@@ -1,0 +1,13 @@
+<ul class="todo-list">
+<li sa2n-for="item in todos">
+<h3 bind-title="item.title">{{ item.title }}</h3>
+<p>{{ item.desc }}</p>
+    <div class="todo-meta">
+        <span>{{ item.category.title }} | </span>
+        <span>预期完成时间: {{ item.endTime | formatDate }} {{item.done}}</span>
+        </div>
+    <a class="fa fa-pencil" href="#/edit/{{ item.id }}"></a>
+    <i class="fa fa-check" on-click="doneTodo($index,$item)"></i>
+    <i class="fa fa-trash-o" on-click="rmTodo($item)"></i>
+</li>
+</ul>

@@ -2,8 +2,8 @@
     "name": "san-vm",
     "description": "",
     "version": "0.0.1",
-    
+
     "devDependencies": {
-        "jasmine-node": "^2.0.0"
+        "jasmine": "2.4.x"
     }
 }
