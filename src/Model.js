@@ -4,61 +4,67 @@
         this.data = {};
     }
 
-    Model.prototype.set = function (target, value) {
-        if (typeof target === 'string') {
-            target = parser.expr(target);
+    Model.prototype.set = function (expr, value) {
+        if (typeof expr === 'string') {
+            expr = parser.expr(expr);
         }
 
         var data = this.data;
-        for (var i = 0; i < target.expr.length - 1; i++) {
-            data = data[target.expr[i].value];
-            if (!data) {
-                data = data[target.expr[i].value] = {};
-            }
-        }
-
-        data[target.expr[i].value] = value;
-    };
-
-    Model.prototype.get = function (target) {
-
-        if (typeof target === 'string') {
-            target = parser.expr(target);
-        }
-
-        var value = evalExprValue(target, this);
-        if (value == null && this.parent) {
-            return this.parent.get(target);
-        }
-
-        return value;
-    };
-
-    function evalExprValue(expr, model) {
         switch (expr.type) {
-            case 'String':
-            case 'Number':
-                return (new Function('return ' + expr.value))();
+            case ExprType.IDENT:
+                this.data[expr.name] = value;
+                break;
 
-            case 'Identifier':
-                return model.data[expr.value];
+            case ExprType.PROP_ACCESSOR:
+                var paths = expr.paths;
+                for (var i = 0; i < paths.length - 1; i++) {
+                    var path = paths[i];
+                    var pathValue = accessorItemValue(path, this);
 
-            case 'PropertyAccessor':
-                var value = model.data[expr.value[0].value];
-                for (var i = 1; i < value && expr.value.length; i++) {
-                    var accessorItem = expr.value[i];
-                    var accessorItemValue;
-                    if (accessorItem.type === 'Identifier') {
-                        accessorItemValue = accessorItem.value;
+                    data = data[pathValue];
+                    if (!data) {
+                        data = data[pathValue] = {};
                     }
-                    else {
-                        accessorItemValue = evalExprValue(accessorItem, model);
-                    }
-
-                    value = value[accessorItemValue];
                 }
+
+                data[accessorItemValue(paths[i], this)] = value;
+        }
+    };
+
+    Model.prototype.get = function (expr) {
+        if (typeof expr === 'string') {
+            expr = parser.expr(expr);
+        }
+
+        switch (expr.type) {
+            case ExprType.IDENT:
+                return this.data[expr.name];
+
+            case ExprType.PROP_ACCESSOR:
+                var paths = expr.paths;
+                var value = this.data[paths[0].name];
+
+                for (var i = 1; value && i < paths.length; i++) {
+                    var path = paths[i];
+                    var pathValue = accessorItemValue(path, this);
+
+                    value = value[pathValue];
+                }
+
+                if (value == null && this.parent) {
+                    return this.parent.get(target);
+                }
+
                 return value;
         }
+
+        return null;
+    };
+
+    function accessorItemValue(expr, model) {
+        return expr.type === ExprType.IDENT
+            ? expr.name
+            : evalExpr(expr, model);
     }
 
 // });

@@ -5,20 +5,15 @@
         RENDERED: 3
     };
 
-    var BindingType = {
-        STATIC: 1,
-        NORMAL: 2,
-        EVENT: 3
-    };
-
-
-
 
     function elementGenStartHTML(stringBuffer, element) {
         var ci = element._ci_;
+        if (!ci.tagName) {
+            return;
+        }
 
         stringBuffer.push('<');
-        stringBuffer.push(ci.type);
+        stringBuffer.push(ci.tagName);
 
         ci.id = ci.id || util.guid();
 
@@ -26,34 +21,35 @@
         stringBuffer.push(ci.id);
         stringBuffer.push('"');
 
-        ci.binds && ci.binds.each(function (item) {
+        ci.binds && ci.binds.each(function (bind) {
 
             var value;
-            switch (item.type) {
-                case 'text':
-                console.log(item)
-                    value = evalTextSegs(item.expr, element.model)
+            switch (bind.type) {
+                case BindType.PROP:
+                    value = evalExpr(bind.expr, element.model);
                     break;
-                case 'bind':
-                    value = element.model.get(item);
+
+                case BindType.EVENT:
+                    //value = element.model.get(item);
+                    break;
             }
 
             stringBuffer.push(' ');
-            stringBuffer.push(item.name);
+            stringBuffer.push(bind.name);
             stringBuffer.push('="');
             stringBuffer.push(value);
             stringBuffer.push('"');
         });
 
-        for (var key in this.attrs) {
-            var value = this.attrs[key];
-            if (typeof value !== 'string') {
-                value = data[value];
-            }
+        // for (var key in this.attrs) {
+        //     var value = this.attrs[key];
+        //     if (typeof value !== 'string') {
+        //         value = data[value];
+        //     }
 
-            if (key !== 'id')
-                text += ' ' + key + '="' + value + '"';
-        }
+        //     if (key !== 'id')
+        //         text += ' ' + key + '="' + value + '"';
+        // }
 
         // for (var key in this.events) {
         //     var value = this.events[key];
@@ -81,6 +77,10 @@
 
     function elementGenCloseHTML(stringBuffer, element) {
         var tagName = element._ci_.tagName;
+        if (!tagName) {
+            return;
+        }
+
 
         if (!util.tagIsAutoClose(tagName)) {
             stringBuffer.push('</');
@@ -90,7 +90,7 @@
     }
 
     function createNode(ci, owner, model) {
-        if (ci.type === 'text') {
+        if (ci.type === NodeType.TEXT) {
             return new node.Text(ci, owner, model);
         }
 
@@ -134,7 +134,6 @@
                         type: ci.type,
                         childs: ci.childs,
                         tagName: ci.tagName,
-                        events: ci.events,
                         binds: ci.binds
                     },
                     this.owner,
@@ -167,32 +166,13 @@
         this._ci_ = ci;
         this.owner = owner;
         this.model = model;
-        this.segs = parser.text(ci.text);
+        this.expr = parser.text(ci.text);
     }
 
     TextNode.prototype.genHTML = function () {
-        return evalTextSegs(this.segs, this.model);
+        return evalExpr(this.expr, this.model);
     };
 
-    function evalInterpolation(interpo, model) {
-        // TODO: filters
-        return evalExprValue(interpo.expr, model);
-    }
-
-    function evalTextSegs(segs, model) {
-        var buf = new util.StringBuffer();
-        for (var i = 0; i < segs.length; i++) {
-            var seg = segs[i];
-            if (typeof seg === 'string') {
-                buf.push(seg);
-            }
-            else {
-                buf.push(evalInterpolation(seg, model));
-            }
-        }
-
-        return buf.toString();
-    }
 
     var node = {
         Element: Element,

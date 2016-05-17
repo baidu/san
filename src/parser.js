@@ -48,6 +48,35 @@
         }
     };
 
+    function each(array, iterator) {
+        if (array && array.length > 0) {
+            for (var i = 0, l = array.length; i < l; i++) {
+                iterator.call(array, array[i], i);
+            }
+        }
+    }
+
+
+    var NodeType = {
+        ELEMENT: 1,
+        TEXT: 2
+    };
+
+    var BindType = {
+        PROP: 1,
+        EVENT: 2
+    };
+
+    var ExprType = {
+        STRING: 1,
+        NUMBER: 2,
+        IDENT: 3,
+        PROP_ACCESSOR: 4,
+        INTERPOLATION: 5,
+        CALL: 6,
+        TEXT: 7
+    };
+
 
     /**
      * 解析 template
@@ -96,10 +125,9 @@
             }
             else if (!tagEnd) {
                 var element = {
-                    type: 'element',
+                    type: NodeType.ELEMENT,
                     tagName: tagName,
                     directives: new IndexedList(),
-                    events: new IndexedList(),
                     binds: new IndexedList(),
                     childs: [],
                     parent: currentNode
@@ -157,7 +185,7 @@
         function pushTextNode(text) {
             if (text) {
                 currentNode.childs.push({
-                    type: 'text',
+                    type: NodeType.TEXT,
                     text: text,
                     parent: currentNode
                 });
@@ -180,29 +208,29 @@
 
             switch (prefix) {
                 case 'on':
-                    element.events.push({
-                        type: prefix,
+                    element.binds.push({
+                        type: BindType.EVENT,
                         name: realName,
                         expr: parser.call(value)
                     });
                     break;
                 case 'bind':
                     element.binds.push({
-                        type: prefix,
+                        type: BindType.PROP,
                         name: realName,
                         expr: parser.expr(value)
                     });
                     break;
                 case 'san':
                     element.directives.push({
-                        type: prefix,
+                        type: BindType.PROP,
                         name: realName,
                         value: value
                     });
                     break;
                 default:
                     element.binds.push({
-                        type: 'text',
+                        type: BindType.PROP,
                         name: name,
                         expr: parser.text(value)
                     });
@@ -285,16 +313,16 @@
         }
 
         return {
-            type: 'String',
-            value: walker.cut(startIndex, walker.currentIndex())
+            type: ExprType.STRING,
+            literal: walker.cut(startIndex, walker.currentIndex())
         };
     }
 
     function readIdentifier(walker) {
         var match = walker.match(/\s*([a-z_][0-9a-z_]*)/ig);
         return {
-            type: 'Identifier',
-            value: match[1]
+            type: ExprType.IDENT,
+            name: match[1]
         };
     }
 
@@ -302,15 +330,15 @@
         var match = walker.match(/\s*(-?[0-9]+(.[0-9]+)?)/g);
 
         return {
-            type: 'Number',
-            value: match[1]
+            type: ExprType.NUMBER,
+            literal: match[1]
         };
     }
 
     function readPropertyAccessor(walker) {
         var result = {
-            type: 'PropertyAccessor',
-            value: []
+            type: ExprType.PROP_ACCESSOR,
+            paths: []
         };
 
         var firstSeg = readIdentifier(walker);
@@ -318,19 +346,19 @@
             return null;
         }
 
-        result.value.push(firstSeg);
+        result.paths.push(firstSeg);
         accessorLoop: while (1) {
             var code = walker.currentCode();
 
             switch (code) {
                 case 46: // .
                     walker.go(1);
-                    result.value.push(readIdentifier(walker));
+                    result.paths.push(readIdentifier(walker));
                     break;
 
                 case 91: // [
                     walker.go(1);
-                    result.value.push(readExpr(walker));
+                    result.paths.push(readExpr(walker));
                     walker.goUtil(93);  // ]
 
                 default:
@@ -338,7 +366,7 @@
             }
         }
 
-        if (result.value.length === 1) {
+        if (result.paths.length === 1) {
             return firstSeg;
         }
 
@@ -384,18 +412,30 @@
         var segs = [];
         var beforeIndex = 0;
         while ((exprMatch = walker.match(exprStartReg)) != null) {
-            segs.push(
-                walker.cut(
-                    beforeIndex,
-                    walker.currentIndex() - exprMatch[0].length
-                ),
-                parseInterpolation(exprMatch[1])
+            var beforeText = walker.cut(
+                beforeIndex,
+                walker.currentIndex() - exprMatch[0].length
             );
+
+            console.log(beforeText)
+            beforeText && segs.push({
+                type: ExprType.STRING,
+                value: beforeText
+            });
+            segs.push(parseInterpolation(exprMatch[1]));
             beforeIndex = walker.currentIndex();
         }
 
-        segs.push(walker.cut(beforeIndex));
-        return segs;
+        var tail = walker.cut(beforeIndex);
+        tail && segs.push({
+            type: ExprType.STRING,
+            value: tail
+        });
+
+        return {
+            type: ExprType.TEXT,
+            segs: segs
+        };
     }
 
     function parseInterpolation(source) {
@@ -408,6 +448,7 @@
         }
 
         return {
+            type: ExprType.INTERPOLATION,
             expr: expr,
             filters: filters
         };
@@ -428,6 +469,7 @@
         }
 
         return {
+            type: ExprType.CALL,
             name: identifier,
             args: args
         };
@@ -454,4 +496,45 @@
         expr: parseExpr,
         call: parseCall
     };
+
+    function run(bo, component) {
+        switch (bo.type) {
+            case BindType.PROP:
+                return evalExpr(bo.expr, component.model);
+
+        }
+    }
+
+    function evalExpr(expr, model) {
+
+        switch (expr.type) {
+            case ExprType.STRING:
+            case ExprType.NUMBER:
+                if (!expr.value) {
+                    expr.value = (new Function('return ' + expr.literal))();
+                }
+                return expr.value;
+
+            case ExprType.IDENT:
+            case ExprType.PROP_ACCESSOR:
+                return model.get(expr);
+
+            case ExprType.INTERPOLATION:
+                var value = model.get(expr.expr);
+                // each(expr.filters, function (filter) {
+                //     value =
+                // })
+                return value;
+
+            case ExprType.CALL:
+                return;
+
+            case ExprType.TEXT:
+                var buf = new util.StringBuffer();
+                each(expr.segs, function (seg) {
+                    buf.push(evalExpr(seg, model));
+                });
+                return buf.toString();
+        }
+    }
 // });
