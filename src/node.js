@@ -5,6 +5,8 @@
         RENDERED: 3
     };
 
+    var elements = {};
+
 
     function elementGenStartHTML(stringBuffer, element) {
         var ci = element._ci_;
@@ -26,7 +28,7 @@
             var value;
             switch (bind.type) {
                 case BindType.PROP:
-                    value = evalExpr(bind.expr, element.model);
+                    value = evalExpr(bind.expr, element.owner);
                     break;
 
                 case BindType.EVENT:
@@ -101,6 +103,8 @@
 
         this._ci_ = ci;
         ci.id = ci.id || guid();
+        elements[ci.id] = this;
+
         this.owner = owner;
 
         this.model = model;
@@ -110,11 +114,63 @@
         if (this.el) {
             this.lifeCycle = ElementPhase.RENDERED;
         }
+
+        var binds = this._ci_.binds;
+        if (binds) {
+            var me = this;
+            binds.each(function (bind) {
+                if (bind.type === BindType.PROP) {
+                    var bindExpr = bind.expr;
+                    if (bindExpr.type === ExprType.TEXT) {
+                        for (var j = 0; j < bindExpr.segs.length; j++) {
+                            var seg = bindExpr.segs[j];
+                            if (seg.type !== ExprType.STRING) {
+                                me.model.listenChange(seg.expr, util.bind(me.modelChange, me, bind.name ));
+                            }
+                        }
+                    }
+                    else {
+                        me.model.listenChange(bindExpr, util.bind(me.modelChange, me, bind.name));
+                    }
+                }
+            });
+        }
     }
 
     Element.prototype.init = function (options) {
 
         this.lifeCycle = ElementPhase.INITED;
+    };
+
+    Element.prototype.modelChange = function (name) {
+        this.setProp(name, evalExpr(this._ci_.binds.getByName(name).expr, this.owner));
+    };
+
+    Element.prototype.setProp = function (name, value) {
+        document.getElementById(this._ci_.id)[name] = value;
+    };
+
+    Element.prototype.refresh = function () {
+        var binds = this._ci_.binds;
+        var me = this;
+
+        var propNameMap = {
+            'class': 'className'
+        }
+        this._ci_.tagName && binds && binds.each(function (bind) {
+            switch (bind.type) {
+                case BindType.PROP:
+                    var propName = bind.name;
+                    propName = propNameMap[propName] || propName;
+
+                    document.getElementById(me._ci_.id)[propName] = evalExpr(bind.expr, me.owner);
+                    break;
+            }
+        });
+
+        for (var i = 0; i < this.childs.length; i++) {
+            this.childs[i].refresh();
+        }
     };
 
     Element.prototype.genHTML = function () {
@@ -124,10 +180,11 @@
         var forDirective = ci.directives && ci.directives.getByName('for');
         if (forDirective) {
             var forData = this.model.get(forDirective.list);
+
             for (var i = 0; i < forData.length; i++) {
                 var itemModel = new Model(this.model);
-                model.set(forDirective.item, forData[i]);
-                forDirective.index && model.set(forDirective.index, i);
+                itemModel.set(forDirective.item, forData[i]);
+                forDirective.index && itemModel.set(forDirective.index, i);
 
                 var child = createNode(
                     {
@@ -164,13 +221,27 @@
 
     function TextNode(ci, owner, model) {
         this._ci_ = ci;
+        ci.id = ci.id || guid();
         this.owner = owner;
         this.model = model;
         this.expr = parser.text(ci.text);
+
+        var segs = this.expr.segs;
+        for (var j = 0; j < segs.length; j++) {
+            var seg = segs[j];
+            if (seg.type === ExprType.INTERPOLATION) {
+                this.model.listenChange(seg.expr, util.bind(this.refresh, this));
+            }
+        }
     }
 
     TextNode.prototype.genHTML = function () {
-        return evalExpr(this.expr, this.model);
+        return evalExpr(this.expr, this.owner) + '<script type="text/san-vm" id="' + this._ci_.id + '"></script>';
+    };
+
+    TextNode.prototype.refresh = function () {
+        var node = document.getElementById(this._ci_.id).previousSibling;
+        node.textContent = evalExpr(this.expr, this.owner);
     };
 
 

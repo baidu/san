@@ -163,8 +163,8 @@
                     }
                 }
 
+                currentNode.childs.push(element);
                 if (!tagClose) {
-                    currentNode.childs.push(element);
                     currentNode = element;
                 }
             }
@@ -222,11 +222,7 @@
                     });
                     break;
                 case 'san':
-                    element.directives.push({
-                        type: BindType.PROP,
-                        name: realName,
-                        value: value
-                    });
+                    element.directives.push(parseDirective(realName, value));
                     break;
                 default:
                     element.binds.push({
@@ -236,6 +232,34 @@
                     });
             }
         }
+    }
+
+    var directiveParsers = {
+        'for': function (value) {
+            var walker = new Walker(value);
+            var match = walker.match(/^\s*([\$0-9a-z_]+)(\s*,\s*([\$0-9a-z_]+))?\s+in\s+/ig);
+
+            if (match) {
+                return {
+                    item: match[1],
+                    index: match[3],
+                    list: readExpr(walker)
+                }
+            }
+
+            throw new Error('for syntax error: ' + value);
+        }
+    };
+
+    function parseDirective(name, value) {
+        var parser = directiveParsers[name];
+        if (parser) {
+            var result = parser(value);
+            result.name = name;
+            return result;
+        }
+
+        return null;
     }
 
     function Walker(source) {
@@ -319,7 +343,7 @@
     }
 
     function readIdentifier(walker) {
-        var match = walker.match(/\s*([a-z_][0-9a-z_]*)/ig);
+        var match = walker.match(/\s*([\$0-9a-z_]+)/ig);
         return {
             type: ExprType.IDENT,
             name: match[1]
@@ -417,7 +441,6 @@
                 walker.currentIndex() - exprMatch[0].length
             );
 
-            console.log(beforeText)
             beforeText && segs.push({
                 type: ExprType.STRING,
                 value: beforeText
@@ -497,15 +520,7 @@
         call: parseCall
     };
 
-    function run(bo, component) {
-        switch (bo.type) {
-            case BindType.PROP:
-                return evalExpr(bo.expr, component.model);
-
-        }
-    }
-
-    function evalExpr(expr, model) {
+    function evalExpr(expr, component) {
 
         switch (expr.type) {
             case ExprType.STRING:
@@ -517,13 +532,23 @@
 
             case ExprType.IDENT:
             case ExprType.PROP_ACCESSOR:
-                return model.get(expr);
+                return component.model.get(expr);
 
             case ExprType.INTERPOLATION:
-                var value = model.get(expr.expr);
-                // each(expr.filters, function (filter) {
-                //     value =
-                // })
+                var value = component.model.get(expr.expr);
+                each(expr.filters, function (filter) {
+                    var filterFn = component.filters[filter.name.name];
+
+                    console.log(filter, filterFn)
+                    if (typeof filterFn === 'function') {
+                        var args = [value];
+                        each(filter.args, function (arg) {
+                            args.push(evalExpr(arg, component));
+                        });
+
+                        value = filterFn.apply(component, args);
+                    }
+                });
                 return value;
 
             case ExprType.CALL:
@@ -532,7 +557,7 @@
             case ExprType.TEXT:
                 var buf = new util.StringBuffer();
                 each(expr.segs, function (seg) {
-                    buf.push(evalExpr(seg, model));
+                    buf.push(evalExpr(seg, component));
                 });
                 return buf.toString();
         }

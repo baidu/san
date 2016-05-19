@@ -24,6 +24,9 @@
             this._ci_ = {};
         }
 
+        util.extend(this, options.methods);
+        this.filters = options.filters || {};
+
         this._vdom_ = new node.Root(this._ci_, this, this.model);
 
         componentCallHook(this, 'compiled');
@@ -33,11 +36,15 @@
         }
     }
 
-    Component.prototype.set = function () {
-
+    Component.prototype.set = function (expr, value) {
+        this.model.set(expr, value);
     };
 
+    Component.prototype.get = function (expr) {
+        return this.model.get(expr);
+    };
 
+    var DELEGATE_EVENT = ['click'];
 
     Component.prototype.attach = function (parent) {
         if (!this.el) {
@@ -48,90 +55,39 @@
         parent.appendChild(this.el);
 
         var me = this;
-        this.el.onclick = function (e) {
+        for (var i = 0; i < DELEGATE_EVENT.length; i++) {
+            var eventName = DELEGATE_EVENT[i];
+            util.on(this.el, eventName, util.bind(this.eventListeners[eventName], this));
+        }
+    };
+
+    Component.prototype.eventListeners = {
+        click: function (e) {
             var target = e.target;
-            var clickExpr = target.getAttribute('click-expr');
+            var targetElement = elements[target.id];
+            console.log(targetElement)
+            var bind = targetElement._ci_.binds.getByName('click');
 
-            var contextData = {};
-            while (target && target.nodeType === 1) {
-                if (target.getAttribute('data-context')) {
+            if (bind) {
+                var bindExpr = bind.expr;
 
-                    contextData = elementData[target.id];
-                    break;
-                }
-                target = target.parentNode;
-            }
-
-            if (clickExpr) {
-                clickExpr = clickExpr.split(',');
-                var methodName = clickExpr[0];
                 var args = [];
-                for (var i = 1; i < clickExpr.length; i++) {
-                    var argName = clickExpr[i];
-                    var arg;
-                    if (argName === '$event') {
-                        arg = e;
+                for (var i = 0; i < bindExpr.args.length; i++) {
+                    var argExpr = bindExpr.args[i];
+                    if (argExpr.type === ExprType.IDENT && argExpr.name === '$event') {
+                        args.push(e);
                     }
                     else {
-                        argName = argName.slice(1);
-                        arg = contextData[argName];
-                        if (arg == null) {
-                            arg = me.data[argName];
-                        }
+                        args.push(evalExpr(argExpr, targetElement.owner));
                     }
-
-                    args[i - 1] = arg;
                 }
 
-                me.methods[methodName].apply(me, args);
-            }
-        };
-    };
-
-    Component.prototype.compile = function () {
-        this.struction = parse(this.template || '');
-    };
-
-    Component.prototype.fromDOM = function (el) {
-        this.el = el;
-        this.attach();
-    };
-
-    Component.prototype.appendTo = function (target) {
-        this.compile();
-        this.attach();
-        target.appendChild(this.el);
-    };
-
-    Component.prototype.render = function () {
-        this.struction.update(this.data);
-    };
-
-    Component.prototype.$set = function (prop, value) {
-        var data = this.data;
-        for (var i = 0, l = prop.length; i < l - 1; i++) {
-            data = data[prop[i]];
-        }
-
-        data[prop[l - 1]] = value;
-
-        this.struction.updateDirective({type: 'OBJECT_CHANGE', path: prop, value: value});
-    };
-
-    Component.prototype.$remove = function (prop, value) {
-        var data = this.data;
-        for (var i = 0, l = prop.length; i < l; i++) {
-            data = data[prop[i]];
-        }
-
-        var len = data.length;
-        while (len--) {
-            if (data[len] === value) {
-                data.splice(len, 1);
-                break;
+                var method = this[bindExpr.name.name];
+                console.log(bindExpr.name, targetElement.model)
+                if (typeof method === 'function') {
+                    method.apply(this, args);
+                }
             }
         }
-
-        this.struction.updateDirective({type: 'ARRAY_REMOVE', path: prop, index: len});
-    };
+    }
 //})
