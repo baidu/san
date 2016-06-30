@@ -1,0 +1,113 @@
+describe("Interpolation", function () {
+
+    sanVM.addFilter('uppercase', function (source) {
+        if (source) {
+            return source.charAt(0).toUpperCase() + source.slice(1);
+        }
+
+        return source;
+    });
+
+    it("alone", function () {
+        var MyComponent = sanVM.Component({
+            template: '{{name}}'
+        });
+        var myComponent = new MyComponent();
+        myComponent.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('errorrik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+
+    it("+static text", function () {
+        var MyComponent = sanVM.Component({
+            template: 'Hello {{name}}!'
+        });
+        var myComponent = new MyComponent();
+        myComponent.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello errorrik!');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+
+    it("global filter", function () {
+        var MyComponent = sanVM.Component({
+            template: '{{name|uppercase}}'
+        });
+        var myComponent = new MyComponent();
+        myComponent.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Errorrik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+
+    it("component filter", function () {
+        var MyComponent = sanVM.Component({
+            template: '{{name|uppercase}}',
+
+            filters: {
+                uppercase: function (source) {
+                    if (source) {
+                        return source.toUpperCase();
+                    }
+
+                    return source;
+                }
+            }
+        });
+        var myComponent = new MyComponent();
+        myComponent.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('ERRORRIK');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+
+    it("set after attach", function (done) {
+        var MyComponent = sanVM.Component({
+            template: 'Hello {{name}}!'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        myComponent.set('name', 'errorrik');
+        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello !');
+
+        sanVM.nextTick(function() {
+            expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello errorrik!');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+});
