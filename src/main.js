@@ -863,7 +863,6 @@
         result.paths.push(firstSeg);
         accessorLoop: while (1) {
             var code = walker.currentCode();
-
             switch (code) {
                 case 46: // .
                     walker.go(1);
@@ -874,6 +873,7 @@
                     walker.go(1);
                     result.paths.push(readExpr(walker));
                     walker.goUtil(93);  // ]
+                    break;
 
                 default:
                     break accessorLoop;
@@ -959,6 +959,15 @@
         this.data = {};
     }
 
+    Model.ChangeType = {
+        SET: 1,
+        ARRAY_PUSH: 2,
+        ARRAY_POP: 3,
+        ARRAY_SHIFT: 4,
+        ARRAY_UNSHIFT: 5,
+        ARRAY_REMOVE: 6
+    };
+
     /**
      * 添加数据变更的事件监听器
      *
@@ -1007,29 +1016,30 @@
             expr = parseExpr(expr);
         }
 
+        var value = null;
+
         switch (expr.type) {
             case ExprType.IDENT:
-                return this.data[expr.name];
+                value = this.data[expr.name];
+                break;
 
             case ExprType.PROP_ACCESSOR:
                 var paths = expr.paths;
-                var value = this.data[paths[0].name];
+                value = this.data[paths[0].name];
 
-                for (var i = 1, l = paths.length; value && i < l; i++) {
+                for (var i = 1, l = paths.length; value != null && i < l; i++) {
                     var path = paths[i];
                     var pathValue = accessorItemValue(path, this);
 
                     value = value[pathValue];
                 }
-
-                if (value == null && this.parent) {
-                    return this.parent.get(expr);
-                }
-
-                return value;
         }
 
-        return null;
+        if (value == null && this.parent) {
+            return this.parent.get(expr);
+        }
+
+        return value;
     };
 
     /**
@@ -1073,9 +1083,11 @@
                 changeExpr = parseExpr(pathValues.join('.'));
         }
 
-        if (prop && data[prop] !== value) {
+        if (prop != null && data[prop] !== value) {
             data[prop] = value;
+            // TODO: 是否要区分SET 和 ARRAY_SET
             !option.silence && this.fireChange({
+                type: Model.ChangeType.SET,
                 expr: changeExpr,
                 exprX: expr,
                 value: value
@@ -1084,58 +1096,133 @@
     };
 
     /**
-     * 判断源表达式路径是否包含目标表达式
+     * 数组数据项push操作
      *
-     * @inner
-     * @param {Object} source 源表达式
-     * @param {Object} target 目标表达式
-     * @param {Model} model 表达式所属数据环境
-     * @return {boolean}
+     * @param {string|Object} expr 数据项路径
+     * @param {*} item 要push的值
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
      */
-    function exprContains(source, target, model) {
-        if (source.type === ExprType.TEXT) {
-            var result = true;
+    Model.prototype.push = function (expr, item, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
+        }
+        var target = this.get(expr);
 
-            each(source.segs, function (seg) {
-                if (seg.type !== ExprType.STRING) {
-                    result = exprContains(seg.expr, target, model);
-                    return result;
-                }
+        if (target instanceof Array) {
+            target.push(item);
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_PUSH,
+                value: item,
+                index: target.length - 1
             });
-
-            return result;
         }
+    };
 
-        var sourceSegs = source.paths;
-        var targetSegs = target.paths;
-        if (source.type !== ExprType.PROP_ACCESSOR) {
-            sourceSegs = [source];
+    /**
+     * 数组数据项pop操作
+     *
+     * @param {string|Object} expr 数据项路径
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
+     */
+    Model.prototype.pop = function (expr, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
         }
-        if (target.type !== ExprType.PROP_ACCESSOR) {
-            targetSegs = [target];
+        var target = this.get(expr);
+
+        if (target instanceof Array) {
+            var value = target.pop();
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_POP,
+                value: value,
+                index: target.length
+            });
         }
+    };
 
-        var sourceLen = sourceSegs.length;
-        var targetLen = targetSegs.length;
-        for (var i = 0; i < targetLen; i++) {
-            if (i >= sourceLen) {
-                return true;
-            }
-
-            var sourceSeg = sourceSegs[i];
-            var targetSeg = targetSegs[i];
-
-            if (sourceSeg.type === ExprType.PROP_ACCESSOR) {
-                return true;
-            }
-
-            if (accessorItemValue(sourceSeg, model) != accessorItemValue(targetSeg, model)) {
-                return false;
-            }
+    /**
+     * 数组数据项shift操作
+     *
+     * @param {string|Object} expr 数据项路径
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
+     */
+    Model.prototype.shift = function (expr, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
         }
+        var target = this.get(expr);
 
-        return true;
-    }
+        if (target instanceof Array) {
+            var value = target.shift();
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_SHIFT,
+                value: value
+            });
+        }
+    };
+
+    /**
+     * 数组数据项unshift操作
+     *
+     * @param {string|Object} expr 数据项路径
+     * @param {*} item 要unshift的值
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
+     */
+    Model.prototype.unshift = function (expr, item, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
+        }
+        var target = this.get(expr);
+
+        if (target instanceof Array) {
+            target.unshift(item);
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_UNSHIFT,
+                value: item
+            });
+        }
+    };
+
+    /**
+     * 数组数据项移除操作
+     *
+     * @param {string|Object} expr 数据项路径
+     * @param {number} index 要移除项的索引
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
+     */
+    Model.prototype.remove = function (expr, index, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
+        }
+        var target = this.get(expr);
+
+        if (target instanceof Array) {
+            var value = target[index];
+            target.splice(index, 1);
+
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_REMOVE,
+                value: value
+            });
+        }
+    };
+
+
 
     /**
      * 获取property accessor单项对应的名称值
@@ -1216,10 +1303,11 @@
      * @param {Component} owner 节点所属组件
      * @return {Element|TextNode}
      */
-    function createNode(aNode, owner) {
+    function createNode(aNode, owner, data) {
         var options = {
             aNode: aNode,
-            owner: owner
+            owner: owner,
+            data: data
         };
 
         if (aNode.directives.get('for')) {
@@ -1411,15 +1499,28 @@
     };
 
     /**
+     * 销毁释放元素行为
+     */
+    Node.prototype._dispose = function () {
+        this.owner = null;
+        this.data = null;
+        this.aNode = null;
+    };
+
+    /**
      * 计算表达式的结果
      *
      * @param {Object} expr 表达式对象
      * @return {*}
      */
     Node.prototype.evalExpr = function (expr) {
-        return evalExpr(expr, this.data || this.owner.data, this.owner);
+        return evalExpr(expr, this.data, this.owner);
     };
 
+
+    function genStumpHTML(node) {
+        return '<script type="text/san-vm" id="' + node.id + '"></script>';
+    }
 
     /**
      * 文本节点类
@@ -1452,8 +1553,7 @@
      * @return {string}
      */
     TextNode.prototype.genHTML = function () {
-        return (this.evalExpr(this.expr) || ' ')
-            + '<script type="text/san-vm" id="' + this.id + '"></script>';
+        return (this.evalExpr(this.expr) || ' ') + genStumpHTML(this);
     };
 
     /**
@@ -1468,12 +1568,17 @@
         }
     };
 
+    /**
+     * 绑定数据变化时的视图更新函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     TextNode.prototype.updateView = function (change) {
         each(
             this.expr.segs,
             function (seg) {
                 if (seg.type === ExprType.INTERPOLATION
-                    && exprContains(seg.expr, change.exprX, this.owner.data)
+                    && exprContains(seg.expr, change.exprX, this.data)
                 ) {
                     this.update();
                     return false;
@@ -1495,9 +1600,8 @@
             }
         }
 
-        this.aNode = null;
-        this.owner = null;
         this.expr = null;
+        Node.prototype._dispose.call(this);
     };
 
 
@@ -1547,6 +1651,14 @@
     Element.prototype._create = function () {
         if (!this.el) {
             this.el = document.createElement(this.tagName);
+            this.el.id = this.id;
+
+            this.aNode.binds.each(function (bind) {
+                var value = this.evalExpr(bind.expr);
+                if (value != null && typeof value !== 'object') {
+                    this.el.setAttribute(bind.name, value);
+                }
+            }, this);
         }
     };
 
@@ -1563,8 +1675,8 @@
      *
      * @param {HTMLElement} parent 要添加到的父元素
      */
-    Element.prototype.attach = function (parent) {
-        this._attach(parent);
+    Element.prototype.attach = function (parentEl, beforeEl) {
+        this._attach(parentEl, beforeEl);
         noticeAttached(this);
     };
 
@@ -1573,7 +1685,7 @@
      *
      * @param {HTMLElement} parent 要添加到的父元素
      */
-    Element.prototype._attach = function (parent) {
+    Element.prototype._attach = function (parentEl, beforeEl) {
         this.create();
 
         this.aNode.binds.each(function (bind) {
@@ -1583,7 +1695,15 @@
             }
         }, this);
         this.el.innerHTML = elementGenChildsHTML(this);
-        parent && parent.appendChild(this.el);
+
+        if (parentEl) {
+            if (beforeEl) {
+                parentEl.insertBefore(this.el, beforeEl);
+            }
+            else {
+                parentEl.appendChild(this.el);
+            }
+        }
     };
 
     /**
@@ -1593,6 +1713,7 @@
      * @param {Element} element 完成attached状态的元素
      */
     function noticeAttached(element) {
+        element.el = element.el || document.getElementById(element.id);
         for (var i = 0, l = element.childs ? element.childs.length : 0; i < l; i++) {
             noticeAttached(element.childs[i]);
         }
@@ -1640,8 +1761,8 @@
         stringBuffer.push('"');
 
         element.aNode.binds.each(function (bind) {
-            if (!this.data) {
-                var value = this.evalExpr(bind.expr);
+            var value = this.evalExpr(bind.expr);
+            if (value != null && typeof value !== 'object') {
                 stringBuffer.push(' ');
                 stringBuffer.push(bind.name);
                 stringBuffer.push('="');
@@ -1685,7 +1806,7 @@
 
         var buf = new StringBuffer();
         for (var i = 0; i < aNode.childs.length; i++) {
-            var child = createNode(aNode.childs[i], element.owner);
+            var child = createNode(aNode.childs[i], element.owner, element.data);
             element.childs.push(child);
             buf.push(child.genHTML());
         }
@@ -1711,13 +1832,13 @@
     };
 
     /**
-     * 绑定属性的对应数据变化时的视图更新函数
+     * 绑定数据变化时的视图更新函数
      *
-     * @param {string} name 属性名
+     * @param {Object} change 数据变化信息
      */
     Element.prototype.updateView = function (change) {
         this.aNode.binds.each(function (bind) {
-            if (exprContains(bind.expr, change.exprX, this.data || this.owner.data)) {
+            if (this.needUpdateView(bind.expr, change)) {
                 var name = bind.name;
                 this.set(name, this.evalExpr(bind.expr));
             }
@@ -1727,6 +1848,95 @@
             child.updateView(change);
         });
     };
+
+    Element.prototype.needUpdateView = function (bindExpr, change) {
+        return exprContains(bindExpr, change.exprX, this.exprResolver, this.data);
+    };
+
+    Element.prototype.exprResolver = function (expr) {
+        return expr;
+    };
+
+    function exprEqual(exprA, exprB) {
+        if (exprA.type !== exprB.type) {
+            return false;
+        }
+
+        switch (exprA.type) {
+            case ExprType.IDENT:
+                return exprA.name === exprB.name;
+
+            case ExprType.PROP_ACCESSOR:
+                var aLen = exprA.paths.length;
+                var bLen = exprB.paths.length;
+
+                if (aLen !== bLen) {
+                    return false;
+                }
+
+                for (var i = 0; i < aLen; i++) {
+                    if (accessorItemValue(sourceSeg, model) != accessorItemValue(targetSeg, model)) {
+                        return false;
+                    }
+                }
+
+                return true;
+        }
+    }
+
+    /**
+     * 判断源表达式路径是否包含目标表达式
+     *
+     * @inner
+     * @param {Object} source 源表达式
+     * @param {Object} target 目标表达式
+     * @param {Model} model 表达式所属数据环境
+     * @return {boolean}
+     */
+    function exprContains(source, target, model) {
+        if (source.type === ExprType.TEXT) {
+            var result = true;
+
+            each(source.segs, function (seg) {
+                if (seg.type !== ExprType.STRING) {
+                    result = exprContains(seg.expr, target, model);
+                    return result;
+                }
+            });
+
+            return result;
+        }
+
+        var sourceSegs = source.paths;
+        var targetSegs = target.paths;
+        if (source.type !== ExprType.PROP_ACCESSOR) {
+            sourceSegs = [source];
+        }
+        if (target.type !== ExprType.PROP_ACCESSOR) {
+            targetSegs = [target];
+        }
+
+        var sourceLen = sourceSegs.length;
+        var targetLen = targetSegs.length;
+        for (var i = 0; i < targetLen; i++) {
+            if (i >= sourceLen) {
+                return true;
+            }
+
+            var sourceSeg = sourceSegs[i];
+            var targetSeg = targetSegs[i];
+
+            if (sourceSeg.type === ExprType.PROP_ACCESSOR) {
+                return true;
+            }
+
+            if (accessorItemValue(sourceSeg, model) != accessorItemValue(targetSeg, model)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * 将元素从页面上移除
@@ -1749,15 +1959,19 @@
      * 销毁释放元素的行为
      */
     Element.prototype._dispose = function () {
-        for (var i = 0, l = this.childs.length; i < l; i++) {
-            this.childs[i].dispose();
-        }
-
+        this._disposeChilds();
         this.detach();
-        this.data = null;
         this.el = null;
-        this.aNode = null;
-        this.owner = null;
+        this.childs = null;
+        delete elementContainer[this.id];
+        Node.prototype._dispose.call(this);
+    };
+
+    Element.prototype._disposeChilds = function () {
+        each(this.childs, function (child) {
+            child.dispose();
+        });
+        this.childs.length = 0;
     };
 
     // #region Component
@@ -1950,10 +2164,10 @@
     };
 
     function ForDirective(options) {
-        Component.call(this, options);
+        Element.call(this, options);
     }
 
-    inherits(ForDirective, Component);
+    inherits(ForDirective, Element);
 
     /**
      * 生成html
@@ -1962,34 +2176,211 @@
      */
     ForDirective.prototype.genHTML = function () {
         var aNode = this.aNode;
+        var data = this.data;
         var forDirective = aNode.directives.get('for');
-        var forData = this.data.get(forDirective.list);
+        var forData = data.get(forDirective.list);
         var buf = new StringBuffer();
 
-        for (var i = 0; i < forData.length; i++) {
-            var itemModel = new Model(this.model);
-            itemModel.set(forDirective.item, forData[i]);
-            forDirective.index && itemModel.set(forDirective.index, i);
+        if (forData instanceof Array) {
+            for (var i = 0; i < forData.length; i++) {
+                var itemData = new Model(data);
+                itemData.set(forDirective.item, forData[i]);
+                forDirective.index && itemData.set(forDirective.index, i);
 
-            var child = createNode(
-                new ANode({
-                    text: aNode.text,
-                    isText: aNode.isText,
-                    childs: aNode.childs,
-                    binds: aNode.binds,
-                    events: aNode.events,
-                    tagName: aNode.tagName
-                }),
-                this.owner
-            );
+                var child = createNode(
+                    new ANode({
+                        text: aNode.text,
+                        isText: aNode.isText,
+                        childs: aNode.childs,
+                        binds: aNode.binds,
+                        events: aNode.events,
+                        tagName: aNode.tagName
+                    }),
+                    this.owner,
+                    itemData
+                );
 
-            this.childs.push(child);
-            buf.push(child.genHTML());
+                this.childs.push(child);
+                buf.push(child.genHTML());
+            }
         }
 
-        // this.bindDataListener();
+        buf.push(genStumpHTML(this));
+
         callHook(this, 'created');
         return buf.toString();
+    };
+
+    /**
+     * 绑定数据变化时的视图更新函数
+     *
+     * @param {Object} change 数据变化信息
+     */
+    ForDirective.prototype.updateView = function (change) {
+        var aNode = this.aNode;
+        var data = this.owner.data;
+        var forDirective = aNode.directives.get('for');
+
+        switch (change.type) {
+            case Model.ChangeType.ARRAY_PUSH:
+                var itemData = new Model(data);
+                itemData.set(forDirective.item, change.value);
+                forDirective.index && itemData.set(forDirective.index, change.index);
+
+                var child = createNode(
+                    new ANode({
+                        text: aNode.text,
+                        isText: aNode.isText,
+                        childs: aNode.childs,
+                        binds: aNode.binds,
+                        events: aNode.events,
+                        tagName: aNode.tagName
+                    }),
+                    this.owner,
+                    itemData
+                );
+
+                var lastChild = this.childs[this.childs.length - 1];
+                this.childs.push(child);
+                child.attach(lastChild.el.parentNode, lastChild.el.nextSibling);
+                break;
+
+            case Model.ChangeType.ARRAY_POP:
+                var index = this.childs.length - 1;
+                var lastChild = this.childs[index];
+                lastChild.dispose();
+                this.childs.splice(index, 1);
+                break;
+
+            case Model.ChangeType.ARRAY_UNSHIFT:
+                var itemData = new Model(data);
+                itemData.set(forDirective.item, change.value);
+                forDirective.index && itemData.set(forDirective.index, 0);
+
+                var child = createNode(
+                    new ANode({
+                        text: aNode.text,
+                        isText: aNode.isText,
+                        childs: aNode.childs,
+                        binds: aNode.binds,
+                        events: aNode.events,
+                        tagName: aNode.tagName
+                    }),
+                    this.owner,
+                    itemData
+                );
+
+                var firstChild = this.childs[0];
+                this.childs.push(child);
+                child.attach(firstChild.el.parentNode, firstChild.el);
+                break;
+
+            case Model.ChangeType.ARRAY_SHIFT:
+                var child = this.childs[0];
+                child.dispose();
+                this.childs.splice(0, 1);
+                break;
+
+            case Model.ChangeType.SET:
+                var expr = change.exprX;
+                var forExpr = forDirective.list;
+                var segs = expr.paths;
+                var fSegs = forExpr.paths;
+
+                if (expr.type === ExprType.IDENT) {
+                    segs = [expr];
+                }
+
+                if (forExpr.type === ExprType.IDENT) {
+                    fSegs = [forExpr];
+                }
+
+                var equal = 1;
+                var changeIndex;
+                for (var i = 0, len = segs.length, fLen = fSegs.length; ; i++) {
+                    if (accessorItemValue(segs[i]) !== accessorItemValue(fSegs[i])) {
+                        equal = 0;
+                        break;
+                    }
+
+                    if (i === len - 1) {
+                        break;
+                    }
+
+                    if (i === fLen - 1) {
+                        changeIndex = +accessorItemValue(segs[i + 1]);
+                        break;
+                    }
+                }
+
+                if (equal === 1) {
+                    if (len <= fLen) {
+                        // 相等时重新构建整个childs
+                        this._disposeChilds();
+                        var forData = data.get(forDirective.list);
+
+                        for (var i = 0; i < forData.length; i++) {
+                            var itemData = new Model(data);
+                            itemData.set(forDirective.item, forData[i]);
+                            forDirective.index && itemData.set(forDirective.index, i);
+
+                            var child = createNode(
+                                new ANode({
+                                    text: aNode.text,
+                                    isText: aNode.isText,
+                                    childs: aNode.childs,
+                                    binds: aNode.binds,
+                                    events: aNode.events,
+                                    tagName: aNode.tagName
+                                }),
+                                this.owner,
+                                itemData
+                            );
+
+                            this.childs.push(child);console.log(this)
+                            child.attach(this.el.parentNode, this.el);
+                        }
+                    }
+                    else if (len === fLen + 1) {
+                        // 等于单项时构建单项
+                        var itemData = new Model(data);
+                        itemData.set(forDirective.item, change.value);
+                        forDirective.index && itemData.set(forDirective.index, changeIndex);
+                        var newChild = createNode(
+                            new ANode({
+                                text: aNode.text,
+                                isText: aNode.isText,
+                                childs: aNode.childs,
+                                binds: aNode.binds,
+                                events: aNode.events,
+                                tagName: aNode.tagName
+                            }),
+                            this.owner,
+                            itemData
+                        );
+                        var replaceChild = this.childs[changeIndex];
+                        newChild.attach(replaceChild.el.parentNode, replaceChild.el);
+                        replaceChild.dispose();
+                        this.childs.splice(changeIndex, 1, newChild);
+                    }
+                    else {
+                        // 否则让子元素刷新
+                        change = extend({}, change);
+                        change.exprX = {
+                            type: ExprType.PROP_ACCESSOR,
+                            paths: [
+                                {name: forDirective.item, type: ExprType.IDENT}
+                            ].concat(segs.slice(fLen + 1))
+                        };
+                        this.childs[changeIndex].updateView(change);
+                    }
+                }
+                else {
+                    Element.prototype.updateView.call(this, change);
+                }
+
+                break;
+        }
     };
 
     // #region exports
