@@ -13,7 +13,7 @@ describe("Element", function () {
             template: '<span title="{{name}}">{{name}}</span>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -34,7 +34,7 @@ describe("Element", function () {
             template: '<span title="{{name}}">{{name}}</span>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -45,7 +45,7 @@ describe("Element", function () {
         expect(span.getAttribute('title')).toBe('errorrik');
         expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
 
-        myComponent.set('name', 'varsha');
+        myComponent.data.set('name', 'varsha');
 
         expect(span.title).toBe('errorrik');
         expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
@@ -62,6 +62,60 @@ describe("Element", function () {
     });
 
 
+    it("bind class", function (done) {
+        var MyComponent = sanVM.Component({
+            template: '<span class="msg {{extra}}"></span>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('extra', 'msg-notice');
 
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.className).toBe('msg msg-notice');
+
+        myComponent.data.set('extra', 'msg-error');
+
+
+        sanVM.nextTick(function () {
+            expect(span.className).toBe('msg msg-error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind style", function (done) {
+        var MyComponent = sanVM.Component({
+            template: '<span style="position: absolute; display: {{display}}"></span>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('display', 'block');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.style.position).toBe('absolute');
+        expect(span.style.display).toBe('block');
+
+        myComponent.data.set('display', 'none');
+
+
+        sanVM.nextTick(function () {
+            expect(span.style.position).toBe('absolute');
+            expect(span.style.display).toBe('none');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 
 });
