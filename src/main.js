@@ -1057,7 +1057,6 @@
         }
 
         var data = this.data;
-        var changeExpr = expr;
         var prop;
 
         switch (expr.type) {
@@ -1080,7 +1079,6 @@
                 }
 
                 prop = accessorItemValue(paths[i], this);
-                changeExpr = parseExpr(pathValues.join('.'));
         }
 
         if (prop != null && data[prop] !== value) {
@@ -1088,8 +1086,7 @@
             // TODO: 是否要区分SET 和 ARRAY_SET
             !option.silence && this.fireChange({
                 type: Model.ChangeType.SET,
-                expr: changeExpr,
-                exprX: expr,
+                expr: expr,
                 value: value
             });
         }
@@ -1578,7 +1575,7 @@
             this.expr.segs,
             function (seg) {
                 if (seg.type === ExprType.INTERPOLATION
-                    && exprContains(seg.expr, change.exprX, this.data)
+                    && exprContains(seg.expr, change.expr, this.data)
                 ) {
                     this.update();
                     return false;
@@ -1838,7 +1835,7 @@
      */
     Element.prototype.updateView = function (change) {
         this.aNode.binds.each(function (bind) {
-            if (this.needUpdateView(bind.expr, change)) {
+            if (exprContains(bind.expr, change.expr, this.data)) {
                 var name = bind.name;
                 this.set(name, this.evalExpr(bind.expr));
             }
@@ -1848,41 +1845,6 @@
             child.updateView(change);
         });
     };
-
-    Element.prototype.needUpdateView = function (bindExpr, change) {
-        return exprContains(bindExpr, change.exprX, this.exprResolver, this.data);
-    };
-
-    Element.prototype.exprResolver = function (expr) {
-        return expr;
-    };
-
-    function exprEqual(exprA, exprB) {
-        if (exprA.type !== exprB.type) {
-            return false;
-        }
-
-        switch (exprA.type) {
-            case ExprType.IDENT:
-                return exprA.name === exprB.name;
-
-            case ExprType.PROP_ACCESSOR:
-                var aLen = exprA.paths.length;
-                var bLen = exprB.paths.length;
-
-                if (aLen !== bLen) {
-                    return false;
-                }
-
-                for (var i = 0; i < aLen; i++) {
-                    if (accessorItemValue(sourceSeg, model) != accessorItemValue(targetSeg, model)) {
-                        return false;
-                    }
-                }
-
-                return true;
-        }
-    }
 
     /**
      * 判断源表达式路径是否包含目标表达式
@@ -1967,6 +1929,9 @@
         Node.prototype._dispose.call(this);
     };
 
+    /**
+     * 销毁释放子元素的行为
+     */
     Element.prototype._disposeChilds = function () {
         each(this.childs, function (child) {
             child.dispose();
@@ -2175,35 +2140,13 @@
      * @return {string}
      */
     ForDirective.prototype.genHTML = function () {
-        var aNode = this.aNode;
-        var data = this.data;
-        var forDirective = aNode.directives.get('for');
-        var forData = data.get(forDirective.list);
         var buf = new StringBuffer();
 
-        if (forData instanceof Array) {
-            for (var i = 0; i < forData.length; i++) {
-                var itemData = new Model(data);
-                itemData.set(forDirective.item, forData[i]);
-                forDirective.index && itemData.set(forDirective.index, i);
-
-                var child = createNode(
-                    new ANode({
-                        text: aNode.text,
-                        isText: aNode.isText,
-                        childs: aNode.childs,
-                        binds: aNode.binds,
-                        events: aNode.events,
-                        tagName: aNode.tagName
-                    }),
-                    this.owner,
-                    itemData
-                );
-
-                this.childs.push(child);
-                buf.push(child.genHTML());
-            }
-        }
+        eachForData(this, function (item ,i) {
+            var child = createForDirectiveChild(this, item, i);
+            this.childs.push(child);
+            buf.push(child.genHTML());
+        });
 
         buf.push(genStumpHTML(this));
 
@@ -2212,173 +2155,158 @@
     };
 
     /**
+     * 遍历 for 指令表达式的对应数据
+     *
+     * @inner
+     * @param {ForDirective} forElement for 指令元素对象
+     * @param {Function} fn 遍历函数
+     */
+    function eachForData(forElement, fn) {
+        var forDirective = forElement.aNode.directives.get('for');
+        var data = forElement.data;
+
+        each(data.get(forDirective.list), fn, forElement);
+    }
+
+    /**
+     * 创建 for 指令元素的子元素
+     *
+     * @inner
+     * @param {ForDirective} forElement for 指令元素对象
+     * @param {*} item 子元素对应数据
+     * @param {number} index 子元素对应序号
+     * @return {Element}
+     */
+    function createForDirectiveChild(forElement, item, index) {
+        var forDirective = forElement.aNode.directives.get('for');
+        var itemData = new Model(forElement.data);
+        itemData.set(forDirective.item, item);
+        forDirective.index && itemData.set(forDirective.index, index);
+
+        var aNode = forElement.aNode;
+        return createNode(
+            new ANode({
+                text: aNode.text,
+                isText: aNode.isText,
+                childs: aNode.childs,
+                binds: aNode.binds,
+                events: aNode.events,
+                tagName: aNode.tagName
+            }),
+            forElement.owner,
+            itemData
+        );
+    }
+
+    /**
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
      */
     ForDirective.prototype.updateView = function (change) {
-        var aNode = this.aNode;
-        var data = this.owner.data;
-        var forDirective = aNode.directives.get('for');
+        var forDirective = this.aNode.directives.get('for');
 
-        switch (change.type) {
-            case Model.ChangeType.ARRAY_PUSH:
-                var itemData = new Model(data);
-                itemData.set(forDirective.item, change.value);
-                forDirective.index && itemData.set(forDirective.index, change.index);
+        var changeExpr = change.expr;
+        var changeSegs = changeExpr.paths;
+        if (changeExpr.type === ExprType.IDENT) {
+            changeSegs = [changeExpr];
+        }
+        var changeLen = changeSegs.length;
 
-                var child = createNode(
-                    new ANode({
-                        text: aNode.text,
-                        isText: aNode.isText,
-                        childs: aNode.childs,
-                        binds: aNode.binds,
-                        events: aNode.events,
-                        tagName: aNode.tagName
-                    }),
-                    this.owner,
-                    itemData
-                );
+        var forExpr = forDirective.list;
+        var forSegs = forExpr.paths;
+        if (forExpr.type === ExprType.IDENT) {
+            forSegs = [forExpr];
+        }
+        var forLen = forSegs.length;
 
-                var lastChild = this.childs[this.childs.length - 1];
-                this.childs.push(child);
-                child.attach(lastChild.el.parentNode, lastChild.el.nextSibling);
+        // changeInForExpr 变量表示变更的数据与 for 指令对应表达式的关系
+        // 0 - for 指令对应表达式的“整个数据”发生了变化
+        // 1 - for 指令对应表达式的数据的“子项”发生了变化
+        // 2 - for 指令对应表达式的数据的“子项的属性”
+        // -1 - 变更的不是 for 指令对应表达式的数据
+        var changeInForExpr = 0;
+        var changeIndex;
+
+        for (var i = 0; i < changeLen && i < forLen; i++) {
+            if (accessorItemValue(changeSegs[i]) !== accessorItemValue(forSegs[i])) {
+                changeInForExpr = -1;
+                break;
+            }
+        }
+
+        if (changeInForExpr >= 0 && changeLen > forLen) {
+            changeIndex = +accessorItemValue(changeSegs[forLen]);
+            changeInForExpr = changeLen - forLen === 1 ? 1 : 2;
+        }
+
+        switch (changeInForExpr) {
+            case -1:
+                Element.prototype.updateView.call(this, change);
                 break;
 
-            case Model.ChangeType.ARRAY_POP:
-                var index = this.childs.length - 1;
-                var lastChild = this.childs[index];
-                lastChild.dispose();
-                this.childs.splice(index, 1);
-                break;
-
-            case Model.ChangeType.ARRAY_UNSHIFT:
-                var itemData = new Model(data);
-                itemData.set(forDirective.item, change.value);
-                forDirective.index && itemData.set(forDirective.index, 0);
-
-                var child = createNode(
-                    new ANode({
-                        text: aNode.text,
-                        isText: aNode.isText,
-                        childs: aNode.childs,
-                        binds: aNode.binds,
-                        events: aNode.events,
-                        tagName: aNode.tagName
-                    }),
-                    this.owner,
-                    itemData
-                );
-
-                var firstChild = this.childs[0];
-                this.childs.push(child);
-                child.attach(firstChild.el.parentNode, firstChild.el);
-                break;
-
-            case Model.ChangeType.ARRAY_SHIFT:
-                var child = this.childs[0];
-                child.dispose();
-                this.childs.splice(0, 1);
-                break;
-
-            case Model.ChangeType.SET:
-                var expr = change.exprX;
-                var forExpr = forDirective.list;
-                var segs = expr.paths;
-                var fSegs = forExpr.paths;
-
-                if (expr.type === ExprType.IDENT) {
-                    segs = [expr];
-                }
-
-                if (forExpr.type === ExprType.IDENT) {
-                    fSegs = [forExpr];
-                }
-
-                var equal = 1;
-                var changeIndex;
-                for (var i = 0, len = segs.length, fLen = fSegs.length; ; i++) {
-                    if (accessorItemValue(segs[i]) !== accessorItemValue(fSegs[i])) {
-                        equal = 0;
+            case 0:
+                // 对表达式数据本身的数组操作
+                // 根据变更类型执行不同的视图更新行为
+                switch (change.type) {
+                    case Model.ChangeType.ARRAY_PUSH:
+                        var newChild = createForDirectiveChild(this, change.value, change.index);
+                        this.childs.push(newChild);
+                        newChild.attach(this.el.parentNode, this.el.nextSibling);
                         break;
-                    }
 
-                    if (i === len - 1) {
+                    case Model.ChangeType.ARRAY_POP:
+                        var index = this.childs.length - 1;
+                        this.childs[index].dispose();
+                        this.childs.splice(index, 1);
                         break;
-                    }
 
-                    if (i === fLen - 1) {
-                        changeIndex = +accessorItemValue(segs[i + 1]);
+                    case Model.ChangeType.ARRAY_UNSHIFT:
+                        var newChild = createForDirectiveChild(this, change.value, 0);
+                        var nextChild = this.childs[0] || this;
+                        this.childs.push(newChild);
+                        newChild.attach(nextChild.el.parentNode, nextChild.el);
                         break;
-                    }
-                }
 
-                if (equal === 1) {
-                    if (len <= fLen) {
-                        // 相等时重新构建整个childs
+                    case Model.ChangeType.ARRAY_SHIFT:
+                        this.childs[0].dispose();
+                        this.childs.splice(0, 1);
+                        break;
+
+                    case Model.ChangeType.SET:
+                        // 重新构建整个childs
                         this._disposeChilds();
-                        var forData = data.get(forDirective.list);
-
-                        for (var i = 0; i < forData.length; i++) {
-                            var itemData = new Model(data);
-                            itemData.set(forDirective.item, forData[i]);
-                            forDirective.index && itemData.set(forDirective.index, i);
-
-                            var child = createNode(
-                                new ANode({
-                                    text: aNode.text,
-                                    isText: aNode.isText,
-                                    childs: aNode.childs,
-                                    binds: aNode.binds,
-                                    events: aNode.events,
-                                    tagName: aNode.tagName
-                                }),
-                                this.owner,
-                                itemData
-                            );
-
-                            this.childs.push(child);console.log(this)
+                        eachForData(this, function (item ,i) {
+                            var child = createForDirectiveChild(this, item, i);
+                            this.childs.push(child);
                             child.attach(this.el.parentNode, this.el);
-                        }
-                    }
-                    else if (len === fLen + 1) {
-                        // 等于单项时构建单项
-                        var itemData = new Model(data);
-                        itemData.set(forDirective.item, change.value);
-                        forDirective.index && itemData.set(forDirective.index, changeIndex);
-                        var newChild = createNode(
-                            new ANode({
-                                text: aNode.text,
-                                isText: aNode.isText,
-                                childs: aNode.childs,
-                                binds: aNode.binds,
-                                events: aNode.events,
-                                tagName: aNode.tagName
-                            }),
-                            this.owner,
-                            itemData
-                        );
-                        var replaceChild = this.childs[changeIndex];
-                        newChild.attach(replaceChild.el.parentNode, replaceChild.el);
-                        replaceChild.dispose();
-                        this.childs.splice(changeIndex, 1, newChild);
-                    }
-                    else {
-                        // 否则让子元素刷新
-                        change = extend({}, change);
-                        change.exprX = {
-                            type: ExprType.PROP_ACCESSOR,
-                            paths: [
-                                {name: forDirective.item, type: ExprType.IDENT}
-                            ].concat(segs.slice(fLen + 1))
-                        };
-                        this.childs[changeIndex].updateView(change);
-                    }
+                        });
                 }
-                else {
-                    Element.prototype.updateView.call(this, change);
-                }
+                break;
 
+            case 1:
+                if (change.type === Model.ChangeType.SET) {
+                    // 等于单项时构建单项
+                    var newChild = createForDirectiveChild(this, change.value, changeIndex);
+                    var replaceChild = this.childs[changeIndex];
+                    newChild.attach(replaceChild.el.parentNode, replaceChild.el);
+                    replaceChild.dispose();
+                    this.childs.splice(changeIndex, 1, newChild);
+                }
+                break;
+
+            case 2:
+                if (change.type === Model.ChangeType.SET) {
+                    // 否则让子元素刷新
+                    change = extend({}, change);
+                    change.expr = {
+                        type: ExprType.PROP_ACCESSOR,
+                        paths: [
+                            {name: forDirective.item, type: ExprType.IDENT}
+                        ].concat(changeSegs.slice(forLen + 1))
+                    };
+                    this.childs[changeIndex].updateView(change);
+                }
                 break;
         }
     };
