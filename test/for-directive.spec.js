@@ -5,7 +5,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -51,7 +51,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -84,7 +84,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -115,7 +115,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -150,7 +150,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -181,7 +181,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -212,7 +212,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -243,7 +243,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
@@ -276,11 +276,11 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}} in {{org}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com'},
             {name: 'varsha', email: 'wangshuonpu@163.com'}
         ]);
-        myComponent.set('org', 'efe');
+        myComponent.data.set('org', 'efe');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -337,7 +337,7 @@ describe("ForDirective", function () {
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.set('persons', [
+        myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com', tels: ['12345678', '87654321']},
             {name: 'varsha', email: 'wangshuonpu@163.com', tels: ['23456789', '98765432']}
         ]);

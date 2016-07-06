@@ -13,7 +13,7 @@ describe("Interpolation", function () {
             template: '{{name}}'
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -31,7 +31,7 @@ describe("Interpolation", function () {
             template: 'Hello {{name}}!'
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -49,7 +49,7 @@ describe("Interpolation", function () {
             template: '{{name|uppercase}}'
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -77,7 +77,7 @@ describe("Interpolation", function () {
             }
         });
         var myComponent = new MyComponent();
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -99,7 +99,7 @@ describe("Interpolation", function () {
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-        myComponent.set('name', 'errorrik');
+        myComponent.data.set('name', 'errorrik');
         expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello !');
 
         sanVM.nextTick(function() {
