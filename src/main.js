@@ -1758,14 +1758,18 @@
         stringBuffer.push('"');
 
         element.aNode.binds.each(function (bind) {
-            var value = this.evalExpr(bind.expr);
-            if (value != null && typeof value !== 'object') {
-                stringBuffer.push(' ');
-                stringBuffer.push(bind.name);
-                stringBuffer.push('="');
-                stringBuffer.push(value);
-                stringBuffer.push('"');
+            console.log(bind)
+            if (bind.expr.type === ExprType.TEXT) {
+                var value = this.evalExpr(bind.expr);
+                if (value != null && typeof value !== 'object') {
+                    stringBuffer.push(' ');
+                    stringBuffer.push(bind.name);
+                    stringBuffer.push('="');
+                    stringBuffer.push(value);
+                    stringBuffer.push('"');
+                };
             }
+
         }, element);
 
         stringBuffer.push('>');
@@ -1812,18 +1816,39 @@
     }
 
     /**
+     * 元素的属性设置函数集合
+     *
+     * @inner
+     * @type {Object}
+     */
+    var elementPropSetter = {
+        '*': function (el, name, value) {
+            el[name] = value;
+        },
+
+        'class': function (el, name, value) {
+            el.className = value;
+        },
+
+        'style': function (el, name, value) {
+            el.style.cssText = value;
+        }
+    };
+
+    /**
      * 设置元素属性
      *
      * @param {string} name 属性名称
      * @param {*} name 属性值
      */
-    Element.prototype.set = function (name, value) {
+    Element.prototype.setProp = function (name, value) {
         if (!this.el) {
             this.el = document.getElementById(this.id);
         }
 
         if (this.el && this.lifeCycle.is('created') && !this.blockSetOnce) {
-            this.el[name] = value;
+            var fn = elementPropSetter[name] || elementPropSetter['*'];
+            fn(this.el, name, value);
             this.blockSetOnce = false;
         }
     };
@@ -1835,10 +1860,14 @@
      */
     Element.prototype.updateView = function (change) {
         this.aNode.binds.each(function (bind) {
-            if (exprContains(bind.expr, change.expr, this.data)) {
+
+            if (exprContains(bind.expr, change.expr, this.data)
+                && bind.expr.type === ExprType.TEXT
+            ) {
                 var name = bind.name;
-                this.set(name, this.evalExpr(bind.expr));
+                this.setProp(name, this.evalExpr(bind.expr));
             }
+
         }, this);
 
         each(this.childs, function (child) {
@@ -2116,16 +2145,6 @@
                 }
             }
         }
-    };
-
-    /**
-     * 设置组件属性
-     *
-     * @param {string} name 属性名称
-     * @param {*} name 属性值
-     */
-    Component.prototype.set = function (name, value) {
-        this.data.set(name, value);
     };
 
     function ForDirective(options) {
