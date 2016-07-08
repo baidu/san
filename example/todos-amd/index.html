@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Todos</title>
+        <link rel="stylesheet" href="src/index.css">
+        <link rel="stylesheet" href="dep/font-awesome/font-awesome.css">
+
+        <script src="dep/esl-2.1.4.js"></script>
+        <script>
+            require.config({
+                baseUrl: 'src',
+                paths: {
+                    moment: '../dep/moment-2.11.0'
+                },
+                packages: [
+                    {
+                        name: 'san-vm',
+                        location: '../../../src'
+                    }
+                ],
+                waitSeconds: 3
+            });
+        </script>
+    </head>
+    <body>
+        <div id="wrap"></div>
+        <script>
+            require(
+                ['app'],
+                function (app) {
+                    app.init();
+                }
+            );
+        </script>
+    </body>
+</html>

@@ -1,0 +1,406 @@
+body {
+    background: #333;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+h3,
+p,
+ul,
+li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#wrap {
+    width: 800px;
+    margin: 0 auto;
+}
+
+.form {
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin: 10px auto;
+    width: 90%;
+    max-width: 800px;
+    background: #555;
+    padding: 10px;
+    color: #999;
+}
+
+.form-op {
+    text-align: center;
+}
+
+.form-title,
+.form-desc {
+    display: block;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: #fff;
+}
+
+.form-title:hover,
+.form-desc:hover,
+.form-title:focus,
+.form-desc:focus {
+    background: #444;
+}
+
+.form-title {
+    font-size: 18px;
+    height: 30px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.form-desc {
+    resize: none;
+    height: 40px;
+}
+
+.form-ok,
+.form-cancel {
+    box-sizing: border-box;
+    border: 0;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.form-ok {
+    color: #60a917;
+}
+
+.form-cancel {
+    color: #e51400;
+}
+
+.todo-add {
+    display: block;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0;
+    margin: 10px auto;
+    max-width: 800px;
+    background: #6a6a6a;
+    color: #fff;
+    font-size: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.todo-add:hover {
+    background: #222;
+}
+
+.filter-category {
+    display: inline-block;
+}
+
+.filter-category li {
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.filter-category li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.filter-category .checked {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
+
+.filter-category-clear {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.todo-list {
+    list-style: none;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0;
+    margin: 10px auto;
+    max-width: 800px;
+}
+
+.todo-list h3 {
+    font-size: 18px;
+    height: 30px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.todo-list li {
+    padding: 10px;
+    background: #eee;
+    border-radius: 5px;
+    position: relative;
+    font-size: 14px;
+    color: #666;
+    border-left: 8px solid #555;
+    margin-bottom: 5px;
+}
+
+.todo-list .fa {
+    font-size: 14px;
+    position: absolute;
+    top: 5px;
+    display: none;
+    color: #60a917;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.todo-list .fa-trash-o {
+    right: 5px;
+}
+
+.todo-list .fa-check {
+    right: 25px;
+}
+
+.todo-list .fa-pencil {
+    right: 45px;
+}
+
+.todo-list li:hover .fa {
+    display: block;
+    color: #999;
+}
+
+.todo-list .todo-done .fa {
+    display: block;
+}
+.todo-list .todo-done:hover .fa {
+    color: #60a917;
+}
+
+.todo-list .todo-done {
+    cursor: default;
+    opacity: .4;
+}
+
+.todo-meta {
+    font-size: 10px;
+    color: #999;
+}
+
+.add-category-layer .form {
+    background: #fff;
+}
+
+.add-category-layer .form-title,
+.add-category-layer .form-title:hover,
+.add-category-layer .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.edit-category-layer .fa-times-circle-o {
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+
+.add-category {
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.edit-category {
+    cursor: pointer;
+}
+
+.edit-category-list input {
+    display: block;
+}
+
+.edit-category-list .ui-colorpicker {
+    display: block;
+    margin-top: 3px;
+}
+
+.edit-category-list > li {
+    margin: 10px;
+}
+
+.edit-category-list .fa-check {
+    cursor: pointer;
+    color: green;
+}
+
+.edit-category-list .fa-trash {
+    cursor: pointer;
+    color: red;
+}
+
+.edit-category-list .form-title,
+.edit-category-list .form-title:hover,
+.edit-category-list .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.ui-layer {
+    position: absolute;
+    background: #fff;
+    color: #666;
+}
+
+.ui-timepicker {
+    width: 70px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-timepicker:hover {
+    background: #444;
+}
+
+.ui-timepicker-layer {
+    font-size: 12px;
+    border: 1px solid #ddd;
+    width: 70px;
+}
+
+.ui-timepicker-layer li {
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-timepicker-layer li:hover {
+    background: #eee;
+}
+
+.ui-timepicker-layer li.selected {
+    background: #eee;
+}
+
+.ui-calendar {
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-calendar:hover {
+    background: #444;
+}
+
+.ui-calendar-layer {
+    width: 210px;
+    background: #fff;
+    color: #333;
+}
+
+.ui-calendar-layer .ui-calendar-func {
+    line-height: 30px;
+    height: 30px;
+    background: #eee;
+    color: #666;
+}
+
+.ui-calendar-layer ol {
+    margin: 0;
+    padding: 0;
+}
+
+.ui-calendar-layer b {
+    text-align: center;
+    width: 149px;
+    float: left;
+}
+
+.ui-calendar-layer .fa-angle-left,
+.ui-calendar-layer .fa-angle-right {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    float: left;
+}
+
+.ui-calendar-layer .fa-angle-right {
+    float: right;
+}
+
+.ui-calendar-layer {
+    overflow: hidden;
+}
+
+.ui-calendar-layer li {
+    float: left;
+    width: 30px;
+    height: 20px;
+    line-height: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+}
+
+.ui-calendar-layer .date-head li {
+    background: #ddd;
+    cursor: default;
+}
+
+.ui-calendar-layer li.selected {
+    background: #eee;
+    cursor: default;
+}
+
+.ui-categorypicker {
+    display: inline-block;
+}
+
+.ui-categorypicker li {
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.ui-categorypicker li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.ui-categorypicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
+
+.ui-colorpicker {
+    list-style: none;
+    display: inline-block;
+}
+
+.ui-colorpicker li {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.ui-colorpicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
