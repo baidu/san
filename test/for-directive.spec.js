@@ -176,6 +176,37 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data remove after attach", function (done) {
+        var MyComponent = sanVM.Component({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+
+        myComponent.data.remove('persons', 0);
+
+        sanVM.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[1].getAttribute('title')).toBe('varsha');
+            expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("data set after attach", function (done) {
         var MyComponent = sanVM.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
