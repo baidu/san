@@ -630,15 +630,17 @@
                     break;
 
                 case 'bind':
-                    var twoWay = false;
-                    if (realName.indexOf('-') === 0) {
-                        realName = realName.slice(1);
-                        twoWay = true;
-                    }
+                    aElement.binds.push({
+                        name: realName,
+                        expr: parseExpr(value)
+                    });
+                    break;
+
+                case 'bindx':
                     aElement.binds.push({
                         name: realName,
                         expr: parseExpr(value),
-                        twoWay: twoWay
+                        twoWay: true
                     });
                     break;
 
@@ -1208,13 +1210,18 @@
         var target = this.get(expr);
 
         if (target instanceof Array) {
+            if (index < 0 || index >= target.length) {
+                return;
+            }
+
             var value = target[index];
             target.splice(index, 1);
 
             !option.silence && this.fireChange({
                 expr: expr,
                 type: Model.ChangeType.ARRAY_REMOVE,
-                value: value
+                value: value,
+                index: index
             });
         }
     };
@@ -1443,6 +1450,10 @@
             source[name].call(source);
         }
 
+        if (typeof source['_' + name] === 'function') {
+            source['_' + name].call(source);
+        }
+
         var hookMethod = source.hooks && source.hooks[name];
         if (hookMethod) {
             hookMethod.call(source);
@@ -1487,6 +1498,12 @@
         this.id = this.aNode.id || guid();
     };
 
+    Node.prototype._created = function () {
+        if (!this.el) {
+            this.el = document.getElementById(this.id);
+        }
+    };
+
     /**
      * 销毁释放元素
      */
@@ -1514,7 +1531,13 @@
         return evalExpr(expr, this.data, this.owner);
     };
 
-
+    /**
+     * 创建桩的html
+     *
+     * @inner
+     * @param {Node} node 节点对象
+     * @return {string}
+     */
     function genStumpHTML(node) {
         return '<script type="text/san-vm" id="' + node.id + '"></script>';
     }
@@ -1624,11 +1647,48 @@
      */
     function Element(options) {
         this.childs = [];
+        this.listeners = {};
         Node.call(this, options);
     }
 
     inherits(Element, Node);
 
+
+    Element.prototype.on = function (name, listener) {
+        if (typeof listener !== 'function') {
+            return;
+        }
+
+        if (!this.listeners[name]) {
+            this.listeners[name] = [];
+        }
+
+        this.listeners[name].push(listener);
+    };
+
+    Element.prototype.un = function (name, listener) {
+        var nameListeners = this.listeners[name];
+
+        if (nameListeners instanceof Array) {
+            if (!listener) {
+                nameListeners.length = 0;
+            }
+            else {
+                var len = nameListeners.length;
+                while (len--) {
+                    if (listener === nameListeners[len]) {
+                        nameListeners.splice(len, 1);
+                    }
+                }
+            }
+        }
+    };
+
+    Element.prototype.fire = function (name, event) {
+        each(this.listeners[name], function (listener) {
+            listener.call(this, event);
+        }, this);
+    };
 
     /**
      * 初始化行为
@@ -1667,6 +1727,39 @@
         callHook(this, 'created');
     };
 
+    Element.prototype._created = function () {
+        Node.prototype._created.call(this);
+
+
+        this.aNode.binds.each(function (bindInfo) {
+            if (bindInfo.twoWay) {
+                this.owner.on(bindInfo.name + 'Changed', function (value) {
+                    this.owner.data.set(bindInfo.expr, value);
+                });
+
+                var me = this;
+                this.owner.data.onChange(function (change) {
+                    if (exprContains(change.expr, bindInfo.expr, this)) {
+                        me.fire(bindInfo.name + 'Changed', this.get(bindInfo.expr));
+                    }
+                });
+
+                if (bindInfo.name === 'value') {
+                    var elTagName = this.el.tagName;
+                    var elType = this.el.type;
+                    if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
+                        on(this.el, ('oninput' in this.el) ? 'input' : 'propertychange', bind(function (e) {
+                            this.blockSetOnce = true;
+                            this.owner.data.set(bindInfo.expr, (e.target || e.srcElement).value);
+                        }, this))
+                    }
+                }
+            }
+        }, this);
+
+        this.bindEvents();
+    };
+
     /**
      * 将元素attach到页面
      *
@@ -1674,6 +1767,7 @@
      */
     Element.prototype.attach = function (parentEl, beforeEl) {
         this._attach(parentEl, beforeEl);
+        this.bindEvents();
         noticeAttached(this);
     };
 
@@ -1703,6 +1797,76 @@
         }
     };
 
+    Element.prototype.bindEvents = function () {
+        if (this.eventListeners) {
+            return;
+        }
+
+        this.eventListeners = {};
+        this.aNode.events.each(function (eventBind) {
+            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
+            var listener = provideFn(this, eventBind);
+
+            this.eventListeners[listener.name] = listener.fn;
+            on(this.el, listener.name, listener.fn);
+        }, this);
+    };
+
+    Element.prototype.unbindEvents = function () {
+        if (this.eventListeners) {
+            for (var key in this.eventListeners) {
+                un(this.el, key, this.eventListeners[key]);
+            }
+
+            this.eventListeners = null;
+        }
+    };
+
+    var elementEventProvider = {
+        'input': function (element, eventBind) {
+            return {
+                name: ('oninput' in element.el) ? 'input' : 'propertychange',
+                fn: bind(elementInputListener, element, eventBind)
+            };
+        },
+
+        '*': function (element, eventBind) {
+            return {
+                name: eventBind.name,
+                fn: bind(elementEventListener, element, eventBind)
+            };
+        }
+    };
+
+    function elementInputListener(eventBind, e) {
+        if (e.type === 'input' || e.propertyName === 'value') {
+            e.value = (e.target || e.srcElement).value;
+            elementEventListener.call(this, eventBind, e);
+        }
+    }
+
+    function elementEventListener(eventBind, e) {
+        var args = [];
+        var expr = eventBind.expr;
+
+        e = e || window.event;
+
+        each(expr.args, function (argExpr) {
+            if (argExpr.type === ExprType.IDENT && argExpr.name === '$event') {
+                args.push(e);
+            }
+            else {
+                args.push(this.evalExpr(argExpr));
+            }
+        }, this);
+
+        var method = this.owner[expr.name.name];
+        if (typeof method === 'function') {
+            method.apply(this.owner, args);
+        }
+    }
+
+
     /**
      * 通知元素和子元素完成attached状态
      *
@@ -1710,11 +1874,11 @@
      * @param {Element} element 完成attached状态的元素
      */
     function noticeAttached(element) {
-        element.el = element.el || document.getElementById(element.id);
         for (var i = 0, l = element.childs ? element.childs.length : 0; i < l; i++) {
             noticeAttached(element.childs[i]);
         }
 
+        callHook(element, 'created');
         callHook(element, 'attached');
     }
 
@@ -1732,7 +1896,6 @@
         elementGenCloseHTML(this, buf);
 
         // this.bindDataListener();
-        callHook(this, 'created');
         return buf.toString();
     };
 
@@ -1758,17 +1921,14 @@
         stringBuffer.push('"');
 
         element.aNode.binds.each(function (bind) {
-            console.log(bind)
-            if (bind.expr.type === ExprType.TEXT) {
-                var value = this.evalExpr(bind.expr);
-                if (value != null && typeof value !== 'object') {
-                    stringBuffer.push(' ');
-                    stringBuffer.push(bind.name);
-                    stringBuffer.push('="');
-                    stringBuffer.push(value);
-                    stringBuffer.push('"');
-                };
-            }
+            var value = this.evalExpr(bind.expr);
+            if (value != null && typeof value !== 'object') {
+                stringBuffer.push(' ');
+                stringBuffer.push(bind.name);
+                stringBuffer.push('="');
+                stringBuffer.push(value);
+                stringBuffer.push('"');
+            };
 
         }, element);
 
@@ -1950,8 +2110,10 @@
      * 销毁释放元素的行为
      */
     Element.prototype._dispose = function () {
+        this.listeners = null;
         this._disposeChilds();
         this.detach();
+        this.unbindEvents();
         this.el = null;
         this.childs = null;
         delete elementContainer[this.id];
@@ -2063,7 +2225,7 @@
         if (this !== this.owner) {
             return;
         }
-
+console.log(this)
         this.data.unChange(this.dataChanger);
         this.dataChanger = null;
     };
@@ -2077,23 +2239,6 @@
     Component.prototype._attach = function (parent) {
         Element.prototype._attach.call(this, parent);
         this._listenDataChange();
-
-        for (var i = 0; i < DELEGATE_EVENT.length; i++) {
-            var eventName = DELEGATE_EVENT[i];
-            on(this.el, eventName, bind(DELEGATE_EVENT_LISTENERS[eventName], this));
-        }
-    };
-
-    /**
-     * 将元素从页面上移除的行为
-     */
-    Component.prototype._detach = function () {
-        for (var i = 0; i < DELEGATE_EVENT.length; i++) {
-            var eventName = DELEGATE_EVENT[i];
-            un(this.el, eventName, bind(DELEGATE_EVENT_LISTENERS[eventName], this));
-        }
-
-        Element.prototype._detach.call(this);
     };
 
     /**
@@ -2169,7 +2314,6 @@
 
         buf.push(genStumpHTML(this));
 
-        callHook(this, 'created');
         return buf.toString();
     };
 
@@ -2285,11 +2429,25 @@
                         var nextChild = this.childs[0] || this;
                         this.childs.push(newChild);
                         newChild.attach(nextChild.el.parentNode, nextChild.el);
+                        updateForDirectiveIndex(this, 1, function (i) {
+                            return i + 1;
+                        });
                         break;
 
                     case Model.ChangeType.ARRAY_SHIFT:
                         this.childs[0].dispose();
                         this.childs.splice(0, 1);
+                        updateForDirectiveIndex(this, 0, function (i) {
+                            return i - 1;
+                        });
+                        break;
+
+                    case Model.ChangeType.ARRAY_REMOVE:
+                        this.childs[change.index].dispose();
+                        this.childs.splice(change.index, 1);
+                        updateForDirectiveIndex(this, change.index, function (i) {
+                            return i - 1;
+                        });
                         break;
 
                     case Model.ChangeType.SET:
@@ -2330,6 +2488,17 @@
         }
     };
 
+    function updateForDirectiveIndex(forElement, start, fn) {
+        var childs = forElement.childs;
+        var forDirective = forElement.aNode.directives.get('for');
+        for (var len = childs.length; start < len; start++) {
+            var index = childs[start].data.get(forDirective.index);
+            if (index != null) {
+                childs[start].data.set(forDirective.index, fn(index));
+            }
+        }
+    }
+
     // #region exports
     var vmExports = {};
 
@@ -2366,7 +2535,19 @@
      * @inner
      * @type {Object}
      */
-    var filters = {};
+    var filters = {
+        yesToBe: function (condition, value) {
+            if (condition) {
+                return value;
+            }
+
+            return '';
+        },
+
+        yesOrNoToBe: function (condition, yesValue, noValue) {
+            return condition ? yesValue : noValue;
+        }
+    };
 
     /**
      * 注册全局 filter
