@@ -358,7 +358,9 @@
         PROP_ACCESSOR: 4,
         INTERPOLATION: 5,
         CALL: 6,
-        TEXT: 7
+        TEXT: 7,
+        BINARY: 8,
+        UNARY: 9
     };
 
     /**
@@ -438,7 +440,7 @@
      */
     Walker.prototype.goUtil = function (charCode) {
         var code;
-        while ((code = this.currentCode())) {
+        while (this.index < this.len && (code = this.currentCode())) {
             if (code === 32 || code === 9) {
                 this.index++;
             }
@@ -898,12 +900,16 @@
      */
     function readExpr(walker) {
         walker.goUtil();
+
+        var expr;
         var code = walker.currentCode();
+
         switch (code) {
             case 34: // "
             case 39: // '
-                return readString(walker);
-            case 45:
+                expr = readString(walker);
+                break;
+            case 45: // number
             case 48:
             case 49:
             case 50:
@@ -914,11 +920,85 @@
             case 55:
             case 56:
             case 57:
-                return readNumber(walker);
+                expr = readNumber(walker);
+                break;
             default:
-                return readPropertyAccessor(walker);
+                expr = readPropertyAccessor(walker);
         }
+
+        walker.goUtil();
+
+        code = walker.currentCode();
+        var op;
+        switch (code) {
+            case 43: // +
+            case 45: // -
+            case 42: // *
+            case 47: // /
+                walker.go(1);
+                op = BinaryOp[code];
+                break;
+
+            case 61: // =
+            case 33: // !
+                if (walker.nextCode() === 61) {
+                    code += 61;
+                    if (walker.nextCode() === 61) {
+                        code += 61;
+                        walker.go(1);
+                    }
+                }
+                else {
+                    walker.go(-2);
+                }
+                op = BinaryOp[code];
+                break;
+
+            case 38: // &
+                if (walker.nextCode() === 38) {
+                    walker.go(1);
+                    op = BinaryOp[76];
+                }
+                else {
+                    walker.go(-2);
+                }
+                break;
+
+            case 124: // |
+                walker.go(1);
+                if (walker.nextCode() === 124) {
+                    walker.go(1);
+                    op = BinaryOp[248];
+                }
+                else {
+                    walker.go(-2);
+                }
+                break;
+        }
+
+        if (op) {
+            return {
+                type: ExprType.BINARY,
+                operator: op,
+                segs: [expr, readExpr(walker)]
+            };
+        }
+
+        return expr;
     }
+
+    var BinaryOp = {
+        43: function (a, b) {return a + b;},
+        45: function (a, b) {return a - b;},
+        42: function (a, b) {return a * b;},
+        47: function (a, b) {return a / b;},
+        76: function (a, b) {return a && b;},
+        94: function (a, b) {return a != b;},
+        122: function (a, b) {return a == b;},
+        155: function (a, b) {return a !== b;},
+        183: function (a, b) {return a === b;},
+        248: function (a, b) {return a || b;}
+    };
 
     /**
      * 读取调用
@@ -1253,6 +1333,12 @@
      */
     function evalExpr(expr, model, owner) {
         switch (expr.type) {
+            case ExprType.BINARY:
+                return expr.operator(
+                    evalExpr(expr.segs[0], model, owner),
+                    evalExpr(expr.segs[1], model, owner)
+                );
+
             case ExprType.STRING:
             case ExprType.NUMBER:
                 if (!expr.value) {
@@ -1265,7 +1351,7 @@
                 return model.get(expr);
 
             case ExprType.INTERPOLATION:
-                var value = model.get(expr.expr);
+                var value = evalExpr(expr.expr, model, owner);
 
                 owner && each(expr.filters, function (filter) {
                     var filterName = filter.name.name;
