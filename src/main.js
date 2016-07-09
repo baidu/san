@@ -674,7 +674,7 @@
                 return {
                     item: match[1],
                     index: match[3],
-                    list: readExpr(walker)
+                    list: readPropertyAccessor(walker)
                 };
             }
 
@@ -750,7 +750,7 @@
      */
     function parseInterpolation(source) {
         var walker = new Walker(source);
-        var expr = readExpr(walker);
+        var expr = readLogicalORExpr(walker);
 
         var filters = [];
         while (walker.goUtil(124)) { // |
@@ -772,7 +772,7 @@
      * @return {Object}
      */
     function parseExpr(source) {
-        return readExpr(new Walker(source));
+        return readLogicalORExpr(new Walker(source));
     }
 
     /**
@@ -875,7 +875,7 @@
 
                 case 91: // [
                     walker.go(1);
-                    result.paths.push(readExpr(walker));
+                    result.paths.push(readLogicalORExpr(walker));
                     walker.goUtil(93);  // ]
                     break;
 
@@ -891,24 +891,151 @@
         return result;
     }
 
-    /**
-     * 读取表达式
-     *
-     * @inner
-     * @param {Walker} walker 源码读取对象
-     * @return {Object}
-     */
-    function readExpr(walker) {
+    function readLogicalORExpr(walker) {
+        var expr = readLogicalANDExpr(walker);
         walker.goUtil();
 
-        var expr;
-        var code = walker.currentCode();
+        if (walker.currentCode() === 124) { // |
+            if (walker.nextCode() === 124) {
+                walker.go(1);
+                return {
+                    type: ExprType.BINARY,
+                    operator: BinaryOp[248],
+                    segs: [expr, readLogicalORExpr(walker)]
+                };
+            }
+            else {
+                walker.go(-1);
+            }
+        }
 
+        return expr;
+    }
+
+    function readLogicalANDExpr(walker) {
+        var expr = readEqualityExpr(walker);
+        walker.goUtil();
+
+        if (walker.currentCode() === 38) { // &
+            if (walker.nextCode() === 38) {
+                walker.go(1);
+                return {
+                    type: ExprType.BINARY,
+                    operator: BinaryOp[76],
+                    segs: [expr, readLogicalANDExpr(walker)]
+                };
+            }
+            else {
+                walker.go(-1);
+            }
+        }
+
+        return expr;
+    }
+
+    function readEqualityExpr(walker) {
+        var expr = readRelationalExpr(walker);
+        walker.goUtil();
+
+        var code = walker.currentCode();
         switch (code) {
+            case 61: // =
+            case 33: // !
+                if (walker.nextCode() === 61) {
+                    code += 61;
+                    if (walker.nextCode() === 61) {
+                        walker.go(1);
+                        code += 61;
+                    }
+
+                    return {
+                        type: ExprType.BINARY,
+                        operator: BinaryOp[code],
+                        segs: [expr, readEqualityExpr(walker)]
+                    };
+                }
+                else {
+                    walker.go(-1);
+                }
+        }
+
+        return expr;
+    }
+
+    function readRelationalExpr(walker) {
+        var expr = readAdditiveExpr(walker);
+        walker.goUtil();
+
+        var code = walker.currentCode();
+        switch (code) {
+            case 60: // <
+            case 62: // >
+                if (walker.nextCode() === 61) {
+                    code += 61;
+                    walker.go(1);
+                }
+
+                return {
+                    type: ExprType.BINARY,
+                    operator: BinaryOp[code],
+                    segs: [expr, readRelationalExpr(walker)]
+                };
+        }
+
+        return expr;
+    }
+
+    function readAdditiveExpr(walker) {
+        var expr = readMultiplicativeExpr(walker);
+        walker.goUtil();
+
+        var code = walker.currentCode();
+        switch (code) {
+            case 43: // +
+            case 45: // -
+                walker.go(1);
+                return {
+                    type: ExprType.BINARY,
+                    operator: BinaryOp[code],
+                    segs: [expr, readAdditiveExpr(walker)]
+                };
+        }
+
+        return expr;
+    }
+
+    function readMultiplicativeExpr(walker) {
+        var expr = readUnaryExpr(walker);
+        walker.goUtil();
+
+        var code = walker.currentCode();
+        switch (code) {
+            case 42: // *
+            case 47: // /
+                walker.go(1);
+                return {
+                    type: ExprType.BINARY,
+                    operator: BinaryOp[code],
+                    segs: [expr, readMultiplicativeExpr(walker)]
+                };
+        }
+
+        return expr;
+    }
+
+    function readUnaryExpr(walker) {
+        walker.goUtil();
+
+        switch (walker.currentCode()) {
+            case 33: // !
+                walker.go(1);
+                return {
+                    type: ExprType.UNARY,
+                    expr: readUnaryExpr(walker)
+                };
             case 34: // "
             case 39: // '
-                expr = readString(walker);
-                break;
+                return readString(walker);
             case 45: // number
             case 48:
             case 49:
@@ -920,81 +1047,25 @@
             case 55:
             case 56:
             case 57:
-                expr = readNumber(walker);
-                break;
-            default:
-                expr = readPropertyAccessor(walker);
+                return readNumber(walker);
         }
 
-        walker.goUtil();
-
-        code = walker.currentCode();
-        var op;
-        switch (code) {
-            case 43: // +
-            case 45: // -
-            case 42: // *
-            case 47: // /
-                walker.go(1);
-                op = BinaryOp[code];
-                break;
-
-            case 61: // =
-            case 33: // !
-                if (walker.nextCode() === 61) {
-                    code += 61;
-                    if (walker.nextCode() === 61) {
-                        code += 61;
-                        walker.go(1);
-                    }
-                }
-                else {
-                    walker.go(-2);
-                }
-                op = BinaryOp[code];
-                break;
-
-            case 38: // &
-                if (walker.nextCode() === 38) {
-                    walker.go(1);
-                    op = BinaryOp[76];
-                }
-                else {
-                    walker.go(-2);
-                }
-                break;
-
-            case 124: // |
-                walker.go(1);
-                if (walker.nextCode() === 124) {
-                    walker.go(1);
-                    op = BinaryOp[248];
-                }
-                else {
-                    walker.go(-2);
-                }
-                break;
-        }
-
-        if (op) {
-            return {
-                type: ExprType.BINARY,
-                operator: op,
-                segs: [expr, readExpr(walker)]
-            };
-        }
-
-        return expr;
+        return readPropertyAccessor(walker);
     }
+
 
     var BinaryOp = {
         43: function (a, b) {return a + b;},
         45: function (a, b) {return a - b;},
         42: function (a, b) {return a * b;},
         47: function (a, b) {return a / b;},
+        60: function (a, b) {return a < b;},
+        62: function (a, b) {return a > b;},
         76: function (a, b) {return a && b;},
         94: function (a, b) {return a != b;},
+        121: function (a, b) {return a <= b;},
         122: function (a, b) {return a == b;},
+        123: function (a, b) {return a >= b;},
         155: function (a, b) {return a !== b;},
         183: function (a, b) {return a === b;},
         248: function (a, b) {return a || b;}
@@ -1014,7 +1085,7 @@
 
         if (walker.goUtil(40)) { // (
             while (!walker.goUtil(41)) { // )
-                args.push(readExpr(walker));
+                args.push(readLogicalORExpr(walker));
                 walker.goUtil(44); // ,
             }
         }
@@ -1025,6 +1096,7 @@
             args: args
         };
     }
+
 
     // #region Model
 
@@ -1333,6 +1405,9 @@
      */
     function evalExpr(expr, model, owner) {
         switch (expr.type) {
+            case ExprType.UNARY:
+                return !evalExpr(expr.expr, model, owner);
+
             case ExprType.BINARY:
                 return expr.operator(
                     evalExpr(expr.segs[0], model, owner),
@@ -2311,7 +2386,7 @@
         if (this !== this.owner) {
             return;
         }
-console.log(this)
+
         this.data.unChange(this.dataChanger);
         this.dataChanger = null;
     };
