@@ -57,7 +57,9 @@
     function each(array, iterator, thisArg) {
         if (array && array.length > 0) {
             for (var i = 0, l = array.length; i < l; i++) {
-                iterator.call(thisArg || array, array[i], i);
+                if (iterator.call(thisArg || array, array[i], i) === false) {
+                    break;
+                }
             }
         }
     }
@@ -875,7 +877,14 @@
 
                 case 91: // [
                     walker.go(1);
-                    result.paths.push(readLogicalORExpr(walker));
+                    var itemExpr = readLogicalORExpr(walker);
+                    if (itemExpr.type === ExprType.IDENT) {
+                        itemExpr = {
+                            type: ExprType.PROP_ACCESSOR,
+                            paths: [itemExpr]
+                        };
+                    }
+                    result.paths.push(itemExpr);
                     walker.goUtil(93);  // ]
                     break;
 
@@ -1097,6 +1106,88 @@
         };
     }
 
+    function exprsNeedsUpdate(exprs, changeExpr, model) {
+        var result = false;
+        each(exprs, function (expr) {
+            result = exprNeedsUpdate(expr, changeExpr, model);
+            return !result;
+        });
+
+        return result;
+    }
+
+    /**
+     * 判断源表达式路径是否包含目标表达式
+     *
+     * @inner
+     * @param {Object} source 源表达式
+     * @param {Object} target 目标表达式
+     * @param {Model} model 表达式所属数据环境
+     * @return {boolean}
+     */
+    function exprNeedsUpdate(expr, changeExpr, model) {
+        if (changeExpr.type === ExprType.IDENT) {
+            changeExpr = {
+                type: ExprType.PROP_ACCESSOR,
+                paths: [changeExpr]
+            };
+        }
+
+        switch (expr.type) {
+            case ExprType.UNARY:
+                return exprNeedsUpdate(expr.expr, changeExpr, model);
+
+
+            case ExprType.TEXT:
+            case ExprType.BINARY:
+                return exprsNeedsUpdate(expr.segs, changeExpr, model);
+
+
+            case ExprType.IDENT:
+                return expr.name === changeExpr.paths[0].name;
+
+
+            case ExprType.INTERPOLATION:
+                if (!exprNeedsUpdate(expr.expr, changeExpr, model)) {
+                    var result = false;
+                    each(expr.filters, function (filter) {
+                        result = exprsNeedsUpdate(filter.args, changeExpr, model);
+                        return !result;
+                    });
+
+                    return result;
+                }
+
+                return true;
+
+
+            case ExprType.PROP_ACCESSOR:
+                var paths = expr.paths;
+                var changePaths = changeExpr.paths;
+
+                var result = true;
+                for (var i = 0, len = paths.length, changeLen = changePaths.length; i < len; i++) {
+                    var pathExpr = paths[i];
+
+                    if (pathExpr.type === ExprType.PROP_ACCESSOR
+                        && exprNeedsUpdate(pathExpr, changeExpr, model)
+                    ) {
+                        return true;
+                    }
+
+                    if (result && i < changeLen
+                        && accessorItemValue(pathExpr, model) != accessorItemValue(changePaths[i], model)
+                    ) {
+                        result = false;
+                    }
+                }
+
+                return result;
+        }
+
+        return false;
+    }
+
 
     // #region Model
 
@@ -1184,7 +1275,6 @@
                 for (var i = 1, l = paths.length; value != null && i < l; i++) {
                     var path = paths[i];
                     var pathValue = accessorItemValue(path, this);
-
                     value = value[pathValue];
                 }
         }
@@ -1755,32 +1845,15 @@
      * @param {Object} change 数据变化信息
      */
     TextNode.prototype.updateView = function (change) {
-        each(
-            this.expr.segs,
-            function (seg) {
-                if (seg.type === ExprType.INTERPOLATION
-                    && exprContains(seg.expr, change.expr, this.data)
-                ) {
-                    this.update();
-                    return false;
-                }
-            },
-            this
-        );
+        if (exprNeedsUpdate(this.expr, change.expr, this.data)) {
+            this.update();
+        }
     };
 
     /**
      * 销毁文本节点
      */
     TextNode.prototype._dispose = function () {
-        var segs = this.expr.segs;
-        for (var i = 0, l = segs.length; i < l; i++) {
-            var seg = segs[i];
-            if (seg.type === ExprType.INTERPOLATION) {
-                this.owner.data.unChange(seg.expr, this.refreshMethod);
-            }
-        }
-
         this.expr = null;
         Node.prototype._dispose.call(this);
     };
@@ -1900,7 +1973,7 @@
 
                 var me = this;
                 this.owner.data.onChange(function (change) {
-                    if (exprContains(change.expr, bindInfo.expr, this)) {
+                    if (exprNeedsUpdate(bindInfo.expr, change.expr, this)) {
                         me.fire(bindInfo.name + 'Changed', this.get(bindInfo.expr));
                     }
                 });
@@ -2181,14 +2254,10 @@
      */
     Element.prototype.updateView = function (change) {
         this.aNode.binds.each(function (bind) {
-
-            if (exprContains(bind.expr, change.expr, this.data)
-                && bind.expr.type === ExprType.TEXT
-            ) {
+            if (exprNeedsUpdate(bind.expr, change.expr, this.data)) {
                 var name = bind.name;
                 this.setProp(name, this.evalExpr(bind.expr));
             }
-
         }, this);
 
         each(this.childs, function (child) {
@@ -2196,59 +2265,7 @@
         });
     };
 
-    /**
-     * 判断源表达式路径是否包含目标表达式
-     *
-     * @inner
-     * @param {Object} source 源表达式
-     * @param {Object} target 目标表达式
-     * @param {Model} model 表达式所属数据环境
-     * @return {boolean}
-     */
-    function exprContains(source, target, model) {
-        if (source.type === ExprType.TEXT) {
-            var result = true;
 
-            each(source.segs, function (seg) {
-                if (seg.type !== ExprType.STRING) {
-                    result = exprContains(seg.expr, target, model);
-                    return result;
-                }
-            });
-
-            return result;
-        }
-
-        var sourceSegs = source.paths;
-        var targetSegs = target.paths;
-        if (source.type !== ExprType.PROP_ACCESSOR) {
-            sourceSegs = [source];
-        }
-        if (target.type !== ExprType.PROP_ACCESSOR) {
-            targetSegs = [target];
-        }
-
-        var sourceLen = sourceSegs.length;
-        var targetLen = targetSegs.length;
-        for (var i = 0; i < targetLen; i++) {
-            if (i >= sourceLen) {
-                return true;
-            }
-
-            var sourceSeg = sourceSegs[i];
-            var targetSeg = targetSegs[i];
-
-            if (sourceSeg.type === ExprType.PROP_ACCESSOR) {
-                return true;
-            }
-
-            if (accessorItemValue(sourceSeg, model) != accessorItemValue(targetSeg, model)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /**
      * 将元素从页面上移除
