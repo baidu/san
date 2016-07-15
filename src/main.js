@@ -335,6 +335,22 @@
     };
 
     /**
+     * 连接另外一个 IndexedList，返回一个新的 IndexedList
+     *
+     * @inner
+     * @param {IndexedList} other 要连接的IndexedList
+     * @return {IndexedList}
+     */
+    IndexedList.prototype.concat = function (other) {
+        var result = new IndexedList();
+        each(this.raw.concat(other.raw), function (item) {
+            result.push(item);
+        });
+
+        return result;
+    };
+
+    /**
      * 判断标签是否应自关闭
      *
      * @inner
@@ -506,7 +522,7 @@
             return rootNode;
         }
 
-        source = source.replace(/<!--([\s\S]*?)-->/mg, '');
+        source = source.replace(/<!--([\s\S]*?)-->/mg, '').replace(/(^\s+|\s+$)/g, '');
         var walker = new Walker(source);
 
         var tagReg = /<(\/)?([a-z0-9-]+)\s*/ig;
@@ -607,17 +623,17 @@
          * 解析抽象节点属性
          *
          * @inner
-         * @param {ANode} aElement 抽象节点
+         * @param {ANode} aNode 抽象节点
          * @param {string} name 属性名称
          * @param {string} value 属性值
          */
-        function integrateAttr(aElement, name, value) {
+        function integrateAttr(aNode, name, value) {
             var prefixIndex = name.indexOf('-');
             var prefix;
             var realName;
 
             if (name === 'id') {
-                aElement.id = value;
+                aNode.id = value;
             }
 
             if (prefixIndex > 0) {
@@ -627,21 +643,21 @@
 
             switch (prefix) {
                 case 'on':
-                    aElement.events.push({
+                    aNode.events.push({
                         name: realName,
                         expr: parseCall(value)
                     });
                     break;
 
                 case 'bind':
-                    aElement.binds.push({
+                    aNode.binds.push({
                         name: realName,
                         expr: parseExpr(value)
                     });
                     break;
 
                 case 'bindx':
-                    aElement.binds.push({
+                    aNode.binds.push({
                         name: realName,
                         expr: parseExpr(value),
                         twoWay: true
@@ -649,11 +665,11 @@
                     break;
 
                 case 'san':
-                    aElement.directives.push(parseDirective(realName, value));
+                    aNode.directives.push(parseDirective(realName, value));
                     break;
 
                 default:
-                    aElement.binds.push({
+                    aNode.binds.push({
                         name: name,
                         expr: parseText(value)
                     });
@@ -681,6 +697,10 @@
             }
 
             throw new Error('for syntax error: ' + value);
+        },
+
+        'ref': function (value) {
+            return {value: value};
         }
     };
 
@@ -774,6 +794,10 @@
      * @return {Object}
      */
     function parseExpr(source) {
+        if (typeof source === 'Object' && source.type) {
+            return source;
+        }
+
         return readLogicalORExpr(new Walker(source));
     }
 
@@ -1309,29 +1333,29 @@
                 break;
 
             case ExprType.PROP_ACCESSOR:
-                var pathValues = [];
                 var paths = expr.paths;
                 for (var i = 0, l = paths.length; i < l - 1; i++) {
                     var path = paths[i];
                     var pathValue = accessorItemValue(path, this);
-                    pathValues.push(pathValue);
 
-                    data = data[pathValue];
-                    if (!data) {
-                        data = data[pathValue] = {};
+
+                    if (data[pathValue] == null) {
+                        data[pathValue] = {};
                     }
+                    data = data[pathValue];
                 }
 
                 prop = accessorItemValue(paths[i], this);
         }
 
         if (prop != null && data[prop] !== value) {
+
             data[prop] = value;
-            // TODO: 是否要区分SET 和 ARRAY_SET
             !option.silence && this.fireChange({
                 type: Model.ChangeType.SET,
                 expr: expr,
-                value: value
+                value: value,
+                option: option
             });
         }
     };
@@ -1357,7 +1381,8 @@
                 expr: expr,
                 type: Model.ChangeType.ARRAY_PUSH,
                 value: item,
-                index: target.length - 1
+                index: target.length - 1,
+                option: option
             });
         }
     };
@@ -1382,7 +1407,8 @@
                 expr: expr,
                 type: Model.ChangeType.ARRAY_POP,
                 value: value,
-                index: target.length
+                index: target.length,
+                option: option
             });
         }
     };
@@ -1406,7 +1432,8 @@
             !option.silence && this.fireChange({
                 expr: expr,
                 type: Model.ChangeType.ARRAY_SHIFT,
-                value: value
+                value: value,
+                option: option
             });
         }
     };
@@ -1431,7 +1458,8 @@
             !option.silence && this.fireChange({
                 expr: expr,
                 type: Model.ChangeType.ARRAY_UNSHIFT,
-                value: item
+                value: item,
+                option: option
             });
         }
     };
@@ -1463,7 +1491,8 @@
                 expr: expr,
                 type: Model.ChangeType.ARRAY_REMOVE,
                 value: value,
-                index: index
+                index: index,
+                option: option
             });
         }
     };
@@ -1573,7 +1602,8 @@
             return new TextNode(options);
         }
 
-        var ComponentType = owner.components && owner.components[aNode.tagName];
+        var ComponentType = owner.components && owner.components[aNode.tagName]
+            || ComponentClasses[aNode.tagName];
         if (ComponentType) {
             var component = new ComponentType(options);
             return component;
@@ -1745,8 +1775,8 @@
      Node.prototype._init = function (options) {
         this.owner = options.owner;
         this.data = options.data;
-        this.aNode = options.aNode || this.aNode || new ANode();
-        this.id = this.aNode.id || guid();
+        this.aNode = options.aNode;
+        this.id = this.aNode && this.aNode.id || guid();
     };
 
     Node.prototype._created = function () {
@@ -1896,7 +1926,6 @@
         if (!this.listeners[name]) {
             this.listeners[name] = [];
         }
-
         this.listeners[name].push(listener);
     };
 
@@ -1933,7 +1962,7 @@
         Node.prototype._init.call(this, options);
 
         elementContainer[this.id] = this;
-        this.tagName = this.aNode.tagName || 'div';
+        this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
     };
 
     /**
@@ -1964,19 +1993,23 @@
     Element.prototype._created = function () {
         Node.prototype._created.call(this);
 
-
+        // TODO: 整理下
         this.aNode.binds.each(function (bindInfo) {
             if (bindInfo.twoWay) {
-                this.owner.on(bindInfo.name + 'Changed', function (value) {
-                    this.owner.data.set(bindInfo.expr, value);
-                });
-
                 var me = this;
-                this.owner.data.onChange(function (change) {
-                    if (exprNeedsUpdate(bindInfo.expr, change.expr, this)) {
-                        me.fire(bindInfo.name + 'Changed', this.get(bindInfo.expr));
-                    }
-                });
+
+                if (this instanceof Component) {
+                    this.on(bindInfo.name + 'Changed', function (value) {
+                        this.parentData && this.parentData.set(bindInfo.expr, value);
+                    });
+
+                    this.data.onChange(function (change) {
+                        var dataExpr = parseExpr(bindInfo.name);
+                        if (exprNeedsUpdate(dataExpr, change.expr, this)) {
+                            me.fire(bindInfo.name + 'Changed', evalExpr(dataExpr, this, me));
+                        }
+                    });
+                }
 
                 if (bindInfo.name === 'value') {
                     var elTagName = this.el.tagName;
@@ -1984,7 +2017,7 @@
                     if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
                         on(this.el, ('oninput' in this.el) ? 'input' : 'propertychange', bind(function (e) {
                             this.blockSetOnce = true;
-                            this.owner.data.set(bindInfo.expr, (e.target || e.srcElement).value);
+                            this.data.set(bindInfo.expr, (e.target || e.srcElement).value);
                         }, this))
                     }
                 }
@@ -2014,10 +2047,8 @@
         this.create();
 
         this.aNode.binds.each(function (bind) {
-            if (!this.data) {
-                var value = this.evalExpr(bind.expr);
-                this.el.setAttribute(bind.name, value);
-            }
+            var value = this.evalExpr(bind.expr);
+            this.setProp(bind.name, value);
         }, this);
         this.el.innerHTML = elementGenChildsHTML(this);
 
@@ -2094,9 +2125,10 @@
             }
         }, this);
 
-        var method = this.owner[expr.name.name];
+        var component = this instanceof Component ? this : this.owner;
+        var method = component[expr.name.name];
         if (typeof method === 'function') {
-            method.apply(this.owner, args);
+            method.apply(component, args);
         }
     }
 
@@ -2201,7 +2233,13 @@
 
         var buf = new StringBuffer();
         for (var i = 0; i < aNode.childs.length; i++) {
-            var child = createNode(aNode.childs[i], element.owner, element.data);
+            // bad smell? i dont think so
+            // in my view, Component is first class
+            var child = createNode(
+                aNode.childs[i],
+                element instanceof Component ? element : element.owner,
+                element.data
+            );
             element.childs.push(child);
             buf.push(child.genHTML());
         }
@@ -2255,8 +2293,7 @@
     Element.prototype.updateView = function (change) {
         this.aNode.binds.each(function (bind) {
             if (exprNeedsUpdate(bind.expr, change.expr, this.data)) {
-                var name = bind.name;
-                this.setProp(name, this.evalExpr(bind.expr));
+                this.setProp(bind.name, this.evalExpr(bind.expr));
             }
         }, this);
 
@@ -2264,7 +2301,6 @@
             child.updateView(change);
         });
     };
-
 
 
     /**
@@ -2317,6 +2353,7 @@
      * @param {Object} options 初始化参数
      */
     function Component(options) {
+        this.refs = {};
         Element.call(this, options);
     }
 
@@ -2328,12 +2365,28 @@
      * @param {Object} options 初始化参数
      */
     Component.prototype.init = function (options) {
-        this.aNode = options.aNode || this.aNode;
+        Element.prototype._init.call(this, options);
+
         this._compile();
         callHook(this, 'compiled');
 
-        Element.prototype._init.call(this, options);
-        this.data = this.data || new Model();
+        var ref = this.aNode.directives.get('ref');
+        if (ref) {
+            this.owner.refs[ref.value] = this;
+        }
+
+        this.parentData = this.data;
+        this.data = new Model();
+        var initData = options.initData || this.initData;
+        for (var key in initData) {
+            if (initData.hasOwnProperty(key)) {
+                this.data.set(key, initData[key]);
+            }
+        }
+        this.parentData && this.aNode.binds.each(function (bind) {
+            this.data.set(bind.name, evalExpr(bind.expr, this.parentData, this.owner));
+        }, this);
+
         this.filters = options.filters || this.filters || {};
         if (!this.owner) {
             this.owner = this;
@@ -2352,18 +2405,33 @@
      * 模板编译行为
      */
     Component.prototype._compile = function () {
+        var tplANode = this.constructor.prototype.aNode;
+
         if (!this.aNode) {
-            if (this.template) {
-                this.aNode = parseTemplate(this.template);
-            }
-            else if (this.el) {
-                this.aNode = parseFromDOM(this.el);
-                this.compileFromEl = true;
-            }
-            else {
-                this.aNode = new ANode();
-            }
+            this.aNode = tplANode;
         }
+        else {
+            this.aNode.childs = tplANode.childs;
+
+            this.aNode.binds = this.aNode.binds.concat(tplANode.binds);
+            this.aNode.directives = this.aNode.directives.concat(tplANode.directives);
+            this.aNode.events = this.aNode.events.concat(tplANode.events);
+        }
+    };
+
+    Component.prototype.watch = function (dataName, listener) {
+        var dataExpr = parseExpr(dataName);
+        var me = this;
+
+        this.data.onChange(function (change) {
+            if (exprNeedsUpdate(dataExpr, change.expr, this)) {
+                listener.call(me, me.evalExpr(dataExpr));
+            }
+        });
+    };
+
+    Component.prototype._inited = function () {
+        this._listenDataChange();
     };
 
     /**
@@ -2376,7 +2444,7 @@
      */
     function asyncDataChanger(fn, component) {
         return function (change) {
-            nextTick(bind(fn, component, change))
+            nextTick(bind(fn, component, change));
         };
     }
 
@@ -2386,11 +2454,25 @@
      * @private
      */
     Component.prototype._listenDataChange = function () {
-        if (this !== this.owner || this.dataChanger) {
+        if (this.dataChanger) {
             return;
         }
 
-        this.dataChanger = asyncDataChanger(this.updateView, this);
+        if (this !== this.owner) {
+            var me = this;
+
+            this.ownerDataChange = function (change) {
+                me.aNode.binds.each(function (bind) {
+
+                    if (exprNeedsUpdate(bind.expr, change.expr, this.owner.data)) {
+                        this.data.set(bind.name, this.owner.evalExpr(bind.expr));
+                    }
+                }, me);
+            };
+            this.owner.data.onChange(this.ownerDataChange);
+        }
+
+        this.dataChanger = asyncDataChanger(Element.prototype.updateView, this);
         this.data.onChange(this.dataChanger);
     };
 
@@ -2400,12 +2482,17 @@
      * @private
      */
     Component.prototype._unlistenDataChange = function () {
-        if (this !== this.owner) {
-            return;
+        if (this.dataChanger) {
+            this.data.unChange(this.dataChanger);
+            this.dataChanger = null;
         }
 
-        this.data.unChange(this.dataChanger);
-        this.dataChanger = null;
+        if (this.ownerDataChange) {
+            this.owner.data.unChange(this.ownerDataChange);
+        }
+    };
+
+    Component.prototype.updateView = function (change) {
     };
 
 
@@ -2424,50 +2511,13 @@
      */
     Component.prototype._dispose = function () {
         this._unlistenDataChange();
-
         Element.prototype._dispose.call(this);
+        this.refs = null;
     };
 
-    /**
-     * 要代理的DOM事件列表
-     *
-     * @inner
-     * @type {Array}
-     */
-    var DELEGATE_EVENT = ['click'];
-
-    /**
-     * 代理DOM事件的监听器们
-     *
-     * @inner
-     * @type {Object}
-     */
-    var DELEGATE_EVENT_LISTENERS = {
-        click: function (e) {
-            var target = e.target;
-            var targetElement = elements[target.id];
-            var bind = targetElement.aNode.events.get('click');
-
-            if (bind) {
-                var bindExpr = bind.expr;
-
-                var args = [];
-                for (var i = 0; i < bindExpr.args.length; i++) {
-                    var argExpr = bindExpr.args[i];
-                    if (argExpr.type === ExprType.IDENT && argExpr.name === '$event') {
-                        args.push(e);
-                    }
-                    else {
-                        args.push(targetElement.evalExpr(argExpr));
-                    }
-                }
-
-                var method = this[bindExpr.name.name];
-                if (typeof method === 'function') {
-                    method.apply(this, args);
-                }
-            }
-        }
+    Component.prototype.setProp = function (name, value) {
+        this.data.set(name, value);
+        Element.prototype.setProp.call(this, name, value);
     };
 
     function ForDirective(options) {
@@ -2505,7 +2555,6 @@
     function eachForData(forElement, fn) {
         var forDirective = forElement.aNode.directives.get('for');
         var data = forElement.data;
-
         each(data.get(forDirective.list), fn, forElement);
     }
 
@@ -2693,14 +2742,27 @@
 
         // pre compile template
         if (proto.template) {
-            proto.aNode = parseTemplate(proto.template);
-            delete proto.template;
+            var aNode = parseTemplate(proto.template);
+            var firstChild = aNode.childs[0];
+
+            if (firstChild && firstChild.tagName === 'template') {
+                firstChild.tagName = null;
+                proto.aNode = firstChild;
+            }
+            else {
+                proto.aNode = aNode;
+            }
+
+            proto.template = null;
+        }
+        else {
+            proto.aNode = new ANode();
         }
 
         YourComponent.prototype = proto;
         inherits(YourComponent, Component);
 
-        if (proto.tagName) {
+        if (/^[a-z0-9]+-[a-z0-9]+$/i.test(proto.tagName)) {
             vmExports.register(proto.tagName, YourComponent);
         }
 
