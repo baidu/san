@@ -1,0 +1,20 @@
+<template class="ui-layer ui-calendar-layer" style="left: {{left}}px; top: {{top}}px">
+    <div class="ui-calendar-func">
+        <i class="fa fa-angle-left" on-click="prevMonth"></i>
+        <b>{{ viewYear }}-{{ viewMonth + 1 }}</b>
+        <i class="fa fa-angle-right" on-click="nextMonth"></i>
+    </div>
+    <ol class="date-head">
+        <li>一</li>
+        <li>二</li>
+        <li>三</li>
+        <li>四</li>
+        <li>五</li>
+        <li>六</li>
+        <li>日</li>
+    </ol>
+    <ol>
+        <li san-for="item in dates" on-click="select(item)"
+            class="{{ item | isSelected(value) | yesToBe('selected')}}">{{item}}</li>
+    </ol>
+</template>

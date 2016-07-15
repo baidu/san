@@ -1,12 +1,10 @@
-
 <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
-
 <ul class="filter-category">
     <li
         san-for="item in categories"
         style="background: {{item.color}}"
-
-    ><!-- v-bind:class="{'checked': item.id == category}" -->
+        class="{{item.id == params[1] | yesToBe('checked')}}"
+    >
         <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
     </li>
 </ul>

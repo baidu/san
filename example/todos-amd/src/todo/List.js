@@ -6,9 +6,9 @@ define(function (require) {
     return vm.Component({
         template: template,
 
+
         attached: function () {
-            this.data.set('name', 'errorrik');
-            this.data.set('todos', service.todos());
+            this.data.set('todos', service.todos(+this.data.get('params[1]')));
             this.data.set('categories', service.categories());
         },
 
