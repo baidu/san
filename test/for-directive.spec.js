@@ -1,7 +1,7 @@
 describe("ForDirective", function () {
 
     it("render list, data fill before attach", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -27,7 +27,7 @@ describe("ForDirective", function () {
     });
 
     it("render list, no data", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -47,7 +47,7 @@ describe("ForDirective", function () {
 
 
     it("data push after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -67,7 +67,7 @@ describe("ForDirective", function () {
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(5);
             expect(lis[3].getAttribute('title')).toBe('otakustay');
@@ -80,7 +80,7 @@ describe("ForDirective", function () {
     });
 
     it("data pop after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -98,7 +98,7 @@ describe("ForDirective", function () {
 
         myComponent.data.pop('persons');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('errorrik');
@@ -111,7 +111,7 @@ describe("ForDirective", function () {
     });
 
     it("data unshift after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -131,7 +131,7 @@ describe("ForDirective", function () {
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(5);
             expect(lis[3].getAttribute('title')).toBe('varsha');
@@ -146,7 +146,7 @@ describe("ForDirective", function () {
     });
 
     it("data shift after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -164,7 +164,7 @@ describe("ForDirective", function () {
 
         myComponent.data.shift('persons');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('varsha');
@@ -177,7 +177,7 @@ describe("ForDirective", function () {
     });
 
     it("data remove after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -195,7 +195,7 @@ describe("ForDirective", function () {
 
         myComponent.data.remove('persons', 0);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('varsha');
@@ -208,7 +208,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -226,7 +226,7 @@ describe("ForDirective", function () {
 
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('erik');
@@ -239,7 +239,7 @@ describe("ForDirective", function () {
     });
 
     it("data item set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -257,7 +257,7 @@ describe("ForDirective", function () {
 
         myComponent.data.set('persons[0].name', 'erik');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('erik');
@@ -270,7 +270,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -290,7 +290,7 @@ describe("ForDirective", function () {
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         ]);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('otakustay');
@@ -303,7 +303,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}} in {{org}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -325,7 +325,7 @@ describe("ForDirective", function () {
 
         myComponent.data.set('org', 'MMSFE');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(lis[1].getAttribute('title')).toBe('errorrik');
             expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com in MMSFE')).toBe(0);
 
@@ -336,7 +336,7 @@ describe("ForDirective", function () {
     });
 
     it("no data before attach, data set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -351,7 +351,7 @@ describe("ForDirective", function () {
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         ]);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(1);
             expect(lis[0].getAttribute('title')).toBe('otakustay');
@@ -364,7 +364,7 @@ describe("ForDirective", function () {
     });
 
     it("nested, data fill before attach", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
         });
         var myComponent = new MyComponent();
@@ -398,7 +398,7 @@ describe("ForDirective", function () {
     });
 
     it("nested, data fill after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
         });
         var myComponent = new MyComponent();
@@ -416,7 +416,7 @@ describe("ForDirective", function () {
             {name: 'varsha', email: 'wangshuonpu@163.com', tels: ['23456789', '98765432']}
         ]);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
 
             expect(lis[1].getAttribute('title')).toBe('varsha');

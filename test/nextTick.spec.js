@@ -4,7 +4,7 @@ describe("nextTick", function () {
         var div = document.createElement('div');
         document.body.appendChild(div);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             div.setAttribute('data-vm', 'vm');
         });
 

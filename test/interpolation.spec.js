@@ -1,6 +1,6 @@
 describe("Interpolation", function () {
 
-    sanVM.addFilter('uppercase', function (source) {
+    san.addFilter('uppercase', function (source) {
         if (source) {
             return source.charAt(0).toUpperCase() + source.slice(1);
         }
@@ -9,7 +9,7 @@ describe("Interpolation", function () {
     });
 
     it("alone", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{name}}'
         });
         var myComponent = new MyComponent();
@@ -27,7 +27,7 @@ describe("Interpolation", function () {
 
 
     it("+static text", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: 'Hello {{name}}!'
         });
         var myComponent = new MyComponent();
@@ -45,7 +45,7 @@ describe("Interpolation", function () {
 
 
     it("global filter", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{name|uppercase}}'
         });
         var myComponent = new MyComponent();
@@ -63,7 +63,7 @@ describe("Interpolation", function () {
 
 
     it("component filter", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{name|uppercase}}',
 
             filters: {
@@ -91,7 +91,7 @@ describe("Interpolation", function () {
 
 
     it("set after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: 'Hello {{name}}!'
         });
         var myComponent = new MyComponent();
@@ -102,7 +102,7 @@ describe("Interpolation", function () {
         myComponent.data.set('name', 'errorrik');
         expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello !');
 
-        sanVM.nextTick(function() {
+        san.nextTick(function() {
             expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello errorrik!');
             myComponent.dispose();
             document.body.removeChild(wrap);

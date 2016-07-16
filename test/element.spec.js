@@ -1,6 +1,6 @@
 describe("Element", function () {
 
-    sanVM.addFilter('uppercase', function (source) {
+    san.addFilter('uppercase', function (source) {
         if (source) {
             return source.charAt(0).toUpperCase() + source.slice(1);
         }
@@ -9,7 +9,7 @@ describe("Element", function () {
     });
 
     it("bind prop, data change before attach", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}">{{name}}</span>'
         });
         var myComponent = new MyComponent();
@@ -30,7 +30,7 @@ describe("Element", function () {
 
 
     it("bind prop, data change after attach", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}">{{name}}</span>'
         });
         var myComponent = new MyComponent();
@@ -50,7 +50,7 @@ describe("Element", function () {
         expect(span.title).toBe('errorrik');
         expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('varsha');
             expect(span.firstChild.textContent || span.firstChild.innerText).toBe('varsha');
 
@@ -63,7 +63,7 @@ describe("Element", function () {
 
 
     it("bind class", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span class="msg {{extra}}"></span>'
         });
         var myComponent = new MyComponent();
@@ -79,7 +79,7 @@ describe("Element", function () {
         myComponent.data.set('extra', 'msg-error');
 
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.className).toBe('msg msg-error');
 
             myComponent.dispose();
@@ -90,7 +90,7 @@ describe("Element", function () {
     });
 
     it("bind style", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span style="position: absolute; display: {{display}}"></span>'
         });
         var myComponent = new MyComponent();
@@ -107,7 +107,7 @@ describe("Element", function () {
         myComponent.data.set('display', 'none');
 
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.style.position).toBe('absolute');
             expect(span.style.display).toBe('none');
 
@@ -121,7 +121,7 @@ describe("Element", function () {
     it("bind click event", function (done) {
         var clicked = 0;
 
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span>',
 
             clicker: function (name, email, event) {
@@ -161,7 +161,7 @@ describe("Element", function () {
     it("bind input event", function (done) {
         var inputed = 0;
 
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}">{{name}}</span> <input bind-value="name" on-input="inputer($event)"/>',
 
             inputer: function (event) {
@@ -201,7 +201,7 @@ describe("Element", function () {
         var inputed = 0;
         var interval;
 
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}">{{name}}</span> <input bindx-value="name"/>',
         });
         var myComponent = new MyComponent();

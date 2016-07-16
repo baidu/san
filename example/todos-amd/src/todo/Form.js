@@ -1,9 +1,9 @@
 define(function (require) {
-    var vm = require('san-vm');
+    var san = require('san-core');
     var service = require('service');
     var template = require('tpl!./Form.html');
 
-    var AddCategoryDialog = vm.Component({
+    var AddCategoryDialog = san.Component({
         template: '<template class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             + '<ui-addcategory san-ref="add"></ui-addcategory>'
             + '</template>',
@@ -37,7 +37,7 @@ define(function (require) {
         }
     });
 
-    var EditCategoryDialog = vm.Component({
+    var EditCategoryDialog = san.Component({
         template: '<template class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             + '<i class="fa fa-times-circle-o" on-click="hide"></i>'
             + '<ui-editcategory san-ref="edit"></ui-editcategory>'
@@ -71,7 +71,7 @@ define(function (require) {
     });
 
 
-    return vm.Component({
+    return san.Component({
         template: template,
 
         attached: function () {

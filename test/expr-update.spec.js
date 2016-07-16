@@ -1,6 +1,6 @@
 describe("Expr update detect", function () {
 
-    sanVM.addFilter('upx', function (source, first) {
+    san.addFilter('upx', function (source, first) {
         if (source) {
             if (first) {
                 return source.charAt(0).toUpperCase() + source.slice(1);
@@ -13,7 +13,7 @@ describe("Expr update detect", function () {
     });
 
     it("simple text", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="{{name}}">{{name}}</span>',
         });
         var myComponent = new MyComponent();
@@ -27,7 +27,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('er');
         myComponent.data.set('name', 'san');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('san');
 
             myComponent.dispose();
@@ -38,7 +38,7 @@ describe("Expr update detect", function () {
     });
 
     it("complex text", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="hello {{val1}}, have dinner with {{val2}}?"></span>',
         });
         var myComponent = new MyComponent();
@@ -53,7 +53,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('hello er, have dinner with san?');
         myComponent.data.set('val2', 'etpl');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('hello er, have dinner with etpl?');
 
             myComponent.dispose();
@@ -64,7 +64,7 @@ describe("Expr update detect", function () {
     });
 
     it("text has interpolation and filter", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span title="hello {{name | upx(!all)}}!"></span>',
         });
         var myComponent = new MyComponent();
@@ -79,7 +79,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('hello SAN!');
         myComponent.data.set('all', false);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('hello San!');
 
             myComponent.dispose();
@@ -91,7 +91,7 @@ describe("Expr update detect", function () {
 
 
     it("bind ident", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="name"></span>',
         });
         var myComponent = new MyComponent();
@@ -105,7 +105,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('er');
         myComponent.data.set('name', 'san');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('san');
 
             myComponent.dispose();
@@ -116,7 +116,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind unary", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="!val1"></span>',
         });
         var myComponent = new MyComponent();
@@ -130,7 +130,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('false');
         myComponent.data.set('val1', 0);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('true');
 
             myComponent.dispose();
@@ -141,7 +141,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind binary", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="val1 + val2"></span>',
         });
         var myComponent = new MyComponent();
@@ -156,7 +156,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('20');
         myComponent.data.set('val2', 5);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('15');
 
             myComponent.dispose();
@@ -167,7 +167,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind binary complex", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="val1 + val2 * val3 / val4"></span>',
         });
         var myComponent = new MyComponent();
@@ -184,7 +184,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('30');
         myComponent.data.set('val2', 5);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('20');
 
             myComponent.dispose();
@@ -195,7 +195,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, set item", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.name"></span>',
         });
         var myComponent = new MyComponent();
@@ -212,7 +212,7 @@ describe("Expr update detect", function () {
         expect(span.title).toBe('erik');
         myComponent.data.set('p.name', 'errorrik');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('errorrik');
 
             myComponent.dispose();
@@ -224,7 +224,7 @@ describe("Expr update detect", function () {
 
 
     it("bind property accessor, set outer data", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.org.name"></span>',
         });
         var myComponent = new MyComponent();
@@ -252,7 +252,7 @@ describe("Expr update detect", function () {
             }
         });
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('ssg');
 
             myComponent.dispose();
@@ -263,7 +263,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, variable item", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.orgs[index].name"></span>',
         });
         var myComponent = new MyComponent();
@@ -293,7 +293,7 @@ describe("Expr update detect", function () {
 
         myComponent.data.set('index', 1);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('ssg');
 
             myComponent.dispose();
@@ -304,7 +304,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, after level of variable item", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.orgs[index].name"></span>',
         });
         var myComponent = new MyComponent();
@@ -334,7 +334,7 @@ describe("Expr update detect", function () {
 
         myComponent.data.set('p.orgs[0].name', 'mms');
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('mms');
 
             myComponent.dispose();
@@ -345,7 +345,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, before level of variable item", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.orgs[index].name"></span>',
         });
         var myComponent = new MyComponent();
@@ -384,7 +384,7 @@ describe("Expr update detect", function () {
             }
         ]);
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('ssg');
 
             myComponent.dispose();
@@ -395,7 +395,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, in variable item", function (done) {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '<span bind-title="p.orgs[index].name"></span>',
         });
         var myComponent = new MyComponent();
@@ -428,7 +428,7 @@ describe("Expr update detect", function () {
             company: 'baidu'
         });
 
-        sanVM.nextTick(function () {
+        san.nextTick(function () {
             expect(span.title).toBe('mms');
 
             myComponent.dispose();

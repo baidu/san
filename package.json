@@ -1,7 +1,7 @@
 {
-    "name": "san-vm",
+    "name": "san-core",
     "description": "",
-    "version": "0.0.1",
+    "version": "3.0.0-alpha.1",
 
     "devDependencies": {
         "jasmine": "2.4.x"

@@ -1,12 +1,12 @@
 describe("Expression", function () {
 
-    sanVM.addFilter('tobe', function (value, expectValue) {
+    san.addFilter('tobe', function (value, expectValue) {
         expect(value).toBe(expectValue);
         return value;
     });
 
     it("unary string !", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{!val1 | tobe(!1)}}'
         });
         var myComponent = new MyComponent();
@@ -21,7 +21,7 @@ describe("Expression", function () {
     });
 
     it("unary string !!", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{!!val1 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -36,7 +36,7 @@ describe("Expression", function () {
     });
 
     it("binary number +", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{num1 + num2 | tobe(4)}}'
         });
         var myComponent = new MyComponent();
@@ -52,7 +52,7 @@ describe("Expression", function () {
     });
 
     it("binary string +", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 + val2 | tobe("hello varsha")}}'
         });
         var myComponent = new MyComponent();
@@ -68,7 +68,7 @@ describe("Expression", function () {
     });
 
     it("binary number -", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 - val2 | tobe(4)}}'
         });
         var myComponent = new MyComponent();
@@ -84,7 +84,7 @@ describe("Expression", function () {
     });
 
     it("binary number *", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 * val2 | tobe(150)}}'
         });
         var myComponent = new MyComponent();
@@ -100,7 +100,7 @@ describe("Expression", function () {
     });
 
     it("binary number /", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 / val2 | tobe(6)}}'
         });
         var myComponent = new MyComponent();
@@ -116,7 +116,7 @@ describe("Expression", function () {
     });
 
     it("binary number ==", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 == val2 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -132,7 +132,7 @@ describe("Expression", function () {
     });
 
     it("binary number ===", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 === val2 | tobe(!1)}}'
         });
         var myComponent = new MyComponent();
@@ -148,7 +148,7 @@ describe("Expression", function () {
     });
 
     it("binary number !=", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 != val2 | tobe(!1)}}'
         });
         var myComponent = new MyComponent();
@@ -164,7 +164,7 @@ describe("Expression", function () {
     });
 
     it("binary number !==", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 !== val2 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -180,7 +180,7 @@ describe("Expression", function () {
     });
 
     it("binary number >", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 > val2 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -196,7 +196,7 @@ describe("Expression", function () {
     });
 
     it("binary number <", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 < val2 | tobe(!1)}}'
         });
         var myComponent = new MyComponent();
@@ -212,7 +212,7 @@ describe("Expression", function () {
     });
 
     it("binary number >=", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 >= val2 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -228,7 +228,7 @@ describe("Expression", function () {
     });
 
     it("binary number <=", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 <= val2 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -244,7 +244,7 @@ describe("Expression", function () {
     });
 
     it("confuse a + b * c", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 + val2 * val3 | tobe(23)}}'
         });
         var myComponent = new MyComponent();
@@ -261,7 +261,7 @@ describe("Expression", function () {
     });
 
     it("confuse a * b + c", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 * val2 + val3 | tobe(17)}}'
         });
         var myComponent = new MyComponent();
@@ -278,7 +278,7 @@ describe("Expression", function () {
     });
 
     it("confuse a * b == c + d", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 * val2 == val3 + val4 | tobe(!0)}}'
         });
         var myComponent = new MyComponent();
@@ -296,7 +296,7 @@ describe("Expression", function () {
     });
 
     it("confuse a * b <= c + d", function () {
-        var MyComponent = sanVM.Component({
+        var MyComponent = san.Component({
             template: '{{val1 * val2 <= val3 + val4 | tobe(!1)}}'
         });
         var myComponent = new MyComponent();

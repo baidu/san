@@ -1,8 +1,8 @@
 /**
- * san-vm
+ * san-core
  * Copyright 2016 Baidu Inc. All rights reserved.
  *
- * @file vm引擎
+ * @file 组件体系，vm引擎
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -2727,7 +2727,7 @@
     }
 
     // #region exports
-    var vmExports = {};
+    var san = {};
 
     /**
      * 创建组件类
@@ -2735,7 +2735,7 @@
      * @param {Object} proto
      * @return {Function}
      */
-    vmExports.Component = function (proto) {
+    san.Component = function (proto) {
         function YourComponent(options) {
             Component.call(this, options);
         }
@@ -2763,7 +2763,7 @@
         inherits(YourComponent, Component);
 
         if (/^[a-z0-9]+-[a-z0-9]+$/i.test(proto.tagName)) {
-            vmExports.register(proto.tagName, YourComponent);
+            san.register(proto.tagName, YourComponent);
         }
 
         return YourComponent;
@@ -2795,7 +2795,7 @@
      * @param {string} name 名称
      * @param {function(*, ...*):*} filter 过滤函数
      */
-    vmExports.addFilter = function (name, filter) {
+    san.addFilter = function (name, filter) {
         filters[name] = filter;
     };
 
@@ -2813,7 +2813,7 @@
      * @param {string} name 名称
      * @param {Function} ComponentClass 组件类
      */
-    vmExports.register = function (name, ComponentClass) {
+    san.register = function (name, ComponentClass) {
         ComponentClasses[name] = ComponentClass;
     };
 
@@ -2822,21 +2822,21 @@
      *
      * @param {Function} fn 要运行的函数
      */
-    vmExports.nextTick = nextTick;
+    san.nextTick = nextTick;
 
     // export
     if (typeof exports === 'object' && typeof module === 'object') {
         // For CommonJS
-        exports = module.exports = vmExports;
+        exports = module.exports = san;
     }
     else if (typeof define === 'function' && define.amd) {
         // For AMD
-        define('san-vm', [], vmExports);
-        define( [], vmExports);
+        define('san-core', [], san);
+        define( [], san);
     }
     else {
         // For <script src="..."
-        root.sanVM = vmExports;
+        root.san = san;
     }
 
 })(this);

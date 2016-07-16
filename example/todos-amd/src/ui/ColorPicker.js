@@ -1,7 +1,7 @@
 define(function (require) {
-    var vm = require('san-vm');
+    var san = require('san-core');
 
-    return vm.Component({
+    return san.Component({
         template: ''
             + '<ul class="ui-colorpicker">'
             +    '<li '

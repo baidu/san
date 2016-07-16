@@ -1,15 +1,15 @@
 define(function (require) {
 
 
-    var sanVM = require('san-vm')
-    sanVM.addFilter('formatDate', function (value, format) {
+    var san = require('san-core')
+    san.addFilter('formatDate', function (value, format) {
         return require('moment')(value).format(format);
     });
 
-    sanVM.register('ui-categorypicker', require('./ui/CategoryPicker'));
-    sanVM.register('ui-timepicker', require('./ui/TimePicker'));
-    sanVM.register('ui-calendar', require('./ui/Calendar'));
-    sanVM.register('ui-colorpicker', require('./ui/ColorPicker'));
+    san.register('ui-categorypicker', require('./ui/CategoryPicker'));
+    san.register('ui-timepicker', require('./ui/TimePicker'));
+    san.register('ui-calendar', require('./ui/Calendar'));
+    san.register('ui-colorpicker', require('./ui/ColorPicker'));
 
     var router = require('./router');
 

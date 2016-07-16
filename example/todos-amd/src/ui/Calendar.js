@@ -1,10 +1,10 @@
 define(function (require) {
-    var vm = require('san-vm');
+    var san = require('san-core');
 
     var $ = require('jquery');
     var moment = require('moment');
     var layerTemplate = require('tpl!./CalendarLayer.html');
-    var Layer = vm.Component({
+    var Layer = san.Component({
         template: layerTemplate,
 
         filters: {
@@ -59,7 +59,7 @@ define(function (require) {
             return this.data.get('left') < 0;
         },
 
-        prevMonth: function () {
+        presanonth: function () {
             var viewMonth = this.data.get('viewMonth');
             this.data.set('viewMonth', viewMonth - 1);
             this.updateViewState();
@@ -82,7 +82,7 @@ define(function (require) {
     });
 
 
-    return vm.Component({
+    return san.Component({
         template: '<template on-click="mainClick()" class="ui-calendar">{{ value | valueText }}</template>',
 
         initData: {

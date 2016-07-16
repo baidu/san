@@ -1,9 +1,9 @@
 define(function (require) {
-    var vm = require('san-vm');
+    var san = require('san-core');
 
     var $ = require('jquery');
     var layerTemplate = require('tpl!./TimePickerLayer.html');
-    var Layer = vm.Component({
+    var Layer = san.Component({
         template: layerTemplate,
 
         tagName: 'ul',
@@ -14,7 +14,7 @@ define(function (require) {
     });
 
 
-    return vm.Component({
+    return san.Component({
         template: '<template on-click="mainClick()" class="ui-timepicker">{{ value | valueText }}</template>',
 
         initData: {
