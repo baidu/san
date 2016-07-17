@@ -456,7 +456,7 @@
      *
      * @param {number} charCode 指定字符的code
      */
-    Walker.prototype.goUtil = function (charCode) {
+    Walker.prototype.goUntil = function (charCode) {
         var code;
         while (this.index < this.len && (code = this.currentCode())) {
             if (code === 32 || code === 9) {
@@ -775,7 +775,7 @@
         var expr = readLogicalORExpr(walker);
 
         var filters = [];
-        while (walker.goUtil(124)) { // |
+        while (walker.goUntil(124)) { // |
             filters.push(readCall(walker));
         }
 
@@ -909,7 +909,7 @@
                         };
                     }
                     result.paths.push(itemExpr);
-                    walker.goUtil(93);  // ]
+                    walker.goUntil(93);  // ]
                     break;
 
                 default:
@@ -926,7 +926,7 @@
 
     function readLogicalORExpr(walker) {
         var expr = readLogicalANDExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         if (walker.currentCode() === 124) { // |
             if (walker.nextCode() === 124) {
@@ -947,7 +947,7 @@
 
     function readLogicalANDExpr(walker) {
         var expr = readEqualityExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         if (walker.currentCode() === 38) { // &
             if (walker.nextCode() === 38) {
@@ -968,7 +968,7 @@
 
     function readEqualityExpr(walker) {
         var expr = readRelationalExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         var code = walker.currentCode();
         switch (code) {
@@ -997,7 +997,7 @@
 
     function readRelationalExpr(walker) {
         var expr = readAdditiveExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         var code = walker.currentCode();
         switch (code) {
@@ -1020,7 +1020,7 @@
 
     function readAdditiveExpr(walker) {
         var expr = readMultiplicativeExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         var code = walker.currentCode();
         switch (code) {
@@ -1039,7 +1039,7 @@
 
     function readMultiplicativeExpr(walker) {
         var expr = readUnaryExpr(walker);
-        walker.goUtil();
+        walker.goUntil();
 
         var code = walker.currentCode();
         switch (code) {
@@ -1057,7 +1057,7 @@
     }
 
     function readUnaryExpr(walker) {
-        walker.goUtil();
+        walker.goUntil();
 
         switch (walker.currentCode()) {
             case 33: // !
@@ -1112,14 +1112,14 @@
      * @return {Object}
      */
     function readCall(walker) {
-        walker.goUtil();
+        walker.goUntil();
         var identifier = readIdentifier(walker);
         var args = [];
 
-        if (walker.goUtil(40)) { // (
-            while (!walker.goUtil(41)) { // )
+        if (walker.goUntil(40)) { // (
+            while (!walker.goUntil(41)) { // )
                 args.push(readLogicalORExpr(walker));
-                walker.goUtil(44); // ,
+                walker.goUntil(44); // ,
             }
         }
 
