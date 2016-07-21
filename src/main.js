@@ -691,7 +691,7 @@
             if (match) {
                 return {
                     item: match[1],
-                    index: match[3],
+                    index: match[3] || '$index',
                     list: readPropertyAccessor(walker)
                 };
             }
@@ -700,7 +700,7 @@
         },
 
         'ref': function (value) {
-            return {value: value};
+            return {value: parseText(value)};
         }
     };
 
@@ -794,7 +794,7 @@
      * @return {Object}
      */
     function parseExpr(source) {
-        if (typeof source === 'Object' && source.type) {
+        if (typeof source === 'object' && source.type) {
             return source;
         }
 
@@ -1348,8 +1348,7 @@
                 prop = accessorItemValue(paths[i], this);
         }
 
-        if (prop != null && data[prop] !== value) {
-
+        if (prop != null && (option.force || data[prop] !== value)) {
             data[prop] = value;
             !option.silence && this.fireChange({
                 type: Model.ChangeType.SET,
@@ -1535,7 +1534,7 @@
 
             case ExprType.STRING:
             case ExprType.NUMBER:
-                if (!expr.value) {
+                if (expr.value == null) {
                     expr.value = (new Function('return ' + expr.literal))();
                 }
                 return expr.value;
@@ -1585,13 +1584,16 @@
      * @inner
      * @param {ANode} aNode 抽象节点
      * @param {Component} owner 节点所属组件
-     * @return {Element|TextNode}
+     * @return {Node}
      */
-    function createNode(aNode, owner, data) {
+    function createNode(aNode, parent, scope) {
+        var owner = parent instanceof Component ? parent : parent.owner;
+        var scope = scope || (parent instanceof Component ? parent.data : parent.scope);
         var options = {
             aNode: aNode,
             owner: owner,
-            data: data
+            scope: scope,
+            parent: parent
         };
 
         if (aNode.directives.get('for')) {
@@ -1689,8 +1691,9 @@
             if (lifeCycle.mutex === '*') {
                 this.raw = {};
             }
-
-            delete this.raw[lifeCycle.mutex];
+            else {
+                this.raw[LifeCycles[lifeCycle.mutex].value] = 0;
+            }
         }
 
         this.raw[lifeCycle.value] = 1;
@@ -1774,7 +1777,8 @@
      */
      Node.prototype._init = function (options) {
         this.owner = options.owner;
-        this.data = options.data;
+        this.parent = options.parent;
+        this.scope = options.scope;
         this.aNode = options.aNode;
         this.id = this.aNode && this.aNode.id || guid();
     };
@@ -1798,8 +1802,9 @@
      */
     Node.prototype._dispose = function () {
         this.owner = null;
-        this.data = null;
+        this.scope = null;
         this.aNode = null;
+        this.parent = null;
     };
 
     /**
@@ -1809,7 +1814,7 @@
      * @return {*}
      */
     Node.prototype.evalExpr = function (expr) {
-        return evalExpr(expr, this.data, this.owner);
+        return evalExpr(expr, this.scope, this.owner);
     };
 
     /**
@@ -1875,7 +1880,7 @@
      * @param {Object} change 数据变化信息
      */
     TextNode.prototype.updateView = function (change) {
-        if (exprNeedsUpdate(this.expr, change.expr, this.data)) {
+        if (exprNeedsUpdate(this.expr, change.expr, this.scope)) {
             this.update();
         }
     };
@@ -2000,7 +2005,7 @@
 
                 if (this instanceof Component) {
                     this.on(bindInfo.name + 'Changed', function (value) {
-                        this.parentData && this.parentData.set(bindInfo.expr, value);
+                        this.scope.set(bindInfo.expr, value);
                     });
 
                     this.data.onChange(function (change) {
@@ -2015,10 +2020,13 @@
                     var elTagName = this.el.tagName;
                     var elType = this.el.type;
                     if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
-                        on(this.el, ('oninput' in this.el) ? 'input' : 'propertychange', bind(function (e) {
-                            this.blockSetOnce = true;
-                            this.data.set(bindInfo.expr, (e.target || e.srcElement).value);
-                        }, this))
+                        this.valueSynchronizer = bind(valueSynchronizer, this, bindInfo);
+                        this.valueSynchronizerEvent = ('oninput' in this.el) ? 'input' : 'propertychange';
+                        on(
+                            this.el,
+                            this.valueSynchronizerEvent,
+                            this.valueSynchronizer
+                        );
                     }
                 }
             }
@@ -2026,6 +2034,15 @@
 
         this.bindEvents();
     };
+
+    function valueSynchronizer(bindInfo, e) {
+        this.blockSetOnce = true;
+        var value = (e.target || e.srcElement).value;
+        if (this.el.value !== value) {
+            this.el.value = value;
+        }
+        this.scope.set(bindInfo.expr, value);
+    }
 
     /**
      * 将元素attach到页面
@@ -2071,7 +2088,6 @@
         this.aNode.events.each(function (eventBind) {
             var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
             var listener = provideFn(this, eventBind);
-
             this.eventListeners[listener.name] = listener.fn;
             on(this.el, listener.name, listener.fn);
         }, this);
@@ -2233,12 +2249,9 @@
 
         var buf = new StringBuffer();
         for (var i = 0; i < aNode.childs.length; i++) {
-            // bad smell? i dont think so
-            // in my view, Component is first class
             var child = createNode(
                 aNode.childs[i],
-                element instanceof Component ? element : element.owner,
-                element.data
+                element
             );
             element.childs.push(child);
             buf.push(child.genHTML());
@@ -2291,9 +2304,15 @@
      * @param {Object} change 数据变化信息
      */
     Element.prototype.updateView = function (change) {
-        this.aNode.binds.each(function (bind) {
-            if (exprNeedsUpdate(bind.expr, change.expr, this.data)) {
-                this.setProp(bind.name, this.evalExpr(bind.expr));
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+
+        this.aNode.binds.each(function (bindInfo) {
+            if (exprNeedsUpdate(bindInfo.expr, change.expr, this.scope)) {
+                nextTick(bind(function () {
+                    this.setProp(bindInfo.name, this.evalExpr(bindInfo.expr));
+                }, this));
             }
         }, this);
 
@@ -2328,6 +2347,10 @@
         this._disposeChilds();
         this.detach();
         this.unbindEvents();
+
+        if (this.valueSynchronizer) {
+            un(this.el, this.valueSynchronizerEvent, this.valueSynchronizer);
+        }
         this.el = null;
         this.childs = null;
         delete elementContainer[this.id];
@@ -2370,12 +2393,8 @@
         this._compile();
         callHook(this, 'compiled');
 
-        var ref = this.aNode.directives.get('ref');
-        if (ref) {
-            this.owner.refs[ref.value] = this;
-        }
+        this.initRef();
 
-        this.parentData = this.data;
         this.data = new Model();
         var initData = options.initData || this.initData;
         for (var key in initData) {
@@ -2383,8 +2402,8 @@
                 this.data.set(key, initData[key]);
             }
         }
-        this.parentData && this.aNode.binds.each(function (bind) {
-            this.data.set(bind.name, evalExpr(bind.expr, this.parentData, this.owner));
+        this.scope && this.aNode.binds.each(function (bind) {
+            this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
         this.filters = options.filters || this.filters || {};
@@ -2398,6 +2417,28 @@
             callHook(this, 'created');
             callHook(this, 'attached');
             this._listenDataChange();
+        }
+    };
+
+    // TODO: support dynamic ref?
+    Component.prototype.initRef = function () {
+        var ref = this.aNode.directives.get('ref');
+        if (ref && this.owner !== this) {
+            this.owner.refs[this.evalExpr(ref.value)] = this;
+            // var me = this;
+            // var owner = this.owner;
+            // this.owner.data.onChange(function (change) {
+            //     if (exprNeedsUpdate(ref.value, change.expr, owner.data)) {
+            //         me.evalExpr(ref.value) = me;
+            //     }
+            // });
+        }
+    };
+
+    Component.prototype.disposeRef = function () {
+        if (this.refUpdater) {
+            this.owner.data.unChange(this.refUpdater);
+            this.refUpdater = null;
         }
     };
 
@@ -2425,13 +2466,9 @@
 
         this.data.onChange(function (change) {
             if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                listener.call(me, me.evalExpr(dataExpr));
+                listener.call(me, evalExpr(dataExpr, this.data, this));
             }
         });
-    };
-
-    Component.prototype._inited = function () {
-        this._listenDataChange();
     };
 
     /**
@@ -2442,11 +2479,11 @@
      * @param {Component} component 数据变化的组件
      * @return {Function}
      */
-    function asyncDataChanger(fn, component) {
-        return function (change) {
-            nextTick(bind(fn, component, change));
-        };
-    }
+    // function asyncDataChanger(fn, component) {
+    //     return function (change) {
+    //         nextTick(bind(fn, component, change));
+    //     };
+    // }
 
     /**
      * 监听数据变化的行为
@@ -2459,21 +2496,31 @@
         }
 
         if (this !== this.owner) {
-            var me = this;
+            // var me = this;
+            // // TODO: update logic
+            // this.ownerDataChanger = function (change) {
+            //     me.aNode.binds.each(function (bind) {
 
-            this.ownerDataChange = function (change) {
-                me.aNode.binds.each(function (bind) {
-
-                    if (exprNeedsUpdate(bind.expr, change.expr, this.owner.data)) {
-                        this.data.set(bind.name, this.owner.evalExpr(bind.expr));
-                    }
-                }, me);
-            };
-            this.owner.data.onChange(this.ownerDataChange);
+            //         if (exprNeedsUpdate(bind.expr, change.expr, this.owner.data)) {
+            //             this.data.set(bind.name, this.owner.evalExpr(bind.expr));
+            //         }
+            //     }, me);
+            // };
+            // this.owner.data.onChange(this.ownerDataChange);
         }
 
-        this.dataChanger = asyncDataChanger(Element.prototype.updateView, this);
+        this.dataChanger = bind(this._dataChanger, this);
         this.data.onChange(this.dataChanger);
+    };
+
+    Component.prototype._dataChanger = function (change) {
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+console.log(this, change)
+        each(this.childs, function (child) {
+            child.updateView(change);
+        });
     };
 
     /**
@@ -2487,12 +2534,20 @@
             this.dataChanger = null;
         }
 
-        if (this.ownerDataChange) {
-            this.owner.data.unChange(this.ownerDataChange);
-        }
+        // if (this.ownerDataChanger) {
+        //     this.owner.data.unChange(this.ownerDataChanger);
+        // }
     };
 
     Component.prototype.updateView = function (change) {
+        if (!this.lifeCycle.is('disposed') && this !== this.owner) {
+            this.aNode.binds.each(function (bind) {
+                if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
+                    console.log(this.evalExpr(bind.expr))
+                    this.data.set(bind.name, this.evalExpr(bind.expr), {force: true});
+                }
+            }, this);
+        }
     };
 
 
@@ -2501,8 +2556,7 @@
      *
      * @param {HTMLElement} parent 要添加到的父元素
      */
-    Component.prototype._attach = function (parent) {
-        Element.prototype._attach.call(this, parent);
+    Component.prototype._attached = function (parent) {
         this._listenDataChange();
     };
 
@@ -2510,6 +2564,7 @@
      * 组件销毁的行为
      */
     Component.prototype._dispose = function () {
+        this.disposeRef();
         this._unlistenDataChange();
         Element.prototype._dispose.call(this);
         this.refs = null;
@@ -2554,8 +2609,7 @@
      */
     function eachForData(forElement, fn) {
         var forDirective = forElement.aNode.directives.get('for');
-        var data = forElement.data;
-        each(data.get(forDirective.list), fn, forElement);
+        each(forElement.evalExpr(forDirective.list), fn, forElement);
     }
 
     /**
@@ -2569,9 +2623,53 @@
      */
     function createForDirectiveChild(forElement, item, index) {
         var forDirective = forElement.aNode.directives.get('for');
-        var itemData = new Model(forElement.data);
-        itemData.set(forDirective.item, item);
-        forDirective.index && itemData.set(forDirective.index, index);
+        var itemScope = new Model(forElement.scope);
+        itemScope.set(forDirective.item, item);
+        itemScope.set(forDirective.index, index);
+
+       function exprResolve(expr) {
+            var resolvedExpr = expr;
+            var firstPath;
+
+            switch (expr.type) {
+                case ExprType.IDENT:
+                    firstPath = expr;
+                    break;
+                case ExprType.PROP_ACCESSOR:
+                    firstPath = expr.paths[0]
+                    break;
+            }
+
+            if (firstPath && firstPath.name === forDirective.item) {
+                resolvedExpr = {
+                    type: ExprType.PROP_ACCESSOR,
+                    paths: forDirective.list.type === ExprType.PROP_ACCESSOR
+                        ? forDirective.list.paths.slice(0)
+                        : [forDirective.list]
+                };
+                resolvedExpr.paths.push({
+                    type: ExprType.NUMBER,
+                    value: itemScope.get(forDirective.index)
+                });
+
+                if (expr.type === ExprType.PROP_ACCESSOR) {
+                    resolvedExpr.paths = resolvedExpr.paths.concat(expr.paths.slice(1));
+                }
+            }
+
+            return resolvedExpr;
+        }
+
+        each(['set', 'remove', 'unshift', 'shift', 'push', 'pop'], function (method) {
+            var rawFn = Model.prototype[method];
+            itemScope[method] = function (expr) {
+                expr = exprResolve(parseExpr(expr));
+                rawFn.apply(
+                    forElement.scope,
+                    [expr].concat(Array.prototype.slice.call(arguments, 1))
+                );
+            }
+        });
 
         var aNode = forElement.aNode;
         return createNode(
@@ -2583,8 +2681,8 @@
                 events: aNode.events,
                 tagName: aNode.tagName
             }),
-            forElement.owner,
-            itemData
+            forElement,
+            itemScope
         );
     }
 
@@ -2632,7 +2730,9 @@
 
         switch (changeInForExpr) {
             case -1:
-                Element.prototype.updateView.call(this, change);
+                each(this.childs, function (child) {
+                    child.updateView(change);
+                });
                 break;
 
             case 0:
@@ -2640,38 +2740,48 @@
                 // 根据变更类型执行不同的视图更新行为
                 switch (change.type) {
                     case Model.ChangeType.ARRAY_PUSH:
-                        var newChild = createForDirectiveChild(this, change.value, change.index);
-                        this.childs.push(newChild);
-                        newChild.attach(this.el.parentNode, this.el.nextSibling);
+                        nextTick(bind(function () {
+                            var newChild = createForDirectiveChild(this, change.value, change.index);
+                            this.childs.push(newChild);
+                            newChild.attach(this.el.parentNode, this.el.nextSibling);
+                        }, this));
                         break;
 
                     case Model.ChangeType.ARRAY_POP:
-                        var index = this.childs.length - 1;
-                        this.childs[index].dispose();
-                        this.childs.splice(index, 1);
+                        nextTick(bind(function () {
+                            var index = this.childs.length - 1;
+                            this.childs[index].dispose();
+                            this.childs.splice(index, 1);
+                        }, this));
                         break;
 
                     case Model.ChangeType.ARRAY_UNSHIFT:
-                        var newChild = createForDirectiveChild(this, change.value, 0);
-                        var nextChild = this.childs[0] || this;
-                        this.childs.push(newChild);
-                        newChild.attach(nextChild.el.parentNode, nextChild.el);
+                        nextTick(bind(function () {
+                            var newChild = createForDirectiveChild(this, change.value, 0);
+                            var nextChild = this.childs[0] || this;
+                            this.childs.unshift(newChild);
+                            newChild.attach(nextChild.el.parentNode, nextChild.el);
+                        }, this));
                         updateForDirectiveIndex(this, 1, function (i) {
                             return i + 1;
                         });
                         break;
 
                     case Model.ChangeType.ARRAY_SHIFT:
-                        this.childs[0].dispose();
-                        this.childs.splice(0, 1);
+                        nextTick(bind(function () {
+                            this.childs[0].dispose();
+                            this.childs.splice(0, 1);
+                        }, this));
                         updateForDirectiveIndex(this, 0, function (i) {
                             return i - 1;
                         });
                         break;
 
                     case Model.ChangeType.ARRAY_REMOVE:
-                        this.childs[change.index].dispose();
-                        this.childs.splice(change.index, 1);
+                        nextTick(bind(function () {
+                            this.childs[change.index].dispose();
+                            this.childs.splice(change.index, 1);
+                        }, this));
                         updateForDirectiveIndex(this, change.index, function (i) {
                             return i - 1;
                         });
@@ -2679,25 +2789,27 @@
 
                     case Model.ChangeType.SET:
                         // 重新构建整个childs
-                        this._disposeChilds();
-                        eachForData(this, function (item ,i) {
-                            var child = createForDirectiveChild(this, item, i);
-                            this.childs.push(child);
-                            child.attach(this.el.parentNode, this.el);
-                        });
+                        nextTick(bind(function () {
+                            this._disposeChilds();
+                            eachForData(this, function (item ,i) {
+                                var child = createForDirectiveChild(this, item, i);
+                                this.childs.push(child);
+                                child.attach(this.el.parentNode, this.el);
+                            });
+                        }, this));
                 }
                 break;
 
             case 1:
-                if (change.type === Model.ChangeType.SET) {
-                    // 等于单项时构建单项
-                    var newChild = createForDirectiveChild(this, change.value, changeIndex);
-                    var replaceChild = this.childs[changeIndex];
-                    newChild.attach(replaceChild.el.parentNode, replaceChild.el);
-                    replaceChild.dispose();
-                    this.childs.splice(changeIndex, 1, newChild);
-                }
-                break;
+                // if (change.type === Model.ChangeType.SET) {
+                //     // 等于单项时构建单项
+                //     var newChild = createForDirectiveChild(this, change.value, changeIndex);
+                //     var replaceChild = this.childs[changeIndex];
+                //     newChild.attach(replaceChild.el.parentNode, replaceChild.el);
+                //     replaceChild.dispose();
+                //     this.childs.splice(changeIndex, 1, newChild);
+                // }
+                // break;
 
             case 2:
                 if (change.type === Model.ChangeType.SET) {
@@ -2709,6 +2821,7 @@
                             {name: forDirective.item, type: ExprType.IDENT}
                         ].concat(changeSegs.slice(forLen + 1))
                     };
+                    Model.prototype.set.call(this.childs[changeIndex].scope, change.expr, change.value, {silence: true});
                     this.childs[changeIndex].updateView(change);
                 }
                 break;
@@ -2719,9 +2832,9 @@
         var childs = forElement.childs;
         var forDirective = forElement.aNode.directives.get('for');
         for (var len = childs.length; start < len; start++) {
-            var index = childs[start].data.get(forDirective.index);
+            var index = childs[start].scope.get(forDirective.index);
             if (index != null) {
-                childs[start].data.set(forDirective.index, fn(index));
+                Model.prototype.set.call(childs[start].scope, forDirective.index, fn(index))
             }
         }
     }
@@ -2823,6 +2936,10 @@
      * @param {Function} fn 要运行的函数
      */
     san.nextTick = nextTick;
+
+    san.getEl = function (id) {
+        return elementContainer[id];
+    };
 
     // export
     if (typeof exports === 'object' && typeof module === 'object') {
