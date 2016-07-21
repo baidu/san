@@ -26,7 +26,6 @@ describe("Expr update detect", function () {
         var span = wrap.firstChild.firstChild;
         expect(span.title).toBe('er');
         myComponent.data.set('name', 'san');
-
         san.nextTick(function () {
             expect(span.title).toBe('san');
 
