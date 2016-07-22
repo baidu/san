@@ -99,7 +99,7 @@ define(function (require) {
                 this.data.set('left', -1000);
             }
             else {
-                var pos = $(this.el).offset();
+                var pos = $(this.el).offset();debugger
                 this.data.set('left', pos.left);
                 this.data.set('top', pos.top + this.el.offsetHeight + 1);
             }
@@ -115,7 +115,7 @@ define(function (require) {
         },
 
         filters: {
-            valueText(value) {console.log(value)
+            valueText(value) {
                 var datasource = this.data.get('datasource');
                 var i = datasource.length;
 

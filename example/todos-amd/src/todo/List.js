@@ -6,7 +6,6 @@ define(function (require) {
     return san.Component({
         template: template,
 
-
         attached: function () {
             this.data.set('todos', service.todos(+this.data.get('params[1]')));
             this.data.set('categories', service.categories());

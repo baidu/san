@@ -6,7 +6,7 @@
         class="{{item.id == params[1] | yesToBe('checked')}}"
     >
         <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
-    </li>
+    </li><li>
 </ul>
 
 <a href="#/" class="fa fa-close filter-category-clear" style="display: {{params[1] | yesOrNoToBe('', 'none')}}"></a>
