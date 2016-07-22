@@ -159,8 +159,12 @@
      *
      * @inner
      * @param {Function} 要运行的任务函数
+     * @param {Object=} thisArg this指向对象
      */
-    function nextTick(func) {
+    function nextTick(func, thisArg) {
+        if (thisArg) {
+            func = bind(func, thisArg);
+        }
         nextTasks.push(func);
 
         if (nextHandler) {
@@ -1730,12 +1734,12 @@
 
         source.lifeCycle.set(name);
 
-        if (typeof source[name] === 'function') {
-            source[name].call(source);
-        }
-
         if (typeof source['_' + name] === 'function') {
             source['_' + name].call(source);
+        }
+
+        if (typeof source[name] === 'function') {
+            source[name].call(source);
         }
 
         var hookMethod = source.hooks && source.hooks[name];
@@ -1979,7 +1983,14 @@
             this.el.id = this.id;
 
             this.aNode.binds.each(function (bind) {
-                var value = this.evalExpr(bind.expr);
+                var value;
+                if (this instanceof Component && bind.expr.type === ExprType.TEXT) {
+                    value = evalExpr(bind.expr, this.data, this);
+                }
+                else {
+                    value = this.evalExpr(bind.expr);
+                }
+
                 if (value != null && typeof value !== 'object') {
                     this.el.setAttribute(bind.name, value);
                 }
@@ -2063,10 +2074,6 @@
     Element.prototype._attach = function (parentEl, beforeEl) {
         this.create();
 
-        this.aNode.binds.each(function (bind) {
-            var value = this.evalExpr(bind.expr);
-            this.setProp(bind.name, value);
-        }, this);
         this.el.innerHTML = elementGenChildsHTML(this);
 
         if (parentEl) {
@@ -2473,24 +2480,10 @@
 
         this.data.onChange(function (change) {
             if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                listener.call(me, evalExpr(dataExpr, this.data, this));
+                listener.call(me, evalExpr(dataExpr, this, me));
             }
         });
     };
-
-    /**
-     * 生成数据变化时更新视图的异步方法
-     *
-     * @inner
-     * @param {function(Object)} fn 更新视图的方法，接收数据变更信息对象
-     * @param {Component} component 数据变化的组件
-     * @return {Function}
-     */
-    // function asyncDataChanger(fn, component) {
-    //     return function (change) {
-    //         nextTick(bind(fn, component, change));
-    //     };
-    // }
 
     /**
      * 监听数据变化的行为
@@ -2502,20 +2495,6 @@
             return;
         }
 
-        // if (this !== this.owner) {
-            // var me = this;
-            // // TODO: update logic
-            // this.ownerDataChanger = function (change) {
-            //     me.aNode.binds.each(function (bind) {
-
-            //         if (exprNeedsUpdate(bind.expr, change.expr, this.owner.data)) {
-            //             this.data.set(bind.name, this.owner.evalExpr(bind.expr));
-            //         }
-            //     }, me);
-            // };
-            // this.owner.data.onChange(this.ownerDataChange);
-        // }
-
         this.dataChanger = bind(this._dataChanger, this);
         this.data.onChange(this.dataChanger);
     };
@@ -2524,6 +2503,15 @@
         if (this.lifeCycle.is('disposed')) {
             return;
         }
+
+        this.aNode.binds.each(function (bind) {
+            var value;
+            if (bind.expr.type === ExprType.TEXT) {
+                nextTick(function () {
+                    this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
+                }, this);
+            }
+        }, this);
 
         each(this.childs, function (child) {
             child.updateView(change);
@@ -2540,10 +2528,6 @@
             this.data.unChange(this.dataChanger);
             this.dataChanger = null;
         }
-
-        // if (this.ownerDataChanger) {
-        //     this.owner.data.unChange(this.ownerDataChanger);
-        // }
     };
 
     Component.prototype.updateView = function (change) {
