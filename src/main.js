@@ -2203,7 +2203,14 @@
         stringBuffer.push('"');
 
         element.aNode.binds.each(function (bind) {
-            var value = this.evalExpr(bind.expr);
+            var value;
+            if (this instanceof Component && bind.expr.type === ExprType.TEXT) {
+                value = evalExpr(bind.expr, this.data, this);
+            }
+            else {
+                value = this.evalExpr(bind.expr);
+            }
+
             if (value != null && typeof value !== 'object') {
                 stringBuffer.push(' ');
                 stringBuffer.push(bind.name);
@@ -2495,7 +2502,7 @@
             return;
         }
 
-        if (this !== this.owner) {
+        // if (this !== this.owner) {
             // var me = this;
             // // TODO: update logic
             // this.ownerDataChanger = function (change) {
@@ -2507,7 +2514,7 @@
             //     }, me);
             // };
             // this.owner.data.onChange(this.ownerDataChange);
-        }
+        // }
 
         this.dataChanger = bind(this._dataChanger, this);
         this.data.onChange(this.dataChanger);
@@ -2517,7 +2524,7 @@
         if (this.lifeCycle.is('disposed')) {
             return;
         }
-console.log(this, change)
+
         each(this.childs, function (child) {
             child.updateView(change);
         });
@@ -2542,8 +2549,10 @@ console.log(this, change)
     Component.prototype.updateView = function (change) {
         if (!this.lifeCycle.is('disposed') && this !== this.owner) {
             this.aNode.binds.each(function (bind) {
-                if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
-                    console.log(this.evalExpr(bind.expr))
+                if (bind.expr.type === ExprType.TEXT) {
+                    this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
+                }
+                else if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
                     this.data.set(bind.name, this.evalExpr(bind.expr), {force: true});
                 }
             }, this);
@@ -2570,10 +2579,6 @@ console.log(this, change)
         this.refs = null;
     };
 
-    Component.prototype.setProp = function (name, value) {
-        this.data.set(name, value);
-        Element.prototype.setProp.call(this, name, value);
-    };
 
     function ForDirective(options) {
         Element.call(this, options);
@@ -2661,7 +2666,7 @@ console.log(this, change)
         }
 
         each(['set', 'remove', 'unshift', 'shift', 'push', 'pop'], function (method) {
-            var rawFn = Model.prototype[method];
+            var rawFn = forElement.scope[method];
             itemScope[method] = function (expr) {
                 expr = exprResolve(parseExpr(expr));
                 rawFn.apply(
@@ -2692,6 +2697,10 @@ console.log(this, change)
      * @param {Object} change 数据变化信息
      */
     ForDirective.prototype.updateView = function (change) {
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+
         var forDirective = this.aNode.directives.get('for');
 
         var changeExpr = change.expr;
@@ -2762,7 +2771,7 @@ console.log(this, change)
                             this.childs.unshift(newChild);
                             newChild.attach(nextChild.el.parentNode, nextChild.el);
                         }, this));
-                        updateForDirectiveIndex(this, 1, function (i) {
+                        updateForDirectiveIndex(this, 0, function (i) {
                             return i + 1;
                         });
                         break;
@@ -2772,7 +2781,7 @@ console.log(this, change)
                             this.childs[0].dispose();
                             this.childs.splice(0, 1);
                         }, this));
-                        updateForDirectiveIndex(this, 0, function (i) {
+                        updateForDirectiveIndex(this, 1, function (i) {
                             return i - 1;
                         });
                         break;
