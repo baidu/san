@@ -123,6 +123,76 @@ describe("Form-Bindx", function () {
         });
     });
 
+    it("text value in nested for, set op", function (done) {
+        var MyComponent = san.Component({
+            template: '<a san-for="p in persons">'
+                + '<b title="{{p.name}}">{{p.name}}</b>'
+                + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><input bindx-value="color.name"></h5>'
+                + '</a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {
+                name: 'erik',
+                colors: [
+                    {name: 'blue'},
+                    {name: 'yellow'}
+                ]
+            },
+            {
+                name: 'firede',
+                colors: [
+                    {name: 'red'},
+                    {name: 'green'}
+                ]
+            }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var aes = wrap.getElementsByTagName('a');
+        expect(aes[0].getElementsByTagName('b')[0].title).toBe('erik');
+        expect(aes[1].getElementsByTagName('b')[0].title).toBe('firede');
+
+        var p1tels = aes[1].getElementsByTagName('span');
+        expect(p1tels[0].title).toBe('red');
+        expect(p1tels[1].title).toBe('green');
+
+        var inputs = aes[1].getElementsByTagName('input');
+
+        expect(inputs[0].value).toBe('red');
+        expect(inputs[1].value).toBe('green');
+
+        san.getEl(inputs[0].id).valueSynchronizer({
+            target: {value: 'pick'},
+            srcElement: {value: 'pick'}
+        });
+        san.getEl(inputs[1].id).valueSynchronizer({
+            target: {value: 'yellow'},
+            srcElement: {value: 'yellow'}
+        });
+
+        san.nextTick(function () {
+            var colors = myComponent.data.get('persons[1].colors');
+            expect(colors[0].name).toBe('pick');
+            expect(colors[1].name).toBe('yellow');
+
+            var aes = wrap.getElementsByTagName('a');
+            var p1tels = aes[1].getElementsByTagName('span');
+            expect(p1tels[0].title).toBe(colors[0].name);
+            expect(p1tels[1].title).toBe(colors[1].name);
+
+            var inputs = aes[1].getElementsByTagName('input');
+            expect(inputs[0].value).toBe('pick');
+            expect(inputs[1].value).toBe('yellow');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 
     it("text value in for, push op", function (done) {
         var MyComponent = san.Component({

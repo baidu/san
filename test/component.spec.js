@@ -21,163 +21,199 @@ describe("Component", function () {
         }
     });
 
-    // it("life cycle", function () {
-    //     var isInited = false;
-    //     var isCreated = false;
-    //     var isAttached = false;
-    //     var isDetached = false;
-    //     var isDisposed = false;
+    var Label = san.Component({
+        template: '<span title="{{text}}">{{text}}</span>'
+    });
 
-    //     var MyComponent = san.Component({
-    //         components: {
-    //             'ui-color': ColorPicker
-    //         },
-    //         template: '<span title="{{color}}">{{color}}</span>',
+    it("life cycle", function () {
+        var isInited = false;
+        var isCreated = false;
+        var isAttached = false;
+        var isDetached = false;
+        var isDisposed = false;
 
-    //         inited: function () {
-    //             isInited = true;
-    //         },
+        var MyComponent = san.Component({
+            components: {
+                'ui-color': ColorPicker
+            },
+            template: '<span title="{{color}}">{{color}}</span>',
 
-    //         created: function () {
-    //             isCreated = true;
-    //         },
+            inited: function () {
+                isInited = true;
+            },
 
-    //         attached: function () {
-    //             isAttached = true;
-    //         },
+            created: function () {
+                isCreated = true;
+            },
 
-    //         detached: function () {
-    //             isDetached = true;
-    //         },
+            attached: function () {
+                isAttached = true;
+            },
 
-    //         disposed: function () {
-    //             isDisposed = true;
-    //         }
-    //     });
-    //     var myComponent = new MyComponent();
-    //     expect(myComponent.lifeCycle.is('inited')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('created')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('attached')).toBe(false);
-    //     expect(isInited).toBe(true);
-    //     expect(isCreated).toBe(false);
-    //     expect(isAttached).toBe(false);
+            detached: function () {
+                isDetached = true;
+            },
 
-    //     myComponent.data.set('color', 'green');
+            disposed: function () {
+                isDisposed = true;
+            }
+        });
+        var myComponent = new MyComponent();
+        expect(myComponent.lifeCycle.is('inited')).toBe(true);
+        expect(myComponent.lifeCycle.is('created')).toBe(false);
+        expect(myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(isInited).toBe(true);
+        expect(isCreated).toBe(false);
+        expect(isAttached).toBe(false);
 
-    //     var wrap = document.createElement('div');
-    //     document.body.appendChild(wrap);
-    //     myComponent.attach(wrap);
-    //     expect(myComponent.lifeCycle.is('inited')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('created')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('attached')).toBe(true);
-    //     expect(isInited).toBe(true);
-    //     expect(isCreated).toBe(true);
-    //     expect(isAttached).toBe(true);
+        myComponent.data.set('color', 'green');
 
-    //     myComponent.detach();
-    //     expect(myComponent.lifeCycle.is('created')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('attached')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('detached')).toBe(true);
-    //     expect(isDetached).toBe(true);
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        expect(myComponent.lifeCycle.is('inited')).toBe(true);
+        expect(myComponent.lifeCycle.is('created')).toBe(true);
+        expect(myComponent.lifeCycle.is('attached')).toBe(true);
+        expect(isInited).toBe(true);
+        expect(isCreated).toBe(true);
+        expect(isAttached).toBe(true);
 
-    //     myComponent.attach(wrap);
-    //     expect(myComponent.lifeCycle.is('created')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('attached')).toBe(true);
-    //     expect(myComponent.lifeCycle.is('detached')).toBe(false);
+        myComponent.detach();
+        expect(myComponent.lifeCycle.is('created')).toBe(true);
+        expect(myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(myComponent.lifeCycle.is('detached')).toBe(true);
+        expect(isDetached).toBe(true);
 
-
-    //     myComponent.dispose();
-    //     expect(myComponent.lifeCycle.is('inited')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('created')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('attached')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('detached')).toBe(false);
-    //     expect(myComponent.lifeCycle.is('disposed')).toBe(true);
-    //     expect(isDisposed).toBe(true);
-
-    //     document.body.removeChild(wrap);
-    // });
-
-    // it("ref", function () {
-    //     var MyComponent = san.Component({
-    //         components: {
-    //             'ui-color': ColorPicker
-    //         },
-    //         template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color>'
-    //     });
-    //     var myComponent = new MyComponent();
-    //     myComponent.data.set('color', 'green');
-
-    //     var wrap = document.createElement('div');
-    //     document.body.appendChild(wrap);
-    //     myComponent.attach(wrap);
-
-    //     var span = wrap.firstChild.firstChild;
-    //     expect(myComponent.refs.colorPicker instanceof ColorPicker).toBe(true);
-    //     expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
+        myComponent.attach(wrap);
+        expect(myComponent.lifeCycle.is('created')).toBe(true);
+        expect(myComponent.lifeCycle.is('attached')).toBe(true);
+        expect(myComponent.lifeCycle.is('detached')).toBe(false);
 
 
-    //     myComponent.dispose();
-    //     document.body.removeChild(wrap);
-    // });
+        myComponent.dispose();
+        expect(myComponent.lifeCycle.is('inited')).toBe(false);
+        expect(myComponent.lifeCycle.is('created')).toBe(false);
+        expect(myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(myComponent.lifeCycle.is('detached')).toBe(false);
+        expect(myComponent.lifeCycle.is('disposed')).toBe(true);
+        expect(isDisposed).toBe(true);
 
-    // it("dynamic ref", function () {
-    //     var MyComponent = san.Component({
-    //         components: {
-    //             'ui-color': ColorPicker
-    //         },
-    //         template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="{{name}}"></ui-color>'
-    //     });
-    //     var myComponent = new MyComponent();
-    //     myComponent.data.set('color', 'green');
-    //     myComponent.data.set('name', 'c');
+        document.body.removeChild(wrap);
+    });
 
-    //     var wrap = document.createElement('div');
-    //     document.body.appendChild(wrap);
-    //     myComponent.attach(wrap);
+    it("template tag in template", function (done) {
+        var Label = san.Component({
+            template: '<template class="ui-label" title="{{text}}">{{text}}</template>'
+        });
 
-    //     var span = wrap.firstChild.firstChild;
-    //     expect(myComponent.refs.c instanceof ColorPicker).toBe(true);
-    //     expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
-
-
-    //     myComponent.dispose();
-    //     document.body.removeChild(wrap);
-    // });
+        var MyComponent = san.Component({
+            components: {
+                'ui-label': Label
+            },
+            template: '<ui-label bind-text="name"></ui-label>'
+        });
 
 
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'erik');
 
-    // it("update prop", function (done) {
-    //     var Label = san.Component({
-    //         template: '<span title="{{text}}">{{text}}</span>'
-    //     });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
 
-    //     var MyComponent = san.Component({
-    //         components: {
-    //             'ui-label': Label
-    //         },
-    //         template: '<ui-label bind-text="name"></ui-label>'
-    //     });
+        var labelEl = wrap.firstChild.firstChild;
+        expect(labelEl.className).toBe('ui-label');
+        expect(labelEl.title).toBe('erik');
+
+        myComponent.data.set('name', 'ci');
+
+        san.nextTick(function () {
+            expect(labelEl.className).toBe('ui-label');
+            expect(labelEl.title).toBe('ci');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("ref", function () {
+        var MyComponent = san.Component({
+            components: {
+                'ui-color': ColorPicker
+            },
+            template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('color', 'green');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(myComponent.refs.colorPicker instanceof ColorPicker).toBe(true);
+        expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
 
 
-    //     var myComponent = new MyComponent();
-    //     myComponent.data.set('name', 'erik');
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 
-    //     var wrap = document.createElement('div');
-    //     document.body.appendChild(wrap);
-    //     myComponent.attach(wrap);
+    it("dynamic ref", function () {
+        var MyComponent = san.Component({
+            components: {
+                'ui-color': ColorPicker
+            },
+            template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="{{name}}"></ui-color>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('color', 'green');
+        myComponent.data.set('name', 'c');
 
-    //     var span = wrap.getElementsByTagName('span')[0];
-    //     expect(span.title).toBe('erik');
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
 
-    //     myComponent.data.set('name', 'ci');
+        var span = wrap.firstChild.firstChild;
+        expect(myComponent.refs.c instanceof ColorPicker).toBe(true);
+        expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
 
-    //     san.nextTick(function () {
-    //         expect(span.title).toBe('ci');
-    //         done();
-    //         myComponent.dispose();
-    //         document.body.removeChild(wrap);
-    //     });
-    // });
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+
+
+    it("update prop", function (done) {
+        var MyComponent = san.Component({
+            components: {
+                'ui-label': Label
+            },
+            template: '<ui-label bind-text="name"></ui-label>'
+        });
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'erik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.data.set('name', 'ci');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ci');
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        });
+    });
 
     var TelList = san.Component({
         template: '<ul><li san-for="item in list" title="{{item}}">{{item}}</li></ul>'
@@ -240,10 +276,66 @@ describe("Component", function () {
             var p1lis = dds[1].getElementsByTagName('li');
             expect(p1lis[0].title).toBe('12121212');
             expect(p1lis[1].title).toBe('16161616');
-            // expect(p1lis[2].title).toBe('18181818');
+            expect(p1lis[2].title).toBe('18181818');
 
-        //     myComponent.dispose();
-        // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("in for", function (done) {
+        var MyComponent = san.Component({
+            components: {
+                'ui-label': Label
+            },
+            template: '<ul><li san-for="p in persons"><b title="{{p.name}}">{{p.name}}</b><h5 san-for="t in p.tels"><ui-label bind-text="t"></ui-label></h5></li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {
+                name: 'erik',
+                tels: [
+                    '12345678',
+                    '123456789',
+                ]
+            },
+            {
+                name: 'firede',
+                tels: [
+                    '2345678',
+                    '23456789',
+                ]
+            }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis[0].getElementsByTagName('b')[0].title).toBe('erik');
+        expect(lis[1].getElementsByTagName('b')[0].title).toBe('firede');
+
+        var p1tels = lis[1].getElementsByTagName('span');
+        expect(p1tels[0].title).toBe('2345678');
+        expect(p1tels[1].title).toBe('23456789');
+
+        myComponent.data.set('persons[1].name', 'leeight');
+        myComponent.data.set('persons[1].tels', ['12121212', '16161616', '18181818']);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis[0].getElementsByTagName('b')[0].title).toBe('erik');
+            expect(lis[1].getElementsByTagName('b')[0].title).toBe('leeight');
+
+            var p1tels = lis[1].getElementsByTagName('span');
+            expect(p1tels[0].title).toBe('12121212');
+            expect(p1tels[1].title).toBe('16161616');
+            expect(p1tels[2].title).toBe('18181818');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         });
     });

@@ -143,4 +143,103 @@ describe("Component-Bindx", function () {
             done();
         }, 500);
     });
+
+    it("in nested for, set op", function (done) {
+        var MyComponent = san.Component({
+            components: {
+                'ui-color': ColorPicker
+            },
+            template: '<a san-for="p in persons">'
+                + '<b title="{{p.name}}">{{p.name}}</b>'
+                + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><ui-color bindx-value="color.name"></ui-color></h5>'
+                + '</a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {
+                name: 'erik',
+                colors: [
+                    {name: 'blue'},
+                    {name: 'yellow'}
+                ]
+            },
+            {
+                name: 'firede',
+                colors: [
+                    {name: 'red'},
+                    {name: 'green'}
+                ]
+            }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var aes = wrap.getElementsByTagName('a');
+        expect(aes[0].getElementsByTagName('b')[0].title).toBe('erik');
+        expect(aes[1].getElementsByTagName('b')[0].title).toBe('firede');
+
+        var p1tels = aes[1].getElementsByTagName('span');
+        expect(p1tels[0].title).toBe('red');
+        expect(p1tels[1].title).toBe('green');
+
+        setTimeout(function () {
+            var colors = myComponent.data.get('persons[1].colors');
+            var aes = wrap.getElementsByTagName('a');
+
+            var p1tels = aes[1].getElementsByTagName('span');
+            expect(p1tels[0].title).toBe(colors[0].name);
+            expect(p1tels[1].title).toBe(colors[1].name);
+
+            expect(colors[0].name).not.toBe('red');
+            expect(colors[1].name).not.toBe('green');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 500);
+    });
+
+    it("nested", function (done) {
+        var PersonView = san.Component({
+            components: {
+                'ui-color': ColorPicker
+            },
+
+            template: '<b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color bindx-value="value.color"></ui-color>'
+        });
+
+        var MyComponent = san.Component({
+            components: {
+                'ui-person': PersonView
+            },
+            template: '<ui-person bind-value="person"></ui-person>'
+        });
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('person', {
+            name: 'erik',
+            color: 'pick'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('erik');
+        expect(bs[1].title).toBe('pick');
+
+        setTimeout(function () {
+            var person = myComponent.data.get('person');
+            expect(person.color).not.toBe('pick');
+
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[1].title).toBe(person.color);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 500);
+    });
 });
