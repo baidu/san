@@ -1885,7 +1885,7 @@
      */
     TextNode.prototype.updateView = function (change) {
         if (exprNeedsUpdate(this.expr, change.expr, this.scope)) {
-            this.update();
+            nextTick(this.update, this);
         }
     };
 
@@ -2929,6 +2929,8 @@
      * @param {Function} fn 要运行的函数
      */
     san.nextTick = nextTick;
+
+    san.version = '3.0.0-beta.1';
 
     san.getEl = function (id) {
         return elementContainer[id];
