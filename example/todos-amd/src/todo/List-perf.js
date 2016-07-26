@@ -1,14 +1,19 @@
 define(function (require) {
     var san = require('san-core');
-    var service = require('../service');
+    var service = require('../service-perf');
     var template = require('tpl!./List.html');
 
     return san.Component({
         template: template,
 
         attached: function () {
+            var now = new Date();
             this.data.set('todos', service.todos(+this.data.get('params[1]')));
             this.data.set('categories', service.categories());
+
+            san.nextTick(function () {
+                alert('List render: ' + ((new Date) - now));
+            });
         },
 
 
@@ -16,14 +21,22 @@ define(function (require) {
             var todo = this.data.get('todos', index);
             service.doneTodo(todo.id);
 
+            var now = new Date();
             this.data.set('todos.' + index + '.done', true);
+            san.nextTick(function () {
+                alert('List item modify: ' + ((new Date) - now));
+            });
         },
 
         rmTodo: function (index) {
             var todo = this.data.get('todos', index);
             service.rmTodo(todo.id);
 
+            var now = new Date();
             this.data.remove('todos', index);
+            san.nextTick(function () {
+                alert('List item delete: ' + ((new Date) - now));
+            });
         }
     });
 });

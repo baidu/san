@@ -159,7 +159,7 @@ define(function (require) {
         },
 
         filters: {
-            valueText(value) {
+            valueText: function (value) {
                 if (value instanceof Date) {
                     return moment(value).format('YYYY-MM-DD');
                 }

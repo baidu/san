@@ -1,6 +1,6 @@
 define(function (require) {
     var san = require('san-core');
-    var service = require('service');
+    var service = require('../service');
     var template = require('tpl!./Form.html');
 
     var AddCategoryDialog = san.Component({

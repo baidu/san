@@ -115,7 +115,7 @@ define(function (require) {
         },
 
         filters: {
-            valueText(value) {
+            valueText: function (value) {
                 var datasource = this.data.get('datasource');
                 var i = datasource.length;
 

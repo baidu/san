@@ -1,6 +1,5 @@
 define(function (require) {
-    var data = require('./data');
-
+    var data = require('./performanceData');
 
     /**
      * 对象属性拷贝
