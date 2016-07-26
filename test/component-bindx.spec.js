@@ -50,7 +50,7 @@ describe("Component-Bindx", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        expect(span.firstChild.textContent || span.firstChild.innerText).toBe('green');
+        expect(span.innerHTML.indexOf('green')).toBe(0);
         myComponent.refs.colorPicker.itemClick('blue');
 
         setTimeout(function () {

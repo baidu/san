@@ -215,6 +215,37 @@ describe("Component", function () {
         });
     });
 
+    it("update prop from self attached", function (done) {
+        var MyComponent = san.Component({
+            components: {
+                'ui-label': Label
+            },
+            template: '<ui-label bind-text="name"></ui-label>',
+
+            attached: function () {
+                this.data.set('name', 'ci');
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'erik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ci');
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        });
+    });
+
     var TelList = san.Component({
         template: '<ul><li san-for="item in list" title="{{item}}">{{item}}</li></ul>'
     });

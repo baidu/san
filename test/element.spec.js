@@ -20,9 +20,8 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-
         expect(span.getAttribute('title')).toBe('errorrik');
-        expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
 
         myComponent.dispose();
         document.body.removeChild(wrap);
@@ -43,16 +42,17 @@ describe("Element", function () {
         var span = wrap.firstChild.firstChild;
 
         expect(span.getAttribute('title')).toBe('errorrik');
-        expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
 
         myComponent.data.set('name', 'varsha');
 
         expect(span.title).toBe('errorrik');
-        expect(span.firstChild.textContent || span.firstChild.innerText).toBe('errorrik');
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
 
         san.nextTick(function () {
             expect(span.title).toBe('varsha');
-            expect(span.firstChild.textContent || span.firstChild.innerText).toBe('varsha');
+            expect(span.innerHTML.indexOf('varsha')).toBe(0)
+
 
             myComponent.dispose();
             document.body.removeChild(wrap);

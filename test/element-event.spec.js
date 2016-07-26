@@ -58,12 +58,12 @@ describe("Element-Event", function () {
 
         var span = wrap.firstChild.firstChild;
         var input = wrap.getElementsByTagName('input')[0];
-        expect(span.firstChild.textContent || span.firstChild.innerText).toBe('input something');
+        expect(span.innerHTML.indexOf('input something')).toBe(0);
 
         function doneSpec() {
             if (myComponent.data.get('name') !== 'input something') {
 
-                expect(span.firstChild.textContent || span.firstChild.innerText).toBe(input.value);
+                expect(span.innerHTML.indexOf(input.value)).toBe(0);
 
                 done();
                 myComponent.dispose();

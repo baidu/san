@@ -16,7 +16,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
 
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
         expect(lis[2].getAttribute('title')).toBe('varsha');
         expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
@@ -38,7 +38,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
 
-        expect(lis.length).toBe(0);
+        expect(lis.length).toBe(1);
 
         myComponent.dispose();
         document.body.removeChild(wrap);
@@ -61,7 +61,7 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -69,7 +69,7 @@ describe("ForDirective", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(5);
+            expect(lis.length).toBe(6);
             expect(lis[3].getAttribute('title')).toBe('otakustay');
             expect(lis[3].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
@@ -94,13 +94,13 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.pop('persons');
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(3);
+            expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('errorrik');
             expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
@@ -125,7 +125,7 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.unshift('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -133,7 +133,7 @@ describe("ForDirective", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(5);
+            expect(lis.length).toBe(6);
             expect(lis[3].getAttribute('title')).toBe('varsha');
             expect(lis[3].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
             expect(lis[1].getAttribute('title')).toBe('otakustay');
@@ -160,13 +160,13 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.shift('persons');
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(3);
+            expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('varsha');
             expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
 
@@ -191,13 +191,13 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.remove('persons', 0);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(3);
+            expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('varsha');
             expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
 
@@ -222,13 +222,13 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(4);
+            expect(lis.length).toBe(5);
             expect(lis[1].getAttribute('title')).toBe('erik');
             expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
 
@@ -253,13 +253,13 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.set('persons[0].name', 'erik');
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(4);
+            expect(lis.length).toBe(5);
             expect(lis[1].getAttribute('title')).toBe('erik');
             expect(lis[1].innerHTML.indexOf('erik - errorrik@gmail.com')).toBe(0);
 
@@ -284,7 +284,7 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
 
         myComponent.data.set('persons', [
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -292,7 +292,7 @@ describe("ForDirective", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(3);
+            expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('otakustay');
             expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
@@ -319,7 +319,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
 
-        expect(lis.length).toBe(4);
+        expect(lis.length).toBe(5);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
         expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com in efe')).toBe(0);
 
@@ -345,7 +345,7 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(0);
+        expect(lis.length).toBe(1);
 
         myComponent.data.set('persons', [
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -353,7 +353,7 @@ describe("ForDirective", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(1);
+            expect(lis.length).toBe(2);
             expect(lis[0].getAttribute('title')).toBe('otakustay');
             expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
@@ -379,7 +379,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
 
-        expect(lis.length).toBe(3);
+        expect(lis.length).toBe(4);
 
         expect(lis[2].getAttribute('title')).toBe('varsha');
         expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
@@ -409,7 +409,7 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(0);
+        expect(lis.length).toBe(1);
 
         myComponent.data.set('persons', [
             {name: 'errorrik', email: 'errorrik@gmail.com', tels: ['12345678', '87654321']},
