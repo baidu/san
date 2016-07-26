@@ -135,7 +135,7 @@
      * @return {string} 唯一id
      */
     function guid() {
-        return '_san-vm_' + (guidIndex++);
+        return '_san_' + (guidIndex++);
     }
 
     /**
@@ -198,6 +198,8 @@
         }
     }
 
+    var ie = 0;
+
     /**
      * 字符串连接时是否使用老式的兼容方案
      *
@@ -208,7 +210,11 @@
         var ieVersionMatch = typeof navigator !== 'undefined'
             && navigator.userAgent.match(/msie\s*([0-9]+)/i);
 
-        return ieVersionMatch && ieVersionMatch[1] - 0 < 8;
+        if (ieVersionMatch) {
+            ie = ieVersionMatch[1] - 0;
+        }
+
+        return ie && ie < 8;
     })();
 
     /**
@@ -1661,7 +1667,7 @@
             name: 'disposed',
             value: 6,
             mutex: '*'
-        },
+        }
     };
 
     /**
@@ -1873,7 +1879,7 @@
         var node = document.getElementById(this.id).previousSibling;
 
         if (node) {
-            var textProp = typeof node.textContent === 'string' ? 'textContent' : 'innerText';
+            var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
             node[textProp] = this.evalExpr(this.expr);
         }
     };
@@ -2404,6 +2410,11 @@
     Component.prototype.init = function (options) {
         Element.prototype._init.call(this, options);
 
+        // ie8- 不支持innerHTML输出自定义标签
+        if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
+            this.tagName = 'div';
+        }
+
         this._compile();
         callHook(this, 'compiled');
 
@@ -2584,7 +2595,18 @@
             buf.push(child.genHTML());
         });
 
-        buf.push(genStumpHTML(this));
+        buf.push('<');
+        buf.push(this.tagName);
+
+        buf.push(' id="');
+        buf.push(this.id);
+        buf.push('" style="display:none">');
+
+        if (!tagIsAutoClose(this.tagName)) {
+            buf.push('</');
+            buf.push(this.tagName);
+            buf.push('>');
+        }
 
         return buf.toString();
     };
@@ -2736,7 +2758,7 @@
                         nextTick(bind(function () {
                             var newChild = createForDirectiveChild(this, change.value, change.index);
                             this.childs.push(newChild);
-                            newChild.attach(this.el.parentNode, this.el.nextSibling);
+                            newChild.attach(this.el.parentNode, this.el);
                         }, this));
                         break;
 
@@ -2784,11 +2806,20 @@
                         // 重新构建整个childs
                         nextTick(bind(function () {
                             this._disposeChilds();
+
+                            var buf = new StringBuffer();
                             eachForData(this, function (item ,i) {
                                 var child = createForDirectiveChild(this, item, i);
                                 this.childs.push(child);
-                                child.attach(this.el.parentNode, this.el);
+                                buf.push(child.genHTML());
                             });
+                            this.el.insertAdjacentHTML('beforebegin', buf.toString());
+                            noticeAttached(this);
+                            // eachForData(this, function (item ,i) {
+                            //     var child = createForDirectiveChild(this, item, i);
+                            //     this.childs.push(child);
+                            //     child.attach(this.el.parentNode, this.el);
+                            // });
                         }, this));
                 }
                 break;
@@ -2943,8 +2974,7 @@
     }
     else if (typeof define === 'function' && define.amd) {
         // For AMD
-        define('san-core', [], san);
-        define( [], san);
+        define([], san);
     }
     else {
         // For <script src="..."
