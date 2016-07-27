@@ -7,7 +7,9 @@
  */
 
 
+/* eslint-disable fecs-max-statements */
 (function (root) {
+/* eslint-enable fecs-max-statements */
 
     // #region utils
     /**
@@ -50,8 +52,8 @@
      * 遍历数组集合
      *
      * @inner
-     * @param {Array} source 数组源
-     * @param {function(*,Number):boolean} iterator 遍历函数
+     * @param {Array} array 数组源
+     * @param {function(Any,number):boolean} iterator 遍历函数
      * @param {Object=} thisArg this指向对象
      */
     function each(array, iterator, thisArg) {
@@ -90,9 +92,9 @@
      * DOM 事件挂载
      *
      * @inner
-     * @param {HTMLElement} el
-     * @param {string} eventName
-     * @param {Function} listener
+     * @param {HTMLElement} el DOM元素
+     * @param {string} eventName 事件名
+     * @param {Function} listener 监听函数
      */
     function on(el, eventName, listener) {
         if (el.addEventListener) {
@@ -107,9 +109,9 @@
      * DOM 事件卸载
      *
      * @inner
-     * @param {HTMLElement} el
-     * @param {string} eventName
-     * @param {Function} listener
+     * @param {HTMLElement} el DOM元素
+     * @param {string} eventName 事件名
+     * @param {Function} listener 监听函数
      */
     function un(el, eventName, listener) {
         if (el.addEventListener) {
@@ -158,14 +160,14 @@
      * 在下一个时间周期运行任务
      *
      * @inner
-     * @param {Function} 要运行的任务函数
+     * @param {Function} fn 要运行的任务函数
      * @param {Object=} thisArg this指向对象
      */
-    function nextTick(func, thisArg) {
+    function nextTick(fn, thisArg) {
         if (thisArg) {
-            func = bind(func, thisArg);
+            fn = bind(fn, thisArg);
         }
-        nextTasks.push(func);
+        nextTasks.push(fn);
 
         if (nextHandler) {
             return;
@@ -198,7 +200,22 @@
         }
     }
 
-    var ie = 0;
+    /**
+     * ie版本号，非ie时为0
+     *
+     * @inner
+     * @type {number}
+     */
+    var ie = (function () {
+        var ieVersionMatch = typeof navigator !== 'undefined'
+            && navigator.userAgent.match(/msie\s*([0-9]+)/i);
+
+        if (ieVersionMatch) {
+            return ieVersionMatch[1] - 0;
+        }
+
+        return 0;
+    })();
 
     /**
      * 字符串连接时是否使用老式的兼容方案
@@ -206,16 +223,7 @@
      * @inner
      * @type {boolean}
      */
-    var compatStringJoin = (function () {
-        var ieVersionMatch = typeof navigator !== 'undefined'
-            && navigator.userAgent.match(/msie\s*([0-9]+)/i);
-
-        if (ieVersionMatch) {
-            ie = ieVersionMatch[1] - 0;
-        }
-
-        return ie && ie < 8;
-    })();
+    var isCompatStringJoin = ie && ie < 8;
 
     /**
      * 写个用于跨平台提高性能的字符串连接类
@@ -225,7 +233,7 @@
      * @class
      */
     function StringBuffer() {
-        this.raw = compatStringJoin ? [] : '';
+        this.raw = isCompatStringJoin ? [] : '';
     }
 
     /**
@@ -235,7 +243,7 @@
      * @return {string}
      */
     StringBuffer.prototype.toString = function () {
-        return compatStringJoin ? this.raw.join('') : this.raw;
+        return isCompatStringJoin ? this.raw.join('') : this.raw;
     };
 
     /**
@@ -245,7 +253,7 @@
      * @inner
      * @param {string} source 字符串片段
      */
-    StringBuffer.prototype.push = compatStringJoin
+    StringBuffer.prototype.push = isCompatStringJoin
         ? function (source) {
             this.raw.push(source);
         }
@@ -322,7 +330,7 @@
      */
     IndexedList.prototype.removeAt = function (index) {
         var name = this.raw[index].name;
-        delete this.index[name];
+        this.index[name] = null;
         this.raw.splice(index, 1);
     };
 
@@ -333,7 +341,7 @@
      * @param {string} name name
      */
     IndexedList.prototype.remove = function (name) {
-        delete this.index[name];
+        this.index[name] = null;
 
         var len = this.raw.length;
         while (len--) {
@@ -368,7 +376,7 @@
      * @return {boolean}
      */
     function tagIsAutoClose(tagName) {
-        return /^(img|input)$/i.test(tagName)
+        return /^(img|input)$/i.test(tagName);
     }
 
     // #region parse
@@ -455,6 +463,7 @@
     /**
      * 获取相应位置字符的 code
      *
+     * @param {number} index 字符位置
      * @return {number}
      */
     Walker.prototype.charCode = function (index) {
@@ -464,7 +473,8 @@
     /**
      * 向前读取字符，直到遇到指定字符再停止
      *
-     * @param {number} charCode 指定字符的code
+     * @param {number=} charCode 指定字符的code
+     * @return {boolean} 当指定字符时，返回是否碰到指定的字符
      */
     Walker.prototype.goUntil = function (charCode) {
         var code;
@@ -572,7 +582,11 @@
                 var tagClose = tagIsAutoClose(tagName);
 
                 // 解析 attributes
+
+                /* eslint-disable no-constant-condition */
                 while (1) {
+                /* eslint-enable no-constant-condition */
+
                     var nextCharCode = walker.currentCode();
 
                     // 标签结束时跳出 attributes 读取
@@ -617,7 +631,7 @@
          * 在读取栈中添加文本节点
          *
          * @inner
-         * @param {string} 文本内容
+         * @param {string} text 文本内容
          */
         function pushTextNode(text) {
             if (text) {
@@ -710,7 +724,9 @@
         },
 
         'ref': function (value) {
-            return {value: parseText(value)};
+            return {
+                value: parseText(value)
+            };
         }
     };
 
@@ -720,7 +736,7 @@
      * @inner
      * @param {string} name 指令名称
      * @param {string} value 指令值
-     * @return {Object=}
+     * @return {Object}
      */
     function parseDirective(name, value) {
         var parser = directiveParsers[name];
@@ -832,7 +848,7 @@
     function readString(walker) {
         var startCode = walker.currentCode();
         var startIndex = walker.currentIndex();
-        var char;
+        var charCode;
 
         walkLoop: while ((charCode = walker.nextCode())) {
             switch (charCode) {
@@ -901,7 +917,11 @@
         }
 
         result.paths.push(firstSeg);
+
+        /* eslint-disable no-constant-condition */
         accessorLoop: while (1) {
+        /* eslint-enable no-constant-condition */
+
             var code = walker.currentCode();
             switch (code) {
                 case 46: // .
@@ -934,6 +954,13 @@
         return result;
     }
 
+    /**
+     * 读取逻辑或表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readLogicalORExpr(walker) {
         var expr = readLogicalANDExpr(walker);
         walker.goUntil();
@@ -947,14 +974,20 @@
                     segs: [expr, readLogicalORExpr(walker)]
                 };
             }
-            else {
-                walker.go(-1);
-            }
+
+            walker.go(-1);
         }
 
         return expr;
     }
 
+    /**
+     * 读取逻辑与表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readLogicalANDExpr(walker) {
         var expr = readEqualityExpr(walker);
         walker.goUntil();
@@ -968,14 +1001,20 @@
                     segs: [expr, readLogicalANDExpr(walker)]
                 };
             }
-            else {
-                walker.go(-1);
-            }
+
+            walker.go(-1);
         }
 
         return expr;
     }
 
+    /**
+     * 读取相等比对表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readEqualityExpr(walker) {
         var expr = readRelationalExpr(walker);
         walker.goUntil();
@@ -997,14 +1036,20 @@
                         segs: [expr, readEqualityExpr(walker)]
                     };
                 }
-                else {
-                    walker.go(-1);
-                }
+
+                walker.go(-1);
         }
 
         return expr;
     }
 
+    /**
+     * 读取关系判断表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readRelationalExpr(walker) {
         var expr = readAdditiveExpr(walker);
         walker.goUntil();
@@ -1028,6 +1073,13 @@
         return expr;
     }
 
+    /**
+     * 读取加法表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readAdditiveExpr(walker) {
         var expr = readMultiplicativeExpr(walker);
         walker.goUntil();
@@ -1047,6 +1099,13 @@
         return expr;
     }
 
+    /**
+     * 读取乘法表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readMultiplicativeExpr(walker) {
         var expr = readUnaryExpr(walker);
         walker.goUntil();
@@ -1066,6 +1125,13 @@
         return expr;
     }
 
+    /**
+     * 读取一元表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
     function readUnaryExpr(walker) {
         walker.goUntil();
 
@@ -1096,22 +1162,57 @@
         return readPropertyAccessor(walker);
     }
 
-
+    /**
+     * 二元表达式操作函数
+     *
+     * @inner
+     * @type {Object}
+     */
     var BinaryOp = {
-        43: function (a, b) {return a + b;},
-        45: function (a, b) {return a - b;},
-        42: function (a, b) {return a * b;},
-        47: function (a, b) {return a / b;},
-        60: function (a, b) {return a < b;},
-        62: function (a, b) {return a > b;},
-        76: function (a, b) {return a && b;},
-        94: function (a, b) {return a != b;},
-        121: function (a, b) {return a <= b;},
-        122: function (a, b) {return a == b;},
-        123: function (a, b) {return a >= b;},
-        155: function (a, b) {return a !== b;},
-        183: function (a, b) {return a === b;},
-        248: function (a, b) {return a || b;}
+        /* eslint-disable */
+        43: function (a, b) {
+            return a + b;
+        },
+        45: function (a, b) {
+            return a - b;
+        },
+        42: function (a, b) {
+            return a * b;
+        },
+        47: function (a, b) {
+            return a / b;
+        },
+        60: function (a, b) {
+            return a < b;
+        },
+        62: function (a, b) {
+            return a > b;
+        },
+        76: function (a, b) {
+            return a && b;
+        },
+        94: function (a, b) {
+            return a != b;
+        },
+        121: function (a, b) {
+            return a <= b;
+        },
+        122: function (a, b) {
+            return a == b;
+        },
+        123: function (a, b) {
+            return a >= b;
+        },
+        155: function (a, b) {
+            return a !== b;
+        },
+        183: function (a, b) {
+            return a === b;
+        },
+        248: function (a, b) {
+            return a || b;
+        }
+        /* eslint-enable     */
     };
 
     /**
@@ -1140,6 +1241,15 @@
         };
     }
 
+    /**
+     * 判断多个源表达式路径是否包含目标表达式。任何一个满足条件都为true
+     *
+     * @inner
+     * @param {Array} exprs 多个源表达式
+     * @param {Object} changeExpr 目标表达式
+     * @param {Model} model 表达式所属数据环境
+     * @return {boolean}
+     */
     function exprsNeedsUpdate(exprs, changeExpr, model) {
         var result = false;
         each(exprs, function (expr) {
@@ -1152,10 +1262,11 @@
 
     /**
      * 判断源表达式路径是否包含目标表达式
+     * 用于判断源表达式对应对象是否需要更新
      *
      * @inner
-     * @param {Object} source 源表达式
-     * @param {Object} target 目标表达式
+     * @param {Object} expr 源表达式
+     * @param {Object} changeExpr 目标表达式
      * @param {Model} model 表达式所属数据环境
      * @return {boolean}
      */
@@ -1199,7 +1310,10 @@
                 var paths = expr.paths;
                 var changePaths = changeExpr.paths;
 
+
+                /* eslint-disable no-redeclare */
                 var result = true;
+                /* eslint-enable no-redeclare */
                 for (var i = 0, len = paths.length, changeLen = changePaths.length; i < len; i++) {
                     var pathExpr = paths[i];
 
@@ -1210,7 +1324,9 @@
                     }
 
                     if (result && i < changeLen
+                        /* eslint-disable eqeqeq */
                         && accessorItemValue(pathExpr, model) != accessorItemValue(changePaths[i], model)
+                        /* eslint-enable eqeqeq */
                     ) {
                         result = false;
                     }
@@ -1266,7 +1382,6 @@
     Model.prototype.unChange = function (listener) {
         var len = this.listeners.length;
         while (len--) {
-            var item = this.listeners[len];
             if (this.listeners[len] === listener) {
                 this.listeners.splice(len, 1);
             }
@@ -1558,7 +1673,9 @@
 
                 owner && each(expr.filters, function (filter) {
                     var filterName = filter.name.name;
-                    var filterFn = owner.filters[filterName] || filters[filterName]
+                    /* eslint-disable no-use-before-define */
+                    var filterFn = owner.filters[filterName] || filters[filterName];
+                    /* eslint-enable no-use-before-define */
 
                     if (typeof filterFn === 'function') {
                         var args = [value];
@@ -1593,12 +1710,13 @@
      *
      * @inner
      * @param {ANode} aNode 抽象节点
-     * @param {Component} owner 节点所属组件
+     * @param {Node} parent 父亲节点
+     * @param {Model=} scope 所属数据环境
      * @return {Node}
      */
     function createNode(aNode, parent, scope) {
         var owner = parent instanceof Component ? parent : parent.owner;
-        var scope = scope || (parent instanceof Component ? parent.data : parent.scope);
+        scope = scope || (parent instanceof Component ? parent.data : parent.scope);
         var options = {
             aNode: aNode,
             owner: owner,
@@ -1614,21 +1732,19 @@
             return new TextNode(options);
         }
 
+        /* eslint-disable no-use-before-define */
         var ComponentType = owner.components && owner.components[aNode.tagName]
             || ComponentClasses[aNode.tagName];
+        /* eslint-enable no-use-before-define */
         if (ComponentType) {
             var component = new ComponentType(options);
             return component;
         }
 
-        var ElementType = getElementType(aNode);
-        return new ElementType(options);
+        return new Element(options);
     }
 
-    function getElementType(aNode) {
-        return Element;
-    }
-
+    /* eslint-disable fecs-valid-var-jsdoc */
     /**
      * 节点生命周期信息
      *
@@ -1669,6 +1785,7 @@
             mutex: '*'
         }
     };
+    /* eslint-enable fecs-valid-var-jsdoc */
 
     /**
      * 生命周期类
@@ -1683,7 +1800,7 @@
     /**
      * 设置生命周期
      *
-     * @paran {string} name 生命周期名称
+     * @param {string} name 生命周期名称
      */
     LifeCycle.prototype.set = function (name) {
         var lifeCycle = LifeCycles[name];
@@ -1712,7 +1829,7 @@
     /**
      * 是否位于生命周期
      *
-     * @paran {string} name 生命周期名称
+     * @param {string} name 生命周期名称
      * @return {boolean}
      */
     LifeCycle.prototype.is = function (name) {
@@ -1785,7 +1902,7 @@
      *
      * @param {Object} options 初始化参数
      */
-     Node.prototype._init = function (options) {
+    Node.prototype._init = function (options) {
         this.owner = options.owner;
         this.parent = options.parent;
         this.scope = options.scope;
@@ -1793,6 +1910,9 @@
         this.id = this.aNode && this.aNode.id || guid();
     };
 
+    /**
+     * 创建完成后的行为
+     */
     Node.prototype._created = function () {
         if (!this.el) {
             this.el = document.getElementById(this.id);
@@ -1932,7 +2052,12 @@
 
     inherits(Element, Node);
 
-
+    /**
+     * 添加事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function} listener 监听器
+     */
     Element.prototype.on = function (name, listener) {
         if (typeof listener !== 'function') {
             return;
@@ -1944,6 +2069,12 @@
         this.listeners[name].push(listener);
     };
 
+    /**
+     * 移除事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function=} listener 监听器
+     */
     Element.prototype.un = function (name, listener) {
         var nameListeners = this.listeners[name];
 
@@ -1962,6 +2093,12 @@
         }
     };
 
+    /**
+     * 派发事件
+     *
+     * @param {string} name 事件名
+     * @param {Object} event 事件对象
+     */
     Element.prototype.fire = function (name, event) {
         each(this.listeners[name], function (listener) {
             listener.call(this, event);
@@ -2012,10 +2149,14 @@
         callHook(this, 'created');
     };
 
+    /**
+     * 完成创建元素DOM后的行为
+     */
     Element.prototype._created = function () {
         Node.prototype._created.call(this);
 
-        // TODO: 整理下
+        // 处理双绑的逻辑
+        // TODO: 这部分逻辑抽象到Component.prototype._created中
         this.aNode.binds.each(function (bindInfo) {
             if (bindInfo.twoWay) {
                 var me = this;
@@ -2032,8 +2173,7 @@
                         }
                     });
                 }
-
-                if (bindInfo.name === 'value') {
+                else if (bindInfo.name === 'value') {
                     var elTagName = this.el.tagName;
                     var elType = this.el.type;
                     if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
@@ -2064,7 +2204,8 @@
     /**
      * 将元素attach到页面
      *
-     * @param {HTMLElement} parent 要添加到的父元素
+     * @param {HTMLElement} parentEl 要添加到的父元素
+     * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
      */
     Element.prototype.attach = function (parentEl, beforeEl) {
         this._attach(parentEl, beforeEl);
@@ -2075,7 +2216,8 @@
     /**
      * 将元素attach到页面的行为
      *
-     * @param {HTMLElement} parent 要添加到的父元素
+     * @param {HTMLElement} parentEl 要添加到的父元素
+     * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
      */
     Element.prototype._attach = function (parentEl, beforeEl) {
         this.create();
@@ -2092,30 +2234,12 @@
         }
     };
 
-    Element.prototype.bindEvents = function () {
-        if (this.eventListeners) {
-            return;
-        }
-
-        this.eventListeners = {};
-        this.aNode.events.each(function (eventBind) {
-            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
-            var listener = provideFn(this, eventBind);
-            this.eventListeners[listener.name] = listener.fn;
-            on(this.el, listener.name, listener.fn);
-        }, this);
-    };
-
-    Element.prototype.unbindEvents = function () {
-        if (this.eventListeners) {
-            for (var key in this.eventListeners) {
-                un(this.el, key, this.eventListeners[key]);
-            }
-
-            this.eventListeners = null;
-        }
-    };
-
+    /**
+     * 元素事件处理函数提供者
+     *
+     * @inner
+     * @type {Object}
+     */
     var elementEventProvider = {
         'input': function (element, eventBind) {
             return {
@@ -2132,6 +2256,13 @@
         }
     };
 
+    /**
+     * 表单input事件监听函数
+     *
+     * @inner
+     * @param {Object} eventBind 绑定信息对象
+     * @param {Event} e 事件对象
+     */
     function elementInputListener(eventBind, e) {
         if (e.type === 'input' || e.propertyName === 'value') {
             e.value = (e.target || e.srcElement).value;
@@ -2139,6 +2270,13 @@
         }
     }
 
+    /**
+     * 普适事件监听函数
+     *
+     * @inner
+     * @param {Object} eventBind 绑定信息对象
+     * @param {Event} e 事件对象
+     */
     function elementEventListener(eventBind, e) {
         var args = [];
         var expr = eventBind.expr;
@@ -2160,6 +2298,41 @@
             method.apply(component, args);
         }
     }
+
+    /**
+     * 绑定事件
+     */
+    Element.prototype.bindEvents = function () {
+        if (this.eventListeners) {
+            return;
+        }
+
+        this.eventListeners = {};
+        this.aNode.events.each(function (eventBind) {
+            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
+            var listener = provideFn(this, eventBind);
+            this.eventListeners[listener.name] = listener.fn;
+            on(this.el, listener.name, listener.fn);
+        }, this);
+    };
+
+    /**
+     * 解除绑定事件
+     */
+    Element.prototype.unbindEvents = function () {
+        var eventListeners = this.eventListeners;
+        if (eventListeners) {
+            for (var key in eventListeners) {
+                if (eventListeners.hasOwnProperty(key)) {
+                    un(this.el, key, eventListeners[key]);
+                }
+            }
+        }
+
+        this.eventListeners = null;
+    };
+
+
 
 
     /**
@@ -2183,7 +2356,6 @@
      * @return {string}
      */
     Element.prototype.genHTML = function () {
-        var aNode = this.aNode;
         var buf = new StringBuffer();
 
         elementGenStartHTML(this, buf);
@@ -2208,9 +2380,6 @@
 
         stringBuffer.push('<');
         stringBuffer.push(element.tagName);
-
-        // aNode.id = aNode.id || util.guid();
-
         stringBuffer.push(' id="');
         stringBuffer.push(element.id);
         stringBuffer.push('"');
@@ -2230,8 +2399,7 @@
                 stringBuffer.push('="');
                 stringBuffer.push(value);
                 stringBuffer.push('"');
-            };
-
+            }
         }, element);
 
         stringBuffer.push('>');
@@ -2304,7 +2472,7 @@
      * 设置元素属性
      *
      * @param {string} name 属性名称
-     * @param {*} name 属性值
+     * @param {*} value 属性值
      */
     Element.prototype.setProp = function (name, value) {
         if (!this.el) {
@@ -2446,6 +2614,9 @@
     };
 
     // TODO: support dynamic ref?
+    /**
+     * 初始化 ref 在 owner 中的引用
+     */
     Component.prototype.initRef = function () {
         var ref = this.aNode.directives.get('ref');
         if (ref && this.owner !== this) {
@@ -2460,9 +2631,12 @@
         }
     };
 
+    /**
+     * 卸载 ref 在 owner 中的引用
+     */
     Component.prototype.disposeRef = function () {
         if (this.refUpdater) {
-            this.owner.data.unChange(this.refUpdater);
+            // this.owner.data.unChange(this.refUpdater);
             this.refUpdater = null;
         }
     };
@@ -2485,6 +2659,12 @@
         }
     };
 
+    /**
+     * 监听组件的数据变化
+     *
+     * @param {string} dataName 变化的数据项
+     * @param {Function} listener 监听函数
+     */
     Component.prototype.watch = function (dataName, listener) {
         var dataExpr = parseExpr(dataName);
         var me = this;
@@ -2510,13 +2690,18 @@
         this.data.onChange(this.dataChanger);
     };
 
+    /**
+     * 组件内部监听数据变化的函数
+     *
+     * @private
+     * @param {Object} change 数据变化信息
+     */
     Component.prototype._dataChanger = function (change) {
         if (this.lifeCycle.is('disposed')) {
             return;
         }
 
         this.aNode.binds.each(function (bind) {
-            var value;
             if (bind.expr.type === ExprType.TEXT) {
                 nextTick(function () {
                     this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
@@ -2541,6 +2726,11 @@
         }
     };
 
+    /**
+     * 绑定数据变化时的视图更新函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     Component.prototype.updateView = function (change) {
         if (!this.lifeCycle.is('disposed') && this !== this.owner) {
             this.aNode.binds.each(function (bind) {
@@ -2574,7 +2764,12 @@
         this.refs = null;
     };
 
-
+    /**
+     * for 指令处理类
+     *
+     * @class
+     * @param {Object} options 初始化参数
+     */
     function ForDirective(options) {
         Element.call(this, options);
     }
@@ -2589,7 +2784,7 @@
     ForDirective.prototype.genHTML = function () {
         var buf = new StringBuffer();
 
-        eachForData(this, function (item ,i) {
+        eachForData(this, function (item, i) {
             var child = createForDirectiveChild(this, item, i);
             this.childs.push(child);
             buf.push(child.genHTML());
@@ -2638,7 +2833,7 @@
         itemScope.set(forDirective.item, item);
         itemScope.set(forDirective.index, index);
 
-       function exprResolve(expr) {
+        function exprResolve(expr) {
             var resolvedExpr = expr;
             var firstPath;
 
@@ -2647,7 +2842,7 @@
                     firstPath = expr;
                     break;
                 case ExprType.PROP_ACCESSOR:
-                    firstPath = expr.paths[0]
+                    firstPath = expr.paths[0];
                     break;
             }
 
@@ -2679,7 +2874,7 @@
                     forElement.scope,
                     [expr].concat(Array.prototype.slice.call(arguments, 1))
                 );
-            }
+            };
         });
 
         var aNode = forElement.aNode;
@@ -2806,20 +3001,15 @@
                         // 重新构建整个childs
                         nextTick(bind(function () {
                             this._disposeChilds();
-
                             var buf = new StringBuffer();
-                            eachForData(this, function (item ,i) {
+                            eachForData(this, function (item, i) {
                                 var child = createForDirectiveChild(this, item, i);
                                 this.childs.push(child);
                                 buf.push(child.genHTML());
                             });
+
                             this.el.insertAdjacentHTML('beforebegin', buf.toString());
                             noticeAttached(this);
-                            // eachForData(this, function (item ,i) {
-                            //     var child = createForDirectiveChild(this, item, i);
-                            //     this.childs.push(child);
-                            //     child.attach(this.el.parentNode, this.el);
-                            // });
                         }, this));
                 }
                 break;
@@ -2845,20 +3035,38 @@
                             {name: forDirective.item, type: ExprType.IDENT}
                         ].concat(changeSegs.slice(forLen + 1))
                     };
-                    Model.prototype.set.call(this.childs[changeIndex].scope, change.expr, change.value, {silence: true});
+                    Model.prototype.set.call(
+                        this.childs[changeIndex].scope,
+                        change.expr,
+                        change.value,
+                        {silence: true}
+                    );
                     this.childs[changeIndex].updateView(change);
                 }
                 break;
         }
     };
 
-    function updateForDirectiveIndex(forElement, start, fn) {
-        var childs = forElement.childs;
-        var forDirective = forElement.aNode.directives.get('for');
+    /**
+     * 更新 for 指令元素子组件的索引值
+     *
+     * @inner
+     * @param {ForDirective} forDirective for 指令元素
+     * @param {number} start 开始的索引
+     * @param {function(number):number} fn 计算更新后值的函数
+     */
+    function updateForDirectiveIndex(forDirective, start, fn) {
+        var childs = forDirective.childs;
+        var directiveInfo = forDirective.aNode.directives.get('for');
+
         for (var len = childs.length; start < len; start++) {
-            var index = childs[start].scope.get(forDirective.index);
+            var index = childs[start].scope.get(directiveInfo.index);
             if (index != null) {
-                Model.prototype.set.call(childs[start].scope, forDirective.index, fn(index))
+                Model.prototype.set.call(
+                    childs[start].scope,
+                    directiveInfo.index,
+                    fn(index)
+                );
             }
         }
     }
@@ -2869,7 +3077,7 @@
     /**
      * 创建组件类
      *
-     * @param {Object} proto
+     * @param {Object} proto 组件类的方法表
      * @return {Function}
      */
     san.Component = function (proto) {
@@ -2961,8 +3169,20 @@
      */
     san.nextTick = nextTick;
 
+    /**
+     * 注册全局 filter
+     *
+     * @param {string} name 名称
+     * @param {function(*, ...*):*} filter 过滤函数
+     */
     san.version = '3.0.0-beta.1';
 
+    /**
+     * 根据 DOM id 获取内部元素对象
+     *
+     * @param {string} id DOM元素的id
+     * @return {Element}
+     */
     san.getEl = function (id) {
         return elementContainer[id];
     };
