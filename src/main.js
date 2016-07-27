@@ -2002,16 +2002,25 @@
             var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
             node[textProp] = this.evalExpr(this.expr);
         }
+
+        this.hasUpdateOpInNextTick = 0;
+        callHook(this, 'updated');
     };
 
     /**
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     TextNode.prototype.updateView = function (change) {
-        if (exprNeedsUpdate(this.expr, change.expr, this.scope)) {
+        if (!this.hasUpdateOpInNextTick
+            && exprNeedsUpdate(this.expr, change.expr, this.scope)
+        ) {
+            this.hasUpdateOpInNextTick = 1;
             nextTick(this.update, this);
+
+            return true;
         }
     };
 
@@ -2047,6 +2056,9 @@
     function Element(options) {
         this.childs = [];
         this.listeners = {};
+        this._updatedOp = 0;
+        this._updateOpCount = 0;
+
         Node.call(this, options);
     }
 
@@ -2333,8 +2345,6 @@
     };
 
 
-
-
     /**
      * 通知元素和子元素完成attached状态
      *
@@ -2490,23 +2500,54 @@
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Element.prototype.updateView = function (change) {
         if (this.lifeCycle.is('disposed')) {
             return;
         }
 
+        var needUpdate = false;
         this.aNode.binds.each(function (bindInfo) {
             if (exprNeedsUpdate(bindInfo.expr, change.expr, this.scope)) {
-                nextTick(bind(function () {
+                nextTick(function () {
                     this.setProp(bindInfo.name, this.evalExpr(bindInfo.expr));
-                }, this));
+                }, this);
+                needUpdate = true;
             }
         }, this);
 
         each(this.childs, function (child) {
-            child.updateView(change);
+            needUpdate = child.updateView(change) || needUpdate;
         });
+
+        needUpdate && this._noticeUpdatedSoon();
+        return needUpdate;
+    };
+
+    /**
+     * 在 nextTick 注册视图更新操作时，注册触发 updated 钩子的处理函数
+     *
+     * @private
+     */
+    Element.prototype._noticeUpdatedSoon = function () {
+        this._updateOpCount++;
+        nextTick(this._noticeUpdated, this);
+    };
+
+    /**
+     * 在视图更新结束后，触发 updated 钩子
+     *
+     * @private
+     */
+    Element.prototype._noticeUpdated = function () {
+        this._updatedOp++;
+        if (this._updatedOp >= this._updateOpCount) {
+            this._updateOpCount = 0;
+            this._updatedOp = 0;
+
+            callHook(this, 'updated');
+        }
     };
 
 
@@ -2695,11 +2736,14 @@
      *
      * @private
      * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype._dataChanger = function (change) {
         if (this.lifeCycle.is('disposed')) {
             return;
         }
+
+        var needUpdate = false;
 
         this.aNode.binds.each(function (bind) {
             if (bind.expr.type === ExprType.TEXT) {
@@ -2710,8 +2754,10 @@
         }, this);
 
         each(this.childs, function (child) {
-            child.updateView(change);
+            needUpdate = child.updateView(change) || needUpdate;
         });
+
+        needUpdate && this._noticeUpdatedSoon();
     };
 
     /**
@@ -2733,14 +2779,24 @@
      */
     Component.prototype.updateView = function (change) {
         if (!this.lifeCycle.is('disposed') && this !== this.owner) {
+            var needUpdate = false;
+
             this.aNode.binds.each(function (bind) {
-                if (bind.expr.type === ExprType.TEXT) {
-                    this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
-                }
-                else if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
-                    this.data.set(bind.name, this.evalExpr(bind.expr), {force: true});
+                // if (bind.expr.type === ExprType.TEXT) {
+                //     this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
+                // }
+                // else
+                if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
+                    this.data.set(
+                        bind.name,
+                        this.evalExpr(bind.expr),
+                        {force: true}
+                    );
+                    needUpdate = true;
                 }
             }, this);
+
+            return needUpdate;
         }
     };
 
@@ -2896,6 +2952,7 @@
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     ForDirective.prototype.updateView = function (change) {
         if (this.lifeCycle.is('disposed')) {
@@ -2938,10 +2995,12 @@
             changeInForExpr = changeLen - forLen === 1 ? 1 : 2;
         }
 
+        var needUpdate = false;
+
         switch (changeInForExpr) {
             case -1:
                 each(this.childs, function (child) {
-                    child.updateView(change);
+                    needUpdate = child.updateView(change) || needUpdate;
                 });
                 break;
 
@@ -2950,48 +3009,48 @@
                 // 根据变更类型执行不同的视图更新行为
                 switch (change.type) {
                     case Model.ChangeType.ARRAY_PUSH:
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             var newChild = createForDirectiveChild(this, change.value, change.index);
                             this.childs.push(newChild);
                             newChild.attach(this.el.parentNode, this.el);
-                        }, this));
+                        }, this);
                         break;
 
                     case Model.ChangeType.ARRAY_POP:
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             var index = this.childs.length - 1;
                             this.childs[index].dispose();
                             this.childs.splice(index, 1);
-                        }, this));
+                        }, this);
                         break;
 
                     case Model.ChangeType.ARRAY_UNSHIFT:
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             var newChild = createForDirectiveChild(this, change.value, 0);
                             var nextChild = this.childs[0] || this;
                             this.childs.unshift(newChild);
                             newChild.attach(nextChild.el.parentNode, nextChild.el);
-                        }, this));
+                        }, this);
                         updateForDirectiveIndex(this, 0, function (i) {
                             return i + 1;
                         });
                         break;
 
                     case Model.ChangeType.ARRAY_SHIFT:
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             this.childs[0].dispose();
                             this.childs.splice(0, 1);
-                        }, this));
+                        }, this);
                         updateForDirectiveIndex(this, 1, function (i) {
                             return i - 1;
                         });
                         break;
 
                     case Model.ChangeType.ARRAY_REMOVE:
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             this.childs[change.index].dispose();
                             this.childs.splice(change.index, 1);
-                        }, this));
+                        }, this);
                         updateForDirectiveIndex(this, change.index, function (i) {
                             return i - 1;
                         });
@@ -2999,7 +3058,7 @@
 
                     case Model.ChangeType.SET:
                         // 重新构建整个childs
-                        nextTick(bind(function () {
+                        nextTick(function () {
                             this._disposeChilds();
                             var buf = new StringBuffer();
                             eachForData(this, function (item, i) {
@@ -3010,24 +3069,15 @@
 
                             this.el.insertAdjacentHTML('beforebegin', buf.toString());
                             noticeAttached(this);
-                        }, this));
+                        }, this);
                 }
+
+                needUpdate = true;
                 break;
 
             case 1:
-                // if (change.type === Model.ChangeType.SET) {
-                //     // 等于单项时构建单项
-                //     var newChild = createForDirectiveChild(this, change.value, changeIndex);
-                //     var replaceChild = this.childs[changeIndex];
-                //     newChild.attach(replaceChild.el.parentNode, replaceChild.el);
-                //     replaceChild.dispose();
-                //     this.childs.splice(changeIndex, 1, newChild);
-                // }
-                // break;
-
             case 2:
                 if (change.type === Model.ChangeType.SET) {
-                    // 否则让子元素刷新
                     change = extend({}, change);
                     change.expr = {
                         type: ExprType.PROP_ACCESSOR,
@@ -3042,9 +3092,13 @@
                         {silence: true}
                     );
                     this.childs[changeIndex].updateView(change);
+                    needUpdate = true;
                 }
                 break;
         }
+
+        needUpdate && this._noticeUpdatedSoon();
+        return needUpdate;
     };
 
     /**
