@@ -101,6 +101,108 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("life cycle updated", function (done) {
+        var times = 0;
+
+        var MyComponent = san.Component({
+            template: '<span title="{{email}}">{{name}}</span>',
+
+            updated: function () {
+                times++;
+            }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('email', 'errorrik@gmail.com');
+        myComponent.data.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(times).toBe(0);
+
+        myComponent.data.set('email', 'erik168@163.com');
+        myComponent.data.set('name', 'erik');
+        expect(times).toBe(0);
+
+        san.nextTick(function () {
+            expect(times).toBe(1);
+
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('erik')).toBe(0);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+
+    });
+
+    it("life cycle updated, nested component", function (done) {
+        var times = 0;
+        var subTimes = 0;
+
+        var Label = san.Component({
+            template: '<span bind-title="title">{{text}}</span>',
+
+            updated: function () {
+                subTimes++;
+            }
+        });
+
+        var MyComponent = san.Component({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<h5><ui-label bind-title="name" bind-text="jokeName"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p>',
+
+            updated: function () {
+                times++;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('jokeName', 'airike');
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('school', 'none');
+        myComponent.data.set('company', 'bidu');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(times).toBe(0);
+        expect(subTimes).toBe(0);
+
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+        expect(times).toBe(0);
+        expect(subTimes).toBe(0);
+
+        san.nextTick(function () {
+
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2b')).toBe(0);
+            expect(times).toBe(1);
+            expect(subTimes).toBe(1);
+
+
+            myComponent.data.set('school', 'hainan mid');
+            myComponent.data.set('company', 'baidu');
+
+            san.nextTick(function () {
+                expect(times).toBe(2);
+                expect(subTimes).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
     it("template tag in template", function (done) {
         var Label = san.Component({
             template: '<template class="ui-label" title="{{text}}">{{text}}</template>'
