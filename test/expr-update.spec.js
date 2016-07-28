@@ -1,6 +1,6 @@
 describe("Expr update detect", function () {
 
-    san.addFilter('upx', function (source, first) {
+    function upxFilter(source, first) {
         if (source) {
             if (first) {
                 return source.charAt(0).toUpperCase() + source.slice(1);
@@ -10,11 +10,11 @@ describe("Expr update detect", function () {
         }
 
         return source;
-    });
+    }
 
     it("simple text", function (done) {
         var MyComponent = san.Component({
-            template: '<span title="{{name}}">{{name}}</span>',
+            template: '<span title="{{name}}">{{name}}</span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'er');
@@ -38,7 +38,7 @@ describe("Expr update detect", function () {
 
     it("complex text", function (done) {
         var MyComponent = san.Component({
-            template: '<span title="hello {{val1}}, have dinner with {{val2}}?"></span>',
+            template: '<span title="hello {{val1}}, have dinner with {{val2}}?"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 'er');
@@ -65,6 +65,7 @@ describe("Expr update detect", function () {
     it("text has interpolation and filter", function (done) {
         var MyComponent = san.Component({
             template: '<span title="hello {{name | upx(!all)}}!"></span>',
+            filters: {upx: upxFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'san');
@@ -91,7 +92,7 @@ describe("Expr update detect", function () {
 
     it("bind ident", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="name"></span>',
+            template: '<span bind-title="name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'er');
@@ -116,7 +117,7 @@ describe("Expr update detect", function () {
 
     it("bind unary", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="!val1"></span>',
+            template: '<span bind-title="!val1"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
@@ -141,7 +142,7 @@ describe("Expr update detect", function () {
 
     it("bind binary", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="val1 + val2"></span>',
+            template: '<span bind-title="val1 + val2"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
@@ -167,7 +168,7 @@ describe("Expr update detect", function () {
 
     it("bind binary complex", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="val1 + val2 * val3 / val4"></span>',
+            template: '<span bind-title="val1 + val2 * val3 / val4"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
@@ -195,7 +196,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, set item", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.name"></span>',
+            template: '<span bind-title="p.name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {
@@ -224,7 +225,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, set outer data", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.org.name"></span>',
+            template: '<span bind-title="p.org.name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {
@@ -263,7 +264,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, variable item", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.orgs[index].name"></span>',
+            template: '<span bind-title="p.orgs[index].name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {
@@ -304,7 +305,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, after level of variable item", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.orgs[index].name"></span>',
+            template: '<span bind-title="p.orgs[index].name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {
@@ -345,7 +346,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, before level of variable item", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.orgs[index].name"></span>',
+            template: '<span bind-title="p.orgs[index].name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {
@@ -395,7 +396,7 @@ describe("Expr update detect", function () {
 
     it("bind property accessor, in variable item", function (done) {
         var MyComponent = san.Component({
-            template: '<span bind-title="p.orgs[index].name"></span>',
+            template: '<span bind-title="p.orgs[index].name"></span>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('p', {

@@ -1621,7 +1621,84 @@
         }
     };
 
+    /**
+     * HTML Filter替换的字符实体表
+     *
+     * @const
+     * @inner
+     * @type {Object}
+     */
+    var HTML_ENTITY = {
+        /* jshint ignore:start */
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        /* eslint-disable quotes */
+        "'": '&#39;'
+        /* eslint-enable quotes */
+        /* jshint ignore:end */
+    };
 
+    /**
+     * HTML Filter的替换函数
+     *
+     * @inner
+     * @param {string} c 替换字符
+     * @return {string} 替换后的HTML字符实体
+     */
+    function htmlFilterReplacer(c) {
+        return HTML_ENTITY[c];
+    }
+
+    /**
+     * 默认filter
+     *
+     * @inner
+     * @const
+     * @type {Object}
+     */
+    var DEFAULT_FILTERS = {
+        /**
+         * HTML转义filter
+         *
+         * @param {string} source 源串
+         * @return {string} 替换结果串
+         */
+        html: function (source) {
+            return source.replace(/[&<>"']/g, htmlFilterReplacer);
+        },
+
+        /**
+         * URL编码filter
+         *
+         * @param {string} source 源串
+         * @return {string} 替换结果串
+         */
+        url: encodeURIComponent,
+
+        /**
+         * 源串filter，用于在默认开启HTML转义时获取源串，不进行转义
+         *
+         * @param {string} source 源串
+         * @return {string} 替换结果串
+         */
+        raw: function (source) {
+            return source;
+        },
+
+        yesToBe: function (condition, value) {
+            if (condition) {
+                return value;
+            }
+
+            return '';
+        },
+
+        yesOrNoToBe: function (condition, yesValue, noValue) {
+            return condition ? yesValue : noValue;
+        }
+    };
 
     /**
      * 获取property accessor单项对应的名称值
@@ -1674,7 +1751,7 @@
                 owner && each(expr.filters, function (filter) {
                     var filterName = filter.name.name;
                     /* eslint-disable no-use-before-define */
-                    var filterFn = owner.filters[filterName] || filters[filterName];
+                    var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
                     /* eslint-enable no-use-before-define */
 
                     if (typeof filterFn === 'function') {
@@ -1732,10 +1809,7 @@
             return new TextNode(options);
         }
 
-        /* eslint-disable no-use-before-define */
-        var ComponentType = owner.components && owner.components[aNode.tagName]
-            || ComponentClasses[aNode.tagName];
-        /* eslint-enable no-use-before-define */
+        var ComponentType = owner.components && owner.components[aNode.tagName];
         if (ComponentType) {
             var component = new ComponentType(options);
             return component;
@@ -3166,54 +3240,6 @@
         }
 
         return YourComponent;
-    };
-
-    /**
-     * 存储全局 filter 的对象
-     *
-     * @inner
-     * @type {Object}
-     */
-    var filters = {
-        yesToBe: function (condition, value) {
-            if (condition) {
-                return value;
-            }
-
-            return '';
-        },
-
-        yesOrNoToBe: function (condition, yesValue, noValue) {
-            return condition ? yesValue : noValue;
-        }
-    };
-
-    /**
-     * 注册全局 filter
-     *
-     * @param {string} name 名称
-     * @param {function(*, ...*):*} filter 过滤函数
-     */
-    san.addFilter = function (name, filter) {
-        filters[name] = filter;
-    };
-
-    /**
-     * 存储全局组件的对象
-     *
-     * @inner
-     * @type {Object}
-     */
-    var ComponentClasses = {};
-
-    /**
-     * 注册全局组件
-     *
-     * @param {string} name 名称
-     * @param {Function} ComponentClass 组件类
-     */
-    san.register = function (name, ComponentClass) {
-        ComponentClasses[name] = ComponentClass;
     };
 
     /**

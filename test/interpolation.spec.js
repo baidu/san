@@ -1,12 +1,6 @@
 describe("Interpolation", function () {
 
-    san.addFilter('uppercase', function (source) {
-        if (source) {
-            return source.charAt(0).toUpperCase() + source.slice(1);
-        }
 
-        return source;
-    });
 
     it("alone", function () {
         var MyComponent = san.Component({
@@ -46,7 +40,16 @@ describe("Interpolation", function () {
 
     it("global filter", function () {
         var MyComponent = san.Component({
-            template: '{{name|uppercase}}'
+            template: '{{name|uppercase}}',
+            filters: {
+                uppercase: function (source) {
+                    if (source) {
+                        return source.charAt(0).toUpperCase() + source.slice(1);
+                    }
+
+                    return source;
+                }
+            }
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'errorrik');

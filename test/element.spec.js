@@ -1,12 +1,5 @@
 describe("Element", function () {
 
-    san.addFilter('uppercase', function (source) {
-        if (source) {
-            return source.charAt(0).toUpperCase() + source.slice(1);
-        }
-
-        return source;
-    });
 
     it("bind prop, data change before attach", function () {
         var MyComponent = san.Component({

@@ -1,13 +1,15 @@
 describe("Expression", function () {
 
-    san.addFilter('tobe', function (value, expectValue) {
+    function tobeFilter(value, expectValue) {
         expect(value).toBe(expectValue);
         return value;
-    });
+    }
+
 
     it("unary string !", function () {
         var MyComponent = san.Component({
-            template: '{{!val1 | tobe(!1)}}'
+            template: '{{!val1 | tobe(!1)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
@@ -22,7 +24,8 @@ describe("Expression", function () {
 
     it("unary string !!", function () {
         var MyComponent = san.Component({
-            template: '{{!!val1 | tobe(!0)}}'
+            template: '{{!!val1 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
@@ -37,7 +40,8 @@ describe("Expression", function () {
 
     it("binary number +", function () {
         var MyComponent = san.Component({
-            template: '{{num1 + num2 | tobe(4)}}'
+            template: '{{num1 + num2 | tobe(4)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('num1', 1);
@@ -53,7 +57,8 @@ describe("Expression", function () {
 
     it("binary string +", function () {
         var MyComponent = san.Component({
-            template: '{{val1 + val2 | tobe("hello varsha")}}'
+            template: '{{val1 + val2 | tobe("hello varsha")}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 'hello ');
@@ -69,7 +74,8 @@ describe("Expression", function () {
 
     it("binary number -", function () {
         var MyComponent = san.Component({
-            template: '{{val1 - val2 | tobe(4)}}'
+            template: '{{val1 - val2 | tobe(4)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 5);
@@ -85,7 +91,8 @@ describe("Expression", function () {
 
     it("binary number *", function () {
         var MyComponent = san.Component({
-            template: '{{val1 * val2 | tobe(150)}}'
+            template: '{{val1 * val2 | tobe(150)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 5);
@@ -101,7 +108,8 @@ describe("Expression", function () {
 
     it("binary number /", function () {
         var MyComponent = san.Component({
-            template: '{{val1 / val2 | tobe(6)}}'
+            template: '{{val1 / val2 | tobe(6)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 30);
@@ -117,7 +125,8 @@ describe("Expression", function () {
 
     it("binary number ==", function () {
         var MyComponent = san.Component({
-            template: '{{val1 == val2 | tobe(!0)}}'
+            template: '{{val1 == val2 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', '');
@@ -133,7 +142,8 @@ describe("Expression", function () {
 
     it("binary number ===", function () {
         var MyComponent = san.Component({
-            template: '{{val1 === val2 | tobe(!1)}}'
+            template: '{{val1 === val2 | tobe(!1)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', '');
@@ -149,7 +159,8 @@ describe("Expression", function () {
 
     it("binary number !=", function () {
         var MyComponent = san.Component({
-            template: '{{val1 != val2 | tobe(!1)}}'
+            template: '{{val1 != val2 | tobe(!1)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', '');
@@ -165,7 +176,8 @@ describe("Expression", function () {
 
     it("binary number !==", function () {
         var MyComponent = san.Component({
-            template: '{{val1 !== val2 | tobe(!0)}}'
+            template: '{{val1 !== val2 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', '');
@@ -181,7 +193,8 @@ describe("Expression", function () {
 
     it("binary number >", function () {
         var MyComponent = san.Component({
-            template: '{{val1 > val2 | tobe(!0)}}'
+            template: '{{val1 > val2 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 1);
@@ -197,7 +210,8 @@ describe("Expression", function () {
 
     it("binary number <", function () {
         var MyComponent = san.Component({
-            template: '{{val1 < val2 | tobe(!1)}}'
+            template: '{{val1 < val2 | tobe(!1)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 1);
@@ -213,7 +227,8 @@ describe("Expression", function () {
 
     it("binary number >=", function () {
         var MyComponent = san.Component({
-            template: '{{val1 >= val2 | tobe(!0)}}'
+            template: '{{val1 >= val2 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 1);
@@ -229,7 +244,8 @@ describe("Expression", function () {
 
     it("binary number <=", function () {
         var MyComponent = san.Component({
-            template: '{{val1 <= val2 | tobe(!0)}}'
+            template: '{{val1 <= val2 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 1);
@@ -245,7 +261,8 @@ describe("Expression", function () {
 
     it("confuse a + b * c", function () {
         var MyComponent = san.Component({
-            template: '{{val1 + val2 * val3 | tobe(23)}}'
+            template: '{{val1 + val2 * val3 | tobe(23)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 3);
@@ -262,7 +279,8 @@ describe("Expression", function () {
 
     it("confuse a * b + c", function () {
         var MyComponent = san.Component({
-            template: '{{val1 * val2 + val3 | tobe(17)}}'
+            template: '{{val1 * val2 + val3 | tobe(17)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 3);
@@ -279,7 +297,8 @@ describe("Expression", function () {
 
     it("confuse a * b == c + d", function () {
         var MyComponent = san.Component({
-            template: '{{val1 * val2 == val3 + val4 | tobe(!0)}}'
+            template: '{{val1 * val2 == val3 + val4 | tobe(!0)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 3);
@@ -297,7 +316,8 @@ describe("Expression", function () {
 
     it("confuse a * b <= c + d", function () {
         var MyComponent = san.Component({
-            template: '{{val1 * val2 <= val3 + val4 | tobe(!1)}}'
+            template: '{{val1 * val2 <= val3 + val4 | tobe(!1)}}',
+            filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 3);
