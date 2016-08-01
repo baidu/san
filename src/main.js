@@ -2771,7 +2771,7 @@
                     }
                 }
                 else {
-                    throw new Error('[SAN FATEL]');
+                    throw new Error('[SAN FATEL] template shoule have a root element.');
                 }
 
                 proto.template = null;
@@ -2794,7 +2794,7 @@
         }
 
 
-        this.tagName = protoANode.tagName || this.aNode.tagName;
+        this.tagName = protoANode.tagName || this.aNode.tagName || 'div';
         // ie8- 不支持innerHTML输出自定义标签
         if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
             this.tagName = 'div';
