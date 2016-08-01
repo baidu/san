@@ -1,8 +1,20 @@
 describe("Element-Event", function () {
+    function defineComponent(proto) {
+        function ComponentClass(option) {
+            san.Component.call(this, option);
+        }
+
+        ComponentClass.prototype = proto
+        san.inherits(ComponentClass, san.Component);
+
+        return ComponentClass;
+    }
+
+
     it("bind click", function (done) {
         var clicked = 0;
 
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
 
             clicker: function (name, email, event) {
@@ -42,7 +54,7 @@ describe("Element-Event", function () {
     it("bind text input", function (done) {
         var inputed = 0;
 
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span> <input bind-value="name" on-input="inputer($event)"/></a>',
 
             inputer: function (event) {

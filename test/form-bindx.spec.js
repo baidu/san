@@ -1,6 +1,18 @@
 describe("Form-Bindx", function () {
+    function defineComponent(proto) {
+        function ComponentClass(option) {
+            san.Component.call(this, option);
+        }
+
+        ComponentClass.prototype = proto
+        san.inherits(ComponentClass, san.Component);
+
+        return ComponentClass;
+    }
+
+
     it("text value", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span> <input bindx-value="name"/></div>',
         });
         var myComponent = new MyComponent();
@@ -29,7 +41,7 @@ describe("Form-Bindx", function () {
     });
 
     it("text value in for, set op directly", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div>input something<input bindx-value="item" san-for="item in list"></div>',
         });
         var myComponent = new MyComponent();
@@ -74,7 +86,7 @@ describe("Form-Bindx", function () {
     });
 
     it("text value in for, set op", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
@@ -124,7 +136,7 @@ describe("Form-Bindx", function () {
     });
 
     it("text value in nested for, set op", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div><a san-for="p in persons">'
                 + '<b title="{{p.name}}">{{p.name}}</b>'
                 + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><input bindx-value="color.name"></h5>'
@@ -195,7 +207,7 @@ describe("Form-Bindx", function () {
 
 
     it("text value in for, push op", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div>input something<div san-for="item in list"><span bind-title="item.name"></span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
@@ -254,7 +266,7 @@ describe("Form-Bindx", function () {
 
 
     it("text value in for, unshift op", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
@@ -324,7 +336,7 @@ describe("Form-Bindx", function () {
         var inputed = 0;
         var interval;
 
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();

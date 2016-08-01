@@ -1,9 +1,19 @@
 describe("Interpolation", function () {
 
+    function defineComponent(proto) {
+        function ComponentClass(option) {
+            san.Component.call(this, option);
+        }
+
+        ComponentClass.prototype = proto
+        san.inherits(ComponentClass, san.Component);
+
+        return ComponentClass;
+    }
 
 
     it("alone", function () {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a>{{name}}</a>'
         });
         var myComponent = new MyComponent();
@@ -21,7 +31,7 @@ describe("Interpolation", function () {
 
 
     it("+static text", function () {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();
@@ -39,7 +49,7 @@ describe("Interpolation", function () {
 
 
     it("global filter", function () {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a>{{name|uppercase}}</a>',
             filters: {
                 uppercase: function (source) {
@@ -66,7 +76,7 @@ describe("Interpolation", function () {
 
 
     it("component filter", function () {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a>{{name|uppercase}}</a>',
 
             filters: {
@@ -94,7 +104,7 @@ describe("Interpolation", function () {
 
 
     it("set after attach", function (done) {
-        var MyComponent = san.Component({
+        var MyComponent = defineComponent({
             template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();

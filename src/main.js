@@ -1659,6 +1659,7 @@
      * @type {Object}
      */
     var DEFAULT_FILTERS = {
+
         /**
          * HTML转义filter
          *
@@ -2679,8 +2680,8 @@
      * @param {Object} options 初始化参数
      */
     function Component(options) {
-        this.refs = {};
         Element.call(this, options);
+        this.refs = {};
     }
 
     inherits(Component, Element);
@@ -2755,21 +2756,45 @@
      * 模板编译行为
      */
     Component.prototype._compile = function () {
-        var tplANode = this.constructor.prototype.aNode;
+        // pre compile template
+        var proto = this.constructor.prototype;
 
+        if (!proto.aNode) {
+            if (proto.template) {
+                var aNode = parseTemplate(proto.template);
+                var firstChild = aNode.childs[0];
+
+                if (firstChild && !firstChild.isText) {
+                    proto.aNode = firstChild;
+                    if (firstChild.tagName === 'template') {
+                        firstChild.tagName = null;
+                    }
+                }
+                else {
+                    throw new Error('[SAN FATEL]');
+                }
+
+                proto.template = null;
+            }
+
+            proto.aNode = proto.aNode || new ANode();
+        }
+
+
+        var protoANode = proto.aNode;
         if (!this.aNode) {
-            this.aNode = tplANode;
+            this.aNode = protoANode;
         }
-        else if (this.aNode !== tplANode) {
-            this.aNode.childs = tplANode.childs;
+        else if (this.aNode !== protoANode) {
+            this.aNode.childs = protoANode.childs;
 
-            this.aNode.binds = this.aNode.binds.concat(tplANode.binds);
-            this.aNode.directives = this.aNode.directives.concat(tplANode.directives);
-            this.aNode.events = this.aNode.events.concat(tplANode.events);
+            this.aNode.binds = this.aNode.binds.concat(protoANode.binds);
+            this.aNode.directives = this.aNode.directives.concat(protoANode.directives);
+            this.aNode.events = this.aNode.events.concat(protoANode.events);
         }
 
 
-        this.tagName = tplANode.tagName || this.aNode.tagName;
+        this.tagName = protoANode.tagName || this.aNode.tagName;
         // ie8- 不支持innerHTML输出自定义标签
         if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
             this.tagName = 'div';
@@ -2812,7 +2837,6 @@
      *
      * @private
      * @param {Object} change 数据变化信息
-     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype._dataChanger = function (change) {
         if (this.lifeCycle.is('disposed')) {
@@ -2852,6 +2876,7 @@
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype.updateView = function (change) {
         if (!this.lifeCycle.is('disposed') && this !== this.owner) {
@@ -3205,45 +3230,11 @@
     var san = {};
 
     /**
-     * 创建组件类
+     * 组件基类
      *
-     * @param {Object} proto 组件类的方法表
-     * @return {Function}
+     * @type {Function}
      */
-    san.Component = function (proto) {
-        function YourComponent(options) {
-            Component.call(this, options);
-        }
-
-        // pre compile template
-        if (proto.template) {
-            var aNode = parseTemplate(proto.template);
-            var firstChild = aNode.childs[0];
-
-            if (firstChild && !firstChild.isText) {
-                proto.aNode = firstChild;
-                if (firstChild.tagName === 'template') {
-                    firstChild.tagName = null;
-                }
-            }
-            else {
-                throw new Error('[SAN FATEL]');
-            }
-
-            proto.template = null;
-        }
-
-        proto.aNode = proto.aNode || new ANode();
-
-        YourComponent.prototype = proto;
-        inherits(YourComponent, Component);
-
-        if (/^[a-z0-9]+-[a-z0-9]+$/i.test(proto.tagName)) {
-            san.register(proto.tagName, YourComponent);
-        }
-
-        return YourComponent;
-    };
+    san.Component = Component;
 
     /**
      * 在下一个更新周期运行函数
@@ -3269,6 +3260,14 @@
     san.getEl = function (id) {
         return elementContainer[id];
     };
+
+    /**
+     * 构建类之间的继承关系
+     *
+     * @param {Function} subClass 子类函数
+     * @param {Function} superClass 父类函数
+     */
+    san.inherits = inherits;
 
     // export
     if (typeof exports === 'object' && typeof module === 'object') {
