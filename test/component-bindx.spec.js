@@ -40,7 +40,7 @@ describe("Component-Bindx", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color>',
+            template: '<div><span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('color', 'green');
@@ -71,9 +71,9 @@ describe("Component-Bindx", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<div san-for="item in colors">'
+            template: '<div><div san-for="item in colors">'
                 + '<span title="{{item}}">{{item}}</span><ui-color bindx-value="item"></ui-color>'
-                + '</div>',
+                + '</div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('colors', [
@@ -110,9 +110,9 @@ describe("Component-Bindx", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<div san-for="item in colors">'
+            template: '<div><div san-for="item in colors">'
                 + '<span title="{{item.name}}">{{item.name}}</span><ui-color bindx-value="item.name"></ui-color>'
-                + '</div>',
+                + '</div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('colors', [
@@ -149,10 +149,10 @@ describe("Component-Bindx", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<a san-for="p in persons">'
+            template: '<div><a san-for="p in persons">'
                 + '<b title="{{p.name}}">{{p.name}}</b>'
                 + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><ui-color bindx-value="color.name"></ui-color></h5>'
-                + '</a>'
+                + '</a></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -206,14 +206,14 @@ describe("Component-Bindx", function () {
                 'ui-color': ColorPicker
             },
 
-            template: '<b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color bindx-value="value.color"></ui-color>'
+            template: '<div><b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color bindx-value="value.color"></ui-color></div>'
         });
 
         var MyComponent = san.Component({
             components: {
                 'ui-person': PersonView
             },
-            template: '<ui-person bind-value="person"></ui-person>'
+            template: '<div><ui-person bind-value="person"></ui-person></div>'
         });
 
         var myComponent = new MyComponent();

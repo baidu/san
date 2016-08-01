@@ -1,7 +1,7 @@
 describe("Form-Bindx", function () {
     it("text value", function (done) {
         var MyComponent = san.Component({
-            template: '<span title="{{name}}">{{name}}</span> <input bindx-value="name"/>',
+            template: '<div><span title="{{name}}">{{name}}</span> <input bindx-value="name"/></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'input something');
@@ -30,7 +30,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, set op directly", function (done) {
         var MyComponent = san.Component({
-            template: 'input something<input bindx-value="item" san-for="item in list">',
+            template: '<div>input something<input bindx-value="item" san-for="item in list"></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -75,7 +75,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, set op", function (done) {
         var MyComponent = san.Component({
-            template: 'input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div>',
+            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -125,10 +125,10 @@ describe("Form-Bindx", function () {
 
     it("text value in nested for, set op", function (done) {
         var MyComponent = san.Component({
-            template: '<a san-for="p in persons">'
+            template: '<div><a san-for="p in persons">'
                 + '<b title="{{p.name}}">{{p.name}}</b>'
                 + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><input bindx-value="color.name"></h5>'
-                + '</a>'
+                + '</a></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -196,7 +196,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, push op", function (done) {
         var MyComponent = san.Component({
-            template: 'input something<div san-for="item in list"><span bind-title="item.name"></span><input bindx-value="item.name"></div>',
+            template: '<div>input something<div san-for="item in list"><span bind-title="item.name"></span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -255,7 +255,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, unshift op", function (done) {
         var MyComponent = san.Component({
-            template: 'input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div>',
+            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -325,7 +325,7 @@ describe("Form-Bindx", function () {
         var interval;
 
         var MyComponent = san.Component({
-            template: 'input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div>',
+            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [

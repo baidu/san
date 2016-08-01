@@ -4,7 +4,7 @@ describe("Interpolation", function () {
 
     it("alone", function () {
         var MyComponent = san.Component({
-            template: '{{name}}'
+            template: '<a>{{name}}</a>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'errorrik');
@@ -22,7 +22,7 @@ describe("Interpolation", function () {
 
     it("+static text", function () {
         var MyComponent = san.Component({
-            template: 'Hello {{name}}!'
+            template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'errorrik');
@@ -40,7 +40,7 @@ describe("Interpolation", function () {
 
     it("global filter", function () {
         var MyComponent = san.Component({
-            template: '{{name|uppercase}}',
+            template: '<a>{{name|uppercase}}</a>',
             filters: {
                 uppercase: function (source) {
                     if (source) {
@@ -67,7 +67,7 @@ describe("Interpolation", function () {
 
     it("component filter", function () {
         var MyComponent = san.Component({
-            template: '{{name|uppercase}}',
+            template: '<a>{{name|uppercase}}</a>',
 
             filters: {
                 uppercase: function (source) {
@@ -95,7 +95,7 @@ describe("Interpolation", function () {
 
     it("set after attach", function (done) {
         var MyComponent = san.Component({
-            template: 'Hello {{name}}!'
+            template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();
 
@@ -103,7 +103,7 @@ describe("Interpolation", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
         myComponent.data.set('name', 'errorrik');
-        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello !');
+        expect(wrap.firstChild.innerHTML.indexOf('Hello !')).toBe(0);
 
         san.nextTick(function() {
             expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Hello errorrik!');

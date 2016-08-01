@@ -3,7 +3,7 @@ describe("Element-Event", function () {
         var clicked = 0;
 
         var MyComponent = san.Component({
-            template: '<span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span>',
+            template: '<a><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
 
             clicker: function (name, email, event) {
                 expect(name).toBe('errorrik');
@@ -43,7 +43,7 @@ describe("Element-Event", function () {
         var inputed = 0;
 
         var MyComponent = san.Component({
-            template: '<span title="{{name}}">{{name}}</span> <input bind-value="name" on-input="inputer($event)"/>',
+            template: '<a><span title="{{name}}">{{name}}</span> <input bind-value="name" on-input="inputer($event)"/></a>',
 
             inputer: function (event) {
                 this.data.set('name', event.value);

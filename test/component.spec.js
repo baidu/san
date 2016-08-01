@@ -1,6 +1,6 @@
 describe("Component", function () {
     var ColorPicker = san.Component({
-        template: '<b bind-title="value">{{value}}</b>'
+        template: '<div><b bind-title="value">{{value}}</b>'
             + '<ul class="ui-colorpicker">'
             +    '<li '
             +        'san-for="item in datasource" '
@@ -8,7 +8,7 @@ describe("Component", function () {
             +        'class="{{item == value | yesToBe(\'selected\')}}" '
             +        'on-click="itemClick(item)"'
             +    '></li>'
-            + '</ul>',
+            + '</ul></div>',
 
         initData: {
             datasource: [
@@ -105,7 +105,7 @@ describe("Component", function () {
         var times = 0;
 
         var MyComponent = san.Component({
-            template: '<span title="{{email}}">{{name}}</span>',
+            template: '<a><span title="{{email}}">{{name}}</span></a>',
 
             updated: function () {
                 times++;
@@ -142,7 +142,7 @@ describe("Component", function () {
         var subTimes = 0;
 
         var Label = san.Component({
-            template: '<span bind-title="title">{{text}}</span>',
+            template: '<a><span title="{{title}}">{{text}}</span></a>',
 
             updated: function () {
                 subTimes++;
@@ -154,8 +154,8 @@ describe("Component", function () {
                 'ui-label': Label
             },
 
-            template: '<h5><ui-label bind-title="name" bind-text="jokeName"></ui-label></h5>'
-                + '<p><a>{{school}}</a><u>{{company}}</u></p>',
+            template: '<div><h5><ui-label bind-title="name" bind-text="jokeName"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>',
 
             updated: function () {
                 times++;
@@ -212,7 +212,7 @@ describe("Component", function () {
             components: {
                 'ui-label': Label
             },
-            template: '<ui-label bind-text="name"></ui-label>'
+            template: '<div><ui-label bind-text="name"></ui-label></div>'
         });
 
 
@@ -244,7 +244,7 @@ describe("Component", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color>'
+            template: '<div><span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('color', 'green');
@@ -267,7 +267,7 @@ describe("Component", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="{{name}}"></ui-color>'
+            template: '<div><span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="{{name}}"></ui-color></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('color', 'green');
@@ -293,7 +293,7 @@ describe("Component", function () {
             components: {
                 'ui-label': Label
             },
-            template: '<ui-label bind-text="name"></ui-label>'
+            template: '<a><ui-label bind-text="name"></ui-label></a>'
         });
 
 
@@ -322,7 +322,7 @@ describe("Component", function () {
             components: {
                 'ui-label': Label
             },
-            template: '<ui-label bind-text="name"></ui-label>',
+            template: '<a><ui-label bind-text="name"></ui-label></a>',
 
             attached: function () {
                 this.data.set('name', 'ci');
@@ -356,7 +356,7 @@ describe("Component", function () {
         components: {
             'ui-tel': TelList
         },
-        template: '<dl san-for="item in list"><dt title="{{item.name}}">{{item.name}}</dt><dd><ui-tel bind-list="item.tels"></ui-tel></dd></dl>'
+        template: '<div><dl san-for="item in list"><dt title="{{item.name}}">{{item.name}}</dt><dd><ui-tel bind-list="item.tels"></ui-tel></dd></dl></div>'
     });
 
     it("nested", function (done) {
@@ -364,7 +364,7 @@ describe("Component", function () {
             components: {
                 'ui-person': PersonList
             },
-            template: '<ui-person bind-list="persons"></ui-person>'
+            template: '<div><ui-person bind-list="persons"></ui-person></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [

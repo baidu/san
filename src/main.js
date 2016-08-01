@@ -2693,11 +2693,6 @@
     Component.prototype.init = function (options) {
         Element.prototype._init.call(this, options);
 
-        // ie8- 不支持innerHTML输出自定义标签
-        if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
-            this.tagName = 'div';
-        }
-
         this._compile();
         callHook(this, 'compiled');
 
@@ -2765,12 +2760,19 @@
         if (!this.aNode) {
             this.aNode = tplANode;
         }
-        else {
+        else if (this.aNode !== tplANode) {
             this.aNode.childs = tplANode.childs;
 
             this.aNode.binds = this.aNode.binds.concat(tplANode.binds);
             this.aNode.directives = this.aNode.directives.concat(tplANode.directives);
             this.aNode.events = this.aNode.events.concat(tplANode.events);
+        }
+
+
+        this.tagName = tplANode.tagName || this.aNode.tagName;
+        // ie8- 不支持innerHTML输出自定义标签
+        if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
+            this.tagName = 'div';
         }
     };
 
@@ -3218,19 +3220,20 @@
             var aNode = parseTemplate(proto.template);
             var firstChild = aNode.childs[0];
 
-            if (firstChild && firstChild.tagName === 'template') {
-                firstChild.tagName = null;
+            if (firstChild && !firstChild.isText) {
                 proto.aNode = firstChild;
+                if (firstChild.tagName === 'template') {
+                    firstChild.tagName = null;
+                }
             }
             else {
-                proto.aNode = aNode;
+                throw new Error('[SAN FATEL]');
             }
 
             proto.template = null;
         }
-        else {
-            proto.aNode = new ANode();
-        }
+
+        proto.aNode = proto.aNode || new ANode();
 
         YourComponent.prototype = proto;
         inherits(YourComponent, Component);
