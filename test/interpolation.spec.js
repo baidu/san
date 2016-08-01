@@ -48,30 +48,21 @@ describe("Interpolation", function () {
     });
 
 
-    it("global filter", function () {
+    it("default filter", function () {
         var MyComponent = defineComponent({
-            template: '<a>{{name|uppercase}}</a>',
-            filters: {
-                uppercase: function (source) {
-                    if (source) {
-                        return source.charAt(0).toUpperCase() + source.slice(1);
-                    }
-
-                    return source;
-                }
-            }
+            template: '<a>{{name}}</a>'
         });
         var myComponent = new MyComponent();
-        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('name', '<u>errorrik</u>');
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('Errorrik');
+        expect(wrap.firstChild.innerHTML.indexOf('&lt;u&gt;errorrik&lt;/u&gt;')).toBe(0);
 
-        myComponent.dispose();
-        document.body.removeChild(wrap);
+        // myComponent.dispose();
+        // document.body.removeChild(wrap);
     });
 
 

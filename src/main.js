@@ -1667,7 +1667,11 @@
          * @return {string} 替换结果串
          */
         html: function (source) {
-            return source.replace(/[&<>"']/g, htmlFilterReplacer);
+            if (!source) {
+                return '';
+            }
+
+            return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
         },
 
         /**
@@ -1748,8 +1752,21 @@
 
             case ExprType.INTERPOLATION:
                 var value = evalExpr(expr.expr, model, owner);
+                var filters = expr.filters.length > 0
+                    ? expr.filters
+                    : [
+                        {
+                            type: ExprType.CALL,
+                            name: {
+                                type: ExprType.IDENT,
+                                name: 'html'
+                            },
+                            args: []
+                        }
+                    ];
 
-                owner && each(expr.filters, function (filter) {
+
+                owner && each(filters, function (filter) {
                     var filterName = filter.name.name;
                     /* eslint-disable no-use-before-define */
                     var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
