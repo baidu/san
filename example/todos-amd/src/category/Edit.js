@@ -1,10 +1,15 @@
 define(function (require) {
-    var san = require('san-core');
+
+    var defineComponent = require('../defineComponent');
     var service = require('service');
     var template = require('tpl!./Edit.html');
 
-    return san.Component({
+    return defineComponent({
         template: template,
+
+        components: {
+            'ui-colorpicker': require('../ui/ColorPicker')
+        },
 
         initData: {categories: []},
 

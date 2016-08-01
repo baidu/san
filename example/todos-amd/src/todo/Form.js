@@ -1,12 +1,14 @@
 define(function (require) {
-    var san = require('san-core');
+
+    var defineComponent = require('../defineComponent');
+
     var service = require('../service');
     var template = require('tpl!./Form.html');
 
-    var AddCategoryDialog = san.Component({
-        template: '<template class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
+    var AddCategoryDialog = defineComponent({
+        template: '<div class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             + '<ui-addcategory san-ref="add"></ui-addcategory>'
-            + '</template>',
+            + '</div>',
 
         components: {
             'ui-addcategory': require('../category/Add')
@@ -23,7 +25,7 @@ define(function (require) {
         },
 
         show: function () {
-            this.data.set('left', window.screen.availWidth / 2 - 100);
+            this.data.set('left', document.body.clientWidth / 2 - 100);
         },
 
         hide: function () {
@@ -37,11 +39,11 @@ define(function (require) {
         }
     });
 
-    var EditCategoryDialog = san.Component({
-        template: '<template class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
-            + '<i class="fa fa-times-circle-o" on-click="hide"></i>'
-            + '<ui-editcategory san-ref="edit"></ui-editcategory>'
-            + '</template>',
+    var EditCategoryDialog = defineComponent({
+        template: '<div class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
+            +   '<i class="fa fa-times-circle-o" on-click="hide"></i>'
+            +   '<ui-editcategory san-ref="edit"></ui-editcategory>'
+            + '</div>',
 
         components: {
             'ui-editcategory': require('../category/Edit')
@@ -58,7 +60,7 @@ define(function (require) {
         },
 
         show: function () {
-            this.data.set('left', window.screen.availWidth / 2 - 100);
+            this.data.set('left', document.body.clientWidth / 2 - 100);
         },
 
         hide: function () {
@@ -71,8 +73,14 @@ define(function (require) {
     });
 
 
-    return san.Component({
+    return defineComponent({
         template: template,
+
+        components: {
+            'ui-categorypicker': require('../ui/CategoryPicker'),
+            'ui-timepicker': require('../ui/TimePicker'),
+            'ui-calendar': require('../ui/Calendar')
+        },
 
         attached: function () {
             var id = this.data.get('id');

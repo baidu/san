@@ -1,10 +1,16 @@
 define(function (require) {
     var san = require('san-core');
+
+    var defineComponent = require('../defineComponent');
     var service = require('../service-perf');
     var template = require('tpl!./List.html');
 
-    return san.Component({
+    return defineComponent({
         template: template,
+
+        filters: {
+            formatDate: require('../filters').formatDate
+        },
 
         attached: function () {
             var now = new Date();

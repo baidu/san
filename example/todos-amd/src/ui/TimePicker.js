@@ -1,9 +1,9 @@
 define(function (require) {
-    var san = require('san-core');
+    var defineComponent = require('../defineComponent');
 
     var $ = require('jquery');
     var layerTemplate = require('tpl!./TimePickerLayer.html');
-    var Layer = san.Component({
+    var Layer = defineComponent({
         template: layerTemplate,
 
         tagName: 'ul',
@@ -14,7 +14,7 @@ define(function (require) {
     });
 
 
-    return san.Component({
+    return defineComponent({
         template: '<template on-click="mainClick()" class="ui-timepicker">{{ value | valueText }}</template>',
 
         initData: {
@@ -99,7 +99,7 @@ define(function (require) {
                 this.data.set('left', -1000);
             }
             else {
-                var pos = $(this.el).offset();debugger
+                var pos = $(this.el).offset();
                 this.data.set('left', pos.left);
                 this.data.set('top', pos.top + this.el.offsetHeight + 1);
             }

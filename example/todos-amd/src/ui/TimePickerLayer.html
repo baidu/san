@@ -1,5 +1,4 @@
-<template class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
-    <ul>
-        <li san-for="item, index in datasource" class="{{item.value == value | yesToBe('selected')}}" on-click="itemClick(item)">{{ item.text }}</li>
-    </ul>
-</template>
+<ul class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
+    <li san-for="item, index in datasource" class="{{item.value == value | yesToBe('selected')}}" on-click="itemClick(item)">{{ item.text }}</li>
+</ul>
+

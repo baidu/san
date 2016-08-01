@@ -1,30 +1,32 @@
-<a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
-<ul class="filter-category">
-    <li
-        san-for="item in categories"
-        style="background: {{item.color}}"
-        class="{{item.id == params[1] | yesToBe('checked')}}"
-    >
-        <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
-    </li><li>
-</ul>
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        <li
+            san-for="item in categories"
+            style="background: {{item.color}}"
+            class="{{item.id == params[1] | yesToBe('checked')}}"
+        >
+            <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
+        </li>
+    </ul>
 
-<a href="#/" class="fa fa-close filter-category-clear" style="display: {{params[1] | yesOrNoToBe('', 'none')}}"></a>
+    <a href="#/" class="fa fa-close filter-category-clear" style="display: {{params[1] | yesOrNoToBe('', 'none')}}"></a>
 
-<ul class="todo-list">
-    <li san-for="item, index in todos"
-        style="border-color: {{item.category.color}}"
-        class="{{item.done | yesToBe('todo-done')}}"
-    >
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.desc }}</p>
-        <div class="todo-meta">
-            <span v-if="item.category">{{ item.category.title }} | </span>
-            <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
-        </div>
-        <a class="fa fa-pencil" href="#/edit/{{ item.id }}"></a>
-        <i class="fa fa-check" on-click="doneTodo(index)"></i>
-        <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
-    </li>
-</ul>
+    <ul class="todo-list">
+        <li san-for="item, index in todos"
+            style="border-color: {{item.category.color}}"
+            class="{{item.done | yesToBe('todo-done')}}"
+        >
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+            <div class="todo-meta">
+                <span v-if="item.category">{{ item.category.title }} | </span>
+                <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
+            </div>
+            <a class="fa fa-pencil" href="#/edit/{{ item.id }}"></a>
+            <i class="fa fa-check" on-click="doneTodo(index)"></i>
+            <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
+        </li>
+    </ul>
+</div>
 

@@ -1,8 +1,8 @@
 define(function (require) {
-    var san = require('san-core');
+    var defineComponent = require('../defineComponent');
     var template = require('tpl!./CategoryPicker.html');
 
-    return san.Component({
+    return defineComponent({
         template: template,
 
         initData: {
