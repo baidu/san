@@ -85,19 +85,19 @@ define(function (require) {
     return san.defineComponent({
         template: '<template on-click="mainClick()" class="ui-calendar">{{ value | valueText }}</template>',
 
-        initData: {
-            value: new Date()
+        initData: function () {
+            return {
+                value: new Date()
+            };
         },
 
         initLayer: function () {
             if (!this.layer) {
-                var layer = new Layer({
-                    initData: {
-                        left: -1000,
-                        top: 0,
-                        value: this.data.get('value')
-                    }
-                });
+                var layer = new Layer();
+                layer.data.set('left', -1000);
+                layer.data.set('top', 0);
+                layer.data.set('value', this.data.get('value'));
+
                 this.layer = layer;
 
                 var calendar = this;

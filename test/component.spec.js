@@ -138,6 +138,43 @@ describe("Component", function () {
 
     });
 
+    it("initData", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{email}}">{{name}}</span></a>',
+
+            initData: function () {
+                return {
+                    email: 'errorrik@gmail.com',
+                    name: 'errorrik'
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        myComponent.data.set('email', 'erik168@163.com');
+        myComponent.data.set('name', 'erik');
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+        expect(span.title.indexOf('errorrik@gmail.com')).toBe(0);
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('erik')).toBe(0);
+            expect(span.title.indexOf('erik168@163.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+
+    });
+
     it("life cycle updated, nested component", function (done) {
         var times = 0;
         var subTimes = 0;

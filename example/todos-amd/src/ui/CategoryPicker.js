@@ -5,8 +5,10 @@ define(function (require) {
     return san.defineComponent({
         template: template,
 
-        initData: {
-            datasource: []
+        initData: function () {
+            return {
+                datasource: []
+            };
         },
 
         itemClick: function (index) {

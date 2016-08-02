@@ -49,10 +49,12 @@ define(function (require) {
             'ui-editcategory': require('../category/Edit')
         },
 
-        initData: {
-            width: 200,
-            top: 100,
-            left: -1000
+        initData: function () {
+            return {
+                width: 200,
+                top: 100,
+                left: -1000
+            };
         },
 
         attached: function () {

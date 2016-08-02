@@ -13,10 +13,12 @@ describe("Component-Bindx", function () {
         +    '>click</li>'
         + '</ul>';
 
-    ColorPicker.prototype.initData = {
-        datasource: [
-            'red', 'blue', 'yellow', 'green'
-        ]
+    ColorPicker.prototype.initData = function () {
+        return {
+            datasource: [
+                'red', 'blue', 'yellow', 'green'
+            ]
+        }
     };
 
     ColorPicker.prototype.itemClick = function (item) {
@@ -37,7 +39,6 @@ describe("Component-Bindx", function () {
 
         setTimeout(function () {me.itemClick(nextValue)}, 20);
     };
-
 
 
     it("value", function (done) {

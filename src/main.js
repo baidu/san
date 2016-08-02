@@ -2726,13 +2726,17 @@
 
         this.initRef();
 
+        // init data
         this.data = new Model();
-        var initData = options.initData || this.initData;
-        for (var key in initData) {
-            if (initData.hasOwnProperty(key)) {
-                this.data.set(key, initData[key]);
+        if (typeof this.initData === 'function') {
+            var initData = this.initData();
+            for (var key in initData) {
+                if (initData.hasOwnProperty(key)) {
+                    this.data.set(key, initData[key]);
+                }
             }
         }
+
         this.scope && this.aNode.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);

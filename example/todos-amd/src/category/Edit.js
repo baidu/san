@@ -10,7 +10,11 @@ define(function (require) {
             'ui-colorpicker': require('../ui/ColorPicker')
         },
 
-        initData: {categories: []},
+        initData: function () {
+            return {
+                categories: []
+            };
+        },
 
         attached: function () {
             this.data.set('categories', service.categories());

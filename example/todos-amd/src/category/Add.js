@@ -11,9 +11,11 @@ define(function (require) {
             'ui-colorpicker': require('../ui/ColorPicker')
         },
 
-        initData: {
-            title: '',
-            color: ''
+        initData: function () {
+            return {
+                title: '',
+                color: ''
+            };
         },
 
         submit: function () {
