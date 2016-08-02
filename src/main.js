@@ -693,12 +693,44 @@
                     break;
 
                 default:
-                    aNode.binds.push({
+                    aNode.binds.push(textBindExtra({
                         name: name,
                         expr: parseText(value)
-                    });
+                    }));
             }
         }
+    }
+
+    /**
+     * 为text类型的属性绑定附加额外的行为，用于一些特殊需求，比如class中插值的自动展开
+     *
+     * @inner
+     * @param {Object} 绑定信息
+     * @return {Object}
+     */
+    function textBindExtra(bind) {
+        switch (bind.name) {
+            case 'class':
+                each(bind.expr.segs, function (seg) {
+                    if (seg.type === ExprType.INTERPOLATION) {
+                        seg.filters.push({
+                            type: ExprType.CALL,
+                            name: {
+                                type: ExprType.IDENT,
+                                name: 'join'
+                            },
+                            args: [
+                                {
+                                    type: ExprType.STRING,
+                                    value: ' '
+                                }
+                            ]
+                        });
+                    }
+                });
+        }
+
+        return bind;
     }
 
     /**
@@ -1712,6 +1744,13 @@
 
         yesOrNoToBe: function (condition, yesValue, noValue) {
             return condition ? yesValue : noValue;
+        },
+
+        join: function (source, separator) {
+            if (source instanceof Array) {
+                return source.join(separator);
+            }
+            return source;
         }
     };
 

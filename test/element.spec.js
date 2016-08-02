@@ -81,6 +81,33 @@ describe("Element", function () {
         });
     });
 
+    it("bind class, auto expand", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span class="msg {{extra}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('extra', ['msg-notice', 'msg-error']);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.className).toBe('msg msg-notice msg-error');
+
+        myComponent.data.set('extra', 'msg-error');
+
+
+        san.nextTick(function () {
+            expect(span.className).toBe('msg msg-error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind style", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span style="position: absolute; display: {{display}}"></span></a>'
