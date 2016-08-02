@@ -1,7 +1,7 @@
 define(function (require) {
-    var defineComponent = require('../defineComponent');
+    var san = require('san-core');
 
-    return defineComponent({
+    return san.defineComponent({
         template: ''
             + '<ul class="ui-colorpicker">'
             +    '<li '

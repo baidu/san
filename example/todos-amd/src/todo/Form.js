@@ -1,11 +1,11 @@
 define(function (require) {
 
-    var defineComponent = require('../defineComponent');
+    var san = require('san-core');
 
     var service = require('../service');
     var template = require('tpl!./Form.html');
 
-    var AddCategoryDialog = defineComponent({
+    var AddCategoryDialog = san.defineComponent({
         template: '<div class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             + '<ui-addcategory san-ref="add"></ui-addcategory>'
             + '</div>',
@@ -39,7 +39,7 @@ define(function (require) {
         }
     });
 
-    var EditCategoryDialog = defineComponent({
+    var EditCategoryDialog = san.defineComponent({
         template: '<div class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             +   '<i class="fa fa-times-circle-o" on-click="hide"></i>'
             +   '<ui-editcategory san-ref="edit"></ui-editcategory>'
@@ -73,7 +73,7 @@ define(function (require) {
     });
 
 
-    return defineComponent({
+    return san.defineComponent({
         template: template,
 
         components: {

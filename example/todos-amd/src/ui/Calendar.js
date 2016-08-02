@@ -1,10 +1,10 @@
 define(function (require) {
-    var defineComponent = require('../defineComponent');
+    var san = require('san-core');
 
     var $ = require('jquery');
     var moment = require('moment');
     var layerTemplate = require('tpl!./CalendarLayer.html');
-    var Layer = defineComponent({
+    var Layer = san.defineComponent({
         template: layerTemplate,
 
         filters: {
@@ -82,7 +82,7 @@ define(function (require) {
     });
 
 
-    return defineComponent({
+    return san.defineComponent({
         template: '<template on-click="mainClick()" class="ui-calendar">{{ value | valueText }}</template>',
 
         initData: {

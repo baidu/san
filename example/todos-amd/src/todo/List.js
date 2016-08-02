@@ -1,9 +1,9 @@
 define(function (require) {
-    var defineComponent = require('../defineComponent');
+    var san = require('san-core');
     var service = require('../service');
     var template = require('tpl!./List.html');
 
-    return defineComponent({
+    return san.defineComponent({
         template: template,
 
         filters: {
