@@ -1,19 +1,7 @@
 describe("ForDirective", function () {
 
-    function defineComponent(proto) {
-        function ComponentClass(option) {
-            san.Component.call(this, option);
-        }
-
-        ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
-
-        return ComponentClass;
-    }
-
-
     it("render list, data fill before attach", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -39,7 +27,7 @@ describe("ForDirective", function () {
     });
 
     it("render list, no data", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -59,7 +47,7 @@ describe("ForDirective", function () {
 
 
     it("data push after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -92,7 +80,7 @@ describe("ForDirective", function () {
     });
 
     it("data pop after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -123,7 +111,7 @@ describe("ForDirective", function () {
     });
 
     it("data unshift after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -158,7 +146,7 @@ describe("ForDirective", function () {
     });
 
     it("data shift after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -189,7 +177,7 @@ describe("ForDirective", function () {
     });
 
     it("data remove after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -220,7 +208,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -251,7 +239,7 @@ describe("ForDirective", function () {
     });
 
     it("data item set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -282,7 +270,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -315,7 +303,7 @@ describe("ForDirective", function () {
     });
 
     it("data set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}} in {{org}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -348,7 +336,7 @@ describe("ForDirective", function () {
     });
 
     it("no data before attach, data set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
         });
         var myComponent = new MyComponent();
@@ -376,7 +364,7 @@ describe("ForDirective", function () {
     });
 
     it("nested, data fill before attach", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
         });
         var myComponent = new MyComponent();
@@ -410,7 +398,7 @@ describe("ForDirective", function () {
     });
 
     it("nested, data fill after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
         });
         var myComponent = new MyComponent();

@@ -1157,9 +1157,19 @@
             case 56:
             case 57:
                 return readNumber(walker);
+            case 40: // (
+                return readParenthesizedExpr(walker);
         }
 
         return readPropertyAccessor(walker);
+    }
+
+    function readParenthesizedExpr(walker) {
+        walker.go(1);
+        var expr = readLogicalORExpr(walker);
+        walker.goUntil(41);  // )
+
+        return expr;
     }
 
     /**
@@ -3252,6 +3262,23 @@
      * @type {Function}
      */
     san.Component = Component;
+
+    /**
+     * 创建组件类
+     *
+     * @param {Object} proto 组件类的方法表
+     * @return {Function}
+     */
+    san.defineComponent = function (proto) {
+        function ComponentClass(option) {
+            san.Component.call(this, option);
+        }
+
+        ComponentClass.prototype = proto
+        san.inherits(ComponentClass, san.Component);
+
+        return ComponentClass;
+    };
 
     /**
      * 在下一个更新周期运行函数

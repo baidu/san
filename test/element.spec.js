@@ -1,19 +1,7 @@
 describe("Element", function () {
 
-    function defineComponent(proto) {
-        function ComponentClass(option) {
-            san.Component.call(this, option);
-        }
-
-        ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
-
-        return ComponentClass;
-    }
-
-
     it("bind prop, data change before attach", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span></a>'
         });
         var myComponent = new MyComponent();
@@ -33,7 +21,7 @@ describe("Element", function () {
 
 
     it("bind prop, data change after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span></a>'
         });
         var myComponent = new MyComponent();
@@ -67,7 +55,7 @@ describe("Element", function () {
 
 
     it("bind class", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span class="msg {{extra}}"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -94,7 +82,7 @@ describe("Element", function () {
     });
 
     it("bind style", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span style="position: absolute; display: {{display}}"></span></a>'
         });
         var myComponent = new MyComponent();

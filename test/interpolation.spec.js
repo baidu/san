@@ -1,19 +1,8 @@
 describe("Interpolation", function () {
 
-    function defineComponent(proto) {
-        function ComponentClass(option) {
-            san.Component.call(this, option);
-        }
-
-        ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
-
-        return ComponentClass;
-    }
-
 
     it("alone", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a>{{name}}</a>'
         });
         var myComponent = new MyComponent();
@@ -31,7 +20,7 @@ describe("Interpolation", function () {
 
 
     it("+static text", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();
@@ -49,7 +38,7 @@ describe("Interpolation", function () {
 
 
     it("default filter", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a>{{name}}</a>'
         });
         var myComponent = new MyComponent();
@@ -61,13 +50,13 @@ describe("Interpolation", function () {
 
         expect(wrap.firstChild.innerHTML.indexOf('&lt;u&gt;errorrik&lt;/u&gt;')).toBe(0);
 
-        // myComponent.dispose();
-        // document.body.removeChild(wrap);
+        myComponent.dispose();
+        document.body.removeChild(wrap);
     });
 
 
     it("component filter", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a>{{name|uppercase}}</a>',
 
             filters: {
@@ -95,7 +84,7 @@ describe("Interpolation", function () {
 
 
     it("set after attach", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a>Hello {{name}}!</a>'
         });
         var myComponent = new MyComponent();

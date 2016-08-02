@@ -1,17 +1,6 @@
 describe("Component", function () {
-    function defineComponent(proto) {
-        function ComponentClass(option) {
-            san.Component.call(this, option);
-        }
 
-        ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
-
-        return ComponentClass;
-    }
-
-
-    var ColorPicker = defineComponent({
+    var ColorPicker = san.defineComponent({
         template: '<div><b bind-title="value">{{value}}</b>'
             + '<ul class="ui-colorpicker">'
             +    '<li '
@@ -33,7 +22,7 @@ describe("Component", function () {
         }
     });
 
-    var Label = defineComponent({
+    var Label = san.defineComponent({
         template: '<span title="{{text}}">{{text}}</span>'
     });
 
@@ -44,7 +33,7 @@ describe("Component", function () {
         var isDetached = false;
         var isDisposed = false;
 
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-color': ColorPicker
             },
@@ -116,7 +105,7 @@ describe("Component", function () {
     it("life cycle updated", function (done) {
         var times = 0;
 
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="{{email}}">{{name}}</span></a>',
 
             updated: function () {
@@ -153,7 +142,7 @@ describe("Component", function () {
         var times = 0;
         var subTimes = 0;
 
-        var Label = defineComponent({
+        var Label = san.defineComponent({
             template: '<a><span title="{{title}}">{{text}}</span></a>',
 
             updated: function () {
@@ -161,7 +150,7 @@ describe("Component", function () {
             }
         });
 
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-label': Label
             },
@@ -216,11 +205,11 @@ describe("Component", function () {
     });
 
     it("template tag in template", function (done) {
-        var Label = defineComponent({
+        var Label = san.defineComponent({
             template: '<template class="ui-label" title="{{text}}">{{text}}</template>'
         });
 
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-label': Label
             },
@@ -252,7 +241,7 @@ describe("Component", function () {
     });
 
     it("ref", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-color': ColorPicker
             },
@@ -275,7 +264,7 @@ describe("Component", function () {
     });
 
     it("dynamic ref", function () {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-color': ColorPicker
             },
@@ -301,7 +290,7 @@ describe("Component", function () {
 
 
     it("update prop", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-label': Label
             },
@@ -330,7 +319,7 @@ describe("Component", function () {
     });
 
     it("update prop from self attached", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-label': Label
             },
@@ -360,11 +349,11 @@ describe("Component", function () {
         });
     });
 
-    var TelList = defineComponent({
+    var TelList = san.defineComponent({
         template: '<ul><li san-for="item in list" title="{{item}}">{{item}}</li></ul>'
     });
 
-    var PersonList = defineComponent({
+    var PersonList = san.defineComponent({
         components: {
             'ui-tel': TelList
         },
@@ -372,7 +361,7 @@ describe("Component", function () {
     });
 
     it("nested", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-person': PersonList
             },
@@ -430,7 +419,7 @@ describe("Component", function () {
     });
 
     it("in for", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             components: {
                 'ui-label': Label
             },

@@ -1,17 +1,5 @@
 describe("Expr update detect", function () {
 
-    function defineComponent(proto) {
-        function ComponentClass(option) {
-            san.Component.call(this, option);
-        }
-
-        ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
-
-        return ComponentClass;
-    }
-
-
     function upxFilter(source, first) {
         if (source) {
             if (first) {
@@ -25,7 +13,7 @@ describe("Expr update detect", function () {
     }
 
     it("simple text", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span></a>'
         });
         var myComponent = new MyComponent();
@@ -49,7 +37,7 @@ describe("Expr update detect", function () {
     });
 
     it("complex text", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="hello {{val1}}, have dinner with {{val2}}?"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -75,7 +63,7 @@ describe("Expr update detect", function () {
     });
 
     it("text has interpolation and filter", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span title="hello {{name | upx(!all)}}!"></span></a>',
             filters: {upx: upxFilter}
         });
@@ -103,7 +91,7 @@ describe("Expr update detect", function () {
 
 
     it("bind ident", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<div><span bind-title="name"></span></div>'
         });
         var myComponent = new MyComponent();
@@ -128,7 +116,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind unary", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<div><span bind-title="!val1"></span></div>'
         });
         var myComponent = new MyComponent();
@@ -153,7 +141,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind binary", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<div><span bind-title="val1 + val2"></span></div>'
         });
         var myComponent = new MyComponent();
@@ -179,7 +167,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind binary complex", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="val1 + val2 * val3 / val4"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -207,7 +195,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, set item", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.name"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -236,7 +224,7 @@ describe("Expr update detect", function () {
 
 
     it("bind property accessor, set outer data", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.org.name"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -275,7 +263,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, variable item", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.orgs[index].name"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -316,7 +304,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, after level of variable item", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.orgs[index].name"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -357,7 +345,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, before level of variable item", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.orgs[index].name"></span></a>'
         });
         var myComponent = new MyComponent();
@@ -407,7 +395,7 @@ describe("Expr update detect", function () {
     });
 
     it("bind property accessor, in variable item", function (done) {
-        var MyComponent = defineComponent({
+        var MyComponent = san.defineComponent({
             template: '<a><span bind-title="p.orgs[index].name"></span></a>'
         });
         var myComponent = new MyComponent();
