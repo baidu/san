@@ -2724,8 +2724,6 @@
         this._compile();
         callHook(this, 'compiled');
 
-        this.initRef();
-
         // init data
         this.data = new Model();
         if (typeof this.initData === 'function') {
@@ -2755,32 +2753,41 @@
         }
     };
 
-    // TODO: support dynamic ref?
     /**
-     * 初始化 ref 在 owner 中的引用
+     * 获取带有 san-ref 指令的子组件引用
+     *
+     * @param {string} name 子组件的引用名
+     * @return {Component}
      */
-    Component.prototype.initRef = function () {
-        var ref = this.aNode.directives.get('ref');
-        if (ref && this.owner !== this) {
-            this.owner.refs[this.evalExpr(ref.value)] = this;
-            // var me = this;
-            // var owner = this.owner;
-            // this.owner.data.onChange(function (change) {
-            //     if (exprNeedsUpdate(ref.value, change.expr, owner.data)) {
-            //         me.evalExpr(ref.value) = me;
-            //     }
-            // });
-        }
-    };
+    Component.prototype.ref = function (name) {
+        var refComponent = null;
+        var owner = this;
 
-    /**
-     * 卸载 ref 在 owner 中的引用
-     */
-    Component.prototype.disposeRef = function () {
-        if (this.refUpdater) {
-            // this.owner.data.unChange(this.refUpdater);
-            this.refUpdater = null;
+        function childsTraversal(element) {
+            for (var i = 0, l = element.childs.length; i < l; i++) {
+                if (refComponent) {
+                    return;
+                }
+
+                var child = element.childs[i];
+
+                if (child instanceof Component) {
+                    var refDirective = child.aNode.directives.get('ref');
+                    if (refDirective
+                        && evalExpr(refDirective.value, owner.data, owner) === name
+                    ) {
+                        refComponent = child;
+                        return;
+                    }
+                }
+                else if (child instanceof Element) {
+                    childsTraversal(child);
+                }
+            }
         }
+
+        childsTraversal(owner);
+        return refComponent;
     };
 
     /**
@@ -2946,7 +2953,6 @@
      * 组件销毁的行为
      */
     Component.prototype._dispose = function () {
-        this.disposeRef();
         this._unlistenDataChange();
         Element.prototype._dispose.call(this);
         this.refs = null;

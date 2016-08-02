@@ -61,10 +61,10 @@ describe("Component-Bindx", function () {
 
         var span = wrap.firstChild.firstChild;
         expect(span.innerHTML.indexOf('green')).toBe(0);
-        myComponent.refs.colorPicker.itemClick('blue');
+        myComponent.ref('colorPicker').itemClick('blue');
 
         setTimeout(function () {
-            var newValue = myComponent.refs.colorPicker.data.get('value');
+            var newValue = myComponent.ref('colorPicker').data.get('value');
             expect(newValue).not.toBe('greeb');
             expect(span.title).toBe(newValue);
             expect(myComponent.data.get('color')).toBe(newValue);

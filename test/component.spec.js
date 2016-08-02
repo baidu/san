@@ -292,7 +292,7 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        expect(myComponent.refs.colorPicker instanceof ColorPicker).toBe(true);
+        expect(myComponent.ref('colorPicker') instanceof ColorPicker).toBe(true);
         expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
 
 
@@ -316,7 +316,7 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        expect(myComponent.refs.c instanceof ColorPicker).toBe(true);
+        expect(myComponent.ref('c') instanceof ColorPicker).toBe(true);
         expect(wrap.getElementsByTagName('b')[0].title).toBe('green');
 
 
