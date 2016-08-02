@@ -2196,7 +2196,8 @@
      */
     function Element(options) {
         this.childs = [];
-        this.listeners = {};
+        // this.listeners = {};
+        this.eventListeners = {};
         this._updatedOp = 0;
         this._updateOpCount = 0;
 
@@ -2204,59 +2205,6 @@
     }
 
     inherits(Element, Node);
-
-    /**
-     * 添加事件监听器
-     *
-     * @param {string} name 事件名
-     * @param {Function} listener 监听器
-     */
-    Element.prototype.on = function (name, listener) {
-        if (typeof listener !== 'function') {
-            return;
-        }
-
-        if (!this.listeners[name]) {
-            this.listeners[name] = [];
-        }
-        this.listeners[name].push(listener);
-    };
-
-    /**
-     * 移除事件监听器
-     *
-     * @param {string} name 事件名
-     * @param {Function=} listener 监听器
-     */
-    Element.prototype.un = function (name, listener) {
-        var nameListeners = this.listeners[name];
-
-        if (nameListeners instanceof Array) {
-            if (!listener) {
-                nameListeners.length = 0;
-            }
-            else {
-                var len = nameListeners.length;
-                while (len--) {
-                    if (listener === nameListeners[len]) {
-                        nameListeners.splice(len, 1);
-                    }
-                }
-            }
-        }
-    };
-
-    /**
-     * 派发事件
-     *
-     * @param {string} name 事件名
-     * @param {Object} event 事件对象
-     */
-    Element.prototype.fire = function (name, event) {
-        each(this.listeners[name], function (listener) {
-            listener.call(this, event);
-        }, this);
-    };
 
     /**
      * 初始化行为
@@ -2307,42 +2255,35 @@
      */
     Element.prototype._created = function () {
         Node.prototype._created.call(this);
+        this._initBindx();
+        this.bindEvents();
+    };
 
-        // 处理双绑的逻辑
-        // TODO: 这部分逻辑抽象到Component.prototype._created中
+    /**
+     * 处理双绑的逻辑
+     *
+     * @private
+     */
+    Element.prototype._initBindx = function () {
         this.aNode.binds.each(function (bindInfo) {
-            if (bindInfo.twoWay) {
-                var me = this;
+            if (!bindInfo.twoWay) {
+                return;
+            }
 
-                if (this instanceof Component) {
-                    this.on(bindInfo.name + 'Changed', function (value) {
-                        this.scope.set(bindInfo.expr, value);
-                    });
-
-                    this.data.onChange(function (change) {
-                        var dataExpr = parseExpr(bindInfo.name);
-                        if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                            me.fire(bindInfo.name + 'Changed', evalExpr(dataExpr, this, me));
-                        }
-                    });
-                }
-                else if (bindInfo.name === 'value') {
-                    var elTagName = this.el.tagName;
-                    var elType = this.el.type;
-                    if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
-                        this.valueSynchronizer = bind(valueSynchronizer, this, bindInfo);
-                        this.valueSynchronizerEvent = ('oninput' in this.el) ? 'input' : 'propertychange';
-                        on(
-                            this.el,
-                            this.valueSynchronizerEvent,
-                            this.valueSynchronizer
-                        );
-                    }
+            if (bindInfo.name === 'value') {
+                var elTagName = this.el.tagName;
+                var elType = this.el.type;
+                if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
+                    this.valueSynchronizer = bind(valueSynchronizer, this, bindInfo);
+                    this.valueSynchronizerEvent = ('oninput' in this.el) ? 'input' : 'propertychange';
+                    on(
+                        this.el,
+                        this.valueSynchronizerEvent,
+                        this.valueSynchronizer
+                    );
                 }
             }
         }, this);
-
-        this.bindEvents();
     };
 
     function valueSynchronizer(bindInfo, e) {
@@ -2445,10 +2386,9 @@
             }
         }, this);
 
-        var component = this instanceof Component ? this : this.owner;
-        var method = component[expr.name.name];
+        var method = this.owner[expr.name.name];
         if (typeof method === 'function') {
-            method.apply(component, args);
+            method.apply(this.owner, args);
         }
     }
 
@@ -2456,17 +2396,14 @@
      * 绑定事件
      */
     Element.prototype.bindEvents = function () {
-        if (this.eventListeners) {
-            return;
-        }
-
-        this.eventListeners = {};
-        this.aNode.events.each(function (eventBind) {
-            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
-            var listener = provideFn(this, eventBind);
-            this.eventListeners[listener.name] = listener.fn;
-            on(this.el, listener.name, listener.fn);
-        }, this);
+        this.aNode.events.each(
+            function (eventBind) {
+                var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
+                var listener = provideFn(this, eventBind);
+                this.on(listener.name, listener.fn);
+            },
+            this
+        );
     };
 
     /**
@@ -2474,17 +2411,67 @@
      */
     Element.prototype.unbindEvents = function () {
         var eventListeners = this.eventListeners;
-        if (eventListeners) {
-            for (var key in eventListeners) {
-                if (eventListeners.hasOwnProperty(key)) {
-                    un(this.el, key, eventListeners[key]);
-                }
+        var el = this.el;
+
+        for (var key in eventListeners) {
+            if (eventListeners.hasOwnProperty(key)) {
+                this.un(key);
+                eventListeners[key] = null;
             }
         }
 
         this.eventListeners = null;
     };
 
+    /**
+     * 派发事件
+     *
+     * @param {string} name 事件名
+     * @param {Object} event 事件对象
+     */
+    Element.prototype.fire = function (name, event) {
+        each(this.eventListeners[name], function (listener) {
+            listener.call(this, event);
+        }, this);
+    };
+
+    /**
+     * 添加事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function} listener 监听器
+     */
+    Element.prototype.on = function (name, listener) {
+        if (typeof listener !== 'function') {
+            return;
+        }
+
+        if (!this.eventListeners[name]) {
+            this.eventListeners[name] = [];
+        }
+        this.eventListeners[name].push(listener);
+
+        on(this.el, name, listener);
+    };
+
+    /**
+     * 移除事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function=} listener 监听器
+     */
+    Element.prototype.un = function (name, listener) {
+        var nameListeners = this.eventListeners[name];
+        var len = nameListeners instanceof Array && nameListeners.length;
+
+        while (len--) {
+            var fn = nameListeners[len];
+            if (!listener || listener === fn) {
+                nameListeners.splice(len, 1);
+                un(this.el, name, fn);
+            }
+        }
+    };
 
     /**
      * 通知元素和子元素完成attached状态
@@ -2747,7 +2734,6 @@
      */
     function Component(options) {
         Element.call(this, options);
-        this.refs = {};
     }
 
     inherits(Component, Element);
@@ -2879,6 +2865,23 @@
     };
 
     /**
+     * 处理双绑的逻辑
+     *
+     * @private
+     */
+    Component.prototype._initBindx = function () {
+        this.aNode.binds.each(function (bindInfo) {
+            if (!bindInfo.twoWay) {
+                return;
+            }
+
+            this.watch(bindInfo.name, function (value) {
+                this.scope.set(bindInfo.expr, value);
+            });
+        }, this);
+    };
+
+    /**
      * 监听组件的数据变化
      *
      * @param {string} dataName 变化的数据项
@@ -2994,7 +2997,6 @@
     Component.prototype._dispose = function () {
         this._unlistenDataChange();
         Element.prototype._dispose.call(this);
-        this.refs = null;
     };
 
     /**

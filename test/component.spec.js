@@ -277,6 +277,46 @@ describe("Component", function () {
         });
     });
 
+    it("custom event listen and fire", function () {
+        var receive;
+
+        var Label = san.defineComponent({
+            template: '<template class="ui-label" title="{{text}}">{{text}}</template>',
+
+            attached: function () {
+                this.fire('haha', this.data.get('text') + 'haha');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label bind-text="name" on-haha="labelHaha($event)"></ui-label></div>',
+
+            labelHaha: function (e) {
+                receive = e;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'erik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var labelEl = wrap.firstChild.firstChild;
+        expect(labelEl.className).toBe('ui-label');
+        expect(labelEl.title).toBe('erik');
+        expect(receive).toBe('erikhaha');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("ref", function () {
         var MyComponent = san.defineComponent({
             components: {

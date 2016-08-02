@@ -7,7 +7,7 @@ define(function (require) {
 
     var AddCategoryDialog = san.defineComponent({
         template: '<div class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
-            + '<ui-addcategory san-ref="add"></ui-addcategory>'
+            + '<ui-addcategory san-ref="add" on-finished="finish($event)"></ui-addcategory>'
             + '</div>',
 
         components: {
@@ -18,10 +18,6 @@ define(function (require) {
             width: 200,
             top: 100,
             left: -1000
-        },
-
-        attached: function () {
-            this.refs.add.on('finished', this.finish.bind(this));
         },
 
         show: function () {
@@ -42,7 +38,7 @@ define(function (require) {
     var EditCategoryDialog = san.defineComponent({
         template: '<div class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
             +   '<i class="fa fa-times-circle-o" on-click="hide"></i>'
-            +   '<ui-editcategory san-ref="edit"></ui-editcategory>'
+            +   '<ui-editcategory on-rm="edited" on-edit="edited"></ui-editcategory>'
             + '</div>',
 
         components: {
@@ -57,10 +53,6 @@ define(function (require) {
             };
         },
 
-        attached: function () {
-            this.refs.edit.on('change', this.change.bind(this));
-        },
-
         show: function () {
             this.data.set('left', document.body.clientWidth / 2 - 100);
         },
@@ -69,8 +61,8 @@ define(function (require) {
             this.data.set('left', -1000);
         },
 
-        change: function () {
-            this.fire('change');
+        edited: function () {
+            this.fire('edited');
         }
     });
 
@@ -166,7 +158,7 @@ define(function (require) {
             if (!this.editCategoryDialog) {
                 this.editCategoryDialog = new EditCategoryDialog();
                 this.editCategoryDialog.attach(document.body);
-                this.editCategoryDialog.on('change', this.updateCategories.bind(this));
+                this.editCategoryDialog.on('edited', this.updateCategories.bind(this));
             }
             this.editCategoryDialog.show();
         },

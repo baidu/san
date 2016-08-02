@@ -24,13 +24,13 @@ define(function (require) {
             var category = this.data.get('categories')[index];
             service.rmCategory(category.id);
             this.data.remove('categories', index);
-            this.fire('change');
+            this.fire('rm');
         },
 
         edit: function (index) {
             var category = this.data.get('categories')[index];
             service.editCategory(category);
-            this.fire('change');
+            this.fire('edit');
         }
     });
 });
