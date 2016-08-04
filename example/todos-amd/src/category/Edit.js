@@ -23,7 +23,7 @@ define(function (require) {
         rm: function (index) {
             var category = this.data.get('categories')[index];
             service.rmCategory(category.id);
-            this.data.remove('categories', index);
+            this.data.removeAt('categories', index);
             this.fire('rm');
         },
 

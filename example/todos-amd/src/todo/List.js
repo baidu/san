@@ -27,7 +27,7 @@ define(function (require) {
             var todo = this.data.get('todos', index);
             service.rmTodo(todo.id);
 
-            this.data.remove('todos', index);
+            this.data.removeAt('todos', index);
         }
     });
 });
