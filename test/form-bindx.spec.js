@@ -1,11 +1,13 @@
 describe("Form-Bindx", function () {
 
     it("text value", function (done) {
+        var defName = 'input something';
+
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span> <input bindx-value="name"/></div>',
         });
         var myComponent = new MyComponent();
-        myComponent.data.set('name', 'input something');
+        myComponent.data.set('name', defName);
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -14,31 +16,36 @@ describe("Form-Bindx", function () {
         var span = wrap.firstChild.firstChild;
         var input = wrap.getElementsByTagName('input')[0];
         var inputEl = san.getEl(input.id);
-        expect(span.title).toBe('input something');
-        inputEl.valueSynchronizer({
-            target: {value: 'otherthing'},
-            srcElement: {value: 'otherthing'}
-        });
+        expect(span.title).toBe(defName);
 
-        san.nextTick(function () {
-            expect(span.title).toBe('otherthing');
+        doneSpec();
+        function doneSpec() {
+            var name = myComponent.data.get('name');
+            if (name !== defName) {
+                expect(span.title).toBe(name);
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
     });
 
     it("text value in for, set op directly", function (done) {
+        var defList = [
+            'errorrik',
+            'varsha',
+            'firede'
+        ];
+
         var MyComponent = san.defineComponent({
             template: '<div>input something<input bindx-value="item" san-for="item in list"></div>',
         });
         var myComponent = new MyComponent();
-        myComponent.data.set('list', [
-            'errorrik',
-            'varsha',
-            'firede'
-        ]);
+        myComponent.data.set('list', defList);
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -49,29 +56,22 @@ describe("Form-Bindx", function () {
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
 
-        san.getEl(inputs[0].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
-        san.getEl(inputs[1].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
-        san.getEl(inputs[2].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
-
-        san.nextTick(function () {
+        doneSpec();
+        function doneSpec() {
             var list = myComponent.data.get('list');
-            expect(list[0]).toBe('erik');
-            expect(list[1]).toBe('erik');
-            expect(list[2]).toBe('erik');
+            if (list[0] !== 'errorrik' || list[1] !== 'varsha' || list[2] !== 'firede') {
+                expect(list[0]).toBe(inputs[0].value);
+                expect(list[1]).toBe(inputs[1].value);
+                expect(list[2]).toBe(inputs[2].value);
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
     });
 
     it("text value in for, set op", function (done) {
@@ -94,34 +94,24 @@ describe("Form-Bindx", function () {
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
 
-        san.getEl(inputs[0].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
-        san.getEl(inputs[1].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
-        san.getEl(inputs[2].id).valueSynchronizer({
-            target: {value: 'erik'},
-            srcElement: {value: 'erik'}
-        });
 
-        san.nextTick(function doneSpec() {
+        doneSpec();
+        function doneSpec() {
             var list = myComponent.data.get('list');
-            expect(list[0].name).toBe('erik');
-            expect(list[1].name).toBe('erik');
-            expect(list[2].name).toBe('erik');
+            if (list[0].name !== 'errorrik' || list[1].name !== 'varsha' || list[2].name !== 'firede') {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans[0].title).toBe(list[0].name);
+                expect(spans[1].title).toBe(list[1].name);
+                expect(spans[2].title).toBe(list[2].name);
 
-            var spans = wrap.getElementsByTagName('span');
-            expect(spans[0].title).toBe('erik');
-            expect(spans[1].title).toBe('erik');
-            expect(spans[2].title).toBe('erik');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
+            setTimeout(doneSpec, 500);
+        }
     });
 
     it("text value in nested for, set op", function (done) {
@@ -161,43 +151,44 @@ describe("Form-Bindx", function () {
         expect(p1tels[1].title).toBe('green');
 
         var inputs = aes[1].getElementsByTagName('input');
-
         expect(inputs[0].value).toBe('red');
         expect(inputs[1].value).toBe('green');
 
-        san.getEl(inputs[0].id).valueSynchronizer({
-            target: {value: 'pick'},
-            srcElement: {value: 'pick'}
-        });
-        san.getEl(inputs[1].id).valueSynchronizer({
-            target: {value: 'yellow'},
-            srcElement: {value: 'yellow'}
-        });
+        doneSpec();
+        function doneSpec() {
+            var colors0 = myComponent.data.get('persons[0].colors');
+            var colors1 = myComponent.data.get('persons[1].colors');
 
-        san.nextTick(function () {
-            var colors = myComponent.data.get('persons[1].colors');
-            expect(colors[0].name).toBe('pick');
-            expect(colors[1].name).toBe('yellow');
+            if (colors0[0].name !== 'blue'
+                || colors0[1].name !== 'yellow'
+                || colors1[0].name !== 'red'
+                || colors1[1].name !== 'green'
+            ) {
 
-            var aes = wrap.getElementsByTagName('a');
-            var p1tels = aes[1].getElementsByTagName('span');
-            expect(p1tels[0].title).toBe(colors[0].name);
-            expect(p1tels[1].title).toBe(colors[1].name);
+                var aes = wrap.getElementsByTagName('a');
 
-            var inputs = aes[1].getElementsByTagName('input');
-            expect(inputs[0].value).toBe('pick');
-            expect(inputs[1].value).toBe('yellow');
+                var p0tels = aes[0].getElementsByTagName('span');
+                expect(p0tels[0].title).toBe(colors0[0].name);
+                expect(p0tels[1].title).toBe(colors0[1].name);
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
+                var p1tels = aes[1].getElementsByTagName('span');
+                expect(p1tels[0].title).toBe(colors1[0].name);
+                expect(p1tels[1].title).toBe(colors1[1].name);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
     });
 
 
     it("text value in for, push op", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div>input something<div san-for="item in list"><span bind-title="item.name"></span><input bindx-value="item.name"></div></div>',
+            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>',
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -221,35 +212,24 @@ describe("Form-Bindx", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            san.getEl(inputs[0].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[1].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[2].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.nextTick(doneSpec);
+            doneSpec();
         });
 
         function doneSpec() {
             var list = myComponent.data.get('list');
-            expect(list[0].name).toBe('erik');
-            expect(list[1].name).toBe('erik');
-            expect(list[2].name).toBe('erik');
+            if (list[0].name !== 'errorrik' || list[1].name !== 'varsha' || list[2].name !== 'otakustay') {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans[0].title).toBe(list[0].name);
+                expect(spans[1].title).toBe(list[1].name);
+                expect(spans[2].title).toBe(list[2].name);
 
-            var spans = wrap.getElementsByTagName('span');
-            expect(spans[0].title).toBe('erik');
-            expect(spans[1].title).toBe('erik');
-            expect(spans[2].title).toBe('erik');
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
 
-            done();
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            setTimeout(doneSpec, 500);
         }
     });
 
@@ -283,41 +263,29 @@ describe("Form-Bindx", function () {
             expect(inputs[2].value).toBe('varsha');
             expect(inputs[3].value).toBe('firede');
 
-            san.getEl(inputs[0].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[1].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[2].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[3].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.nextTick(doneSpec);
+            doneSpec();
         });
 
         function doneSpec() {
             var list = myComponent.data.get('list');
-            expect(list[0].name).toBe('erik');
-            expect(list[1].name).toBe('erik');
-            expect(list[2].name).toBe('erik');
-            expect(list[3].name).toBe('erik');
+            if (list[0].name !== 'otakustay'
+                || list[1].name !== 'errorrik'
+                || list[2].name !== 'varsha'
+                || list[3].name !== 'firede'
+            ) {
+                var spans = wrap.getElementsByTagName('span');
+                expect(list[0].name).toBe(spans[0].title);
+                expect(list[1].name).toBe(spans[1].title);
+                expect(list[2].name).toBe(spans[2].title);
+                expect(list[3].name).toBe(spans[3].title);
 
-            var spans = wrap.getElementsByTagName('span');
-            expect(spans[0].title).toBe('erik');
-            expect(spans[1].title).toBe('erik');
-            expect(spans[2].title).toBe('erik');
-            expect(spans[3].title).toBe('erik');
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
 
-            done();
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            setTimeout(doneSpec, 500);
         }
     });
 
@@ -345,35 +313,190 @@ describe("Form-Bindx", function () {
         expect(inputs[2].value).toBe('firede');
         expect(inputs.length).toBe(3);
 
-        myComponent.data.remove('list', 2);
+        myComponent.data.removeAt('list', 2);
         san.nextTick(function () {
             var inputs = wrap.getElementsByTagName('input');
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            san.getEl(inputs[0].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.getEl(inputs[1].id).valueSynchronizer({
-                target: {value: 'erik'},
-                srcElement: {value: 'erik'}
-            });
-            san.nextTick(doneSpec);
+            doneSpec();
         });
 
         function doneSpec() {
             var list = myComponent.data.get('list');
-            expect(list[0].name).toBe('erik');
-            expect(list[1].name).toBe('erik');
+            if (list[0].name !== 'errorrik'
+                || list[1].name !== 'varsha'
+            ) {
+                var spans = wrap.getElementsByTagName('span');
+                expect(list[0].name).toBe(spans[0].title);
+                expect(list[1].name).toBe(spans[1].title);
 
-            var spans = wrap.getElementsByTagName('span');
-            expect(spans[0].title).toBe('erik');
-            expect(spans[1].title).toBe('erik');
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
 
-            done();
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            setTimeout(doneSpec, 500);
+        }
+    });
+
+    it("checkbox", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online | join("|")}}</b>'
+                + '<label><input type="checkbox" value="errorrik" bindx-checked="online">errorrik</label>'
+                + '<label><input type="checkbox" value="varsha" bindx-checked="online">varsha</label>'
+                + '<label><input type="checkbox" value="firede" bindx-checked="online">firede</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: ['varsha']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+        expect(inputs[2].checked).toBe(false);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+
+            if (online.length !== 1) {
+                var bEl = wrap.getElementsByTagName('b')[0];
+                expect(bEl.innerHTML.indexOf(online.join('|')) >= 0).toBe(true);
+
+                var values = {};
+                for (var i = 0; i < online.length; i++) {
+                    values[online[i]] = true;
+                }
+
+                var inputs = wrap.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = inputs[i];
+                    expect(input.checked).toBe(!!values[input.value]);
+                }
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        doneSpec();
+    });
+
+    it("radio", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online}}</b>'
+                + '<label><input type="radio" value="errorrik" bindx-checked="online" name="onliner">errorrik</label>'
+                + '<label><input type="radio" value="varsha" bindx-checked="online" name="onliner">varsha</label>'
+                + '<label><input type="radio" value="firede" bindx-checked="online" name="onliner">firede</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'varsha'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+        expect(inputs[2].checked).toBe(false);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+            if (online !== 'varsha') {
+                var bEl = wrap.getElementsByTagName('b')[0];
+                expect(bEl.innerHTML.indexOf(online) >= 0).toBe(true);
+
+                var inputs = wrap.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = inputs[i];
+                    expect(input.checked).toBe(online === input.value);
+                }
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        doneSpec();
+    });
+
+    it("select", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online}}</b>'
+                + '<select bindx-value="online">'
+                +   '<option value="errorrik">errorrik</option>'
+                +   '<option value="varsha">varsha</option>'
+                +   '<option value="firede">firede</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'varsha'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var select = wrap.getElementsByTagName('select')[0];
+
+        san.nextTick(function () {
+            expect(select.selectedIndex).toBe(1);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+
+            doneSpec();
+        });
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+            if (online !== 'varsha') {
+                var select = wrap.getElementsByTagName('select')[0];
+                expect(select.value).toBe(online);
+                expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf(online)).toBe(0);
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
         }
     });
 });

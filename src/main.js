@@ -1638,7 +1638,7 @@
      * @param {Object=} option 设置参数
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
-    Model.prototype.remove = function (expr, index, option) {
+    Model.prototype.removeAt = function (expr, index, option) {
         option = option || {};
         if (typeof expr === 'string') {
             expr = parseExpr(expr);
@@ -1660,6 +1660,32 @@
                 index: index,
                 option: option
             });
+        }
+    };
+
+    /**
+     * 数组数据项移除操作
+     *
+     * @param {string|Object} expr 数据项路径
+     * @param {*} value 要移除的项
+     * @param {Object=} option 设置参数
+     * @param {boolean} option.silence 静默设置，不触发变更事件
+     */
+    Model.prototype.remove = function (expr, value, option) {
+        option = option || {};
+        if (typeof expr === 'string') {
+            expr = parseExpr(expr);
+        }
+        var target = this.get(expr);
+
+        if (target instanceof Array) {
+            var len = target.length;
+            while (len--) {
+                if (target[len] === value) {
+                    this.removeAt(expr, len, option);
+                    break;
+                }
+            }
         }
     };
 
@@ -2216,6 +2242,7 @@
 
         elementContainer[this.id] = this;
         this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
+        this._initPropHandlers();
     };
 
     /**
@@ -2270,29 +2297,40 @@
                 return;
             }
 
-            if (bindInfo.name === 'value') {
-                var elTagName = this.el.tagName;
-                var elType = this.el.type;
-                if ((elTagName === 'INPUT' && elType === 'text') || elTagName === 'TEXTAREA') {
-                    this.valueSynchronizer = bind(valueSynchronizer, this, bindInfo);
-                    this.valueSynchronizerEvent = ('oninput' in this.el) ? 'input' : 'propertychange';
-                    on(
-                        this.el,
-                        this.valueSynchronizerEvent,
-                        this.valueSynchronizer
-                    );
-                }
+            var elTagName = this.el.tagName;
+            var elType = this.el.type;
+
+            switch (bindInfo.name) {
+                case 'value':
+                    switch (elTagName) {
+                        case 'INPUT':
+                        case 'TEXTAREA':
+                            this.on(
+                                ('oninput' in this.el) ? 'input' : 'propertychange',
+                                bind(bindOutputer, this, bindInfo)
+                            );
+                            break;
+
+                        case 'SELECT':
+                            this.on('change', bind(bindOutputer, this, bindInfo));
+                            break;
+                    }
+                    break;
+
+                case 'checked':
+                    if (elTagName === 'INPUT' && (elType === 'checkbox' || elType === 'radio')) {
+                        this.on('click', bind(bindOutputer, this, bindInfo));
+                    }
+                    break;
             }
         }, this);
     };
 
-    function valueSynchronizer(bindInfo, e) {
+    function bindOutputer(bindInfo, e) {
         this.blockSetOnce = true;
-        var value = (e.target || e.srcElement).value;
-        if (this.el.value !== value) {
-            this.el.value = value;
-        }
-        this.scope.set(bindInfo.expr, value);
+        var propHandler = this.propHandlers[bindInfo.name] || this.propHandlers['*'];
+        propHandler.output(this, bindInfo);
+        this.blockSetOnce = false;
     }
 
     /**
@@ -2531,13 +2569,8 @@
                 value = this.evalExpr(bind.expr);
             }
 
-            if (value != null && typeof value !== 'object') {
-                stringBuffer.push(' ');
-                stringBuffer.push(bind.name);
-                stringBuffer.push('="');
-                stringBuffer.push(value);
-                stringBuffer.push('"');
-            }
+            var propHandler = this.propHandlers[bind.name] || this.propHandlers['*'];
+            stringBuffer.push(propHandler.input.attr(this, bind.name, value));
         }, element);
 
         stringBuffer.push('>');
@@ -2586,26 +2619,216 @@
         return buf.toString();
     }
 
+    function contains(array, value) {
+        var result = false;
+        each(array, function (item) {
+            result = item === value;
+            return !result;
+        });
+
+        return result;
+    }
+
     /**
-     * 元素的属性设置函数集合
+     * 绑定元素的属性设置的变换方法集合
      *
      * @inner
-     * @type {Object}
+     * @type {Array}
      */
-    var elementPropSetter = {
-        '*': function (el, name, value) {
-            el[name] = value;
+    var bindPropHandlers = [
+        // input[type=checkbox] 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    var bindValue = element.aNode.binds.get('value');
+                    if (bindValue) {
+                        var elementValue = element.evalExpr(bindValue.expr);
+                        if (contains(value, elementValue)) {
+                            return ' checked="checked"';
+                        }
+                    }
+
+                    return '';
+                },
+
+                prop: function (element, name, value) {
+                    var bindValue = element.aNode.binds.get('value');
+                    if (bindValue) {
+                        var elementValue = element.evalExpr(bindValue.expr);
+                        if (contains(value, elementValue)) {
+                            element.el.checked = true;
+                            return;
+                        }
+                    }
+
+                    element.el.checked = false;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                var el = element.el;
+                element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+            },
+
+            choose: function (element) {
+                if (element.aNode) {
+                    var bindType = element.aNode.binds.get('type');
+                    return element.tagName.toLowerCase() === 'input'
+                        && bindType && element.evalExpr(bindType.expr) === 'checkbox'
+                        && 'checked';
+                }
+            }
         },
 
-        'class': function (el, name, value) {
-            el.className = value;
+        // input[type=radio] 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    var bindValue = element.aNode.binds.get('value');
+                    if (bindValue) {
+                        var elementValue = element.evalExpr(bindValue.expr)
+                        if (value === elementValue) {
+                            return ' checked="checked"';
+                        }
+                    }
+
+                    return '';
+                },
+
+                prop: function (element, name, value) {
+                    var bindValue = element.aNode.binds.get('value');
+                    if (bindValue) {
+                        var elementValue = element.evalExpr(bindValue.expr)
+                        if (value === elementValue) {
+                            element.el.checked = true;
+                            return;
+                        }
+                    }
+
+                    element.el.checked = false;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                var el = element.el;
+                element.scope.set(bindInfo.expr, el.checked ? el.value : '');
+            },
+
+            choose: function (element) {
+                if (element.aNode) {
+                    var bindType = element.aNode.binds.get('type');
+                    return element.tagName.toLowerCase() === 'input'
+                        && bindType && element.evalExpr(bindType.expr) === 'radio'
+                        && 'checked';
+                }
+            }
         },
 
-        'style': function (el, name, value) {
-            el.style.cssText = value;
+        // select 的 value bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    nextTick(function () {
+                        element.el[name] = value;
+                    });
+                },
+
+                prop: function (element, name, value) {
+                    element.el[name] = value;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                element.scope.set(bindInfo.expr, element.el[bindInfo.name]);
+            },
+
+            choose: function (element) {
+                return element.tagName.toLowerCase() === 'select' && 'value';
+            }
+        },
+
+        // class 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    if (!value) {
+                        return '';
+                    }
+
+                    return ' class="' + value + '"'
+                },
+
+                prop: function (element, name, value) {
+                    element.el.className = value;
+                }
+            },
+
+            choose: function (element) {
+                return 'class';
+            }
+        },
+
+        // style 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    if (!value) {
+                        return '';
+                    }
+
+                    return ' style="' + value + '"';
+                },
+
+                prop: function (element, name, value) {
+                    element.el.style.cssText = value;
+                }
+            },
+
+            choose: function (element) {
+                return 'style';
+            }
+        },
+
+        // normal 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    if (value == null) {
+                        return '';
+                    }
+
+                    return ' ' + name + '="' + value + '"';
+                },
+
+                prop: function (element, name, value) {
+                    element.el[name] = value;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                element.scope.set(bindInfo.expr, element.el[bindInfo.name]);
+            },
+
+            choose: function (element) {
+                return '*';
+            }
         }
-    };
+    ];
 
+    Element.prototype._initPropHandlers = function () {
+        // TODO: clear prop in dispose
+        this.propHandlers = {};
+        each(
+            bindPropHandlers,
+            function (propHandler) {
+                var name = propHandler.choose(this);
+                if (name) {
+                    this.propHandlers[name] = propHandler;
+                }
+            },
+            this
+        );
+    }
     /**
      * 设置元素属性
      *
@@ -2618,8 +2841,8 @@
         }
 
         if (this.el && this.lifeCycle.is('created') && !this.blockSetOnce) {
-            var fn = elementPropSetter[name] || elementPropSetter['*'];
-            fn(this.el, name, value);
+            var propHandler = this.propHandlers[name] || this.propHandlers['*'];
+            propHandler.input.prop(this, name, value);
             this.blockSetOnce = false;
         }
     };

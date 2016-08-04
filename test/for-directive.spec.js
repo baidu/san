@@ -193,7 +193,7 @@ describe("ForDirective", function () {
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(5);
 
-        myComponent.data.remove('persons', 0);
+        myComponent.data.removeAt('persons', 0);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
