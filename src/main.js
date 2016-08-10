@@ -765,6 +765,12 @@
             return {
                 value: parseExpr(value)
             };
+        },
+
+        'else': function () {
+            return {
+                value: true
+            };
         }
     };
 
@@ -1902,6 +1908,10 @@
 
         if (aNode.directives.get('if')) {
             return new IfDirective(options);
+        }
+
+        if (aNode.directives.get('else')) {
+            return new ElseDirective(options);
         }
 
         if (aNode.directives.get('for')) {
@@ -3337,6 +3347,33 @@
         callHook(this, 'created');
         callHook(this, 'attached');
     };
+
+    function ElseDirective(options) {
+        var parentChilds = options.parent.childs;
+        var len = parentChilds.length;
+        while (len--) {
+            var child = parentChilds[len];
+            if (child instanceof TextNode) {
+                continue;
+            }
+
+            if (child instanceof IfDirective) {
+                options.aNode.directives.push({
+                    name: 'if',
+                    value: {
+                        type: ExprType.UNARY,
+                        expr: child.aNode.directives.get('if').value
+                    }
+                });
+                options.aNode.directives.remove('else');
+                return new IfDirective(options);
+            }
+
+            break;
+        }
+
+        throw new Error('[SAN FATEL] else not match if.');
+    }
 
     /**
      * for 指令处理类
