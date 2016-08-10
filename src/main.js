@@ -759,6 +759,12 @@
             return {
                 value: parseText(value)
             };
+        },
+
+        'if': function (value) {
+            return {
+                value: parseExpr(value)
+            };
         }
     };
 
@@ -1894,6 +1900,10 @@
             parent: parent
         };
 
+        if (aNode.directives.get('if')) {
+            return new IfDirective(options);
+        }
+
         if (aNode.directives.get('for')) {
             return new ForDirective(options);
         }
@@ -2087,6 +2097,20 @@
     };
 
     /**
+     * 通知自己和childs完成attached状态
+     *
+     * @protected
+     */
+    Node.prototype._noticeAttached = function () {
+        for (var i = 0, l = this.childs ? this.childs.length : 0; i < l; i++) {
+            this.childs[i]._noticeAttached();
+        }
+
+        callHook(this, 'created');
+        callHook(this, 'attached');
+    };
+
+    /**
      * 销毁释放元素
      */
     Node.prototype.dispose = function () {
@@ -2273,8 +2297,10 @@
      * 创建元素DOM
      */
     Element.prototype.create = function () {
-        this._create();
-        callHook(this, 'created');
+        if (!this.lifeCycle.is('created')) {
+            this._create();
+            callHook(this, 'created');
+        }
     };
 
     /**
@@ -2340,9 +2366,11 @@
      * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
      */
     Element.prototype.attach = function (parentEl, beforeEl) {
-        this._attach(parentEl, beforeEl);
-        this.bindEvents();
-        noticeAttached(this);
+        if (!this.lifeCycle.is('attached')) {
+            this._attach(parentEl, beforeEl);
+            this.bindEvents();
+            this._noticeAttached();
+        }
     };
 
     /**
@@ -2510,21 +2538,6 @@
             }
         }
     };
-
-    /**
-     * 通知元素和子元素完成attached状态
-     *
-     * @inner
-     * @param {Element} element 完成attached状态的元素
-     */
-    function noticeAttached(element) {
-        for (var i = 0, l = element.childs ? element.childs.length : 0; i < l; i++) {
-            noticeAttached(element.childs[i]);
-        }
-
-        callHook(element, 'created');
-        callHook(element, 'attached');
-    }
 
     /**
      * 生成元素的html
@@ -2836,10 +2849,6 @@
      * @param {*} value 属性值
      */
     Element.prototype.setProp = function (name, value) {
-        if (!this.el) {
-            this.el = document.getElementById(this.id);
-        }
-
         if (this.el && this.lifeCycle.is('created') && !this.blockSetOnce) {
             var propHandler = this.propHandlers[name] || this.propHandlers['*'];
             propHandler.input.prop(this, name, value);
@@ -2906,8 +2915,10 @@
      * 将元素从页面上移除
      */
     Element.prototype.detach = function () {
-        this._detach();
-        callHook(this, 'detached');
+        if (this.lifeCycle.is('attached')) {
+            this._detach();
+            callHook(this, 'detached');
+        }
     };
 
     /**
@@ -3223,6 +3234,111 @@
     };
 
     /**
+     * if 指令处理类
+     *
+     * @class
+     * @param {Object} options 初始化参数
+     */
+    function IfDirective(options) {
+        Element.call(this, options);
+    }
+
+    inherits(IfDirective, Element);
+
+    function createIfDirectiveChild(ifElement) {
+        var aNode = ifElement.aNode;
+        var childANode = new ANode({
+            text: aNode.text,
+            isText: aNode.isText,
+            childs: aNode.childs,
+            binds: aNode.binds,
+            events: aNode.events,
+            tagName: aNode.tagName
+        });
+
+        ifElement.aNode.directives.each(function (directive) {
+            if (directive.name !== 'if') {
+                childANode.directives.push(directive);
+            }
+        });
+
+        return createNode(childANode, ifElement);
+    }
+
+    /**
+     * 生成html
+     *
+     * @return {string}
+     */
+    IfDirective.prototype.genHTML = function () {
+        var buf = new StringBuffer();
+        var ifDirective = this.aNode.directives.get('if');
+        if (this.evalExpr(ifDirective.value)) {
+            var child = createIfDirectiveChild(this);
+            this.childs.push(child);
+            buf.push(child.genHTML());
+        }
+        buf.push(genStumpHTML(this));
+
+        return buf.toString();
+    };
+
+    /**
+     * 绑定数据变化时的视图更新函数
+     *
+     * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
+     */
+    IfDirective.prototype.updateView = function (change) {
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+
+        var ifExpr = this.aNode.directives.get('if').value;
+        var child = this.childs[0];
+        if (exprNeedsUpdate(ifExpr, change.expr, this.scope)) {
+            nextTick(function () {
+                if (this.lifeCycle.is('disposed')) {
+                    return;
+                }
+
+                var isChildExists = !!this.evalExpr(ifExpr);
+
+                if (isChildExists) {
+                    if (!child) {
+                        child = createIfDirectiveChild(this);
+                        child.attach(this.el.parentNode, this.el);
+                        this.childs[0] = child;
+                    }
+                }
+                else {
+                    child && child.dispose();
+                    this.childs.length = 0;
+                }
+            }, this);
+
+            return true;
+        }
+
+        return child && child.updateView(change);
+    };
+
+    /**
+     * 通知自己和子元素完成attached状态
+     *
+     * @protected
+     */
+    IfDirective.prototype._noticeAttached = function () {
+        var ifDirective = this.aNode.directives.get('if');
+        if (this.evalExpr(ifDirective.value)) {
+            this.childs[0]._noticeAttached();
+        }
+
+        callHook(this, 'created');
+        callHook(this, 'attached');
+    };
+
+    /**
      * for 指令处理类
      *
      * @class
@@ -3262,6 +3378,58 @@
         }
 
         return buf.toString();
+    };
+
+    /**
+     * 将元素attach到页面的行为
+     *
+     * @param {HTMLElement} parentEl 要添加到的父元素
+     * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+     */
+    ForDirective.prototype._attach = function (parentEl, beforeEl) {
+        this.create();
+        if (parentEl) {
+            if (beforeEl) {
+                parentEl.insertBefore(this.el, beforeEl);
+            }
+            else {
+                parentEl.appendChild(this.el);
+            }
+        }
+
+        var buf = new StringBuffer();
+
+        eachForData(this, function (item, i) {
+            var child = createForDirectiveChild(this, item, i);
+            this.childs.push(child);
+            buf.push(child.genHTML());
+        });
+        this.el.insertAdjacentHTML('beforebegin', buf.toString());
+    };
+
+    /**
+     * 将元素从页面上移除的行为
+     */
+    ForDirective.prototype._detach = function () {
+        each(this.childs, function (child) {
+            child.dispose();
+        });
+        this.childs.length = 0;
+
+        if (this.el && this.el.parentNode) {
+            this.el.parentNode.removeChild(this.el);
+        }
+    };
+
+    /**
+     * 创建元素DOM行为
+     */
+    ForDirective.prototype._create = function () {
+        if (!this.el) {
+            this.el = document.createElement(this.tagName);
+            this.el.id = this.id;
+            this.el.style.display = 'none';
+        }
     };
 
     /**
@@ -3412,6 +3580,10 @@
                 switch (change.type) {
                     case Model.ChangeType.ARRAY_PUSH:
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             var newChild = createForDirectiveChild(this, change.value, change.index);
                             this.childs.push(newChild);
                             newChild.attach(this.el.parentNode, this.el);
@@ -3420,6 +3592,10 @@
 
                     case Model.ChangeType.ARRAY_POP:
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             var index = this.childs.length - 1;
                             this.childs[index].dispose();
                             this.childs.splice(index, 1);
@@ -3428,6 +3604,10 @@
 
                     case Model.ChangeType.ARRAY_UNSHIFT:
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             var newChild = createForDirectiveChild(this, change.value, 0);
                             var nextChild = this.childs[0] || this;
                             this.childs.unshift(newChild);
@@ -3440,6 +3620,10 @@
 
                     case Model.ChangeType.ARRAY_SHIFT:
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             this.childs[0].dispose();
                             this.childs.splice(0, 1);
                         }, this);
@@ -3450,6 +3634,10 @@
 
                     case Model.ChangeType.ARRAY_REMOVE:
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             this.childs[change.index].dispose();
                             this.childs.splice(change.index, 1);
                         }, this);
@@ -3461,6 +3649,10 @@
                     case Model.ChangeType.SET:
                         // 重新构建整个childs
                         nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
                             this._disposeChilds();
                             var buf = new StringBuffer();
                             eachForData(this, function (item, i) {
@@ -3470,7 +3662,7 @@
                             });
 
                             this.el.insertAdjacentHTML('beforebegin', buf.toString());
-                            noticeAttached(this);
+                            this._noticeAttached();
                         }, this);
                 }
 
