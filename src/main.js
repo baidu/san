@@ -642,62 +642,74 @@
                 }));
             }
         }
+    }
 
-        /**
-         * 解析抽象节点属性
-         *
-         * @inner
-         * @param {ANode} aNode 抽象节点
-         * @param {string} name 属性名称
-         * @param {string} value 属性值
-         */
-        function integrateAttr(aNode, name, value) {
-            var prefixIndex = name.indexOf('-');
-            var prefix;
-            var realName;
+    /**
+     * 解析抽象节点属性
+     *
+     * @inner
+     * @param {ANode} aNode 抽象节点
+     * @param {string} name 属性名称
+     * @param {string} value 属性值
+     * @param {boolean=} ignoreNormal 是否忽略无前缀的普通属性
+     */
+    function integrateAttr(aNode, name, value, ignoreNormal) {
+        if (name === 'id') {
+            aNode.id = value;
+            return;
+        }
 
-            if (name === 'id') {
-                aNode.id = value;
-            }
+        var prefixIndex = name.indexOf('-');
+        var prefix;
+        var realName;
 
-            if (prefixIndex > 0) {
-                prefix = name.slice(0, prefixIndex);
-                realName = name.slice(prefixIndex + 1);
-            }
+        if (prefixIndex > 0) {
+            prefix = name.slice(0, prefixIndex);
+            realName = name.slice(prefixIndex + 1);
+        }
 
-            switch (prefix) {
-                case 'on':
-                    aNode.events.push({
-                        name: realName,
-                        expr: parseCall(value)
-                    });
-                    break;
+        switch (prefix) {
+            case 'on':
+                aNode.events.push({
+                    name: realName,
+                    expr: parseCall(value)
+                });
+                break;
 
-                case 'bind':
-                    aNode.binds.push({
-                        name: realName,
-                        expr: parseExpr(value)
-                    });
-                    break;
+            case 'bind':
+                aNode.binds.push({
+                    name: realName,
+                    expr: parseExpr(value)
+                });
+                break;
 
-                case 'bindx':
-                    aNode.binds.push({
-                        name: realName,
-                        expr: parseExpr(value),
-                        twoWay: true
-                    });
-                    break;
+            case 'bindx':
+                aNode.binds.push({
+                    name: realName,
+                    expr: parseExpr(value),
+                    twoWay: true
+                });
+                break;
 
-                case 'san':
-                    aNode.directives.push(parseDirective(realName, value));
-                    break;
+            case 'san':
+                var directive = parseDirective(realName, value);
+                directive && aNode.directives.push(directive);
+                break;
 
-                default:
+            case 'prop':
+                aNode.binds.push(textBindExtra({
+                    name: realName,
+                    expr: parseText(value)
+                }));
+                break;
+
+            default:
+                if (!ignoreNormal) {
                     aNode.binds.push(textBindExtra({
                         name: name,
                         expr: parseText(value)
                     }));
-            }
+                }
         }
     }
 
@@ -2094,7 +2106,11 @@
         this.parent = options.parent;
         this.scope = options.scope;
         this.aNode = options.aNode;
-        this.id = this.aNode && this.aNode.id || guid();
+        this.el = options.el;
+
+        this.id = (this.el && this.el.id)
+            || (this.aNode && this.aNode.id)
+            || guid();
     };
 
     /**
@@ -2132,6 +2148,7 @@
      * 销毁释放元素行为
      */
     Node.prototype._dispose = function () {
+        this.el = null;
         this.owner = null;
         this.scope = null;
         this.aNode = null;
@@ -2156,7 +2173,7 @@
      * @return {string}
      */
     function genStumpHTML(node) {
-        return '<script type="text/san-vm" id="' + node.id + '"></script>';
+        return '<script type="text/san" id="' + node.id + '"></script>';
     }
 
     /**
@@ -2181,7 +2198,31 @@
      */
     TextNode.prototype._init = function (options) {
         Node.prototype._init.call(this, options);
+
+        if (this.el) {
+            if (!this.aNode) {
+                this.aNode = new ANode();
+            }
+
+            // TODO: 兼容性
+            this.aNode.text = this.el.textContent;
+        }
+
         this.expr = parseText(this.aNode.text);
+    };
+
+    TextNode.prototype._inited = function () {
+        if (this.el) {
+            callHook(this, 'created');
+
+            if (this.el.parentNode) {
+                if (this.el.previousSibling.nodeType !== 3) {
+                    // TODO: create text node and insert before el
+                }
+
+                callHook(this, 'attached');
+            }
+        }
     };
 
     /**
@@ -2197,7 +2238,7 @@
      * 刷新文本节点的内容
      */
     TextNode.prototype.update = function () {
-        var node = document.getElementById(this.id).previousSibling;
+        var node = this.el.previousSibling;
 
         if (node) {
             var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
@@ -2274,9 +2315,28 @@
     Element.prototype._init = function (options) {
         Node.prototype._init.call(this, options);
 
+        if (this.el) {
+            this.aNode = parseANodeFromEl(this.el);
+            this.tagName = this.aNode.tagName;
+        }
+
         elementContainer[this.id] = this;
         this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
         this._initPropHandlers();
+    };
+
+    /**
+     * 初始化完成后的行为
+     */
+    Element.prototype._inited = function () {
+        if (this.el) {
+            this.tagName = this.el.tagName.toLowerCase();
+            compileChildsFromEl(this);
+            callHook(this, 'created');
+            if (this.el.parentNode) {
+                callHook(this, 'attached');
+            }
+        }
     };
 
     /**
@@ -2990,8 +3050,10 @@
     Component.prototype.init = function (options) {
         Element.prototype._init.call(this, options);
 
-        this._compile();
-        callHook(this, 'compiled');
+        this.filters = options.filters || this.filters || {};
+        if (!this.owner) {
+            this.owner = this;
+        }
 
         // init data
         this.data = new Model();
@@ -3004,22 +3066,30 @@
             }
         }
 
+        this._compile();
+        callHook(this, 'compiled');
+
         this.scope && this.aNode.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
-        this.filters = options.filters || this.filters || {};
-        if (!this.owner) {
-            this.owner = this;
-        }
+
         callHook(this, 'inited');
 
         // 如果从el编译的，认为已经attach了，触发钩子
-        if (this.compileFromEl) {
+        // TODO: listen in created or attached
+        if (this.isCompileFromEl) {
             callHook(this, 'created');
             callHook(this, 'attached');
             this._listenDataChange();
         }
+    };
+
+    /**
+     * 初始化完成后的行为
+     * 清空Element.prototype._inited的行为
+     */
+    Component.prototype._inited = function () {
     };
 
     /**
@@ -3059,10 +3129,112 @@
         return refComponent;
     };
 
+    Component.prototype._compileFromEl = function () {
+        this.isCompileFromEl = true;
+        this.aNode = parseANodeFromEl(this.el);
+        compileChildsFromEl(this);
+    };
+
+    function compileChildsFromEl(element) {
+        var walker = new DOMChildsWalker(element.el);
+        var current;
+        while ((current = walker.current)) {
+            var child = null;
+
+            if (current.nodeType === 1) {
+                // find component class
+                var tagName = current.tagName.toLowerCase();
+                var ComponentClass = null;
+
+                if (tagName.indexOf('-') > 0) {
+                    ComponentClass = element.owner.components[tagName];
+                }
+
+                var componentName = current.getAttribute('san-component');
+                if (componentName) {
+                    ComponentClass = element.owner.components[componentName];
+                }
+
+                var owner = element instanceof Component ? element : element.owner;
+                var option = {
+                    owner: owner,
+                    scope: owner.data,
+                    parent: element,
+                    el: current
+                };
+
+                // as Component
+                if (ComponentClass) {
+                    child = new ComponentClass(option);
+                }
+                // as normal Element
+                else {
+                    var childANode = parseANodeFromEl(current);
+
+                    if (childANode.directives.get('if')) {
+                        child = new IfDirective(option);
+                    }
+                    else if (childANode.directives.get('for')) {
+                        child = new ForDirective(option);
+                    }
+                    else if (isStump(current)) {
+                        // as TextNode
+                        child = new TextNode(option);
+                    }
+                    else {
+                        // as Element
+                        child = new Element(option);
+                    }
+                }
+            }
+
+            if (child) {
+                element.childs.push(child);
+            }
+
+            walker.next();
+        }
+    }
+
+    function parseANodeFromEl(el) {
+        var aNode = new ANode();
+        each(
+            el.attributes,
+            function (attr) {
+                integrateAttr(aNode, attr.name, attr.value, true);
+            }
+        );
+
+        return aNode;
+    }
+
+    function isStump(element) {
+        return element.tagName === 'SCRIPT' && element.type === 'text/san';
+    }
+
+    function DOMChildsWalker(el) {
+        this.current = el.firstChild;
+    }
+
+    DOMChildsWalker.prototype.next = function () {
+        this.current = this.current.nextSibling;
+    };
+
+
+
     /**
      * 模板编译行为
      */
     Component.prototype._compile = function () {
+        if (this.lifeCycle.is('compiled')) {
+            return;
+        }
+
+        if (this.el) {
+            this._compileFromEl();
+            return;
+        }
+
         // pre compile template
         var proto = this.constructor.prototype;
 
