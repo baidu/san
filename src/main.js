@@ -3057,15 +3057,19 @@
 
         // init data
         this.data = new Model();
-        if (typeof this.initData === 'function') {
-            var initData = this.initData();
-            for (var key in initData) {
-                if (initData.hasOwnProperty(key)) {
-                    this.data.set(key, initData[key]);
-                }
+
+        var initData = options.data;
+        if (!initData && typeof this.initData === 'function') {
+            initData = this.initData();
+        }
+
+        for (var key in initData) {
+            if (initData.hasOwnProperty(key)) {
+                this.data.set(key, initData[key]);
             }
         }
 
+        // compile
         this._compile();
         callHook(this, 'compiled');
 
