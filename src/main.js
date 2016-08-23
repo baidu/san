@@ -2176,6 +2176,11 @@
         return '<script type="text/san" id="' + node.id + '"></script>';
     }
 
+    function getScriptText(script) {
+        // TODO: 兼容性
+        return script.textContent;
+    }
+
     /**
      * 文本节点类
      *
@@ -2205,7 +2210,7 @@
             }
 
             // TODO: 兼容性
-            this.aNode.text = this.el.textContent;
+            this.aNode.text = getScriptText(this.el);
         }
 
         this.expr = parseText(this.aNode.text);
@@ -3143,60 +3148,61 @@
         var walker = new DOMChildsWalker(element.el);
         var current;
         while ((current = walker.current)) {
-            var child = null;
-
-            if (current.nodeType === 1) {
-                // find component class
-                var tagName = current.tagName.toLowerCase();
-                var ComponentClass = null;
-
-                if (tagName.indexOf('-') > 0) {
-                    ComponentClass = element.owner.components[tagName];
-                }
-
-                var componentName = current.getAttribute('san-component');
-                if (componentName) {
-                    ComponentClass = element.owner.components[componentName];
-                }
-
-                var owner = element instanceof Component ? element : element.owner;
-                var option = {
-                    owner: owner,
-                    scope: owner.data,
-                    parent: element,
-                    el: current
-                };
-
-                // as Component
-                if (ComponentClass) {
-                    child = new ComponentClass(option);
-                }
-                // as normal Element
-                else {
-                    var childANode = parseANodeFromEl(current);
-
-                    if (childANode.directives.get('if')) {
-                        child = new IfDirective(option);
-                    }
-                    else if (childANode.directives.get('for')) {
-                        child = new ForDirective(option);
-                    }
-                    else if (isStump(current)) {
-                        // as TextNode
-                        child = new TextNode(option);
-                    }
-                    else {
-                        // as Element
-                        child = new Element(option);
-                    }
-                }
-            }
-
+            var child = createNodeByEl(current, element, walker);
             if (child) {
                 element.childs.push(child);
             }
 
-            walker.next();
+            walker.goNext();
+        }
+    }
+
+    function createNodeByEl(el, parent, elWalker) {
+        var owner = parent instanceof Component ? parent : parent.owner;
+
+        // find component class
+        var tagName = el.tagName.toLowerCase();
+        var ComponentClass = null;
+
+        if (tagName.indexOf('-') > 0) {
+            ComponentClass = owner.components[tagName];
+        }
+
+        var componentName = el.getAttribute('san-component');
+        if (componentName) {
+            ComponentClass = owner.components[componentName];
+        }
+
+        var option = {
+            owner: owner,
+            scope: owner.data,
+            parent: parent,
+            el: el,
+            elWalker: elWalker
+        };
+
+        // as Component
+        if (ComponentClass) {
+            return new ComponentClass(option);
+        }
+
+        // as normal Element
+        var childANode = parseANodeFromEl(el);
+        var stumpName = el.getAttribute('san-stump');
+
+        if (childANode.directives.get('if')) {
+            return new IfDirective(option);
+        }
+        else if (childANode.directives.get('for') || stumpName === 'for') {
+            return new ForDirective(option);
+        }
+        else if (isStump(el)) {
+            // as TextNode
+            return new TextNode(option);
+        }
+        else {
+            // as Element
+            return new Element(option);
         }
     }
 
@@ -3217,13 +3223,26 @@
     }
 
     function DOMChildsWalker(el) {
-        this.current = el.firstChild;
+        this.raw = [];
+        this.index = 0;
+
+        var child = el.firstChild;
+        while (child) {
+            if (child.nodeType === 1) {
+                this.raw.push(child);
+            }
+
+            child = child.nextSibling;
+        }
+
+        this.current = this.raw[this.index];
+        this.next = this.raw[this.index + 1];
     }
 
-    DOMChildsWalker.prototype.next = function () {
-        this.current = this.current.nextSibling;
+    DOMChildsWalker.prototype.goNext = function () {
+        this.current = this.raw[++this.index];
+        this.next = this.raw[this.index + 1];
     };
-
 
 
     /**
@@ -3591,6 +3610,62 @@
         }
 
         return buf.toString();
+    };
+
+    /**
+     * 初始化行为
+     *
+     * @param {Object} options 初始化参数
+     */
+    ForDirective.prototype._init = function (options) {
+        Node.prototype._init.call(this, options);
+
+
+        if (options.el) {
+            this.el = null;
+
+            while (1) {
+                var current = options.elWalker.current;
+                if (current.getAttribute('san-stump') === 'for') {
+                    var aNode = parseTemplate(getScriptText(current));
+                    aNode = aNode.childs[0];
+                    this.aNode = aNode;
+                    this.tagName = this.aNode.tagName;
+                    this._create();
+
+                    options.el.parentNode.insertBefore(this.el, current);
+                    options.el.parentNode.removeChild(current);
+                    break;
+                }
+                else {
+                    current.removeAttribute('san-for');
+                    var child = createNodeByEl(current, this, options.elWalker);
+                    this.childs.push(child);
+                }
+
+                var next = options.elWalker.next;
+                if (next && (next.getAttribute('san-for') || next.getAttribute('san-stump') === 'for')) {
+                    options.elWalker.goNext();
+                }
+                else {
+                    break;
+                }
+            }
+        }
+
+        elementContainer[this.id] = this;
+    };
+
+    /**
+     * 初始化完成后的行为
+     */
+    ForDirective.prototype._inited = function () {
+        if (this.el) {
+            callHook(this, 'created');
+            if (this.el.parentNode) {
+                callHook(this, 'attached');
+            }
+        }
     };
 
     /**
