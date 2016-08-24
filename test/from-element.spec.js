@@ -310,4 +310,115 @@ describe("Component Compile From Element", function () {
 
     });
 
+    it("update if, init with true", function (done) {
+        var MyComponent = san.defineComponent({
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<u><span san-if="cond" title="errorrik" prop-title="{{name}}">errorrik<script type="text/san">{{name}}</script></span></u>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                'cond': true,
+                'name': 'errorrik'
+            }
+        });
+
+        myComponent.data.set('cond', false);
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('errorrik');
+
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(0);
+
+            myComponent.data.set('cond', true);
+
+            san.nextTick(function () {
+                var span = wrap.firstChild.firstChild;
+                expect(span.title).toBe('errorrik');
+                expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("update if, init with false", function (done) {
+        var MyComponent = san.defineComponent({
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<u><script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script></u>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                'cond': false,
+                'name': 'errorrik'
+            }
+        });
+
+        myComponent.data.set('cond', true);
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(0);
+
+
+        san.nextTick(function () {
+            var span = wrap.firstChild.firstChild;
+            expect(span.title).toBe('errorrik');
+            expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("update else, init with false", function (done) {
+        var MyComponent = san.defineComponent({
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<u>'
+            + '<script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script>'
+            + '<span san-else title="otakustay" prop-title="{{name2}}">otakustay<script type="text/san">{{name2}}</script></span>'
+            + '</u>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                'cond': false,
+                'name': 'errorrik',
+                'name2': 'otakustay'
+            }
+        });
+
+        myComponent.data.set('cond', true);
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('otakustay');
+        expect(spans[0].innerHTML.indexOf('otakustay')).toBe(0);
+
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('errorrik');
+            expect(spans[0].innerHTML.indexOf('errorrik')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });

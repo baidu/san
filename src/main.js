@@ -2205,12 +2205,10 @@
         Node.prototype._init.call(this, options);
 
         if (this.el) {
-            if (!this.aNode) {
-                this.aNode = new ANode();
-            }
-
-            // TODO: 兼容性
+            this.aNode.isText = true;
+            this.aNode.tagName = null;
             this.aNode.text = getScriptText(this.el);
+            this.parent._pushChildANode(this.aNode);
         }
 
         this.expr = parseText(this.aNode.text);
@@ -2322,6 +2320,7 @@
 
         if (this.el) {
             this.aNode = parseANodeFromEl(this.el);
+            this.parent._pushChildANode(this.aNode);
             this.tagName = this.aNode.tagName;
         }
 
@@ -3033,6 +3032,10 @@
         this.childs.length = 0;
     };
 
+    Element.prototype._pushChildANode = function (aNode) {
+        this.aNode.childs.push(aNode);
+    };
+
     // #region Component
 
     /**
@@ -3053,7 +3056,7 @@
      * @param {Object} options 初始化参数
      */
     Component.prototype.init = function (options) {
-        Element.prototype._init.call(this, options);
+        Node.prototype._init.call(this, options);
 
         this.filters = options.filters || this.filters || {};
         if (!this.owner) {
@@ -3141,6 +3144,8 @@
     Component.prototype._compileFromEl = function () {
         this.isCompileFromEl = true;
         this.aNode = parseANodeFromEl(this.el);
+
+        this.parent && this.parent._pushChildANode(this.aNode);
         compileChildsFromEl(this);
     };
 
@@ -3189,9 +3194,13 @@
         // as normal Element
         var childANode = parseANodeFromEl(el);
         var stumpName = el.getAttribute('san-stump');
+        option.aNode = childANode;
 
-        if (childANode.directives.get('if')) {
+        if (childANode.directives.get('if') || stumpName === 'if') {
             return new IfDirective(option);
+        }
+        else if (childANode.directives.get('else') || stumpName === 'else') {
+            return new ElseDirective(option);
         }
         else if (childANode.directives.get('for') || stumpName === 'for') {
             return new ForDirective(option);
@@ -3208,6 +3217,8 @@
 
     function parseANodeFromEl(el) {
         var aNode = new ANode();
+        aNode.tagName = el.tagName.toLowerCase();
+
         each(
             el.attributes,
             function (attr) {
@@ -3471,6 +3482,69 @@
     }
 
     /**
+     * 初始化行为
+     *
+     * @param {Object} options 初始化参数
+     */
+    IfDirective.prototype._init = function (options) {
+        Node.prototype._init.call(this, options);
+
+
+        if (options.el) {
+            if (options.el.getAttribute('san-stump') === 'if') {
+                var aNode = parseTemplate(getScriptText(options.el));
+                aNode = aNode.childs[0];
+                this.aNode = aNode;
+                this.tagName = this.aNode.tagName;
+            }
+            else {
+                this.el = null;
+                this._create();
+                options.el.parentNode.insertBefore(this.el, options.el.nextSibling);
+
+                options.el.removeAttribute('san-if');
+                var child = createNodeByEl(options.el, this, options.elWalker);
+
+                this.childs.push(child);
+                this.aNode.childs = child.aNode.childs.slice(0);
+            }
+
+            if (options.ifDirective) {
+                this.aNode.directives.push(options.ifDirective);
+            }
+
+            this.parent._pushChildANode(this.aNode);
+        }
+
+        elementContainer[this.id] = this;
+    };
+
+    IfDirective.prototype._pushChildANode = function () {};
+
+    /**
+     * 创建元素DOM行为
+     */
+    IfDirective.prototype._create = function () {
+        if (!this.el) {
+            this.el = document.createElement('script');
+            this.el.type = 'text/san';
+            this.el.id = this.id;
+        }
+    };
+
+    /**
+     * 初始化完成后的行为
+     */
+    IfDirective.prototype._inited = function () {
+        if (this.el) {
+            callHook(this, 'created');
+            if (this.el.parentNode) {
+                callHook(this, 'attached');
+            }
+        }
+    };
+
+    /**
      * 生成html
      *
      * @return {string}
@@ -3553,14 +3627,26 @@
             }
 
             if (child instanceof IfDirective) {
-                options.aNode.directives.push({
+                var directiveValue = {
                     name: 'if',
                     value: {
                         type: ExprType.UNARY,
                         expr: child.aNode.directives.get('if').value
                     }
-                });
+                };
+                options.aNode.directives.push(directiveValue);
                 options.aNode.directives.remove('else');
+
+                if (options.el) {
+                    if (isStump(options.el)) {
+                        options.el.setAttribute('san-stump', 'if');
+                    }
+                    else {
+                        options.el.removeAttribute('san-else');
+                    }
+                }
+
+                options.ifDirective = directiveValue;
                 return new IfDirective(options);
             }
 
@@ -3581,6 +3667,9 @@
     }
 
     inherits(ForDirective, Element);
+
+
+    ForDirective.prototype._pushChildANode = function () {};
 
     /**
      * 生成html
@@ -3651,6 +3740,8 @@
                     break;
                 }
             }
+
+            this.parent._pushChildANode(this.aNode);
         }
 
         elementContainer[this.id] = this;
