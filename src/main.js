@@ -2318,21 +2318,26 @@
     Element.prototype._init = function (options) {
         Node.prototype._init.call(this, options);
 
+        this._initFromEl(options);
+        elementContainer[this.id] = this;
+        this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
+        this._initPropHandlers();
+    };
+
+    Element.prototype._initFromEl = function () {
         if (this.el) {
             this.aNode = parseANodeFromEl(this.el);
             this.parent._pushChildANode(this.aNode);
             this.tagName = this.aNode.tagName;
         }
-
-        elementContainer[this.id] = this;
-        this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
-        this._initPropHandlers();
     };
 
     /**
      * 初始化完成后的行为
      */
     Element.prototype._inited = function () {
+
+
         if (this.el) {
             this.tagName = this.el.tagName.toLowerCase();
             compileChildsFromEl(this);
@@ -3056,7 +3061,7 @@
      * @param {Object} options 初始化参数
      */
     Component.prototype.init = function (options) {
-        Node.prototype._init.call(this, options);
+        Element.prototype._init.call(this, options);
 
         this.filters = options.filters || this.filters || {};
         if (!this.owner) {
@@ -3096,6 +3101,9 @@
             this._listenDataChange();
         }
     };
+
+
+    Component.prototype._initFromEl =
 
     /**
      * 初始化完成后的行为
@@ -3481,15 +3489,8 @@
         return createNode(childANode, ifElement);
     }
 
-    /**
-     * 初始化行为
-     *
-     * @param {Object} options 初始化参数
-     */
-    IfDirective.prototype._init = function (options) {
-        Node.prototype._init.call(this, options);
 
-
+    IfDirective.prototype._initFromEl = function (options) {
         if (options.el) {
             if (options.el.getAttribute('san-stump') === 'if') {
                 var aNode = parseTemplate(getScriptText(options.el));
@@ -3515,8 +3516,6 @@
 
             this.parent._pushChildANode(this.aNode);
         }
-
-        elementContainer[this.id] = this;
     };
 
     IfDirective.prototype._pushChildANode = function () {};
@@ -3706,10 +3705,7 @@
      *
      * @param {Object} options 初始化参数
      */
-    ForDirective.prototype._init = function (options) {
-        Node.prototype._init.call(this, options);
-
-
+    ForDirective.prototype._initFromEl = function (options) {
         if (options.el) {
             this.el = null;
 
@@ -3743,8 +3739,6 @@
 
             this.parent._pushChildANode(this.aNode);
         }
-
-        elementContainer[this.id] = this;
     };
 
     /**
