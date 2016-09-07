@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - list</title>
+</head>
+
+<body>
+    <script src="../../../src/main.js"></script>
+    <script>
+    var MyApp = san.defineComponent({
+        template: ''
+            + '<dl>'
+            +   '<dt>name - email</dt>'
+            +   '<dd san-for="p, index in persons" title="{{p.name}}">{{index + 1}}. {{p.name}}({{dept}}) - {{p.email}}</dd>'
+            + '</dl>',
+
+        initData: function () {
+            return {
+                dept: 'ssg',
+                persons: [
+                    {name: 'errorrik', email: 'errorrik@gmail.com'},
+                    {name: 'otakustay', email: 'otakustay@gmail.com'}
+                ]
+            };
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+
