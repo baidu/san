@@ -18,7 +18,6 @@ describe("Component Compile From Element", function () {
         var myComponent = new MyComponent({
             el: wrap.firstChild
         });
-        myComponent.attach(wrap);
 
         myComponent.data.set('email', 'erik168@163.com');
         myComponent.data.set('name', 'erik');
@@ -52,7 +51,6 @@ describe("Component Compile From Element", function () {
         var myComponent = new MyComponent({
             el: wrap.firstChild
         });
-        myComponent.attach(wrap);
 
         myComponent.data.set('email', 'erik168@163.com');
         myComponent.data.set('name', 'erik');
@@ -175,7 +173,7 @@ describe("Component Compile From Element", function () {
         var wrap = document.createElement('div');
         wrap.innerHTML = '<ul><li>name - email</li>'
             + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="errorrik">errorrik - errorrik@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="varsha">varsha - wangshuonpu@163.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
+            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="otakustay">otakustay - otakustay@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
             + '<script type="text/san" san-stump="for"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></script>'
             + '<li>name - email</li></ul>';
         document.body.appendChild(wrap);
@@ -185,7 +183,7 @@ describe("Component Compile From Element", function () {
             data: {
                 'persons': [
                     {name: 'errorrik', email: 'errorrik@gmail.com'},
-                    {name: 'varsha', email: 'wangshuonpu@163.com'}
+                    {name: 'otakustay', email: 'otakustay@gmail.com'}
                 ]
             }
         });
@@ -414,6 +412,45 @@ describe("Component Compile From Element", function () {
             expect(spans.length).toBe(1);
             expect(spans[0].title).toBe('errorrik');
             expect(spans[0].innerHTML.indexOf('errorrik')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("update else, init with true", function (done) {
+        var MyComponent = san.defineComponent({
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<u>'
+            + '<span san-if="cond" title="errorrik" prop-title="{{name}}">errorrik<script type="text/san">{{name}}</script></span>'
+            + '<script type="text/san" san-stump="else"><span san-else title="{{name2}}">{{name2}}</span></script>'
+            + '</u>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                'cond': true,
+                'name': 'errorrik',
+                'name2': 'otakustay'
+            }
+        });
+
+        myComponent.data.set('cond', false);
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('errorrik');
+        expect(spans[0].innerHTML.indexOf('errorrik')).toBe(0);
+
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('otakustay');
+            expect(spans[0].innerHTML.indexOf('otakustay')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);

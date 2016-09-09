@@ -1792,6 +1792,14 @@
             return '';
         },
 
+        nullToBe: function (condition, value) {
+            if (condition == null) {
+                return value;
+            }
+
+            return condition;
+        },
+
         yesOrNoToBe: function (condition, yesValue, noValue) {
             return condition ? yesValue : noValue;
         },
@@ -3495,6 +3503,7 @@
             if (options.el.getAttribute('san-stump') === 'if') {
                 var aNode = parseTemplate(getScriptText(options.el));
                 aNode = aNode.childs[0];
+                aNode.directives.remove('else');
                 this.aNode = aNode;
                 this.tagName = this.aNode.tagName;
             }
@@ -4110,11 +4119,11 @@
      */
     san.defineComponent = function (proto) {
         function ComponentClass(option) {
-            san.Component.call(this, option);
+            Component.call(this, option);
         }
 
         ComponentClass.prototype = proto
-        san.inherits(ComponentClass, san.Component);
+        san.inherits(ComponentClass, Component);
 
         return ComponentClass;
     };
