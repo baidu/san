@@ -14,10 +14,12 @@ define(function (require) {
             'ui-addcategory': require('../category/Add')
         },
 
-        initData: {
-            width: 200,
-            top: 100,
-            left: -1000
+        initData: function () {
+            return {
+                width: 200,
+                top: 100,
+                left: -1000
+            };
         },
 
         show: function () {
