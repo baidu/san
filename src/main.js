@@ -3090,6 +3090,8 @@
             }
         }
 
+        callHook(this, 'inited');
+
         // compile
         this._compile();
         callHook(this, 'compiled');
@@ -3098,8 +3100,6 @@
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
-
-        callHook(this, 'inited');
 
         // 如果从el编译的，认为已经attach了，触发钩子
         // TODO: listen in created or attached
