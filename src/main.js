@@ -2184,11 +2184,6 @@
         return '<script type="text/san" id="' + node.id + '"></script>';
     }
 
-    function getScriptText(script) {
-        // TODO: 兼容性
-        return script.innerHTML;
-    }
-
     /**
      * 文本节点类
      *
@@ -2215,7 +2210,7 @@
         if (this.el) {
             this.aNode.isText = true;
             this.aNode.tagName = null;
-            this.aNode.text = getScriptText(this.el);
+            this.aNode.text = this.el.innerHTML;
             this.parent._pushChildANode(this.aNode);
         }
 
@@ -2228,7 +2223,7 @@
 
             if (this.el.parentNode) {
                 if (this.el.previousSibling.nodeType !== 3) {
-                    // TODO: create text node and insert before el
+                    this.el.insertAdjacentHTML('beforebegin', '\uFEFF');
                 }
 
                 callHook(this, 'attached');
@@ -3496,7 +3491,7 @@
     IfDirective.prototype._initFromEl = function (options) {
         if (options.el) {
             if (options.el.getAttribute('san-stump') === 'if') {
-                var aNode = parseTemplate(getScriptText(options.el));
+                var aNode = parseTemplate(options.el.innerHTML);
                 aNode = aNode.childs[0];
                 aNode.directives.remove('else');
                 this.aNode = aNode;
@@ -3710,7 +3705,7 @@
             while (1) {
                 var current = options.elWalker.current;
                 if (current.getAttribute('san-stump') === 'for') {
-                    var aNode = parseTemplate(getScriptText(current));
+                    var aNode = parseTemplate(current.innerHTML);
                     aNode = aNode.childs[0];
                     this.aNode = aNode;
                     this.tagName = this.aNode.tagName;
