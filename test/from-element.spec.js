@@ -353,7 +353,7 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u><script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script></u>';
+        wrap.innerHTML = '<u><a>nimei</a><script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script></u>';
         document.body.appendChild(wrap);
 
         var myComponent = new MyComponent({
@@ -370,7 +370,7 @@ describe("Component Compile From Element", function () {
 
 
         san.nextTick(function () {
-            var span = wrap.firstChild.firstChild;
+            var span = wrap.firstChild.firstChild.nextSibling;
             expect(span.title).toBe('errorrik');
             expect(span.innerHTML.indexOf('errorrik')).toBe(0);
 
@@ -385,7 +385,7 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u>'
+        wrap.innerHTML = '<u><a>nimei</a>'
             + '<script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script>'
             + '<span san-else title="otakustay" prop-title="{{name2}}">otakustay<script type="text/san">{{name2}}</script></span>'
             + '</u>';
