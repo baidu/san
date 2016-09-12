@@ -104,7 +104,7 @@ describe("IfDirective", function () {
         san.nextTick(function () {
 
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(5);
+            expect(lis.length).toBe(4);
             expect(lis[2].getAttribute('title')).toBe('varsha');
             expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
             expect(lis[1].getAttribute('title')).toBe('errorrik');
@@ -133,7 +133,7 @@ describe("IfDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(5);
+        expect(lis.length).toBe(4);
         expect(lis[2].getAttribute('title')).toBe('varsha');
         expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
@@ -152,7 +152,7 @@ describe("IfDirective", function () {
 
             san.nextTick(function () {
                 var lis = wrap.getElementsByTagName('li');
-                expect(lis.length).toBe(6);
+                expect(lis.length).toBe(5);
                 expect(lis[3].getAttribute('title')).toBe('varsha');
                 expect(lis[3].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
                 expect(lis[1].getAttribute('title')).toBe('otakustay');

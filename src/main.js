@@ -2242,7 +2242,7 @@
      * @return {string}
      */
     TextNode.prototype.genHTML = function () {
-        return (this.evalExpr(this.expr) || ' ') + genStumpHTML(this);
+        return (this.evalExpr(this.expr) || '\uFEFF') + genStumpHTML(this);
     };
 
     /**
@@ -2253,7 +2253,7 @@
 
         if (node) {
             var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
-            node[textProp] = this.evalExpr(this.expr);
+            node[textProp] = this.evalExpr(this.expr) || '\uFEFF';
         }
 
         this.hasUpdateOpInNextTick = 0;
@@ -3429,10 +3429,6 @@
             var needUpdate = false;
 
             this.aNode.binds.each(function (bind) {
-                // if (bind.expr.type === ExprType.TEXT) {
-                //     this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
-                // }
-                // else
                 if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
                     this.data.set(
                         bind.name,
@@ -3446,7 +3442,6 @@
             return needUpdate;
         }
     };
-
 
     /**
      * 将元素attach到页面的行为
@@ -3565,8 +3560,10 @@
             this.childs.push(child);
             buf.push(child.genHTML());
         }
-        //
-        buf.push('<a style="display:none">d</a>');
+
+        // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
+        //       为了保证script的stump存在，前面加个零宽特殊字符
+        buf.push('\uFEFF');
         buf.push(genStumpHTML(this));
 
         return buf.toString();
@@ -3695,18 +3692,10 @@
             buf.push(child.genHTML());
         });
 
-        buf.push('<');
-        buf.push(this.tagName);
-
-        buf.push(' id="');
-        buf.push(this.id);
-        buf.push('" style="display:none">');
-
-        if (!tagIsAutoClose(this.tagName)) {
-            buf.push('</');
-            buf.push(this.tagName);
-            buf.push('>');
-        }
+        // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
+        //       为了保证script的stump存在，前面加个零宽特殊字符
+        buf.push('\uFEFF');
+        buf.push(genStumpHTML(this));
 
         return buf.toString();
     };
@@ -3718,8 +3707,6 @@
      */
     ForDirective.prototype._initFromEl = function (options) {
         if (options.el) {
-            this.el = null;
-
             while (1) {
                 var current = options.elWalker.current;
                 if (current.getAttribute('san-stump') === 'for') {
@@ -3727,10 +3714,6 @@
                     aNode = aNode.childs[0];
                     this.aNode = aNode;
                     this.tagName = this.aNode.tagName;
-                    this._create();
-
-                    options.el.parentNode.insertBefore(this.el, current);
-                    options.el.parentNode.removeChild(current);
                     break;
                 }
                 else {
@@ -3810,9 +3793,9 @@
      */
     ForDirective.prototype._create = function () {
         if (!this.el) {
-            this.el = document.createElement(this.tagName);
+            this.el = document.createElement('script');
+            this.el.type = 'text/san';
             this.el.id = this.id;
-            this.el.style.display = 'none';
         }
     };
 

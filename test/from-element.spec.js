@@ -142,7 +142,7 @@ describe("Component Compile From Element", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(3);
+        expect(lis.length).toBe(2);
 
         myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -150,7 +150,7 @@ describe("Component Compile From Element", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(4);
+            expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('otakustay');
             expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
@@ -189,7 +189,7 @@ describe("Component Compile From Element", function () {
         });
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(5);
+        expect(lis.length).toBe(4);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
         expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
@@ -199,7 +199,7 @@ describe("Component Compile From Element", function () {
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(6);
+            expect(lis.length).toBe(5);
             expect(lis[3].getAttribute('title')).toBe('otakustay');
             expect(lis[3].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
@@ -241,14 +241,14 @@ describe("Component Compile From Element", function () {
         myComponent.data.removeAt('persons', 0);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(5);
+        expect(lis.length).toBe(4);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
         expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(4);
+            expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('varsha');
             expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
 
@@ -290,14 +290,14 @@ describe("Component Compile From Element", function () {
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(5);
+        expect(lis.length).toBe(4);
         expect(lis[1].getAttribute('title')).toBe('errorrik');
         expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(5);
+            expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('erik');
             expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
 
