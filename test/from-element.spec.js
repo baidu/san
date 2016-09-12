@@ -78,7 +78,7 @@ describe("Component Compile From Element", function () {
             },
 
             template: '<div><h5><ui-label bind-title="name" bind-text="jokeName"></ui-label></h5>'
-                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>',
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
         });
 
         var wrap = document.createElement('div');

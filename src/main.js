@@ -2186,7 +2186,7 @@
 
     function getScriptText(script) {
         // TODO: 兼容性
-        return script.textContent;
+        return script.innerHTML;
     }
 
     /**
@@ -3565,6 +3565,8 @@
             this.childs.push(child);
             buf.push(child.genHTML());
         }
+        //
+        buf.push('<a style="display:none">d</a>');
         buf.push(genStumpHTML(this));
 
         return buf.toString();
