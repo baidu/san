@@ -1,5 +1,5 @@
 define(function (require) {
-    var san = require('san-core');
+    var san = require('san');
 
     var $ = require('jquery');
     var layerTemplate = require('tpl!./TimePickerLayer.html');
