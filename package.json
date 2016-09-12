@@ -1,9 +1,15 @@
 {
-    "name": "san-core",
-    "description": "",
-    "version": "3.0.0-alpha.1",
+    "name": "san",
+    "description": "A MVVM Component Framework",
+    "version": "3.0.0-rc.1",
 
-    "devDependencies": {
-        "jasmine": "2.4.x"
+    "contributors": [
+        { "name": "erik", "email": "errorrik@gmail.com" },
+        { "name": "otakustay", "email": "otakustay@gmail.com" }
+    ],
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ecomfe/san.git"
     }
 }
