@@ -173,7 +173,7 @@ describe("IfDirective", function () {
         components: {
             'ui-tel': TelList
         },
-        template: '<div><dl san-for="item in list"><dt title="{{item.name}}">{{item.name}}</dt><dd><ui-tel bind-list="item.tels"></ui-tel></dd></dl></div>'
+        template: '<div><dl san-for="item in list"><dt title="{{item.name}}">{{item.name}}</dt><dd><ui-tel list="{{item.tels}}"></ui-tel></dd></dl></div>'
     });
 
     it("render component, init false, update soon", function (done) {
@@ -181,7 +181,7 @@ describe("IfDirective", function () {
             components: {
                 'ui-person': PersonList
             },
-            template: '<div><ui-person bind-list="persons" san-if="cond"></ui-person></div>'
+            template: '<div><ui-person list="{{persons}}" san-if="cond"></ui-person></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('cond', false);
@@ -238,7 +238,7 @@ describe("IfDirective", function () {
             components: {
                 'ui-person': PersonList
             },
-            template: '<div><ui-person bind-list="persons" san-if="cond"></ui-person></div>'
+            template: '<div><ui-person list="{{persons}}" san-if="cond"></ui-person></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('cond', true);

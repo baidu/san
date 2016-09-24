@@ -50,7 +50,7 @@ describe("Component-Bindx", function () {
         MyComponent.prototype.components = {
             'ui-color': ColorPicker
         };
-        MyComponent.prototype.template = '<div><span title="{{color}}">{{color}}</span> <ui-color bindx-value="color" san-ref="colorPicker"></ui-color></div>';
+        MyComponent.prototype.template = '<div><span title="{{color}}">{{color}}</span> <ui-color value="{= color =}" san-ref="colorPicker"></ui-color></div>';
 
         var myComponent = new MyComponent();
         myComponent.data.set('color', 'green');
@@ -86,7 +86,7 @@ describe("Component-Bindx", function () {
             'ui-color': ColorPicker
         };
         MyComponent.prototype.template = '<div><div san-for="item in colors">'
-            + '<span title="{{item}}">{{item}}</span><ui-color bindx-value="item"></ui-color>'
+            + '<span title="{{item}}">{{item}}</span><ui-color value="{=item=}"></ui-color>'
             + '</div></div>';
 
 
@@ -131,7 +131,7 @@ describe("Component-Bindx", function () {
         };
 
         MyComponent.prototype.template = '<div><div san-for="item in colors">'
-            + '<span title="{{item.name}}">{{item.name}}</span><ui-color bindx-value="item.name"></ui-color>'
+            + '<span title="{{item.name}}">{{item.name}}</span><ui-color value="{=item.name=}"></ui-color>'
             + '</div></div>';
 
         var myComponent = new MyComponent();
@@ -176,7 +176,7 @@ describe("Component-Bindx", function () {
 
         MyComponent.prototype.template = '<div><a san-for="p in persons">'
             + '<b title="{{p.name}}">{{p.name}}</b>'
-            + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><ui-color bindx-value="color.name"></ui-color></h5>'
+            + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><ui-color value="{=color.name=}"></ui-color></h5>'
             + '</a></div>';
 
 
@@ -235,7 +235,7 @@ describe("Component-Bindx", function () {
         PersonView.prototype.components = {
             'ui-color': ColorPicker
         };
-        PersonView.prototype.template = '<div><b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color bindx-value="value.color"></ui-color></div>';
+        PersonView.prototype.template = '<div><b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color value="{=value.color=}"></ui-color></div>';
 
         function MyComponent(options) {
             san.Component.call(this, options);
@@ -246,7 +246,7 @@ describe("Component-Bindx", function () {
             'ui-person': PersonView
         };
 
-        MyComponent.prototype.template = '<div><ui-person bind-value="person"></ui-person></div>';
+        MyComponent.prototype.template = '<div><ui-person value="{{person}}"></ui-person></div>';
 
 
         var myComponent = new MyComponent();

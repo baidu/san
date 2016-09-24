@@ -44,7 +44,7 @@ describe("Element-Event", function () {
         var inputed = 0;
 
         var MyComponent = san.defineComponent({
-            template: '<a><span title="{{name}}">{{name}}</span> <input bind-value="name" on-input="inputer($event)"/></a>',
+            template: '<a><span title="{{name}}">{{name}}</span> <input value="{{name}}" on-input="inputer($event)"/></a>',
 
             inputer: function (event) {
                 this.data.set('name', event.value);

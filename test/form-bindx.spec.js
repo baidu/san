@@ -4,7 +4,7 @@ describe("Form-Bindx", function () {
         var defName = 'input something';
 
         var MyComponent = san.defineComponent({
-            template: '<div><span title="{{name}}">{{name}}</span> <input bindx-value="name"/></div>'
+            template: '<div><span title="{{name}}">{{name}}</span> <input value="{=name=}"/></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', defName);
@@ -42,7 +42,7 @@ describe("Form-Bindx", function () {
         ];
 
         var MyComponent = san.defineComponent({
-            template: '<div>input something<input bindx-value="item" san-for="item in list"></div>'
+            template: '<div>input something<input value="{=item=}" san-for="item in list"></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', defList);
@@ -76,7 +76,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, set op", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>'
+            template: '<div>input something<div san-for="item in list"><span title="{{item.name}}">{{item.name}}</span><input value="{=item.name=}"></div></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -118,7 +118,7 @@ describe("Form-Bindx", function () {
         var MyComponent = san.defineComponent({
             template: '<div><a san-for="p in persons">'
                 + '<b title="{{p.name}}">{{p.name}}</b>'
-                + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><input bindx-value="color.name"></h5>'
+                + '<h5 san-for="color in p.colors"><span title="{{color.name}}">{{color.name}}</span><input value="{=color.name=}"></h5>'
                 + '</a></div>'
         });
         var myComponent = new MyComponent();
@@ -188,7 +188,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, push op", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>'
+            template: '<div>input something<div san-for="item in list"><span title="{{item.name}}">{{item.name}}</span><input value="{=item.name=}"></div></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -236,7 +236,7 @@ describe("Form-Bindx", function () {
 
     it("text value in for, unshift op", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>'
+            template: '<div>input something<div san-for="item in list"><span title="{{item.name}}">{{item.name}}</span><input value="{=item.name=}"></div></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -294,7 +294,7 @@ describe("Form-Bindx", function () {
         var interval;
 
         var MyComponent = san.defineComponent({
-            template: '<div>input something<div san-for="item in list"><span bind-title="item.name">{{item.name}}</span><input bindx-value="item.name"></div></div>'
+            template: '<div>input something<div san-for="item in list"><span title="{{item.name}}">{{item.name}}</span><input value="{=item.name=}"></div></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('list', [
@@ -345,9 +345,9 @@ describe("Form-Bindx", function () {
         var MyComponent = san.defineComponent({
             template: '<div>'
                 + '<b>{{online | join("|")}}</b>'
-                + '<label><input type="checkbox" value="errorrik" bindx-checked="online">errorrik</label>'
-                + '<label><input type="checkbox" value="varsha" bindx-checked="online">varsha</label>'
-                + '<label><input type="checkbox" value="firede" bindx-checked="online">firede</label>'
+                + '<label><input type="checkbox" value="errorrik" checked="{=online=}">errorrik</label>'
+                + '<label><input type="checkbox" value="varsha" checked="{=online=}">varsha</label>'
+                + '<label><input type="checkbox" value="firede" checked="{=online=}">firede</label>'
                 + '</div>',
 
             initData: function () {
@@ -403,9 +403,9 @@ describe("Form-Bindx", function () {
         var MyComponent = san.defineComponent({
             template: '<div>'
                 + '<b>{{online}}</b>'
-                + '<label><input type="radio" value="errorrik" bindx-checked="online" name="onliner">errorrik</label>'
-                + '<label><input type="radio" value="varsha" bindx-checked="online" name="onliner">varsha</label>'
-                + '<label><input type="radio" value="firede" bindx-checked="online" name="onliner">firede</label>'
+                + '<label><input type="radio" value="errorrik" checked="{=online=}" name="onliner">errorrik</label>'
+                + '<label><input type="radio" value="varsha" checked="{=online=}" name="onliner">varsha</label>'
+                + '<label><input type="radio" value="firede" checked="{=online=}" name="onliner">firede</label>'
                 + '</div>',
 
             initData: function () {
@@ -455,7 +455,7 @@ describe("Form-Bindx", function () {
         var MyComponent = san.defineComponent({
             template: '<div>'
                 + '<b>{{online}}</b>'
-                + '<select bindx-value="online">'
+                + '<select value="{=online=}">'
                 +   '<option value="errorrik">errorrik</option>'
                 +   '<option value="varsha">varsha</option>'
                 +   '<option value="firede">firede</option>'
