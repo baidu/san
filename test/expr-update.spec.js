@@ -1,4 +1,4 @@
-describe("Expr update detect", function () {
+describe("Expression Update Detect", function () {
 
     function upxFilter(source, first) {
         if (source) {

@@ -1,4 +1,4 @@
-describe("Component-Bindx", function () {
+describe("Component-TwoWay Binding", function () {
     function ColorPicker(options) {
         san.Component.call(this, options);
     }

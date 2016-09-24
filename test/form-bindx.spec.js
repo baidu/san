@@ -1,4 +1,4 @@
-describe("Form-Bindx", function () {
+describe("Form TwoWay Binding", function () {
 
     it("text value", function (done) {
         var defName = 'input something';
