@@ -77,13 +77,13 @@ describe("Component Compile From Element", function () {
                 'ui-label': Label
             },
 
-            template: '<div><h5><ui-label bind-title="name" bind-text="jokeName"></ui-label></h5>'
+            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
                 + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
         });
 
         var wrap = document.createElement('div');
         wrap.innerHTML = '<div><h5>'
-            + '<a san-component="ui-label" bind-title="name" bind-text="jokeName"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
+            + '<a san-component="ui-label" prop-title="name" prop-text="jokeName"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
             + '</h5>'
             + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
         document.body.appendChild(wrap);
