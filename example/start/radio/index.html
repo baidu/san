@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>start - list</title>
+    <title>start - radio</title>
 </head>
 
 <body>
@@ -10,9 +10,10 @@
     <script>
     var MyApp = san.defineComponent({
         template: '<div>'
-            + '<label><input type="radio" value="errorrik" bindx-checked="online" name="online">errorrik</label>'
-            + '<label><input type="radio" value="otakustay" bindx-checked="online" name="online">otakustay</label>'
-            + '<label><input type="radio" value="firede" bindx-checked="online" name="online">firede</label>'
+            + '<label><input type="radio" value="errorrik" checked="{= online =}" name="online">errorrik</label>'
+            + '<label><input type="radio" value="otakustay" checked="{= online =}" name="online">otakustay</label>'
+            + '<label><input type="radio" value="firede" checked="{= online =}" name="online">firede</label>'
+            + '<br>{{online}}'
             + '</div>',
 
         initData: function () {

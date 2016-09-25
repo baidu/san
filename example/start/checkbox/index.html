@@ -10,9 +10,10 @@
     <script>
     var MyApp = san.defineComponent({
         template: '<div>'
-            + '<label><input type="checkbox" value="errorrik" bindx-checked="online">errorrik</label>'
-            + '<label><input type="checkbox" value="otakustay" bindx-checked="online">otakustay</label>'
-            + '<label><input type="checkbox" value="firede" bindx-checked="online">firede</label>'
+            + '<label><input type="checkbox" value="errorrik" checked="{= online =}">errorrik</label>'
+            + '<label><input type="checkbox" value="otakustay" checked="{= online =}">otakustay</label>'
+            + '<label><input type="checkbox" value="firede" checked="{= online =}">firede</label>'
+            + '<br>{{online}}'
             + '</div>',
         initData: function () {
             return {

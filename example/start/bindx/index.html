@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>start - list</title>
+    <title>start - twoway binding</title>
 </head>
 
 <body>
     <script src="../../../src/main.js"></script>
     <script>
     var MyApp = san.defineComponent({
-        template: '<div><input bindx-value="name" placeholder="please input">Hello {{name}}!</div>'
+        template: '<div><input value="{= name =}" placeholder="please input">Hello {{name}}!</div>'
     });
 
     var myApp = new MyApp();
