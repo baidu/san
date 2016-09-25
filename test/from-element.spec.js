@@ -83,7 +83,7 @@ describe("Component Compile From Element", function () {
 
         var wrap = document.createElement('div');
         wrap.innerHTML = '<div><h5>'
-            + '<a san-component="ui-label" prop-title="name" prop-text="jokeName"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
+            + '<a san-component="ui-label" prop-title="{{name}}" prop-text="{{jokeName}}"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
             + '</h5>'
             + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
         document.body.appendChild(wrap);
