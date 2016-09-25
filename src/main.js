@@ -661,56 +661,72 @@
 
         var prefixIndex = name.indexOf('-');
         var prefix;
-        var realName;
 
         if (prefixIndex > 0) {
             prefix = name.slice(0, prefixIndex);
-            realName = name.slice(prefixIndex + 1);
+            name = name.slice(prefixIndex + 1);
         }
 
         switch (prefix) {
             case 'on':
                 aNode.events.push({
-                    name: realName,
+                    name: name,
                     expr: parseCall(value)
                 });
                 break;
 
-            case 'bind':
-                aNode.binds.push({
-                    name: realName,
-                    expr: parseExpr(value)
-                });
-                break;
-
-            case 'bindx':
-                aNode.binds.push({
-                    name: realName,
-                    expr: parseExpr(value),
-                    twoWay: true
-                });
-                break;
-
             case 'san':
-                var directive = parseDirective(realName, value);
+                var directive = parseDirective(name, value);
                 directive && aNode.directives.push(directive);
                 break;
 
             case 'prop':
-                aNode.binds.push(textBindExtra({
-                    name: realName,
-                    expr: parseText(value)
-                }));
+                integrateBindAttr(aNode, name, value);
                 break;
 
             default:
                 if (!ignoreNormal) {
-                    aNode.binds.push(textBindExtra({
-                        name: name,
-                        expr: parseText(value)
-                    }));
+                    integrateBindAttr(aNode, name, value);
                 }
         }
+    }
+
+    /**
+     * 解析抽象节点绑定属性
+     *
+     * @inner
+     * @param {ANode} aNode 抽象节点
+     * @param {string} name 属性名称
+     * @param {string} value 属性值
+     */
+    function integrateBindAttr(aNode, name, value) {
+        // parse two way binding, e.g. value="{=ident=}"
+        var twoWayMatch = value.match(/^\{=\s*(\S[\s\S]*?)\s*=\}$/);
+
+        if (twoWayMatch) {
+            aNode.binds.push({
+                name: name,
+                expr: parseExpr(twoWayMatch[1]),
+                twoWay: true
+            });
+
+            return;
+        }
+
+        // parse normal prop
+        var expr = parseText(value);
+
+        // 当 text 解析只有一项时，要么就是 string，要么就是 interpolation
+        // interpolation 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
+        // 所以这里做个处理，只有一项时直接抽出来
+        if (expr.segs.length === 1) {
+            expr = expr.segs[0];
+        }
+
+        aNode.binds.push(textBindExtra({
+            name: name,
+            expr: expr
+        }));
     }
 
     /**
@@ -846,7 +862,7 @@
     }
 
     /**
-     * 解析差值替换
+     * 解析插值替换
      *
      * @inner
      * @param {string} source 源码
@@ -1759,7 +1775,7 @@
          * @return {string} 替换结果串
          */
         html: function (source) {
-            if (!source) {
+            if (source == null) {
                 return '';
             }
 
@@ -1859,21 +1875,8 @@
 
             case ExprType.INTERPOLATION:
                 var value = evalExpr(expr.expr, model, owner);
-                var filters = expr.filters.length > 0
-                    ? expr.filters
-                    : [
-                        {
-                            type: ExprType.CALL,
-                            name: {
-                                type: ExprType.IDENT,
-                                name: 'html'
-                            },
-                            args: []
-                        }
-                    ];
 
-
-                owner && each(filters, function (filter) {
+                owner && each(expr.filters, function (filter) {
                     var filterName = filter.name.name;
                     /* eslint-disable no-use-before-define */
                     var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
@@ -1898,11 +1901,20 @@
             case ExprType.TEXT:
                 var buf = new StringBuffer();
                 each(expr.segs, function (seg) {
-                    buf.push(evalExpr(seg, model, owner));
+                    var segValue = evalExpr(seg, model, owner);
+
+                    // use html filter by default
+                    if (seg.type === ExprType.INTERPOLATION && !seg.filters[0]) {
+                        segValue = DEFAULT_FILTERS.html(segValue);
+                    }
+
+                    buf.push(segValue);
                 });
                 return buf.toString();
         }
     }
+
+
 
 
     // #region node
@@ -2359,17 +2371,17 @@
             this.el = document.createElement(this.tagName);
             this.el.id = this.id;
 
-            this.aNode.binds.each(function (bind) {
+            this.aNode.binds.each(function (bindItem) {
                 var value;
-                if (this instanceof Component && bind.expr.type === ExprType.TEXT) {
-                    value = evalExpr(bind.expr, this.data, this);
+                if (this instanceof Component && bindItem.isOwn) {
+                    value = evalExpr(bindItem.expr, this.data, this);
                 }
                 else {
-                    value = this.evalExpr(bind.expr);
+                    value = this.evalExpr(bindItem.expr);
                 }
 
                 if (value != null && typeof value !== 'object') {
-                    this.el.setAttribute(bind.name, value);
+                    this.el.setAttribute(bindItem.name, value);
                 }
             }, this);
         }
@@ -2655,17 +2667,17 @@
         stringBuffer.push(element.id);
         stringBuffer.push('"');
 
-        element.aNode.binds.each(function (bind) {
+        element.aNode.binds.each(function (bindItem) {
             var value;
-            if (this instanceof Component && bind.expr.type === ExprType.TEXT) {
-                value = evalExpr(bind.expr, this.data, this);
+            if (this instanceof Component && bindItem.isOwn) {
+                value = evalExpr(bindItem.expr, this.data, this);
             }
             else {
-                value = this.evalExpr(bind.expr);
+                value = this.evalExpr(bindItem.expr);
             }
 
-            var propHandler = this.propHandlers[bind.name] || this.propHandlers['*'];
-            stringBuffer.push(propHandler.input.attr(this, bind.name, value));
+            var propHandler = this.propHandlers[bindItem.name] || this.propHandlers['*'];
+            stringBuffer.push(propHandler.input.attr(this, bindItem.name, value));
         }, element);
 
         stringBuffer.push('>');
@@ -2950,10 +2962,10 @@
         }
 
         var needUpdate = false;
-        this.aNode.binds.each(function (bindInfo) {
-            if (exprNeedsUpdate(bindInfo.expr, change.expr, this.scope)) {
+        this.aNode.binds.each(function (bindItem) {
+            if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 nextTick(function () {
-                    this.setProp(bindInfo.name, this.evalExpr(bindInfo.expr));
+                    this.setProp(bindItem.name, this.evalExpr(bindItem.expr));
                 }, this);
                 needUpdate = true;
             }
@@ -3293,6 +3305,14 @@
                     if (firstChild.tagName === 'template') {
                         firstChild.tagName = null;
                     }
+
+                    firstChild.binds.each(function (item) {
+                        item.isOwn = true;
+                    });
+
+                    firstChild.events.each(function (item) {
+                        item.isOwn = true;
+                    });
                 }
                 else {
                     throw new Error('[SAN FATEL] template shoule have a root element.');
@@ -3386,10 +3406,10 @@
 
         var needUpdate = false;
 
-        this.aNode.binds.each(function (bind) {
-            if (bind.expr.type === ExprType.TEXT) {
+        this.aNode.binds.each(function (bindItem) {
+            if (bindItem.isOwn) {
                 nextTick(function () {
-                    this.setProp(bind.name, evalExpr(bind.expr, this.data, this));
+                    this.setProp(bindItem.name, evalExpr(bindItem.expr, this.data, this));
                 }, this);
             }
         }, this);
@@ -3423,11 +3443,13 @@
         if (!this.lifeCycle.is('disposed') && this !== this.owner) {
             var needUpdate = false;
 
-            this.aNode.binds.each(function (bind) {
-                if (exprNeedsUpdate(bind.expr, change.expr, this.scope)) {
+            this.aNode.binds.each(function (bindItem) {
+                if (!bindItem.isOwn
+                    && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
+                ) {
                     this.data.set(
-                        bind.name,
-                        this.evalExpr(bind.expr),
+                        bindItem.name,
+                        this.evalExpr(bindItem.expr),
                         {force: true}
                     );
                     needUpdate = true;
