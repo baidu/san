@@ -322,7 +322,7 @@ describe("Component", function () {
             components: {
                 'ui-color': ColorPicker
             },
-            template: '<div><span title="{{color}}">{{color}}</span> <ui-color value="{=color=}" san-ref="colorPicker"></ui-color></div>'
+            template: '<div><span title="{{color}}">{{color}}</span> <ui-color value="{= color =}" san-ref="colorPicker"></ui-color></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('color', 'green');
