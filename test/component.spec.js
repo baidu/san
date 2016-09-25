@@ -551,6 +551,54 @@ describe("Component", function () {
         });
     });
 
+    it("inner el event and outer custom event", function (done) {
+        var innerClicked;
+        var outerReceive;
 
+        var Label = san.defineComponent({
+            template: '<template class="ui-label" on-click="clicker" style="cursor:pointer;text-decoration:underline">here</template>',
+
+            clicker: function () {
+                innerClicked = true;
+                this.fire('haha', 1);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div>Click <ui-label on-haha="labelHaha($event)"></ui-label></div>',
+
+            labelHaha: function (e) {
+                outerReceive = e;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function detect() {
+            if (innerClicked || outerReceive) {
+                expect(innerClicked).toBe(true);
+                expect(outerReceive).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(detect, 500);
+        }
+
+
+        detect();
+    });
 
 });

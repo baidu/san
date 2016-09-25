@@ -2351,12 +2351,12 @@
      * 初始化完成后的行为
      */
     Element.prototype._inited = function () {
-
-
         if (this.el) {
             this.tagName = this.el.tagName.toLowerCase();
+
             compileChildsFromEl(this);
             callHook(this, 'created');
+
             if (this.el.parentNode) {
                 callHook(this, 'attached');
             }
@@ -2546,9 +2546,14 @@
             }
         }, this);
 
-        var method = this.owner[expr.name.name];
+        var owner = this.owner;
+        if (this instanceof Component && eventBind.isOwn) {
+            owner = this;
+        }
+
+        var method = owner[expr.name.name];
         if (typeof method === 'function') {
-            method.apply(this.owner, args);
+            method.apply(owner, args);
         }
     }
 
