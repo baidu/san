@@ -1,7 +1,7 @@
 <ul class="edit-category-list">
     <li san-for="item, index in categories">
-        <input type="text" bindx-value="item.title" class="form-title">
-        <ui-colorpicker bindx-value="item.color"></ui-colorpicker>
+        <input type="text" value="{= item.title =}" class="form-title">
+        <ui-colorpicker value="{= item.color =}"></ui-colorpicker>
         <i class="fa fa-check" on-click="edit(index)"></i>
         <i class="fa fa-trash" on-click="rm(index)"></i>
     </li>
