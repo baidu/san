@@ -3,6 +3,11 @@
 
 San is a MVVM Component Framework for Web.
 
+
+
+<img src="https://img.shields.io/npm/v/san.svg?style=flat-square" alt="Version">
+<img src="https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square" alt="License">
+
 [WebSite](http://ecomfe.github.io/san/)
 
 
