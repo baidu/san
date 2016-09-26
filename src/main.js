@@ -733,7 +733,7 @@
      * 为text类型的属性绑定附加额外的行为，用于一些特殊需求，比如class中插值的自动展开
      *
      * @inner
-     * @param {Object} 绑定信息
+     * @param {Object} bind 绑定信息
      * @return {Object}
      */
     function textBindExtra(bind) {
@@ -2339,6 +2339,11 @@
         this._initPropHandlers();
     };
 
+    /**
+     * 从已有的el进行初始化
+     *
+     * @param {Object} options 初始化参数
+     */
     Element.prototype._initFromEl = function () {
         if (this.el) {
             this.aNode = parseANodeFromEl(this.el);
@@ -2576,7 +2581,6 @@
      */
     Element.prototype.unbindEvents = function () {
         var eventListeners = this.eventListeners;
-        var el = this.el;
 
         for (var key in eventListeners) {
             if (eventListeners.hasOwnProperty(key)) {
@@ -2798,7 +2802,7 @@
                 attr: function (element, name, value) {
                     var bindValue = element.aNode.binds.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr)
+                        var elementValue = element.evalExpr(bindValue.expr);
                         if (value === elementValue) {
                             return ' checked="checked"';
                         }
@@ -2810,7 +2814,7 @@
                 prop: function (element, name, value) {
                     var bindValue = element.aNode.binds.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr)
+                        var elementValue = element.evalExpr(bindValue.expr);
                         if (value === elementValue) {
                             element.el.checked = true;
                             return;
@@ -2867,7 +2871,7 @@
                         return '';
                     }
 
-                    return ' class="' + value + '"'
+                    return ' class="' + value + '"';
                 },
 
                 prop: function (element, name, value) {
@@ -2927,6 +2931,11 @@
         }
     ];
 
+    /**
+     * 初始化元素属性操作的处理器
+     * 元素属性操作和具体名称可能不同，比如style操作的是style.cssText等等
+     * 所以需要一些 handler 做输入输出的属性名与值变换。这里就是初始化这些 handler
+     */
     Element.prototype._initPropHandlers = function () {
         // TODO: clear prop in dispose
         this.propHandlers = {};
@@ -2940,7 +2949,8 @@
             },
             this
         );
-    }
+    };
+
     /**
      * 设置元素属性
      *
@@ -3057,6 +3067,12 @@
         this.childs.length = 0;
     };
 
+    /**
+     * 添加子节点的 ANode
+     * 用于从 el 初始化时，需要将解析的元素抽象成 ANode，并向父级注册
+     *
+     * @param {ANode} aNode 抽象节点对象
+     */
     Element.prototype._pushChildANode = function (aNode) {
         this.aNode.childs.push(aNode);
     };
@@ -3123,7 +3139,14 @@
     };
 
 
+    /* eslint-disable operator-linebreak */
+    /**
+     * 清空从已有的el进行初始化的行为
+     *
+     * @param {Object} options 初始化参数
+     */
     Component.prototype._initFromEl =
+    /* eslint-enable operator-linebreak */
 
     /**
      * 初始化完成后的行为
@@ -3169,6 +3192,9 @@
         return refComponent;
     };
 
+    /**
+     * 从存在的 el 中编译抽象节点
+     */
     Component.prototype._compileFromEl = function () {
         this.isCompileFromEl = true;
         this.aNode = parseANodeFromEl(this.el);
@@ -3177,6 +3203,12 @@
         compileChildsFromEl(this);
     };
 
+    /**
+     * 遍历和编译已有元素的孩子
+     *
+     * @inner
+     * @param {HTMLElement} element 已有元素
+     */
     function compileChildsFromEl(element) {
         var walker = new DOMChildsWalker(element.el);
         var current;
@@ -3190,6 +3222,15 @@
         }
     }
 
+    /**
+     * 通过存在的 el 创建节点的工厂方法
+     *
+     * @inner
+     * @param {HTMLElement} el 页面中存在的元素
+     * @param {Node} parent 父亲节点
+     * @param {DOMChildsWalker} elWalker 遍历元素的功能对象
+     * @return {Node}
+     */
     function createNodeByEl(el, parent, elWalker) {
         var owner = parent instanceof Component ? parent : parent.owner;
 
@@ -3227,22 +3268,31 @@
         if (childANode.directives.get('if') || stumpName === 'if') {
             return new IfDirective(option);
         }
-        else if (childANode.directives.get('else') || stumpName === 'else') {
+
+        if (childANode.directives.get('else') || stumpName === 'else') {
             return new ElseDirective(option);
         }
-        else if (childANode.directives.get('for') || stumpName === 'for') {
+
+        if (childANode.directives.get('for') || stumpName === 'for') {
             return new ForDirective(option);
         }
-        else if (isStump(el)) {
+
+        if (isStump(el)) {
             // as TextNode
             return new TextNode(option);
         }
-        else {
-            // as Element
-            return new Element(option);
-        }
+
+        // as Element
+        return new Element(option);
     }
 
+    /**
+     * 解析元素自身的 ANode
+     *
+     * @inner
+     * @param {HTMLElement} el 页面元素
+     * @return {ANode}
+     */
     function parseANodeFromEl(el) {
         var aNode = new ANode();
         aNode.tagName = el.tagName.toLowerCase();
@@ -3257,10 +3307,24 @@
         return aNode;
     }
 
+    /**
+     * 判断一个元素是不是桩
+     *
+     * @inner
+     * @param {HTMLElement} element 要判断的元素
+     * @return {boolean}
+     */
     function isStump(element) {
         return element.tagName === 'SCRIPT' && element.type === 'text/san';
     }
 
+    /**
+     * 元素子节点遍历操作对象
+     *
+     * @inner
+     * @class
+     * @param {HTMLElement} el 要遍历的元素
+     */
     function DOMChildsWalker(el) {
         this.raw = [];
         this.index = 0;
@@ -3278,6 +3342,9 @@
         this.next = this.raw[this.index + 1];
     }
 
+    /**
+     * 往下走一个元素
+     */
     DOMChildsWalker.prototype.goNext = function () {
         this.current = this.raw[++this.index];
         this.next = this.raw[this.index + 1];
@@ -3494,6 +3561,12 @@
 
     inherits(IfDirective, Element);
 
+    /**
+     * 创建 if 指令对应条件为 true 时对应的元素
+     *
+     * @param {IfDirective} ifElement if指令元素
+     * @return {Element}
+     */
     function createIfDirectiveChild(ifElement) {
         var aNode = ifElement.aNode;
         var childANode = new ANode({
@@ -3514,7 +3587,11 @@
         return createNode(childANode, ifElement);
     }
 
-
+    /**
+     * 从已有的el进行初始化的
+     *
+     * @param {Object} options 初始化参数
+     */
     IfDirective.prototype._initFromEl = function (options) {
         if (options.el) {
             if (options.el.getAttribute('san-stump') === 'if') {
@@ -3544,6 +3621,10 @@
         }
     };
 
+    /**
+     * 清空添加子节点的 ANode 的行为
+     * 从 el 初始化时，不接受子节点的 ANode信息
+     */
     IfDirective.prototype._pushChildANode = function () {};
 
     /**
@@ -3646,6 +3727,13 @@
         callHook(this, 'attached');
     };
 
+    /**
+     * else 指令处理类
+     * 不做具体事情，直接归约成 if
+     *
+     * @class
+     * @param {Object} options 初始化参数
+     */
     function ElseDirective(options) {
         var parentChilds = options.parent.childs;
         var len = parentChilds.length;
@@ -3697,7 +3785,10 @@
 
     inherits(ForDirective, Element);
 
-
+    /**
+     * 清空添加子节点的 ANode 的行为
+     * 从 el 初始化时，不接受子节点的 ANode信息
+     */
     ForDirective.prototype._pushChildANode = function () {};
 
     /**
@@ -3723,7 +3814,7 @@
     };
 
     /**
-     * 初始化行为
+     * 从已有的el进行初始化
      *
      * @param {Object} options 初始化参数
      */
@@ -4129,7 +4220,7 @@
             Component.call(this, option);
         }
 
-        ComponentClass.prototype = proto
+        ComponentClass.prototype = proto;
         san.inherits(ComponentClass, Component);
 
         return ComponentClass;
