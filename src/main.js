@@ -4239,7 +4239,7 @@
      * @param {string} name 名称
      * @param {function(*, ...*):*} filter 过滤函数
      */
-    san.version = '3.0.0-rc.2';
+    san.version = '3.0.0-rc.3';
 
     /**
      * 根据 DOM id 获取内部元素对象
