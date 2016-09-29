@@ -1,14 +1,15 @@
-# todos-esnext
+todos-esnext
+===
 
-prepare
-----------
+> todos demo use `.san` components and `esnext`
+
+## Prepare
 
 ```
 $ npm i
 ```
 
-preview
-----------
+## Dev
 
 First, run dev script:
 
@@ -16,4 +17,19 @@ First, run dev script:
 $ npm run dev
 ```
 
-And then, open http://localhost:8888/ use any browser.
+And then, open <http://localhost:8888/> 
+
+## Build
+
+```
+$ npm run build
+```
+
+Start static server at `dist`
+
+```
+$ type serve >/dev/null 2>&1 || npm i -g serve
+$ serve dist -p 9999
+```
+
+Open <http://localhost:9999/> 
