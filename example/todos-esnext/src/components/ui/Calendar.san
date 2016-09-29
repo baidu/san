@@ -1,0 +1,186 @@
+<template>
+
+<div on-click="mainClick()" class="ui-calendar">
+    {{ value | valueText }}
+</div>
+
+</template>
+
+<script>
+
+
+import $ from 'jquery'
+import moment from 'moment'
+import Layer from './CalendarLayer'
+
+export default {
+
+    initData: function () {
+        return {
+            value: new Date()
+        };
+    },
+
+    initLayer: function () {
+        if (!this.layer) {
+            var layer = new Layer();
+            layer.data.set('left', -1000);
+            layer.data.set('top', 0);
+            layer.data.set('value', this.data.get('value'));
+
+            this.layer = layer;
+
+            var calendar = this;
+            layer.watch('value', function (value) {
+                calendar.data.set('value', value);
+            });
+
+            this.watch('value', function (value) {
+                layer.data.set('value', value);
+            });
+
+            this.layer.attach(document.body);
+
+            this._docClicker = this.docClicker.bind(this);
+            $(document).on('click', this._docClicker);
+        }
+    },
+
+    docClicker: function (e) {
+        var target = e.target || e.srcElement;
+        if (target !== this.el
+            && $(target).closest(this.el).length === 0
+            && $(target).closest(this.layer.el).length === 0
+        ) {
+            this.hideLayer();
+        }
+    },
+
+
+    mainClick: function () {
+        this.initLayer();
+        if (this.layer.isHide()) {
+            this.showLayer();
+        }
+        else {
+            this.hideLayer();
+        }
+    },
+
+    showLayer: function () {
+        var pos = $(this.el).offset();
+        this.layer.show({
+            left: pos.left,
+            top: pos.top + this.el.offsetHeight + 1
+        });
+    },
+
+    hideLayer: function () {
+        this.layer && this.layer.hide();
+    },
+
+    disposed: function () {
+        if (this.layer) {
+            this.layer.dispose();
+            this.layer = null;
+            $(document).off('click', this._docClicker);
+            this._docClicker = null;
+        }
+    },
+
+    filters: {
+        valueText: function (value) {
+            if (value instanceof Date) {
+                return moment(value).format('YYYY-MM-DD');
+            }
+
+            return '';
+        }
+    }
+}
+
+</script>
+
+<style>
+.ui-layer {
+    position: absolute;
+    background: #fff;
+    color: #666;
+}
+
+.ui-calendar {
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-calendar:hover {
+    background: #444;
+}
+
+.ui-calendar-layer {
+    width: 210px;
+    background: #fff;
+    color: #333;
+}
+
+.ui-calendar-layer .ui-calendar-func {
+    line-height: 30px;
+    height: 30px;
+    background: #eee;
+    color: #666;
+}
+
+.ui-calendar-layer ol {
+    margin: 0;
+    padding: 0;
+}
+
+.ui-calendar-layer b {
+    text-align: center;
+    width: 149px;
+    float: left;
+}
+
+.ui-calendar-layer .fa-angle-left,
+.ui-calendar-layer .fa-angle-right {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    float: left;
+}
+
+.ui-calendar-layer .fa-angle-right {
+    float: right;
+}
+
+.ui-calendar-layer {
+    overflow: hidden;
+}
+
+.ui-calendar-layer li {
+    float: left;
+    width: 30px;
+    height: 20px;
+    line-height: 20px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+}
+
+.ui-calendar-layer .date-head li {
+    background: #ddd;
+    cursor: default;
+}
+
+.ui-calendar-layer li.selected {
+    background: #eee;
+    cursor: default;
+}
+
+
+
+</style>

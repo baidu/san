@@ -1,0 +1,200 @@
+<template>
+<div class="form">
+    <input type="text" class="form-title" placeholder="标题" value="{= todo.title =}">
+    <textarea class="form-desc" placeholder="备注" value="{= todo.desc =}"></textarea>
+
+    <ui-categorypicker datasource="{{categories}}" value="{= todo.categoryId =}"></ui-categorypicker>
+    <i class="fa fa-plus add-category" on-click="startAddCategory"></i>
+    <i class="fa fa-pencil edit-category" on-click="startEditCategory"></i>
+    <div>预期完成时间： <ui-calendar value="{= endTimeDate =}"></ui-calendar><ui-timepicker value="{= endTimeHour =}"></ui-timepicker></div>
+
+    <div class="form-op">
+        <button type="button" class="form-ok" on-click="submit"><i class="fa fa-check-circle-o"></i></button>
+        <button type="button" class="form-cancel" on-click="cancel"><i class="fa fa-times-circle-o"></i></button>
+    </div>
+</div>
+</template>
+
+<script>
+
+import service from '../../service'
+
+export default {
+
+    components: {
+        'ui-categorypicker': require('../ui/CategoryPicker'),
+        'ui-timepicker': require('../ui/TimePicker'),
+        'ui-calendar': require('../ui/Calendar')
+    },
+
+    attached: function () {
+        var id = this.data.get('id');
+        if (id) {
+            this.setTodo(service.todo(id));
+        }
+
+        this.updateCategories();
+    },
+
+    created: function () {
+        var now = new Date();
+        this.setTodo({
+            id: 0,
+            title: '',
+            desc: '',
+            endTime: now.getTime(),
+            categoryId: null,
+            done: false
+        });
+
+        var id = this.data.get('params[1]');
+        if (id) {
+            this.data.set('id', +id);
+        }
+    },
+
+    setTodo: function (todo) {
+        this.data.set('todo', todo);
+        this.splitEndTime();
+    },
+
+    splitEndTime: function () {
+        var endTime = new Date(this.data.get('todo.endTime'));
+        this.data.set('endTimeHour', endTime.getHours());
+        this.data.set('endTimeDate', new Date(
+            endTime.getFullYear(),
+            endTime.getMonth(),
+            endTime.getDate()
+        ));
+    },
+
+    joinEndTime: function () {
+        var endTime = new Date(this.data.get('endTimeDate').getTime());
+        endTime.setHours(this.data.get('endTimeHour'));
+        this.data.set('todo.endTime', endTime.getTime());
+    },
+
+    submit: function () {
+        this.joinEndTime();
+        var todo = this.data.get('todo');
+        var id = this.data.get('id');
+        if (!todo.id) {
+            service.addTodo(todo);
+        }
+        else {
+            service.editTodo(todo);
+        }
+
+        history.go(-1);
+    },
+
+    cancel: function () {
+        history.go(-1);
+    },
+
+    updateCategories: function () {
+        this.data.set('categories', service.categories());
+    },
+
+    startAddCategory: function () {
+        if (!this.addCategoryDialog) {
+            this.addCategoryDialog = new AddCategoryDialog();
+            this.addCategoryDialog.attach(document.body);
+            this.addCategoryDialog.on('finished', this.updateCategories.bind(this));
+        }
+        this.addCategoryDialog.show();
+    },
+
+    startEditCategory: function () {
+        if (!this.editCategoryDialog) {
+            this.editCategoryDialog = new EditCategoryDialog();
+            this.editCategoryDialog.attach(document.body);
+            this.editCategoryDialog.on('edited', this.updateCategories.bind(this));
+        }
+        this.editCategoryDialog.show();
+    },
+
+    disposed: function () {
+        if (this.addCategoryDialog) {
+            this.addCategoryDialog.dispose();
+            this.addCategoryDialog = null;
+        }
+
+        if (this.editCategoryDialog) {
+            this.editCategoryDialog.dispose();
+            this.editCategoryDialog = null;
+        }
+    }
+}
+
+</script>
+
+<style>
+
+.form {
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin: 10px auto;
+    width: 90%;
+    max-width: 800px;
+    background: #555;
+    padding: 10px;
+    color: #999;
+}
+
+.form-op {
+    text-align: center;
+}
+
+.form-title,
+.form-desc {
+    display: block;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: #fff;
+}
+
+.form-title:hover,
+.form-desc:hover,
+.form-title:focus,
+.form-desc:focus {
+    background: #444;
+}
+
+.form-title {
+    font-size: 18px;
+    height: 30px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.form-desc {
+    resize: none;
+    height: 40px;
+}
+
+.form-ok,
+.form-cancel {
+    box-sizing: border-box;
+    border: 0;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.form-ok {
+    color: #60a917;
+}
+
+.form-cancel {
+    color: #e51400;
+}
+
+
+
+
+</style>

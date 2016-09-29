@@ -1,0 +1,39 @@
+<template>
+    <ul class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
+        <li san-for="item, index in datasource" class="{{item.value == value | yesToBe('selected')}}" on-click="itemClick(item)">{{ item.text }}</li>
+    </ul>
+</template>
+
+<script>
+
+export default {
+    tagName: 'ul',
+
+    itemClick: function (item) {
+        this.data.set('value', item.value);
+    }
+}
+
+</script>
+
+
+<style>
+.ui-timepicker-layer {
+    font-size: 12px;
+    border: 1px solid #ddd;
+    width: 70px;
+}
+
+.ui-timepicker-layer li {
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-timepicker-layer li:hover {
+    background: #eee;
+}
+
+.ui-timepicker-layer li.selected {
+    background: #eee;
+}
+</style>

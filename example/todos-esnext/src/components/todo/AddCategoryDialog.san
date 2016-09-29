@@ -1,0 +1,50 @@
+<template>
+<div class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">
+    <ui-addcategory san-ref="add" on-finished="finish($event)"></ui-addcategory>
+</div>
+</template>
+
+<script>
+
+export default {
+    components: {
+        'ui-addcategory': require('../category/Add')
+    },
+
+    initData: function () {
+        return {
+            width: 200,
+            top: 100,
+            left: -1000
+        };
+    },
+
+    show: function () {
+        this.data.set('left', document.body.clientWidth / 2 - 100);
+    },
+
+    hide: function () {
+        this.data.set('left', -1000);
+    },
+
+    finish: function (e) {
+        this.hide();
+        this.fire('finished');
+        e.returnValue = false;
+    }
+}
+</script>
+
+<style>
+.add-category-layer .form {
+    background: #fff;
+}
+
+.add-category-layer .form-title,
+.add-category-layer .form-title:hover,
+.add-category-layer .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
+</style>

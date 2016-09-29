@@ -1,0 +1,82 @@
+<template>
+    <ul class="edit-category-list">
+        <li san-for="item, index in categories">
+            <input type="text" value="{= item.title =}" class="form-title">
+            <ui-colorpicker value="{= item.color =}"></ui-colorpicker>
+            <i class="fa fa-check" on-click="edit(index)"></i>
+            <i class="fa fa-trash" on-click="rm(index)"></i>
+        </li>
+    </ul>
+</template>
+
+<script>
+
+import service from '../../service'
+
+export default {
+    components: {
+        'ui-colorpicker': require('../ui/ColorPicker')
+    },
+
+    initData: function () {
+        return {
+            categories: []
+        };
+    },
+
+    attached: function () {
+        this.data.set('categories', service.categories());
+    },
+
+    rm: function (index) {
+        var category = this.data.get('categories')[index];
+        service.rmCategory(category.id);
+        this.data.removeAt('categories', index);
+        this.fire('rm');
+    },
+
+    edit: function (index) {
+        var category = this.data.get('categories')[index];
+        service.editCategory(category);
+        this.fire('edit');
+    }
+}
+
+</script>
+
+<style>
+.edit-category {
+    cursor: pointer;
+}
+
+.edit-category-list input {
+    display: block;
+}
+
+.edit-category-list .ui-colorpicker {
+    display: block;
+    margin-top: 3px;
+}
+
+.edit-category-list > li {
+    margin: 10px;
+}
+
+.edit-category-list .fa-check {
+    cursor: pointer;
+    color: green;
+}
+
+.edit-category-list .fa-trash {
+    cursor: pointer;
+    color: red;
+}
+
+.edit-category-list .form-title,
+.edit-category-list .form-title:hover,
+.edit-category-list .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
+</style>
