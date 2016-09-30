@@ -1,0 +1,46 @@
+<template>
+    <ul class="ui-categorypicker">
+        <li
+            san-for="item, index in datasource"
+            style="background: {{item.color}}"
+            class="{{item.id == value | yesToBe('selected')}}"
+            on-click="itemClick(index)"
+        >{{ item.title }}</li>
+    </ul>
+</template>
+
+<script>
+
+export default {
+    initData: function () {
+        return {
+            datasource: []
+        };
+    },
+
+    itemClick: function (index) {
+        var datasource = this.data.get('datasource');
+        this.data.set('value', datasource[index].id);
+    }
+}
+
+</script>
+
+
+<style>
+.ui-colorpicker {
+    list-style: none;
+    display: inline-block;
+}
+
+.ui-colorpicker li {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.ui-colorpicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
+</style>

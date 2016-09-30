@@ -1,0 +1,63 @@
+<template>
+    <div class="form">
+        <input type="text" placeholder="分类" class="form-title" value="{= title =}">
+        <ui-colorpicker value="{= color =}"></ui-colorpicker>
+        <div class="form-op">
+            <button type="button" class="form-ok" on-click="submit"><i class="fa fa-check-circle-o"></i></button>
+            <button type="button" class="form-cancel" on-click="cancel"><i class="fa fa-times-circle-o"></i></button>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import service from '../../service'
+
+export default {
+    components: {
+        'ui-colorpicker': require('../ui/ColorPicker')
+    },
+
+    initData: function () {
+        return {
+            title: '',
+            color: ''
+        };
+    },
+
+    submit: function () {
+        var title = this.data.get('title');
+        if (!title) {
+            return;
+        }
+
+        service.addCategory({
+            title: title,
+            color: this.data.get('color')
+        });
+
+        this.finish();
+    },
+
+    cancel: function () {
+        this.finish();
+    },
+
+    finish: function () {
+        var e = {};
+        this.fire('finished', e);
+
+        if (e.returnValue !== false) {
+            history.go(-1);
+        }
+    }
+}
+</script>
+
+<style>
+.add-category {
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+</style>
