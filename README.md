@@ -1,6 +1,6 @@
 # SAN 
 
-<p><img src="https://ecomfe.github.io/san/img/logo-colorful.svg" alt="Logo"></p>
+<p><img src="https://ecomfe.github.io/san/img/logo-colorful.svg" alt="Logo" height="220"></p>
 
 San is a MVVM Component Framework for Web.
 
