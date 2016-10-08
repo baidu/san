@@ -1,16 +1,19 @@
-# SAN 
+<center>
 
-<p><img src="https://ecomfe.github.io/san/img/logo-colorful.svg" alt="Logo" height="220"></p>
+<p>
+    <a href="http://ecomfe.github.io/san/">
+        <img src="https://ecomfe.github.io/san/img/logo-colorful.svg" alt="Logo" height="220">
+        <h3>SAN</h3>
+    </a>
+</p>
 
-San is a MVVM Component Framework for Web.
+A MVVM Component Framework for Web.
 
+[![NPM version](http://img.shields.io/npm/v/san.svg?style=flat-square)](https://npmjs.org/package/san)
+[![Build Status](https://img.shields.io/circleci/project/ecomfe/san/master.svg?style=flat-square)](https://circleci.com/gh/ecomfe/san/tree/master)
+[![License](https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square)](https://npmjs.org/package/san)
 
-
-<img src="https://img.shields.io/npm/v/san.svg?style=flat-square" alt="Version">
-<img src="https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square" alt="License">
-
-[WebSite](http://ecomfe.github.io/san/)
-
+</center>
 
 ## Download
 
