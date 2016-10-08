@@ -1,0 +1,9 @@
+machine:
+  node:
+    version: 6
+
+dependencies:
+  pre:
+    - npm install selenium-standalone@latest -g
+    - selenium-standalone install
+    - selenium-standalone start
