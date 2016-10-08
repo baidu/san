@@ -3,12 +3,8 @@ machine:
     version: 6
 
 dependencies:
-  pre:
+  post:
     - npm install selenium-standalone@latest -g
     - selenium-standalone install
-
-test:
-  pre:
-    - selenium-standalone start & echo $! > selenium.pid
-  post:
-    - kill $(cat selenium.pid)
+    - selenium-standalone start:
+      background: true
