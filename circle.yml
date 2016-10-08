@@ -7,4 +7,4 @@ dependencies:
     - npm install selenium-standalone@latest -g
     - selenium-standalone install
     - selenium-standalone start:
-      background: true
+          background: true
