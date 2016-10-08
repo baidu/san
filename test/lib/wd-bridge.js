@@ -1,3 +1,17 @@
+/**
+ * @file webdriver 之桥
+ *       浏览器端，发消息给 webdriver
+ *
+ * @usage
+ *     发日志：
+ *         WDBridge.send('message', 'message')
+ *
+ *     发行为：
+ *         WDBridge.send('action', 'actname:param1|param2')
+ * @see
+ *     http://webdriver.io/api/action/click.html
+ */
+
 (function (global) {
 
     /**

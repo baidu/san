@@ -1,5 +1,12 @@
 /**
  * @file 测试
+ *
+ * @example
+ *
+ * 点击:
+ *     WDBridge.send('action', 'click:#' + myComponent.id);
+ * 输入:
+ *     WDBridge.send('action', 'addValue:#' + input.id + '|added1');
  */
 
 var path = require('path');
@@ -85,9 +92,13 @@ function bridgeLoop(timeout, timeoutMsg, interval) {
             }
 
             // 正常 action
-            if (ret.action) {
-                var act = ret.action.split(':');
-                client[act[0]](act[1]);
+            var action = ret.value.action;
+
+            if (action) {
+                var act = action.split(':');
+                var actName = act[0].trim();
+                var actParams = act[1].trim().split('|');
+                client[actName].apply(client, actParams);
             }
 
             // 等下一个天亮

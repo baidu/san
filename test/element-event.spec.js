@@ -37,6 +37,9 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
+        // wd bridge
+        WDBridge.send('action', 'click:#' + myComponent.id);
+
         doneSpec();
     });
 
@@ -75,6 +78,10 @@ describe("Element-Event", function () {
 
             setTimeout(doneSpec, 500);
         }
+
+
+        // wd bridge
+        WDBridge.send('action', 'addValue:#' + input.id + '|added1');
 
         doneSpec();
     });

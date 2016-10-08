@@ -165,6 +165,7 @@ var ConsoleReporter = (function() {
 var num = 0;
 
 jasmine.getEnv().addReporter(ConsoleReporter({
+  showColors: true,
   print: function (message) {
     WDBridge.send('message', message);
     // console.log(message);

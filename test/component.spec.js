@@ -597,6 +597,8 @@ describe("Component", function () {
             setTimeout(detect, 500);
         }
 
+        // wd bridge
+        WDBridge.send('action', 'click:#' + myComponent.childs[1].id);
 
         detect();
     });

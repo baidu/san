@@ -18,6 +18,8 @@ describe("Form TwoWay Binding", function () {
         var inputEl = san.getEl(input.id);
         expect(span.title).toBe(defName);
 
+        WDBridge.send('action', 'addValue:#' + input.id + '|added2');
+
         doneSpec();
         function doneSpec() {
             var name = myComponent.data.get('name');
@@ -56,6 +58,9 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
 
+        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|added3');
+
+
         doneSpec();
         function doneSpec() {
             var list = myComponent.data.get('list');
@@ -93,6 +98,9 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[0].value).toBe('errorrik');
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
+
+
+        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
 
 
         doneSpec();
@@ -154,6 +162,8 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[0].value).toBe('red');
         expect(inputs[1].value).toBe('green');
 
+        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+
         doneSpec();
         function doneSpec() {
             var colors0 = myComponent.data.get('persons[0].colors');
@@ -212,6 +222,8 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
+            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+
             doneSpec();
         });
 
@@ -262,6 +274,9 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[1].value).toBe('errorrik');
             expect(inputs[2].value).toBe('varsha');
             expect(inputs[3].value).toBe('firede');
+
+            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+
 
             doneSpec();
         });
@@ -318,6 +333,9 @@ describe("Form TwoWay Binding", function () {
             var inputs = wrap.getElementsByTagName('input');
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
+
+            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+
 
             doneSpec();
         });
@@ -396,6 +414,8 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
+        WDBridge.send('action', 'click:#' + inputs[0].id);
+
         doneSpec();
     });
 
@@ -448,6 +468,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
+        WDBridge.send('action', 'click:#' + inputs[0].id);
         doneSpec();
     });
 
@@ -479,6 +500,8 @@ describe("Form TwoWay Binding", function () {
         san.nextTick(function () {
             expect(select.selectedIndex).toBe(1);
             expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+
+            WDBridge.send('action', 'selectByIndex:#' + select.id + '|0');
 
             doneSpec();
         });
