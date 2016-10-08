@@ -6,8 +6,9 @@ dependencies:
   pre:
     - npm install selenium-standalone@latest -g
     - selenium-standalone install
-    - selenium-standalone start & echo $! > selenium.pid
 
 test:
+  pre:
+    - selenium-standalone start & echo $! > selenium.pid
   post:
-  	- kill $(cat selenium.pid)
+    - kill $(cat selenium.pid)
