@@ -37,7 +37,7 @@ process.on('uncaughtException', function (err) {
 var devices = require('./devices');
 
 // standalone
-// var devices = {
+var devices = {
 //     chrome: {
 //         desiredCapabilities: {
 //             browserName: 'chrome'
@@ -60,9 +60,8 @@ Object.keys(devices).forEach(function (key) {
 });
 
 // run tasks
-async.parallelLimit(
+async.series(
     tasks,
-    8,
     function(err, results) {
 
         console.log(results);
