@@ -16,18 +16,6 @@ var path = require('path');
 var httpServer = require('http-server');
 var webdriverio = require('webdriverio');
 
-
-/**
- * happyEnding
- *
- * @param  {number} code state
- */
-function happyEnding (code) {
-    setTimeout(function () {
-        process.exit(code);
-    }, 200);
-}
-
 // start server
 var server = httpServer.createServer({
     root: path.resolve(__dirname, '../../')
@@ -44,99 +32,133 @@ process.on('uncaughtException', function (err) {
 
 // config webdriverio
 
-// standalone
+// saucelabs
+var devices = require('./devices');
 
-// var options = {
-//     desiredCapabilities: {
-//         browserName: 'chrome'
+// standalone
+// var devices = {
+//     chrome: {
+//         desiredCapabilities: {
+//             browserName: 'chrome'
+//         }
 //     }
 // };
 
-// var client = webdriverio.remote(options);
+// devices var
+var devicesList = Object.keys(devices);
+var devicesAll = devicesList.length;
+var devicesDone = 0;
 
-// saucelabs
-var devices = require('./devices');
-var client = webdriverio.multiremote(devices);
+function processEnd (code) {
 
-// report result
-var reportResultRegEx = /^\d+ specs, (\d+) failure/;
-var reportResult;
+    if (code == 0) {
 
-/**
- * 桥循环
- *
- * @param  {number} timeout    超时时间
- * @param  {string} timeoutMsg 超时信息
- * @param  {number} interval   循环间隔
- * @return {client}            webdrive client
- */
-function bridgeLoop(timeout, timeoutMsg, interval) {
+        // 完美结束
+        if (++devicesDone == devicesAll) {
+            setTimeout(function () {
+                process.exit(code);
+            }, 200);
+        }
 
-    interval = interval || 100;
-    timeoutMsg = timeoutMsg || '这个测试超时了';
+        return;
+    }
 
-    return client
-        // .timeoutsAsyncScript(10)
-        .executeAsync(function(done) {
+    setTimeout(function () {
+        process.exit(code);
+    }, 200);
+}
 
-            // 浏览器端 接口
-            window.WDBridge.nextTick(done);
+function processStart (device) {
 
-        }).then(function(ret) {
+    var client = webdriverio.remote(device);
 
-            var msg = ret.value.message;
+    // report result
+    var reportResultRegEx = /^\d+ specs, (\d+) failure/;
+    var reportResult;
 
-            // 获取结果
-            var match = reportResultRegEx.exec(msg);
-            if (match) {
-                reportResult = match[1] === '0' ? 0 : 1;
-            }
+    /**
+     * 桥循环
+     *
+     * @param  {number} timeout    超时时间
+     * @param  {string} timeoutMsg 超时信息
+     * @param  {number} interval   循环间隔
+     * @return {client}            webdrive client
+     */
+    function bridgeLoop(timeout, timeoutMsg, interval) {
 
-            // 正常结束
-            if (/^Finished/.test(msg)) {
-                console.log(msg);
-                client.end();
-                happyEnding(reportResult);
-                return;
-            }
+        interval = interval || 100;
+        timeoutMsg = timeoutMsg || '这个测试超时了';
 
-            // 超时
-            if ((timeout -= interval) < 0) {
-                console.log(timeoutMsg);
-                client.end();
-                happyEnding(1);
-                return;
-            }
+        return client
+            // .timeoutsAsyncScript(10)
+            .executeAsync(function(done) {
 
-            // 正常 log
-            if (msg) {
-                process.stdout.write(msg);
-            }
+                // 浏览器端 接口
+                window.WDBridge.nextTick(done);
 
-            // 正常 action
-            var action = ret.value.action;
+            }).then(function(ret) {
 
-            if (action) {
-                var act = action.split(':');
-                var actName = act[0].trim();
-                var actParams = act[1].trim().split('|');
-                client[actName].apply(client, actParams);
-            }
+                var msg = ret.value.message;
 
-            // 等下一个天亮
-            setTimeout(function() {
+                // 获取结果
+                var match = reportResultRegEx.exec(msg);
+                if (match) {
+                    reportResult = match[1] === '0' ? 0 : 1;
+                }
 
-                bridgeLoop(timeout, timeoutMsg, interval);
+                // 正常结束
+                if (/^Finished/.test(msg)) {
+                    console.log(msg);
+                    client.end();
+                    processEnd(reportResult);
+                    return;
+                }
 
-            }, interval);
+                // 超时
+                if ((timeout -= interval) < 0) {
+                    console.log(timeoutMsg);
+                    client.end();
+                    processEnd(1);
+                    return;
+                }
 
-        });
+                // 正常 log
+                if (msg) {
+                    process.stdout.write(msg);
+                }
+
+                // 正常 action
+                var action = ret.value.action;
+
+                if (action) {
+                    var act = action.split(':');
+                    var actName = act[0].trim();
+                    var actParams = act[1].trim().split('|');
+                    client[actName].apply(client, actParams);
+                }
+
+                // 等下一个天亮
+                setTimeout(function() {
+
+                    bridgeLoop(timeout, timeoutMsg, interval);
+
+                }, interval);
+
+            });
+
+    }
+
+    client.addCommand('bridgeLoop', bridgeLoop);
+
+    client
+        .init()
+        .url('http://127.0.0.1:8001/test/')
+        .bridgeLoop(1000 * 60 * 5);
 
 }
 
-client.addCommand('bridgeLoop', bridgeLoop);
+// run
+devicesList.forEach(function (key) {
+    processStart(devices[key]);
+});
 
-client
-    .init()
-    .url('http://127.0.0.1:8001/test/')
-    .bridgeLoop(1000 * 60 * 5);
