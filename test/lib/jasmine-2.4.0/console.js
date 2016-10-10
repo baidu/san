@@ -57,7 +57,7 @@ getJasmineRequireObj().ConsoleReporter = function() {
       },
       failedSuites = [];
 
-    print('ConsoleReporter is deprecated and will be removed in a future version.');
+    // print('ConsoleReporter is deprecated and will be removed in a future version.');
 
     this.jasmineStarted = function() {
       specCount = 0;
