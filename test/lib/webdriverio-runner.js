@@ -55,6 +55,7 @@ var tasks = {};
 
 Object.keys(devices).forEach(function (key) {
     tasks[key] = function (done) {
+        process.stdout.write('# ' + key + ' ');
         startWorker(devices[key], done);
     };
 });
@@ -172,6 +173,7 @@ function startWorker (device, done) {
         .bridgeLoop(1000 * 30); // 30 秒超时
 
     function workerEnd (code) {
+        console.log('===========================');
         done(null, code);
     }
 
