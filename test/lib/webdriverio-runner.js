@@ -64,12 +64,12 @@ async.parallel(
     tasks,
     function(err, results) {
 
+        console.log(results);
+
         if (err) {
             processExit(err);
             return;
         }
-
-        console.log(results);
 
         processExit(0);
 

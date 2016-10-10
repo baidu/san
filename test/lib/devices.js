@@ -19,11 +19,11 @@ var devices = {
     // },
 
     // ie family
-    ie_9: {
-        browserName: 'internet explorer',
-        platform: 'Windows 7',
-        version: '9'
-    },
+    // ie_9: {
+    //     browserName: 'internet explorer',
+    //     platform: 'Windows 7',
+    //     version: '9'
+    // },
     // ie_10: {
     //     browserName: 'internet explorer',
     //     platform: 'Windows 8',
@@ -40,10 +40,10 @@ var devices = {
     // },
 
     // // mobile
-    // ios_safari_8: {
-    //     browserName: 'iphone',
-    //     version: '8.4'
-    // },
+    ios_safari_8: {
+        browserName: 'iphone',
+        version: '8.4'
+    },
     // ios_safari_9: {
     //     browserName: 'iphone',
     //     version: '9.3'
@@ -52,10 +52,10 @@ var devices = {
     //     browserName: 'android',
     //     version: '4.2'
     // },
-    // android_5_1: {
-    //     browserName: 'android',
-    //     version: '5.1'
-    // }
+    android_5_1: {
+        browserName: 'android',
+        version: '5.1'
+    }
 
 };
 
