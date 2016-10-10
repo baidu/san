@@ -37,7 +37,7 @@ process.on('uncaughtException', function (err) {
 var devices = require('./devices');
 
 // standalone
-var devices = {
+// var devices = {
 //     chrome: {
 //         desiredCapabilities: {
 //             browserName: 'chrome'
