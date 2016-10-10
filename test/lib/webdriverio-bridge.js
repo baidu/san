@@ -2,7 +2,7 @@
  * @file webdriver 之桥
  *       浏览器端，发消息给 webdriver
  *
- * @usage
+ * @example
  *     发日志：
  *         WDBridge.send('message', 'message')
  *
@@ -155,24 +155,14 @@
 
 })(window);
 
+// 把 ConsoleReporter 发送给 WDBridge
+jasmineRequire.console(jasmineRequire, jasmine);
 
-// fake consumer
-// var timer = setInterval(function () {
+jasmine.getEnv().addReporter(new jasmine.ConsoleReporter({
+    timer: new jasmine.Timer(),
+    showColors: true,
+    print: function(message) {
+        WDBridge.send('message', message);
+    }
+}));
 
-//     WDBridge.nextTick(function (ret) {
-
-//         // console.log(ret.message);
-
-
-//         // if (/Finished/.test(ret.message)) {
-//         //     console.log(ret.message);
-//         //     clearInterval(timer);
-//         // }
-
-//         // if (ret.message) {
-//         //     console.log(ret.message);
-//         // }
-
-//     });
-
-// }, 100);

@@ -1,5 +1,8 @@
 /**
- * @file 测试
+ * @file 测试 runner
+ *
+ * @description
+ *     跑测试前，启动 selenium-standalone start
  *
  * @example
  *
@@ -72,7 +75,7 @@ function bridgeLoop(timeout, timeoutMsg, interval) {
 
             // 正常结束
             if (/^Finished/.test(msg)) {
-                process.stdout.write(msg);
+                console.log(msg);
                 client.end();
                 process.exit(reportResult);
                 return;
