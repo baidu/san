@@ -13,17 +13,17 @@ var devices = {
     firefox: {
         browserName: 'firefox'
     },
-    mac_safari: {
-        browserName: 'safari',
-        platform: 'OS X 10.10'
-    },
-
-    // // ie family
-    // ie_9: {
-    //     browserName: 'internet explorer',
-    //     platform: 'Windows 7',
-    //     version: '9'
+    // mac_safari: {
+    //     browserName: 'safari',
+    //     platform: 'OS X 10.10'
     // },
+
+    // ie family
+    ie_9: {
+        browserName: 'internet explorer',
+        platform: 'Windows 7',
+        version: '9'
+    },
     // ie_10: {
     //     browserName: 'internet explorer',
     //     platform: 'Windows 8',

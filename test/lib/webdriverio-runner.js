@@ -13,6 +13,7 @@
  */
 
 var path = require('path');
+var async = require('async');
 var httpServer = require('http-server');
 var webdriverio = require('webdriverio');
 
@@ -41,34 +42,47 @@ var devices = require('./devices');
 //         desiredCapabilities: {
 //             browserName: 'chrome'
 //         }
+//     },
+//     chrome2: {
+//         desiredCapabilities: {
+//             browserName: 'chrome'
+//         }
 //     }
 // };
 
-// devices var
-var devicesList = Object.keys(devices);
-var devicesAll = devicesList.length;
-var devicesDone = 0;
+// config task
+var tasks = {};
 
-function processEnd (code) {
+Object.keys(devices).forEach(function (key) {
+    tasks[key] = function (done) {
+        startWorker(devices[key], done);
+    };
+});
 
-    if (code == 0) {
+// run tasks
+async.parallel(
+    tasks,
+    function(err, results) {
 
-        // 完美结束
-        if (++devicesDone == devicesAll) {
-            setTimeout(function () {
-                process.exit(code);
-            }, 200);
+        if (err) {
+            processExit(err);
+            return;
         }
 
-        return;
-    }
+        console.log(results);
 
+        processExit(0);
+
+    }
+);
+
+function processExit (code) {
     setTimeout(function () {
         process.exit(code);
     }, 200);
 }
 
-function processStart (device) {
+function startWorker (device, done) {
 
     var client = webdriverio.remote(device);
 
@@ -110,7 +124,7 @@ function processStart (device) {
                 if (/^Finished/.test(msg)) {
                     console.log(msg);
                     client.end();
-                    processEnd(reportResult);
+                    workerEnd(reportResult);
                     return;
                 }
 
@@ -118,7 +132,7 @@ function processStart (device) {
                 if ((timeout -= interval) < 0) {
                     console.log(timeoutMsg);
                     client.end();
-                    processEnd(1);
+                    workerEnd(1);
                     return;
                 }
 
@@ -155,10 +169,14 @@ function processStart (device) {
         .url('http://127.0.0.1:8001/test/')
         .bridgeLoop(1000 * 60 * 5);
 
+    function workerEnd (code) {
+
+        if (code === 0) {
+            done(null, code);
+        }
+        else {
+            done(code, code);
+        }
+    }
+
 }
-
-// run
-devicesList.forEach(function (key) {
-    processStart(devices[key]);
-});
-
