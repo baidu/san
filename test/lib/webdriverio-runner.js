@@ -31,13 +31,31 @@ process.on('uncaughtException', function (err) {
 });
 
 // config webdriverio
-var options = {
-    desiredCapabilities: {
-        browserName: 'chrome'
-    }
-};
+// var options = {
+//     desiredCapabilities: [
+//         {
+//             browserName: 'chrome'
+//         },
+//         {
+//             browserName: 'firefox'
+//         }
+//     ]
+// };
 
-var client = webdriverio.remote(options);
+// var client = webdriverio.remote(options);
+
+var client = webdriverio.multiremote({
+    myChrome: {
+        desiredCapabilities: {
+            browserName: 'chrome'
+        }
+    },
+    myFirefox: {
+        desiredCapabilities: {
+            browserName: 'firefox',
+        }
+    }
+});
 
 // report result
 var reportResultRegEx = /^\d+ specs, (\d+) failure/;
