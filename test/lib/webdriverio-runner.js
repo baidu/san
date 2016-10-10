@@ -111,7 +111,6 @@ function startWorker (device, done) {
             // .timeoutsAsyncScript(10)
             .executeAsync(function(done) {
 
-                // 浏览器端 接口
                 window.WDBridge.nextTick(done);
 
             }).then(function(ret) {
@@ -171,7 +170,7 @@ function startWorker (device, done) {
     client
         .init()
         .url('http://127.0.0.1:8001/test/')
-        .bridgeLoop(1000 * 60 * 5);
+        .bridgeLoop(1000 * 30); // 30 秒超时
 
     function workerEnd (code) {
         done(null, code);
