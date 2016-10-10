@@ -60,18 +60,22 @@ Object.keys(devices).forEach(function (key) {
 });
 
 // run tasks
-async.parallel(
+async.parallelLimit(
     tasks,
+    8,
     function(err, results) {
 
         console.log(results);
 
-        if (err) {
-            processExit(err);
-            return;
-        }
+        var hasErr = Object.keys(results)
+            .map(function (key) {
+                return results[key];
+            })
+            .some(function (value) {
+                return value > 0;
+            });
 
-        processExit(0);
+        processExit(hasErr ? 1 : 0);
 
     }
 );
@@ -170,13 +174,7 @@ function startWorker (device, done) {
         .bridgeLoop(1000 * 60 * 5);
 
     function workerEnd (code) {
-
-        if (code === 0) {
-            done(null, code);
-        }
-        else {
-            done(code, code);
-        }
+        done(null, code);
     }
 
 }
