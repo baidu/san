@@ -53,8 +53,8 @@ var options = {
         browserName: 'chrome',
         version: '27',
         platform: 'XP',
-        tags: ['examples'],
-        name: 'This is an example test',
+        tags: ['san'],
+        name: 'This is an san test',
 
         // If using Open Sauce (https://saucelabs.com/opensauce/),
         // capabilities must be tagged as "public" for the jobs's status
