@@ -16,6 +16,18 @@ var path = require('path');
 var httpServer = require('http-server');
 var webdriverio = require('webdriverio');
 
+
+/**
+ * happyEnding
+ *
+ * @param  {number} code state
+ */
+function happyEnding (code) {
+    setTimeout(function () {
+        process.exit(code);
+    }, 200);
+}
+
 // start server
 var server = httpServer.createServer({
     root: path.resolve(__dirname, '../../')
@@ -32,63 +44,19 @@ process.on('uncaughtException', function (err) {
 
 // config webdriverio
 
-
 // standalone
-//
+
 // var options = {
-//     desiredCapabilities: [
-//         {
-//             browserName: 'chrome'
-//         },
-//         {
-//             browserName: 'firefox'
-//         }
-//     ]
+//     desiredCapabilities: {
+//         browserName: 'chrome'
+//     }
 // };
 
+// var client = webdriverio.remote(options);
+
 // saucelabs
-
-var options = {
-    desiredCapabilities: {
-        browserName: 'chrome',
-        version: '27',
-        platform: 'XP',
-        tags: ['san'],
-        name: 'This is an san test',
-
-        // If using Open Sauce (https://saucelabs.com/opensauce/),
-        // capabilities must be tagged as "public" for the jobs's status
-        // to update (failed/passed). If omitted on Open Sauce, the job's
-        // status will only be marked "Finished." This property can be
-        // be omitted for commerical (private) Sauce Labs accounts.
-        // Also see https://support.saucelabs.com/customer/portal/articles/2005331-why-do-my-tests-say-%22finished%22-instead-of-%22passed%22-or-%22failed%22-how-do-i-set-the-status-
-        'public': true
-    },
-    host: 'ondemand.saucelabs.com',
-    port: 80,
-    user: process.env.SAUCE_USERNAME,
-    key: process.env.SAUCE_ACCESS_KEY,
-    logLevel: 'silent'
-};
-
-var client = webdriverio.remote(options);
-
-// multiremote
-
-// var client = webdriverio.multiremote({
-//     myChrome: {
-//         desiredCapabilities: {
-//             browserName: 'chrome'
-//         }
-//     },
-//     myFirefox: {
-//         desiredCapabilities: {
-//             browserName: 'firefox',
-//         }
-//     }
-// });
-
-
+var devices = require('./devices');
+var client = webdriverio.multiremote(devices);
 
 // report result
 var reportResultRegEx = /^\d+ specs, (\d+) failure/;
@@ -128,7 +96,7 @@ function bridgeLoop(timeout, timeoutMsg, interval) {
             if (/^Finished/.test(msg)) {
                 console.log(msg);
                 client.end();
-                process.exit(reportResult);
+                happyEnding(reportResult);
                 return;
             }
 
@@ -136,7 +104,7 @@ function bridgeLoop(timeout, timeoutMsg, interval) {
             if ((timeout -= interval) < 0) {
                 console.log(timeoutMsg);
                 client.end();
-                process.exit(1);
+                happyEnding(1);
                 return;
             }
 
