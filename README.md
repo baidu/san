@@ -30,8 +30,7 @@ $ npm i san
 CDN:
 
 ```html
-<!-- coming soon -->
-<script src="..."></script>
+<script src="https://unpkg.com/san@latest"></script>
 ```
 
 ## Document
