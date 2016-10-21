@@ -21,7 +21,10 @@
     "url": "https://github.com/ecomfe/san.git"
   },
   "scripts": {
-    "test": "node test/lib/webdriverio-runner.js"
+    "wdio": "node test/lib/webdriverio-runner.js",
+    "test": "npm run wdio -- 0",
+    "test:standalone": "npm run wdio -- standalone",
+    "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2"
   },
   "main": "src/main",
   "files": "src",

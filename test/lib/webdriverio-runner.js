@@ -33,22 +33,7 @@ process.on('uncaughtException', function (err) {
 
 // config webdriverio
 
-// saucelabs
-var devices = require('./devices');
-
-// standalone
-// var devices = {
-//     chrome: {
-//         desiredCapabilities: {
-//             browserName: 'chrome'
-//         }
-//     },
-//     chrome2: {
-//         desiredCapabilities: {
-//             browserName: 'chrome'
-//         }
-//     }
-// };
+var devices = require('./devices').get(process.argv[2]);
 
 // config task
 var tasks = {};
@@ -104,7 +89,7 @@ function startWorker (device, done) {
      */
     function bridgeLoop(timeout, timeoutMsg, interval) {
 
-        interval = interval || 100;
+        interval = interval || 10;
         timeoutMsg = timeoutMsg || '这个测试超时了';
 
         return client
