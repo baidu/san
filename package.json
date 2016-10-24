@@ -22,7 +22,7 @@
   },
   "scripts": {
     "wdio": "node test/lib/webdriverio-runner.js",
-    "test": "npm run wdio -- 0",
+    "test": "npm run test:sauce",
     "test:standalone": "npm run wdio -- standalone",
     "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2"
   },
