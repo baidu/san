@@ -3587,8 +3587,7 @@
             ) {
                 this.data.set(
                     bindItem.name,
-                    this.evalExpr(bindItem.expr),
-                    {force: true} // TODO: need force?
+                    this.evalExpr(bindItem.expr)
                 );
                 needUpdate = true;
             }
