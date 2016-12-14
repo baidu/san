@@ -1555,7 +1555,7 @@
                 prop = accessorItemValue(paths[i], this);
         }
 
-        if (prop != null && (option.force || data[prop] !== value)) {
+        if (prop != null) {
             data[prop] = value;
             !option.silence && this.fireChange({
                 type: Model.ChangeType.SET,
@@ -2452,6 +2452,7 @@
     };
 
     function bindOutputer(bindInfo, e) {
+        // TODO: remove blockSetOnce
         this.blockSetOnce = true;
         var propHandler = this.propHandlers[bindInfo.name] || this.propHandlers['*'];
         propHandler.output(this, bindInfo);
@@ -2827,7 +2828,12 @@
 
             output: function (element, bindInfo) {
                 var el = element.el;
-                element.scope.set(bindInfo.expr, el.checked ? el.value : '');
+                element.scope.set(bindInfo.expr, el.checked ? el.value : '', {
+                    target: {
+                        id: element.id,
+                        prop: bindInfo.name
+                    }
+                });
             },
 
             choose: function (element) {
@@ -2855,7 +2861,12 @@
             },
 
             output: function (element, bindInfo) {
-                element.scope.set(bindInfo.expr, element.el[bindInfo.name]);
+                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                    target: {
+                        id: element.id,
+                        prop: bindInfo.name
+                    }
+                });
             },
 
             choose: function (element) {
@@ -2922,7 +2933,12 @@
             },
 
             output: function (element, bindInfo) {
-                element.scope.set(bindInfo.expr, element.el[bindInfo.name]);
+                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                    target: {
+                        id: element.id,
+                        prop: bindInfo.name
+                    }
+                });
             },
 
             choose: function (element) {
@@ -2976,8 +2992,16 @@
             return;
         }
 
+        var changeTarget = change.target;
         var needUpdate = false;
         this.aNode.binds.each(function (bindItem) {
+            if (changeTarget
+                && changeTarget.id === this.id
+                && changeTarget.prop === bindItem.name
+            ) {
+                return;
+            }
+
             if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 nextTick(function () {
                     this.setProp(bindItem.name, this.evalExpr(bindItem.expr));
@@ -3428,8 +3452,35 @@
                 return;
             }
 
-            this.watch(bindInfo.name, function (value) {
-                this.scope.set(bindInfo.expr, value);
+            this.watch(bindInfo.name, function (value, change) {
+                var updateScopeExpr = bindInfo.expr;
+                if (change.expr.type === ExprType.PROP_ACCESSOR) {
+                    updateScopeExpr = {
+                        type: ExprType.PROP_ACCESSOR,
+                        paths: []
+                    };
+
+                    switch (bindInfo.expr.type) {
+                        case ExprType.IDENT:
+                            updateScopeExpr.paths.push(bindInfo.expr);
+                            break;
+                        case ExprType.PROP_ACCESSOR:
+                            Array.prototype.push.apply(updateScopeExpr.paths, bindInfo.expr.paths);
+                    }
+
+                    Array.prototype.push.apply(updateScopeExpr.paths, change.expr.paths.slice(1));
+                }
+
+                this.scope.set(
+                    updateScopeExpr,
+                    evalExpr(change.expr, this.data, this),
+                    {
+                        target: {
+                            id: this.id,
+                            prop: bindInfo.name
+                        }
+                    }
+                );
             });
         }, this);
     };
@@ -3446,7 +3497,7 @@
 
         this.data.onChange(function (change) {
             if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                listener.call(me, evalExpr(dataExpr, this, me));
+                listener.call(me, evalExpr(dataExpr, this, me), change);
             }
         });
     };
@@ -3477,9 +3528,17 @@
         }
 
         var needUpdate = false;
+        var changeTarget = change.option.target;
 
         this.aNode.binds.each(function (bindItem) {
             if (bindItem.isOwn) {
+                if (changeTarget
+                    && changeTarget.id === this.id
+                    && changeTarget.prop === bindItem.name
+                ) {
+                    return;
+                }
+
                 nextTick(function () {
                     this.setProp(bindItem.name, evalExpr(bindItem.expr, this.data, this));
                 }, this);
@@ -3512,24 +3571,30 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype.updateView = function (change) {
-        if (!this.lifeCycle.is('disposed') && this !== this.owner) {
-            var needUpdate = false;
-
-            this.aNode.binds.each(function (bindItem) {
-                if (!bindItem.isOwn
-                    && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
-                ) {
-                    this.data.set(
-                        bindItem.name,
-                        this.evalExpr(bindItem.expr),
-                        {force: true}
-                    );
-                    needUpdate = true;
-                }
-            }, this);
-
-            return needUpdate;
+        var changeTarget = change.option.target;
+        if (this.lifeCycle.is('disposed')
+            || this === this.owner
+            || (changeTarget && changeTarget.id === this.id)
+        ) {
+            return;
         }
+
+        var needUpdate = false;
+
+        this.aNode.binds.each(function (bindItem) {
+            if (!bindItem.isOwn
+                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
+            ) {
+                this.data.set(
+                    bindItem.name,
+                    this.evalExpr(bindItem.expr),
+                    {force: true} // TODO: need force?
+                );
+                needUpdate = true;
+            }
+        }, this);
+
+        return needUpdate;
     };
 
     /**
@@ -4159,6 +4224,7 @@
                             {name: forDirective.item, type: ExprType.IDENT}
                         ].concat(changeSegs.slice(forLen + 1))
                     };
+                    // TODO: merge option
                     Model.prototype.set.call(
                         this.childs[changeIndex].scope,
                         change.expr,

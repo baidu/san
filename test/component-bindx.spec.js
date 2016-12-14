@@ -275,4 +275,178 @@ describe("Component-TwoWay Binding", function () {
             done();
         }, 500);
     });
+
+    it("nested, simple data", function (done) {
+        function Person(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(Person, san.Component);
+
+        Person.prototype.template = '<div><b title="{{name}}">{{name}}</b></div>';
+
+        Person.prototype.attached = function () {
+            var me = this;
+            setTimeout(function () {
+                me.data.set('name', 'errorrik');
+            }, 500);
+        };
+
+        function MyComponent(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(MyComponent, san.Component);
+
+        MyComponent.prototype.components = {
+            'ui-person': Person
+        };
+
+        MyComponent.prototype.template = '<div><ui-person name="{=person.name=}"></ui-person><b title="{{person.name}}">{{person.name}}</b></div>';
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('person', {
+            name: 'erik',
+            sex: 1
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('erik');
+        expect(bs[1].title).toBe('erik');
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].title).toBe('errorrik');
+            expect(bs[1].title).toBe('errorrik');
+            expect(myComponent.data.get('person.name')).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 1500);
+    });
+
+    it("nested, complex data", function (done) {
+        function Person(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(Person, san.Component);
+
+        Person.prototype.template = '<div><b title="{{info.name}}">{{info.name}}</b></div>';
+
+        Person.prototype.attached = function () {
+            var me = this;
+            setTimeout(function () {
+                me.data.set('info.name', 'errorrik');
+            }, 500);
+        };
+
+        function MyComponent(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(MyComponent, san.Component);
+
+        MyComponent.prototype.components = {
+            'ui-person': Person
+        };
+
+        MyComponent.prototype.template = '<div><ui-person info="{=person=}"></ui-person><b title="{{person.name}}">{{person.name}}</b></div>';
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('person', {
+            name: 'erik',
+            sex: 1
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('erik');
+        expect(bs[1].title).toBe('erik');
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].title).toBe('errorrik');
+            expect(bs[1].title).toBe('errorrik');
+            expect(myComponent.data.get('person.name')).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 1500);
+    });
+
+    it("nested, more complex data", function (done) {
+        function Person(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(Person, san.Component);
+
+        Person.prototype.template = '<div><b title="{{info.name}}">{{info.name}}</b></div>';
+
+        Person.prototype.attached = function () {
+            var me = this;
+            setTimeout(function () {
+                me.data.set('info.name', 'errorrik');
+            }, 500);
+        };
+
+        function MyComponent(options) {
+            san.Component.call(this, options);
+        }
+        san.inherits(MyComponent, san.Component);
+
+        MyComponent.prototype.components = {
+            'ui-person': Person
+        };
+
+        MyComponent.prototype.template = '<div>'
+            + '<ui-person info="{=dep.persons[0]=}"></ui-person><b title="{{dep.persons[0].name}}">{{dep.persons[0].name}}</b>'
+            + '<ui-person info="{=dep.persons[1]=}"></ui-person><b title="{{dep.persons[1].name}}">{{dep.persons[1].name}}</b>'
+            + '</div>';
+
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('dep', {
+            name: 'fed',
+            persons: [
+                {
+                    name: 'erik',
+                    sex: 1
+                },
+                {
+                    name: 'jummer',
+                    sex: 1
+                }
+            ]
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('erik');
+        expect(bs[1].title).toBe('erik');
+        expect(bs[2].title).toBe('jummer');
+        expect(bs[3].title).toBe('jummer');
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].title).toBe('errorrik');
+            expect(bs[1].title).toBe('errorrik');
+            expect(bs[2].title).toBe('errorrik');
+            expect(bs[3].title).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 1500);
+    });
 });
