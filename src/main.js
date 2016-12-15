@@ -2747,12 +2747,81 @@
     }
 
     /**
+     * HTML 属性和 DOM 操作属性的对照表
+     *
+     * @inner
+     * @const
+     * @type {Object}
+     */
+    var HTML_ATTR_PROP_MAP = {
+        'readonly': 'readOnly',
+        'cellpadding': 'cellPadding',
+        'cellspacing': 'cellSpacing',
+        'class': 'className'
+    };
+
+    /**
+     * 生成 bool 类型属性绑定操作的变换方法
+     *
+     * @inner
+     * @param {string} attrName 属性名
+     * @param {function(Element):boolean} 判断元素满足选择条件的函数
+     * @return {Object}
+     */
+    function genBoolPropHandler(attrName, chooseCondition) {
+        attrName = attrName.toLowerCase();
+
+        return {
+            input: {
+                attr: function (element, name, value) {
+                    if (!value) {
+                        return '';
+                    }
+
+                    return ' ' + attrName + '="' + attrName + '"';
+                },
+
+                prop: function (element, name, value) {
+                    var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
+                    element.el[propName] = !!value;
+                }
+            },
+
+            choose: function (element) {
+                if (typeof chooseCondition !== 'function' || chooseCondition(element)) {
+                    return attrName;
+                }
+            }
+        };
+    }
+
+    /**
      * 绑定元素的属性设置的变换方法集合
      *
      * @inner
      * @type {Array}
      */
     var bindPropHandlers = [
+        // 表单元素(input / button / textarea / select) 的 disabled
+        genBoolPropHandler('disabled', function (element) {
+            switch (element.tagName.toLowerCase()) {
+                case 'input':
+                case 'textarea':
+                case 'button':
+                case 'select':
+                    return true;
+            }
+        }),
+
+        // 表单元素(input / textarea) 的 readonly
+        genBoolPropHandler('readonly', function (element) {
+            switch (element.tagName.toLowerCase()) {
+                case 'input':
+                case 'textarea':
+                    return true;
+            }
+        }),
+
         // input[type=checkbox] 的 bind handler
         {
             input: {
@@ -2874,27 +2943,6 @@
             }
         },
 
-        // class 的 bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    if (!value) {
-                        return '';
-                    }
-
-                    return ' class="' + value + '"';
-                },
-
-                prop: function (element, name, value) {
-                    element.el.className = value;
-                }
-            },
-
-            choose: function (element) {
-                return 'class';
-            }
-        },
-
         // style 的 bind handler
         {
             input: {
@@ -2928,6 +2976,7 @@
                 },
 
                 prop: function (element, name, value) {
+                    name = HTML_ATTR_PROP_MAP[name] || name;
                     element.el[name] = value;
                 }
             },

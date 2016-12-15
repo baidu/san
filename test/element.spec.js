@@ -137,5 +137,68 @@ describe("Element", function () {
         });
     });
 
+    it("bind disabled", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="text" disabled="{{ed}}"><textarea disabled="{{ed}}"></textarea><button disabled="{{ed}}">btn</button></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        var textarea = wrap.getElementsByTagName('textarea')[0];
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(input.disabled).toBeFalsy();
+        expect(textarea.disabled).toBeFalsy();
+        expect(btn.disabled).toBeFalsy();
+
+        myComponent.data.set('ed', true);
+
+
+        san.nextTick(function () {
+            expect(input.disabled).toBeTruthy();
+            expect(textarea.disabled).toBeTruthy();
+            expect(btn.disabled).toBeTruthy();
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind readonly", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="text" readonly="{{ed}}"><textarea readonly="{{ed}}"></textarea></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        var textarea = wrap.getElementsByTagName('textarea')[0];
+        expect(input.readOnly).toBeFalsy();
+        expect(textarea.readOnly).toBeFalsy();
+
+        myComponent.data.set('ed', true);
+
+
+        san.nextTick(function () {
+            expect(input.readOnly).toBeTruthy();
+            expect(textarea.readOnly).toBeTruthy();
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
 
 });
