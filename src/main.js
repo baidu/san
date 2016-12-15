@@ -2757,6 +2757,12 @@
         'readonly': 'readOnly',
         'cellpadding': 'cellPadding',
         'cellspacing': 'cellSpacing',
+        'colspan': 'colSpan',
+        'rowspan': 'rowSpan',
+        'valign': 'vAlign',
+        'usemap': 'useMap',
+        'frameborder': 'frameBorder',
+        'for': 'htmlFor',
         'class': 'className'
     };
 
