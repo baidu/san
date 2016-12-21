@@ -1,5 +1,5 @@
 /**
- * san-core
+ * San
  * Copyright 2016 Baidu Inc. All rights reserved.
  *
  * @file 组件体系，vm引擎
@@ -3029,7 +3029,7 @@
      * @param {*} value 属性值
      */
     Element.prototype.setProp = function (name, value) {
-        if (this.el && this.lifeCycle.is('created') && !this.blockSetOnce) {
+        if (this.el && this.lifeCycle.is('created')) {
             var propHandler = this.propHandlers[name] || this.propHandlers['*'];
             propHandler.input.prop(this, name, value);
             this.blockSetOnce = false;
@@ -3805,25 +3805,26 @@
         var ifExpr = this.aNode.directives.get('if').value;
         var child = this.childs[0];
         if (exprNeedsUpdate(ifExpr, change.expr, this.scope)) {
-            nextTick(function () {
-                if (this.lifeCycle.is('disposed')) {
-                    return;
+            var isChildExists = !!this.evalExpr(ifExpr);
+
+            if (isChildExists) {
+                if (child) {
+                    child.updateView(change);
                 }
-
-                var isChildExists = !!this.evalExpr(ifExpr);
-
-                if (isChildExists) {
-                    if (!child) {
+                else {
+                    nextTick(function () {
                         child = createIfDirectiveChild(this);
                         child.attach(this.el.parentNode, this.el);
                         this.childs[0] = child;
-                    }
+                    }, this);
                 }
-                else {
-                    child && child.dispose();
+            }
+            else if (child) {
+                nextTick(function () {
+                    child.dispose();
                     this.childs.length = 0;
-                }
-            }, this);
+                }, this);
+            }
 
             return true;
         }

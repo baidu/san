@@ -165,6 +165,52 @@ describe("IfDirective", function () {
         });
     });
 
+    it("render list, init true, render data use as condition", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><ul san-if="persons"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul></div>'
+        });
+        var myComponent = new MyComponent();
+
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(2);
+        expect(lis[1].getAttribute('title')).toBe('varsha');
+        expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+        expect(lis[0].getAttribute('title')).toBe('errorrik');
+        expect(lis[0].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[2].getAttribute('title')).toBe('varsha');
+            expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+            expect(lis[1].getAttribute('title')).toBe('errorrik');
+            expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     var TelList = san.defineComponent({
         template: '<ul><li san-for="item in list" title="{{item}}">{{item}}</li></ul>'
     });
