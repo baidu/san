@@ -2452,11 +2452,8 @@
     };
 
     function bindOutputer(bindInfo, e) {
-        // TODO: remove blockSetOnce
-        this.blockSetOnce = true;
         var propHandler = this.propHandlers[bindInfo.name] || this.propHandlers['*'];
         propHandler.output(this, bindInfo);
-        this.blockSetOnce = false;
     }
 
     /**
@@ -3032,7 +3029,6 @@
         if (this.el && this.lifeCycle.is('created')) {
             var propHandler = this.propHandlers[name] || this.propHandlers['*'];
             propHandler.input.prop(this, name, value);
-            this.blockSetOnce = false;
         }
     };
 
@@ -3047,7 +3043,7 @@
             return;
         }
 
-        var changeTarget = change.target;
+        var changeTarget = change.option.target;
         var needUpdate = false;
         this.aNode.binds.each(function (bindItem) {
             if (changeTarget
