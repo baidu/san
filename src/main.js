@@ -6,6 +6,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+// TODO: remove tagName toLowerCase
 
 /* eslint-disable fecs-max-statements */
 (function (root) {
@@ -725,7 +726,8 @@
 
         aNode.binds.push(textBindExtra({
             name: name,
-            expr: expr
+            expr: expr,
+            raw: value
         }));
     }
 
@@ -1930,6 +1932,7 @@
      */
     function createNode(aNode, parent, scope) {
         var owner = parent instanceof Component ? parent : parent.owner;
+        // scope = scope || owner.data;
         scope = scope || (parent instanceof Component ? parent.data : parent.scope);
         var options = {
             aNode: aNode,
@@ -1958,6 +1961,10 @@
         if (ComponentType) {
             var component = new ComponentType(options);
             return component;
+        }
+
+        if (aNode.tagName === 'slot') {
+            return new SlotElement(options);
         }
 
         return new Element(options);
@@ -2292,7 +2299,95 @@
         Node.prototype._dispose.call(this);
     };
 
+    /**
+     * slot 元素类
+     *
+     * @class
+     * @param {Object} options 初始化参数
+     */
+    function SlotElement(options) {
+        this.childs = [];
+        Node.call(this, options);
+    }
 
+    inherits(SlotElement, Node);
+
+    /**
+     * 初始化行为
+     *
+     * @param {Object} options 初始化参数
+     */
+    SlotElement.prototype._init = function (options) {
+        this.literalOwner = options.owner;
+        options.owner = options.owner.owner;
+        options.scope = options.owner && options.owner.data;
+
+        var nameBind = options.aNode.binds.get('name');
+        this.name = nameBind ? nameBind.raw : '__default__';
+
+        var aNode = new ANode();
+        var givenSlots = this.literalOwner.aNode.givenSlots;
+        var myChilds = givenSlots && givenSlots[this.name];
+        aNode.childs = myChilds || options.aNode.childs;
+
+        options.aNode = aNode;
+        Node.prototype._init.call(this, options);
+    };
+
+    /**
+     * 初始化完成后的行为
+     */
+    SlotElement.prototype._inited = function () {
+        this.owner.slotChilds.push(this);
+    };
+
+    /**
+     * 生成元素的html
+     *
+     * @return {string}
+     */
+    SlotElement.prototype.genHTML = function () {
+        return elementGenChildsHTML(this);
+    };
+
+    /**
+     * 隔离实际所属组件对其的视图更新调用。更新应由outer组件调用
+     *
+     * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
+     */
+    SlotElement.prototype.updateView = function (change) {
+        return false;
+    };
+
+    /**
+     * 绑定数据变化时的视图更新函数
+     *
+     * @param {Object} change 数据变化信息
+     * @return {boolean} 数据的变化是否导致视图需要更新
+     */
+    SlotElement.prototype.slotUpdateView = function (change) {
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+
+        each(this.childs, function (child) {
+            needUpdate = child.updateView(change) || needUpdate;
+        });
+
+        return needUpdate;
+    };
+
+    /**
+     * 销毁释放元素行为
+     */
+    SlotElement.prototype._dispose = function () {
+        this.literalOwner = null;
+
+        Element.prototype._disposeChilds.call(this);
+        this.childs = null;
+        Node.prototype._dispose.call(this);
+    };
 
     // #region Element
 
@@ -2718,17 +2813,13 @@
      * @return {string}
      */
     function elementGenChildsHTML(element) {
-        var aNode = element.aNode;
-
         var buf = new StringBuffer();
-        for (var i = 0; i < aNode.childs.length; i++) {
-            var child = createNode(
-                aNode.childs[i],
-                element
-            );
+
+        each(element.aNode.childs, function (aNodeChild) {
+            var child = createNode(aNodeChild, element);
             element.childs.push(child);
             buf.push(child.genHTML());
-        }
+        });
 
         return buf.toString();
     }
@@ -3161,6 +3252,8 @@
      * @param {Object} options 初始化参数
      */
     function Component(options) {
+        this.slotChilds = [];
+
         Element.call(this, options);
     }
 
@@ -3477,8 +3570,28 @@
             this.aNode = protoANode;
         }
         else if (this.aNode !== protoANode) {
+            // 组件运行时传入的结构，做slot解析
+            this.aNode.givenSlots = {
+                __default__: []
+            };
+            each(this.aNode.childs, function (child) {
+                var slotName = '__default__';
+                var slotBind = child.binds.get('slot');
+                if (slotBind) {
+                    slotName = slotBind.raw;
+                }
+
+                if (!this.aNode.givenSlots[slotName]) {
+                    this.aNode.givenSlots[slotName] = [];
+                }
+
+                this.aNode.givenSlots[slotName].push(child);
+            }, this);
+
+            // 组件的实际结构应为template编译的结构
             this.aNode.childs = protoANode.childs;
 
+            // 合并运行时的一些绑定和事件声明
             this.aNode.binds = this.aNode.binds.concat(protoANode.binds);
             this.aNode.directives = this.aNode.directives.concat(protoANode.directives);
             this.aNode.events = this.aNode.events.concat(protoANode.events);
@@ -3600,6 +3713,10 @@
             needUpdate = child.updateView(change) || needUpdate;
         });
 
+        each(this.slotChilds, function (child) {
+            needUpdate = child.slotUpdateView(change) || needUpdate;
+        });
+
         needUpdate && this._noticeUpdatedSoon();
     };
 
@@ -3660,9 +3777,13 @@
      * 组件销毁的行为
      */
     Component.prototype._dispose = function () {
+        // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
+        this.slotChilds = null;
         this._unlistenDataChange();
         Element.prototype._dispose.call(this);
     };
+
+
 
     /**
      * if 指令处理类
