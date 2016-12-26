@@ -43,46 +43,5 @@ describe("Element-Event", function () {
         doneSpec();
     });
 
-    it("bind text input", function (done) {
-        var inputed = 0;
 
-        var MyComponent = san.defineComponent({
-            template: '<a><span title="{{name}}">{{name}}</span> <input value="{{name}}" on-input="inputer($event)"/></a>',
-
-            inputer: function (event) {
-                this.data.set('name', event.value);
-            }
-        });
-        var myComponent = new MyComponent();
-        myComponent.data.set('name', 'input something');
-
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
-        var span = wrap.firstChild.firstChild;
-        var input = wrap.getElementsByTagName('input')[0];
-        expect(span.innerHTML.indexOf('input something')).toBe(0);
-
-        function doneSpec() {
-            if (myComponent.data.get('name') !== 'input something') {
-
-                expect(span.innerHTML.indexOf(input.value)).toBe(0);
-
-                done();
-                myComponent.dispose();
-                document.body.removeChild(wrap);
-
-                return;
-            }
-
-            setTimeout(doneSpec, 500);
-        }
-
-
-        // wd bridge
-        WDBridge.send('action', 'addValue:#' + input.id + '|added1');
-
-        doneSpec();
-    });
 });
