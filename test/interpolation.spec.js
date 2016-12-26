@@ -103,4 +103,26 @@ describe("Interpolation", function () {
         });
     });
 
+    it("start with empty string", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a>{{name}}</a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', '');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.data.set('name', 'errorrik');
+
+
+        san.nextTick(function () {
+            expect(wrap.firstChild.textContent || wrap.firstChild.innerText).toBe('errorrik');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
 });

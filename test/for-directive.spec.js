@@ -44,7 +44,84 @@ describe("ForDirective", function () {
         document.body.removeChild(wrap);
     });
 
+    it("render list, no data, push soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: []
+                };
+            },
 
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(0);
+
+        myComponent.data.push('persons',
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, push soon, no strange node in page", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: [{name: 'errorrik', email: 'errorrik@gmail.com'}]
+                };
+            },
+
+            template: '<ul style="margin:0;padding:0;border:0;list-style:none"><li style="margin:0;padding:0;border:0;" san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis[0].getAttribute('title')).toBe('errorrik');
+        expect(lis[0].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+        expect(lis.length).toBe(1);
+
+        var itemHeight = lis[0].offsetHeight;
+        expect(lis[0].parentNode.offsetHeight).toBe(itemHeight);
+
+
+        myComponent.data.push('persons',
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[1].getAttribute('title')).toBe('otakustay');
+            expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            expect(lis[0].parentNode.offsetHeight).toBe(itemHeight * 2);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 
     it("data push after attach", function (done) {
         var MyComponent = san.defineComponent({

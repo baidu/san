@@ -226,6 +226,16 @@
      */
     var isCompatStringJoin = ie && ie < 8;
 
+    // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
+    //       为了保证script的stump存在，前面加个零宽特殊字符
+    /**
+     * 是否在桩元素前面插入空白字符
+     *
+     * @inner
+     * @type {boolean}
+     */
+    var isFEFFBeforeStump = ie && ie < 9;
+
     /**
      * 写个用于跨平台提高性能的字符串连接类
      * 万一不小心支持老式浏览器了呢
@@ -235,6 +245,7 @@
      */
     function StringBuffer() {
         this.raw = isCompatStringJoin ? [] : '';
+        this.length = 0;
     }
 
     /**
@@ -256,9 +267,11 @@
      */
     StringBuffer.prototype.push = isCompatStringJoin
         ? function (source) {
+            this.length++;
             this.raw.push(source);
         }
         : function (source) {
+            this.length++;
             this.raw += source;
         };
 
@@ -2241,10 +2254,6 @@
             callHook(this, 'created');
 
             if (this.el.parentNode) {
-                if (this.el.previousSibling.nodeType !== 3) {
-                    this.el.insertAdjacentHTML('beforebegin', '\uFEFF');
-                }
-
                 callHook(this, 'attached');
             }
         }
@@ -2256,7 +2265,8 @@
      * @return {string}
      */
     TextNode.prototype.genHTML = function () {
-        return (this.evalExpr(this.expr) || '\uFEFF') + genStumpHTML(this);
+        var defaultText = isFEFFBeforeStump ? '\uFEFF' : '';
+        return (this.evalExpr(this.expr) || defaultText) + genStumpHTML(this);
     };
 
     /**
@@ -2265,9 +2275,12 @@
     TextNode.prototype.update = function () {
         var node = this.el.previousSibling;
 
-        if (node) {
+        if (node && node.nodeType === 3) {
             var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
-            node[textProp] = this.evalExpr(this.expr) || '\uFEFF';
+            node[textProp] = this.evalExpr(this.expr);
+        }
+        else {
+            this.el.insertAdjacentHTML('beforebegin', this.evalExpr(this.expr));
         }
 
         this.hasUpdateOpInNextTick = 0;
@@ -3900,9 +3913,9 @@
             buf.push(child.genHTML());
         }
 
-        // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
-        //       为了保证script的stump存在，前面加个零宽特殊字符
-        buf.push('\uFEFF');
+        if (isFEFFBeforeStump && !buf.length) {
+            buf.push('\uFEFF');
+        }
         buf.push(genStumpHTML(this));
 
         return buf.toString();
@@ -4042,9 +4055,9 @@
             buf.push(child.genHTML());
         });
 
-        // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
-        //       为了保证script的stump存在，前面加个零宽特殊字符
-        buf.push('\uFEFF');
+        if (isFEFFBeforeStump && !buf.length) {
+            buf.push('\uFEFF');
+        }
         buf.push(genStumpHTML(this));
 
         return buf.toString();
@@ -4435,6 +4448,31 @@
                 );
             }
         }
+    }
+
+    function removeStumpHeadingBlank(node) {
+        if (node.el) {
+            var headingBlank = node.el.previousSibling;
+
+            if (headingBlank && headingBlank.nodeType === 3) {
+                var textProp = typeof headingBlank.textContent === 'string'
+                    ? 'textContent'
+                    : 'data';
+                var text = headingBlank[textProp];
+
+                if (!text || text === '\uFEFF') {
+                    headingBlank.parentNode.removeChild(headingBlank);
+                }
+            }
+        }
+    }
+
+    if (isFEFFBeforeStump) {
+        IfDirective.prototype.attached =
+        TextNode.prototype.attached =
+        ForDirective.prototype.attached = function () {
+            removeStumpHeadingBlank(this);
+        };
     }
 
     // #region exports
