@@ -3162,6 +3162,10 @@
 
             if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 nextTick(function () {
+                    if (this.lifeCycle.is('disposed')) {
+                        return;
+                    }
+
                     this.setProp(bindItem.name, this.evalExpr(bindItem.expr));
                 }, this);
                 needUpdate = true;
@@ -3720,7 +3724,14 @@
                 }
 
                 nextTick(function () {
-                    this.setProp(bindItem.name, evalExpr(bindItem.expr, this.data, this));
+                    if (this.lifeCycle.is('disposed')) {
+                        return;
+                    }
+
+                    this.setProp(
+                        bindItem.name,
+                        evalExpr(bindItem.expr, this.data, this)
+                    );
                 }, this);
             }
         }, this);
