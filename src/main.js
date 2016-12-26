@@ -2249,6 +2249,9 @@
         this.expr = parseText(this.aNode.text);
     };
 
+    /**
+     * 初始化完成后的行为
+     */
     TextNode.prototype._inited = function () {
         if (this.el) {
             callHook(this, 'created');
@@ -4450,6 +4453,12 @@
         }
     }
 
+    /**
+     * 移除节点桩元素前面的空白 FEFF 字符
+     *
+     * @inner
+     * @param {Node} node 要操作的节点
+     */
     function removeStumpHeadingBlank(node) {
         if (node.el) {
             var headingBlank = node.el.previousSibling;
@@ -4467,6 +4476,7 @@
         }
     }
 
+    /* eslint-disable */
     if (isFEFFBeforeStump) {
         IfDirective.prototype.attached =
         TextNode.prototype.attached =
@@ -4474,6 +4484,7 @@
             removeStumpHeadingBlank(this);
         };
     }
+    /* eslint-enable */
 
     // #region exports
     var san = {};
