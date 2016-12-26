@@ -112,8 +112,7 @@
 
             // 统一个 API
             var me = this;
-            Object.keys(Queue.prototype).forEach(function (cmd) {
-
+            for (var key in Queue.prototype) {
                 /**
                  * proxy queue
                  *
@@ -121,11 +120,10 @@
                  * @param  {string} value value
                  * @return {string}       ret
                  */
-                me[cmd] = function (type, value) {
-                    return me[type][cmd](value);
+                me[key] = function (type, value) {
+                    return me[type][key](value);
                 };
-
-            })
+            }
 
         },
 
