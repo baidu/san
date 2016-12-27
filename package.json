@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A MVVM Component Framework",
-  "version": "3.0.0-rc.4",
+  "version": "3.0.0-rc.5",
   "contributors": [
     {
       "name": "erik",
@@ -27,7 +27,11 @@
     "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2"
   },
   "main": "src/main",
-  "files": "src",
+  "unpkg": "dist/san",
+  "files": [
+    "src",
+    "dist"
+  ],
   "license": "MIT",
   "devDependencies": {
     "async": "^2.0.1",
