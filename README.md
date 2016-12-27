@@ -13,6 +13,8 @@ A MVVM Component Framework for Web.
 [![License](https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square)](https://npmjs.org/package/san)
 
 
+[HomePage](https://ecomfe.github.io/san/)
+
 ## Download
 
 GitHub clone:
@@ -30,7 +32,17 @@ $ npm i san
 CDN:
 
 ```html
+<!-- unpkg -->
 <script src="https://unpkg.com/san@latest"></script>
+
+<!-- compressed -->
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-0/san.js"></script>
+
+<!-- compressed(https) -->
+<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-0/san.js"></script>
+
+<!-- source -->
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-0/san.source.js"></script>
 ```
 
 ## Document
