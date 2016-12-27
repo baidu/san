@@ -2369,10 +2369,9 @@
     /**
      * 隔离实际所属组件对其的视图更新调用。更新应由outer组件调用
      *
-     * @param {Object} change 数据变化信息
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
-    SlotElement.prototype.updateView = function (change) {
+    SlotElement.prototype.updateView = function () {
         return false;
     };
 
@@ -2562,7 +2561,7 @@
         }, this);
     };
 
-    function bindOutputer(bindInfo, e) {
+    function bindOutputer(bindInfo) {
         var propHandler = this.propHandlers[bindInfo.name] || this.propHandlers['*'];
         propHandler.output(this, bindInfo);
     }
@@ -3069,7 +3068,7 @@
                 }
             },
 
-            choose: function (element) {
+            choose: function () {
                 return 'style';
             }
         },
@@ -3100,7 +3099,7 @@
                 });
             },
 
-            choose: function (element) {
+            choose: function () {
                 return '*';
             }
         }
@@ -3792,11 +3791,9 @@
     };
 
     /**
-     * 将元素attach到页面的行为
-     *
-     * @param {HTMLElement} parent 要添加到的父元素
+     * 将元素attach到页面后的行为
      */
-    Component.prototype._attached = function (parent) {
+    Component.prototype._attached = function () {
         this._listenDataChange();
     };
 
