@@ -204,6 +204,58 @@ describe("Slot", function () {
         })
     });
 
+    it("components owner", function (done) {
+        var Panel = san.defineComponent({
+            template: '<div>'
+                +   '<div class="head" title="{{title}}" on-click="toggle">{{title}}</div>'
+                +   '<p style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></p>'
+                + '</div>',
+
+            toggle: function () {
+                this.data.set('fold', !this.data.get('fold'));
+            }
+        });
+
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-panel': Panel,
+                'ui-label': Label
+            },
+
+            template: '<div><ui-panel title="{{name}}">'
+                + '<ui-label text="{{name}}"></ui-label>'
+                + '</ui-panel></div>',
+
+            initData: function () {
+                return {
+                    name: 'errorrik'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var p = wrap.getElementsByTagName('p')[0]
+            var spans = p.getElementsByTagName('span');
+
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('errorrik');
+
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("for in slot", function (done) {
         var Tab = san.defineComponent({
             template: '<div>'
