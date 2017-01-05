@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - slot</title>
+    <style>
+    .folder {
+        background: #eee;
+    }
+
+    .folder-title {
+        cursor: pointer;
+        background: #bbb;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    .folder main {
+        padding: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <script src="../../../src/main.js"></script>
+    <script>
+    var Folder = san.defineComponent({
+        template: ''
+            + '<div class="folder">'
+            + '    <header class="folder-title" on-click="toggle">{{title}}</header>'
+            + '    <main style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></main>'
+            + '</div>',
+
+        toggle: function () {
+            this.data.set('fold', !this.data.get('fold'));
+        }
+    });
+
+    var MyApp = san.defineComponent({
+        components: {
+            'ui-folder': Folder
+        },
+
+        template: '<div><ui-folder title="Hello"><b>write in outer component</b></ui-folder></div>'
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+
