@@ -4561,7 +4561,7 @@
     }
     else if (typeof define === 'function' && define.amd) {
         // For AMD
-        define('san', [], san);
+        define([], san);
     }
     else {
         // For <script src="..."
