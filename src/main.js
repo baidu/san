@@ -3537,14 +3537,35 @@
         this.next = this.raw[this.index + 1];
     };
 
+    /**
+     * 预定义子组件类型
+     *
+     * @private
+     */
+    Component.prototype._preDefineComponents = function () {
+        // pre compile template
+        var proto = this.constructor.prototype;
+        for (var key in proto.components) {
+            if (proto.components.hasOwnProperty(key)) {
+                var value = proto.components[key];
+                if (Object.prototype.toString.call(value) === '[object Object]') {
+                    proto.components[key] = defineComponent(value);
+                }
+            }
+        }
+    };
 
     /**
      * 模板编译行为
+     *
+     * @private
      */
     Component.prototype._compile = function () {
         if (this.lifeCycle.is('compiled')) {
             return;
         }
+
+        this._preDefineComponents();
 
         if (this.el) {
             this._compileFromEl();
@@ -4484,6 +4505,23 @@
         }
     }
 
+    /**
+     * 创建组件类
+     *
+     * @param {Object} proto 组件类的方法表
+     * @return {Function}
+     */
+    function defineComponent(proto) {
+        function ComponentClass(option) {
+            Component.call(this, option);
+        }
+
+        ComponentClass.prototype = proto;
+        inherits(ComponentClass, Component);
+
+        return ComponentClass;
+    };
+
     /* eslint-disable */
     if (isFEFFBeforeStump) {
         IfDirective.prototype.attached =
@@ -4510,16 +4548,7 @@
      * @param {Object} proto 组件类的方法表
      * @return {Function}
      */
-    san.defineComponent = function (proto) {
-        function ComponentClass(option) {
-            Component.call(this, option);
-        }
-
-        ComponentClass.prototype = proto;
-        san.inherits(ComponentClass, Component);
-
-        return ComponentClass;
-    };
+    san.defineComponent = defineComponent;
 
     /**
      * 在下一个更新周期运行函数
@@ -4529,12 +4558,11 @@
     san.nextTick = nextTick;
 
     /**
-     * 注册全局 filter
+     * san版本号
      *
-     * @param {string} name 名称
-     * @param {function(*, ...*):*} filter 过滤函数
+     * @type {string}
      */
-    san.version = '3.0.0';
+    san.version = '3.0.1';
 
     /**
      * 根据 DOM id 获取内部元素对象

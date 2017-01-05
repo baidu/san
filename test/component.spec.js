@@ -241,6 +241,40 @@ describe("Component", function () {
 
     });
 
+    it("given raw object to components config, auto use it to define component", function (done) {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': {
+                    template: '<a><span title="{{title}}">{{text}}</span></a>'
+                }
+            },
+
+            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
+        });
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('jokeName', 'airike');
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('school', 'none');
+        myComponent.data.set('company', 'bidu');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('errorrik');
+            expect(span.innerHTML.indexOf('airike')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("template tag in template", function (done) {
         var Label = san.defineComponent({
             template: '<template class="ui-label" title="{{text}}">{{text}}</template>'
