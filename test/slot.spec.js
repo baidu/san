@@ -250,8 +250,8 @@ describe("Slot", function () {
             expect(spans.length).toBe(1);
             expect(spans[0].title).toBe('errorrik');
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         })
     });
