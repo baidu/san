@@ -2385,6 +2385,7 @@
             return;
         }
 
+        var needUpdate = false;
         each(this.childs, function (child) {
             needUpdate = child.updateView(change) || needUpdate;
         });
