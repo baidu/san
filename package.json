@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A MVVM Component Framework",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "contributors": [
     {
       "name": "erik",
@@ -24,9 +24,10 @@
     "wdio": "node test/lib/webdriverio-runner.js",
     "test": "npm run test:sauce",
     "test:standalone": "npm run wdio -- standalone",
-    "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2"
+    "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2",
+    "build": "bash tool/dist.sh"
   },
-  "main": "src/main",
+  "main": "dist/san.source.js",
   "unpkg": "dist/san",
   "files": [
     "src",
