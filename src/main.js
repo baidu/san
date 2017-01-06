@@ -2083,34 +2083,6 @@
     };
 
     /**
-     * 使节点到达相应的生命周期，并调用钩子
-     *
-     * @inner
-     * @param {Element} source 目标节点
-     * @param {string} name 生命周期名称
-     */
-    function callHook(source, name) {
-        if (source.lifeCycle.is(name)) {
-            return;
-        }
-
-        source.lifeCycle.set(name);
-
-        if (typeof source['_' + name] === 'function') {
-            source['_' + name].call(source);
-        }
-
-        if (typeof source[name] === 'function') {
-            source[name].call(source);
-        }
-
-        var hookMethod = source.hooks && source.hooks[name];
-        if (hookMethod) {
-            hookMethod.call(source);
-        }
-    }
-
-    /**
      * 节点基类
      *
      * @inner
@@ -2127,13 +2099,40 @@
     }
 
     /**
+     * 使节点到达相应的生命周期，并调用钩子
+     *
+     * @protected
+     * @param {string} name 生命周期名称
+     */
+    Node.prototype._callHook = function (name) {
+        if (this.lifeCycle.is(name)) {
+            return;
+        }
+
+        this.lifeCycle.set(name);
+
+        if (typeof this['_' + name] === 'function') {
+            this['_' + name].call(this);
+        }
+
+        if (typeof this[name] === 'function') {
+            this[name].call(this);
+        }
+
+        var hookMethod = this.hooks && this.hooks[name];
+        if (hookMethod) {
+            hookMethod.call(this);
+        }
+    };
+
+    /**
      * 初始化
      *
      * @param {Object} options 初始化参数
      */
     Node.prototype.init = function (options) {
         this._init(options);
-        callHook(this, 'inited');
+        this._callHook('inited');
     };
 
     /**
@@ -2172,8 +2171,8 @@
             this.childs[i]._noticeAttached();
         }
 
-        callHook(this, 'created');
-        callHook(this, 'attached');
+        this._callHook('created');
+        this._callHook('attached');
     };
 
     /**
@@ -2181,7 +2180,7 @@
      */
     Node.prototype.dispose = function () {
         this._dispose();
-        callHook(this, 'disposed');
+        this._callHook('disposed');
     };
 
     /**
@@ -2254,10 +2253,10 @@
      */
     TextNode.prototype._inited = function () {
         if (this.el) {
-            callHook(this, 'created');
+            this._callHook('created');
 
             if (this.el.parentNode) {
-                callHook(this, 'attached');
+                this._callHook('attached');
             }
         }
     };
@@ -2287,7 +2286,7 @@
         }
 
         this.hasUpdateOpInNextTick = 0;
-        callHook(this, 'updated');
+        this._callHook('updated');
     };
 
     /**
@@ -2470,10 +2469,10 @@
             this.tagName = this.el.tagName.toLowerCase();
 
             compileChildsFromEl(this);
-            callHook(this, 'created');
+            this._callHook('created');
 
             if (this.el.parentNode) {
-                callHook(this, 'attached');
+                this._callHook('attached');
             }
         }
     };
@@ -2508,7 +2507,7 @@
     Element.prototype.create = function () {
         if (!this.lifeCycle.is('created')) {
             this._create();
-            callHook(this, 'created');
+            this._callHook('created');
         }
     };
 
@@ -3200,7 +3199,7 @@
             this._updateOpCount = 0;
             this._updatedOp = 0;
 
-            callHook(this, 'updated');
+            this._callHook('updated');
         }
     };
 
@@ -3211,7 +3210,7 @@
     Element.prototype.detach = function () {
         if (this.lifeCycle.is('attached')) {
             this._detach();
-            callHook(this, 'detached');
+            this._callHook('detached');
         }
     };
 
@@ -3305,11 +3304,11 @@
             }
         }
 
-        callHook(this, 'inited');
+        this._callHook('inited');
 
         // compile
         this._compile();
-        callHook(this, 'compiled');
+        this._callHook('compiled');
 
         this.scope && this.aNode.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
@@ -3319,8 +3318,8 @@
         // 如果从el编译的，认为已经attach了，触发钩子
         // TODO: listen in created or attached
         if (this.isCompileFromEl) {
-            callHook(this, 'created');
-            callHook(this, 'attached');
+            this._callHook('created');
+            this._callHook('attached');
             this._listenDataChange();
         }
     };
@@ -3924,9 +3923,9 @@
      */
     IfDirective.prototype._inited = function () {
         if (this.el) {
-            callHook(this, 'created');
+            this._callHook('created');
             if (this.el.parentNode) {
-                callHook(this, 'attached');
+                this._callHook('attached');
             }
         }
     };
@@ -4005,8 +4004,8 @@
             this.childs[0]._noticeAttached();
         }
 
-        callHook(this, 'created');
-        callHook(this, 'attached');
+        this._callHook('created');
+        this._callHook('attached');
     };
 
     /**
@@ -4135,9 +4134,9 @@
      */
     ForDirective.prototype._inited = function () {
         if (this.el) {
-            callHook(this, 'created');
+            this._callHook('created');
             if (this.el.parentNode) {
-                callHook(this, 'attached');
+                this._callHook('attached');
             }
         }
     };
