@@ -17,12 +17,6 @@ A MVVM Component Framework for Web. [HomePage](https://ecomfe.github.io/san/)
 
 ## Download
 
-GitHub clone:
-
-```
-$ git clone git@github.com:ecomfe/san.git
-```
-
 NPM:
 
 ```
