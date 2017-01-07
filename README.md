@@ -45,3 +45,7 @@ CDN:
 - [Tutorial](https://ecomfe.github.io/san/tutorial/setup/)
 - [Example](https://ecomfe.github.io/san/example/)
 - [API](https://ecomfe.github.io/san/doc/api/)
+
+## See Also
+
+- [san-router](https://github.com/ecomfe/san-router)
