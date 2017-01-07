@@ -30,13 +30,13 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 
 <!-- compressed -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-0/san.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-1/san.js"></script>
 
 <!-- compressed(https) -->
-<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-0/san.js"></script>
+<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-1/san.js"></script>
 
 <!-- source -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-0/san.source.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-1/san.source.js"></script>
 ```
 
 ## Document
@@ -46,6 +46,10 @@ CDN:
 - [Example](https://ecomfe.github.io/san/example/)
 - [API](https://ecomfe.github.io/san/doc/api/)
 
+## ChangeLog
+
+[ChangeLog](https://github.com/ecomfe/san/blob/master/CHANGELOG.md)
+
 ## See Also
 
-- [san-router](https://github.com/ecomfe/san-router)
+- [san-router](https://github.com/ecomfe/san-router) - Official Router for San
