@@ -5,13 +5,13 @@
         <li
             san-for="item in categories"
             style="background: {{item.color}}"
-            class="{{item.id == params[1] | yesToBe('checked')}}"
+            class="{{item.id == route.query.category | yesToBe('checked')}}"
         >
             <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
         </li>
     </ul>
 
-    <a href="#/" class="fa fa-close filter-category-clear" style="display: {{params[1] | yesOrNoToBe('', 'none')}}"></a>
+    <a href="#/" class="fa fa-close filter-category-clear" style="display: {{route.query.category | yesOrNoToBe('', 'none')}}"></a>
 
     <ul class="todo-list">
         <li san-for="item, index in todos"
@@ -44,9 +44,11 @@ export default {
         formatDate: formatDate
     },
 
-    attached: function () {
+    route: function () {
+        var route = this.data.get('route');
+        var todos = service.todos(+(route.query.category || 0));
 
-        this.data.set('todos', service.todos(+this.data.get('params[1]')));
+        this.data.set('todos', todos);
         this.data.set('categories', service.categories());
     },
 

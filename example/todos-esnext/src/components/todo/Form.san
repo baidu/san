@@ -27,16 +27,16 @@ export default {
         'ui-calendar': require('../ui/Calendar')
     },
 
-    attached: function () {
-        var id = this.data.get('id');
+    route: function () {
+        var id = this.data.get('route').query.id;
         if (id) {
-            this.setTodo(service.todo(id));
+            this.setTodo(service.todo(+id));
         }
 
         this.updateCategories();
     },
 
-    created: function () {
+    inited: function () {
         var now = new Date();
         this.setTodo({
             id: 0,
@@ -46,11 +46,6 @@ export default {
             categoryId: null,
             done: false
         });
-
-        var id = this.data.get('params[1]');
-        if (id) {
-            this.data.set('id', +id);
-        }
     },
 
     setTodo: function (todo) {
