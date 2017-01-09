@@ -7,14 +7,23 @@ define(function (require) {
     return san.defineComponent({
         template: template,
 
+        components: {
+            'router-link': require('san-router').Link
+        },
+
         filters: {
             formatDate: require('../filters').formatDate
         },
 
-        attached: function () {
+        route: function () {
             var now = new Date();
-            this.data.set('todos', service.todos(+this.data.get('params[1]')));
-            this.data.set('categories', service.categories());
+            var route = this.data.get('route');
+            var todos = service.todos(+(route.query.category || 0));
+
+            this.data.set('todos', todos);
+            if (!this.data.get('categories')) {
+                this.data.set('categories', service.categories());
+            }
 
             san.nextTick(function () {
                 alert('List render: ' + ((new Date) - now));

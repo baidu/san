@@ -10,11 +10,19 @@ define(function (require) {
             formatDate: require('../filters').formatDate
         },
 
-        attached: function () {
-            this.data.set('todos', service.todos(+this.data.get('params[1]')));
-            this.data.set('categories', service.categories());
+        components: {
+            'router-link': require('san-router').Link
         },
 
+        route: function () {
+            var route = this.data.get('route');
+            var todos = service.todos(+(route.query.category || 0));
+
+            this.data.set('todos', todos);
+            if (!this.data.get('categories')) {
+                this.data.set('categories', service.categories());
+            }
+        },
 
         doneTodo: function (index) {
             var todo = this.data.get('todos', index);

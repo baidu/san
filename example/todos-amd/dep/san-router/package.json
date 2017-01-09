@@ -1,0 +1,94 @@
+{
+  "_args": [
+    [
+      "san-router@^1.0.0-rc.2",
+      "/Users/cire/workspace/github/ecomfe/san/example/todos-esnext"
+    ]
+  ],
+  "_from": "san-router@>=1.0.0-rc.2 <2.0.0",
+  "_id": "san-router@1.0.0-rc.2",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/san-router",
+  "_nodeVersion": "6.2.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/san-router-1.0.0-rc.2.tgz_1483760045942_0.4795636082999408"
+  },
+  "_npmUser": {
+    "email": "ecomfe@gmail.com",
+    "name": "ecomfe"
+  },
+  "_npmVersion": "3.8.9",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "san-router",
+    "raw": "san-router@^1.0.0-rc.2",
+    "rawSpec": "^1.0.0-rc.2",
+    "scope": null,
+    "spec": ">=1.0.0-rc.2 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/san-router/-/san-router-1.0.0-rc.2.tgz",
+  "_shasum": "7bbf27478e80910fce9981d457bcc2aee72e9c91",
+  "_shrinkwrap": null,
+  "_spec": "san-router@^1.0.0-rc.2",
+  "_where": "/Users/cire/workspace/github/ecomfe/san/example/todos-esnext",
+  "author": {
+    "name": "otakustay"
+  },
+  "bugs": {
+    "url": "https://github.com/ecomfe/san-router/issues"
+  },
+  "dependencies": {
+    "mini-event": "^2.3.0"
+  },
+  "description": "Router for San",
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2016": "^6.16.0",
+    "glob": "^7.1.1",
+    "san": "^3.0.1",
+    "uglify-js": "^2.7.5",
+    "webpack": "^2.2.0-rc.3",
+    "webpack-dev-server": "^2.2.0-rc.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "7bbf27478e80910fce9981d457bcc2aee72e9c91",
+    "tarball": "https://registry.npmjs.org/san-router/-/san-router-1.0.0-rc.2.tgz"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "gitHead": "cfab5902f9f46e28bdcc04936bccf048c7268b51",
+  "homepage": "https://github.com/ecomfe/san-router#readme",
+  "license": "MIT",
+  "main": "dist/san-router.source.js",
+  "maintainers": [
+    {
+      "email": "ecomfe@gmail.com",
+      "name": "ecomfe"
+    }
+  ],
+  "name": "san-router",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecomfe/san-router.git"
+  },
+  "scripts": {
+    "build": "rm -rf dist && webpack && uglifyjs dist/san-router.source.js -mco dist/san-router.js",
+    "test": "npm run test-server && open http://0.0.0.0:8384/test/",
+    "test-server": "webpack-dev-server --config test/webpack.config.js --history-api-fallback --host 0.0.0.0 --port 8384"
+  },
+  "unpkg": "dist/san-router",
+  "version": "1.0.0-rc.2"
+}
