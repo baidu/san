@@ -16,14 +16,8 @@ router.add({rule: '/', Component: List, target: '#app'});
 router.add({rule: '/todos/category/:category', Component: List, target: '#app'});
 router.add({rule: '/add', Component: Form, target: '#app'});
 router.add({rule: '/edit/:id', Component: Form, target: '#app'});
-
-
-// router.route('/', List)
-// router.route(/^\/todos\/category\/([0-9]+)$/, List)
-// router.route(/^\/add$/, Form)
-// router.route(/^\/edit\/([0-9]+)$/, Form)
-// router.route(/^\/category\/add$/, AddCategory)
-// router.route(/^\/category\/edit$/, EditCategory)
+router.add({rule: '/category/add', Component: AddCategory, target: '#app'});
+router.add({rule: '/category/edit', Component: EditCategory, target: '#app'});
 
 // start
 router.start()
