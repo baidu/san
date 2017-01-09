@@ -204,6 +204,108 @@ describe("Slot", function () {
         })
     });
 
+    it("use default content when new component manually", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    name: 'erik'
+                };
+            },
+            template: '<span title="{{name}}"><slot>Hello {{name}}</slot></span>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+
+            expect(spans[0].innerHTML.indexOf('Hello erik') >= 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+
+    it("use default content when no given content", function (done) {
+        var Hello = san.defineComponent({
+            template: '<span title="{{name}}"><slot>Hello {{name}}</slot></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-hello': Hello
+            },
+
+            template: '<div><ui-hello name="{{who}}"></ui-hello></div>',
+
+            initData: function () {
+                return {
+                    who: 'erik',
+                    name: 'errorrik'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+
+            expect(spans[0].innerHTML.indexOf('Hello erik') >= 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("use given content", function (done) {
+        var Hello = san.defineComponent({
+            template: '<span title="{{name}}"><slot>Hello {{name}}</slot></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-hello': Hello
+            },
+
+            template: '<div><ui-hello name="{{who}}">I am {{name}}</ui-hello></div>',
+
+            initData: function () {
+                return {
+                    who: 'erik',
+                    name: 'errorrik'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+
+            expect(spans[0].innerHTML.indexOf('I am errorrik') >= 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("components owner", function (done) {
         var Panel = san.defineComponent({
             template: '<div>'
@@ -323,6 +425,181 @@ describe("Slot", function () {
                 document.body.removeChild(wrap);
                 done();
             });
+        })
+    });
+
+    it("component in for", function (done) {
+        var Link = san.defineComponent({
+            template: '<a href="{{to}}"><slot></slot></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-link': Link
+            },
+
+            initData: function () {
+                return {
+                    items: [
+                        {title: 'website', url: 'http://ecomfe.github.io/san/'},
+                        {title: 'github', url: 'https://github.com/ecomfe/san'}
+                    ]
+                };
+            },
+
+            template: '<div><ul>'
+                + '<li san-for="item in items" title="{{item.title}}">{{item.title}}<ui-link to="{{item.url}}"><b title="{{item.title}}">{{item.title}}</b></ui-link></li>'
+                + '</ul></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var lis = wrap.getElementsByTagName('li');
+
+        var a1 = lis[0].getElementsByTagName('a')[0];
+        var b1 = a1.firstChild;
+        expect(a1.href).toBe('http://ecomfe.github.io/san/')
+        expect(b1.title).toBe('website');
+
+        var a2 = lis[1].getElementsByTagName('a')[0];
+        var b2 = a2.firstChild;
+        expect(a2.href).toBe('https://github.com/ecomfe/san')
+        expect(b2.title).toBe('github');
+
+        myComponent.data.push('items', {title: 'cdn', url: 'https://unpkg.com/san@latest'})
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            var a1 = lis[0].getElementsByTagName('a')[0];
+            var b1 = a1.firstChild;
+            expect(a1.href).toBe('http://ecomfe.github.io/san/')
+            expect(b1.title).toBe('website');
+
+            var a2 = lis[1].getElementsByTagName('a')[0];
+            var b2 = a2.firstChild;
+            expect(a2.href).toBe('https://github.com/ecomfe/san')
+            expect(b2.title).toBe('github');
+
+            var a3 = lis[2].getElementsByTagName('a')[0];
+            var b3 = a3.firstChild;
+            expect(a3.href).toBe('https://unpkg.com/san@latest')
+            expect(b3.title).toBe('cdn');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("component in for directly", function (done) {
+        var Link = san.defineComponent({
+            template: '<a href="{{to}}"><slot></slot></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-link': Link
+            },
+
+            initData: function () {
+                return {
+                    items: [
+                        {title: 'website', url: 'http://ecomfe.github.io/san/'},
+                        {title: 'github', url: 'https://github.com/ecomfe/san'}
+                    ]
+                };
+            },
+
+            template: '<div>'
+                + '<ui-link san-for="item in items" to="{{item.url}}"><b title="{{item.title}}">{{item.title}}</b></ui-link>'
+                + '</div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var aEls = wrap.getElementsByTagName('a');
+
+        var a1 = aEls[0];
+        var b1 = a1.firstChild;
+        expect(a1.href).toBe('http://ecomfe.github.io/san/')
+        expect(b1.title).toBe('website');
+
+        var a2 = aEls[1];
+        var b2 = a2.firstChild;
+        expect(a2.href).toBe('https://github.com/ecomfe/san')
+        expect(b2.title).toBe('github');
+
+        myComponent.data.push('items', {title: 'cdn', url: 'https://unpkg.com/san@latest'})
+
+        san.nextTick(function () {
+            var aEls = wrap.getElementsByTagName('a');
+
+            var a1 = aEls[0];
+            var b1 = a1.firstChild;
+            expect(a1.href).toBe('http://ecomfe.github.io/san/')
+            expect(b1.title).toBe('website');
+
+            var a2 = aEls[1];
+            var b2 = a2.firstChild;
+            expect(a2.href).toBe('https://github.com/ecomfe/san')
+            expect(b2.title).toBe('github');
+
+            var a3 = aEls[2];
+            var b3 = a3.firstChild;
+            expect(a3.href).toBe('https://unpkg.com/san@latest')
+            expect(b3.title).toBe('cdn');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("component in if", function (done) {
+        var Link = san.defineComponent({
+            template: '<a href="{{to}}"><slot></slot></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-link': Link
+            },
+
+            initData: function () {
+                return {
+                };
+            },
+
+            template: '<div><ui-link san-if="link" to="{{link.url}}"><b title="{{link.title}}">{{link.title}}</b></ui-link></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('a').length).toBe(0);
+
+        myComponent.data.set('link', {title: 'link', url: 'http://ecomfe.github.io/san/'});
+        san.nextTick(function () {
+            var a = wrap.getElementsByTagName('a')[0];
+            expect(a.href).toBe('http://ecomfe.github.io/san/');
+            expect(a.getElementsByTagName('b')[0].title).toBe('link');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
         })
     });
 });
