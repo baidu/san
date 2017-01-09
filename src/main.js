@@ -4572,7 +4572,7 @@
      *
      * @type {string}
      */
-    san.version = '3.0.1';
+    san.version = '3.0.2';
 
     /**
      * 根据 DOM id 获取内部元素对象
