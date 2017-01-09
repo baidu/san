@@ -2333,17 +2333,23 @@
      * @param {Object} options 初始化参数
      */
     SlotElement.prototype._init = function (options) {
-        this.literalOwner = options.owner;
-        options.owner = options.owner.owner;
-        options.scope = options.owner && options.owner.data;
-
         var nameBind = options.aNode.binds.get('name');
         this.name = nameBind ? nameBind.raw : '__default__';
 
+        var literalOwner = options.owner;
+        var givenSlots = literalOwner.aNode.givenSlots;
+        var givenChilds = givenSlots && givenSlots[this.name];
+
+
         var aNode = new ANode();
-        var givenSlots = this.literalOwner.aNode.givenSlots;
-        var myChilds = givenSlots && givenSlots[this.name];
-        aNode.childs = myChilds || options.aNode.childs;
+        if (givenChilds) {
+            aNode.childs = givenChilds;
+            options.owner = literalOwner.owner;
+            options.scope = literalOwner.scope;
+        }
+        else {
+            aNode.childs = options.aNode.childs.slice(0);
+        }
 
         options.aNode = aNode;
         Node.prototype._init.call(this, options);
@@ -2397,8 +2403,6 @@
      * 销毁释放元素行为
      */
     SlotElement.prototype._dispose = function () {
-        this.literalOwner = null;
-
         Element.prototype._disposeChilds.call(this);
         this.childs = null;
         Node.prototype._dispose.call(this);
@@ -3610,31 +3614,36 @@
             this.aNode = protoANode;
         }
         else if (this.aNode !== protoANode) {
+            var givenANode = this.aNode;
+
             // 组件运行时传入的结构，做slot解析
-            this.aNode.givenSlots = {
-                __default__: []
-            };
-            each(this.aNode.childs, function (child) {
+            var givenSlots = {};
+            each(givenANode.childs, function (child) {
                 var slotName = '__default__';
                 var slotBind = child.binds.get('slot');
                 if (slotBind) {
                     slotName = slotBind.raw;
                 }
 
-                if (!this.aNode.givenSlots[slotName]) {
-                    this.aNode.givenSlots[slotName] = [];
+                if (!givenSlots[slotName]) {
+                    givenSlots[slotName] = [];
                 }
 
-                this.aNode.givenSlots[slotName].push(child);
+                givenSlots[slotName].push(child);
             }, this);
 
-            // 组件的实际结构应为template编译的结构
-            this.aNode.childs = protoANode.childs;
+            this.aNode = new ANode({
+                tagName: givenANode.tagName,
+                givenSlots: givenSlots,
 
-            // 合并运行时的一些绑定和事件声明
-            this.aNode.binds = this.aNode.binds.concat(protoANode.binds);
-            this.aNode.directives = this.aNode.directives.concat(protoANode.directives);
-            this.aNode.events = this.aNode.events.concat(protoANode.events);
+                // 组件的实际结构应为template编译的结构
+                childs: protoANode.childs,
+
+                // 合并运行时的一些绑定和事件声明
+                binds: givenANode.binds.concat(protoANode.binds),
+                events: givenANode.events.concat(protoANode.events),
+                directives: givenANode.directives.concat(protoANode.directives)
+            });
         }
 
 
@@ -4085,6 +4094,7 @@
             var child = createForDirectiveChild(this, item, i);
             this.childs.push(child);
             buf.push(child.genHTML());
+
         });
 
         if (isFEFFBeforeStump && !buf.length) {
