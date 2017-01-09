@@ -1,17 +1,17 @@
 <template>
 <div class="todos">
-    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <router-link to="/add" class="todo-add"><i class="fa fa-plus-square"></i></router-link>
     <ul class="filter-category">
         <li
             san-for="item in categories"
             style="background: {{item.color}}"
             class="{{item.id == route.query.category | yesToBe('checked')}}"
         >
-            <a href="#/todos/category/{{ item.id }}">{{ item.title }}</a>
+            <router-link to="/todos/category/{{ item.id }}">{{ item.title }}</router-link>
         </li>
     </ul>
 
-    <a href="#/" class="fa fa-close filter-category-clear" style="display: {{route.query.category | yesOrNoToBe('', 'none')}}"></a>
+    <router-link to="/" class="fa fa-close filter-category-clear" style="display: {{route.query.category | yesOrNoToBe('', 'none')}}"></router-link>
 
     <ul class="todo-list">
         <li san-for="item, index in todos"
@@ -24,7 +24,7 @@
                 <span v-if="item.category">{{ item.category.title }} | </span>
                 <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
             </div>
-            <a class="fa fa-pencil" href="#/edit/{{ item.id }}"></a>
+            <router-link class="fa fa-pencil" to="#/edit/{{ item.id }}"></router-link>
             <i class="fa fa-check" on-click="doneTodo(index)"></i>
             <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
         </li>
@@ -36,9 +36,13 @@
 
 import service from '../../service'
 import { formatDate } from '../../filters'
+import { Link } from 'san-router'
 
 
 export default {
+    components: {
+        'router-link': Link
+    },
 
     filters: {
         formatDate: formatDate
