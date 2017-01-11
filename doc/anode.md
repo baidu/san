@@ -5,43 +5,26 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
-[template 简述](#user-content-template-简述)
-
-　　[插值](#user-content-插值)
-
-　　[普通属性](#user-content-普通属性)
-
-　　[双向绑定](#user-content-双向绑定)
-
-　　[指令](#user-content-指令)
-
-[表达式](#user-content-表达式)
-
-　　[表达式类型](#user-content-表达式类型)
-
-　　[STRING](#user-content-string)
-
-　　[NUMBER](#user-content-number)
-
-　　[IDENT](#user-content-ident)
-
-　　[PROP_ACCESSOR](#user-content-prop_accessor)
-
-　　[INTERPOLATION](#user-content-interpolation)
-
-　　[CALL](#user-content-call)
-
-　　[TEXT](#user-content-text)
-
-　　[BINARY](#user-content-binary)
-
-　　[UNARY](#user-content-unary)
-
-[ANode 与相关类型结构](#user-content-anode-与相关类型结构)
-
-　　[ANode](#user-content-anode)
-
+[template 简述](#user-content-template-简述)  
+　　[插值](#user-content-插值)  
+　　[普通属性](#user-content-普通属性)  
+　　[双向绑定](#user-content-双向绑定)  
+　　[指令](#user-content-指令)  
+[表达式](#user-content-表达式)  
+　　[表达式类型](#user-content-表达式类型)  
+　　[STRING](#user-content-string)  
+　　[NUMBER](#user-content-number)  
+　　[IDENT](#user-content-ident)  
+　　[PROP_ACCESSOR](#user-content-prop_accessor)  
+　　[INTERPOLATION](#user-content-interpolation)  
+　　[CALL](#user-content-call)  
+　　[TEXT](#user-content-text)  
+　　[BINARY](#user-content-binary)  
+　　[UNARY](#user-content-unary)  
+[ANode 与相关类型结构](#user-content-anode-与相关类型结构)  
+　　[ANode](#user-content-anode)  
 　　[IndexedList](#user-content-indexedlist)
+
 
 template 简述
 ------------
