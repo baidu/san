@@ -5,6 +5,44 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
+[template 简述](#user-content-template-简述)
+
+　　[插值](#user-content-插值)
+
+　　[普通属性](#user-content-普通属性)
+
+　　[双向绑定](#user-content-双向绑定)
+
+　　[指令](#user-content-指令)
+
+[表达式](#user-content-表达式)
+
+　　[表达式类型](#user-content-表达式类型)
+
+　　[STRING](#user-content-STRING)
+
+　　[NUMBER](#user-content-NUMBER)
+
+　　[IDENT](#user-content-IDENT)
+
+　　[PROP_ACCESSOR](#user-content-PROP_ACCESSOR)
+
+　　[INTERPOLATION](#user-content-INTERPOLATION)
+
+　　[CALL](#user-content-CALL)
+
+　　[TEXT](#user-content-TEXT)
+
+　　[BINARY](#user-content-BINARY)
+
+　　[UNARY](#user-content-UNARY)
+
+[ANode 与相关类型结构](#user-content-ANode-与相关类型结构)
+
+　　[ANode](#user-content-ANode)
+
+　　[IndexedList](#user-content-IndexedList)
+
 template 简述
 ------------
 
@@ -72,7 +110,205 @@ San 认为 template 应该尽量保持 HTML 的语法简洁性，所以双向绑
 </dl>
 ```
 
-类型
+表达式
+-----
+
+San 的 template 支持多种形式的表达式，表达式信息在 template 解析过程中会被解析并以 Object 格式保存在 ANode 中。下面是一个简单字符串表达式的信息形式：
+
+```javascript
+exprInfo = {
+    "type": 1,
+    "value": "hello"
+}
+```
+
+本章对保存在 ANode 中的表达式信息进行相应说明。在下面的描述中，用 `exprInfo` 代替表达式信息对象。
+
+### 表达式类型
+
+从源码中下面枚举类型的声明，可以看出 San 支持的表达式类型。
+
+```javascript
+var ExprType = {
+    STRING: 1,
+    NUMBER: 2,
+    IDENT: 3,
+    PROP_ACCESSOR: 4,
+    INTERPOLATION: 5,
+    CALL: 6,
+    TEXT: 7,
+    BINARY: 8,
+    UNARY: 9
+};
+```
+
+exprInfo 中必须包含 type 属性，值为上面类型值之一。下面不再对 type 属性赘述。
+
+
+### STRING
+
+字符串表达式
+
+```javascript
+// value - 字符串的值
+// literal - 字符串声明式，实际值需要再次计算
+// 通常 value 和 literal 只会存在一个
+exprInfo = {
+    type: ExprType.STRING,
+    value: '你好',
+    literal: '"\\u4f60\\u597d"'
+}
+```
+
+### NUMBER
+
+数值表达式
+
+```javascript
+// literal - 数值的声明式，实际值需要再次计算
+exprInfo = {
+    type: ExprType.NUMBER,
+    literal: '123.456'
+}
+```
+
+### IDENT
+
+一个数据项名称，代表对一个数据项的引用
+
+```javascript
+// name - 数据项名称
+exprInfo = {
+    type: ExprType.IDENT,
+    name: 'user'
+}
+```
+
+### PROP_ACCESSOR
+
+属性访问表达式，比如 `a.b.c` 或 `a[index]`，代表对一个深层数据项的引用
+
+```javascript
+// paths - 属性路径。数组，里面每一项是一个表达式对象，第一项必须是一个 IDENT
+exprInfo = {
+    type: ExprType.PROP_ACCESSOR,
+    paths: [
+        {type: ExprType.IDENT, name: 'user'},
+        {type: ExprType.STRING, value: 'phones'},
+        {
+            type: ExprType.PROP_ACCESSOR,
+            paths: [
+                {type: ExprType.IDENT, name: 'DefaultConfig'},
+                {type: ExprType.STRING, name: 'PHONE-INDEX'}
+            ]
+        }
+    ]
+}
+```
+
+### INTERPOLATION
+
+插值。解析器为了方便解析和求值，将插值看成一种表达式
+
+```javascript
+// expr - 数据访问部分表达式信息，一个表达式对象
+// filters - 过滤器部分信息。数组，其中每一项是一个 CALL 表达式对象
+exprInfo = {
+    type: ExprType.INTERPOLATION,
+    expr: {
+        type: ExprType.PROP_ACCESSOR,
+        paths: [
+            {type: ExprType.IDENT, name: 'user'},
+            {type: ExprType.STRING, value: 'phones'}
+        ]
+    },
+    filters: [
+        {
+            type: ExprType.CALL,
+            name: {type: ExprType.IDENT, name: 'comma'},
+            args: [
+                {type: ExprType.NUMBER, literal: '3'}
+            ]
+        }
+    ]
+}
+```
+
+### CALL
+
+调用表达式，表示对方法或过滤器的调用。调用表达式一般出现在插值的过滤器列表，或事件绑定信息中。
+
+```javascript
+
+// name - 过滤器或方法信息，必须是一个 IDENT 表达式信息
+// args - 调用参数列表。数组，其中每一项是一个表达式对象
+exprInfo = {
+    type: ExprType.CALL,
+    name: {type: ExprType.IDENT, name: 'comma'},
+    args: [
+        {type: ExprType.NUMBER, literal: '3'}
+    ]
+}
+```
+
+
+
+### TEXT
+
+文本。文本是一段由静态字符串和插值表达式组成的复杂内容，通常用于 text 节点与属性绑定。
+
+```javascript
+
+// segs - 文本组成片段。数组，其中每一项是一个 STRING 或 INTERPOLATION表达式对象
+exprInfo = {
+    type: ExprType.TEXT,
+    segs: [
+        {type: ExprType.STRING, value: 'Hello '},
+        {
+            type: ExprType.INTERPOLATION,
+            expr: {
+                type: ExprType.IDENT,
+                name: 'whoAmI'
+            },
+            filters: []
+        },
+        {type: ExprType.STRING, value: '!'}
+    ]
+}
+```
+
+### BINARY
+
+二元表达式，支持多种计算和比较，包括 `+ | - | * | ／ | && | || | == | != | === | !== | > | >= | < | <=` 
+
+```javascript
+// operator - 操作符。数值，值为操作符各个 char 的 ascii 之和。比如 == 操作符的 operator 为 61 + 61 = 122
+// segs - 包含两个表达式对象的数组
+exprInfo = {
+    type: ExprType.BINARY,
+    operator: BinaryOp[248],
+    segs: [expr, readLogicalORExpr(walker)]
+}
+```
+
+### UNARY
+
+一元表达式，其实现在就只支持 `!` 的逻辑否定。
+
+```javascript
+exprInfo = {
+    type: ExprType.UNARY,
+    expr: {
+        type: ExprType.PROP_ACCESSOR,
+        paths: [
+            {type: ExprType.IDENT, name: 'user'},
+            {type: ExprType.STRING, value: 'isLogin'}
+        ]
+    }
+}
+```
+
+ANode 与相关类型结构
 ------
 
 此处只说明解析完成返回结果中可能被访问的实例类型。解析过程中用到的 Walker 等类不做说明。
@@ -179,7 +415,5 @@ ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 
 连接另外一个 IndexedList，返回一个新的 IndexedList
 
 
-表达式
------
 
-ANode 是一个树状结构，每个 ANode 的节点 通过
+
