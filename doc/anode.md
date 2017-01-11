@@ -6,10 +6,10 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 
 
 [template 简述](#user-content-template-简述)  
-　　[插值](#user-content-插值)  
-　　[普通属性](#user-content-普通属性)  
-　　[双向绑定](#user-content-双向绑定)  
-　　[指令](#user-content-指令)  
+　　[插值语法](#user-content-插值)  
+　　[普通属性语法](#user-content-普通属性)  
+　　[双向绑定语法](#user-content-双向绑定)  
+　　[指令语法](#user-content-指令)  
 [表达式](#user-content-表达式)  
 　　[表达式类型](#user-content-表达式类型)  
 　　[STRING](#user-content-string)  
@@ -23,7 +23,16 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[UNARY](#user-content-unary)  
 [ANode 与相关类型结构](#user-content-anode-与相关类型结构)  
 　　[ANode](#user-content-anode)  
-　　[IndexedList](#user-content-indexedlist)
+　　[IndexedList](#user-content-indexedlist)  
+[模板解析结果](#user-content-模板解析结果)  
+　　[文本](#user-content-文本)  
+　　[属性](#user-content-属性)  
+　　[双向绑定](#user-content-双向绑定)  
+　　[复杂的插值](#user-content-复杂的插值)  
+　　[事件绑定](#user-content-事件绑定)  
+　　[条件指令](#user-content-条件指令)  
+　　[循环指令](#user-content-循环指令)  
+
 
 
 template 简述
@@ -31,7 +40,7 @@ template 简述
 
 在 San 中，template 是一个符合 HTML 语法规则的字符串。在 template 中，数据绑定与事件的声明通过以下形式：
 
-### 插值
+### 插值语法
 
 文本中通过 `{{...}}` 声明插值，插值内部支持表达式和过滤器的声明。
 
@@ -47,7 +56,7 @@ template 简述
 <p>Hello {{name}}!</p>
 ```
 
-### 普通属性
+### 普通属性语法
 
 属性内部可以出现插值语法。
 
@@ -63,7 +72,7 @@ template 解析阶段无法预知当前节点将会渲染成一个普通元素�
 - 只包含单一插值，处理成插值表达式。如 `title="{{name}}"`
 
 
-### 双向绑定
+### 双向绑定语法
 
 San 认为 template 应该尽量保持 HTML 的语法简洁性，所以双向绑定方式在属性的值上做文章：属性值形式为 `{= expression =}` 的认为是双向绑定。
 
@@ -76,7 +85,7 @@ San 认为 template 应该尽量保持 HTML 的语法简洁性，所以双向绑
 双向绑定仅支持普通变量和属性访问表达式。
 
 
-### 指令
+### 指令语法
 
 以 `san-` 为前缀的属性，将被解析成指令。常见的指令有 for、if 等。
 
@@ -398,5 +407,365 @@ ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 
 连接另外一个 IndexedList，返回一个新的 IndexedList
 
 
+模板解析结果
+----------
 
+模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `childs` 包含节点结构、`binds` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
+
+本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 实例结构请参考 [ANode 与相关类型结构](#user-content-anode-与相关类型结构) 章节。
+
+### 文本
+
+文本节点作为 p 标签的子节点存在。
+
+```html
+<p>Hello {{name}}!</p>
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [],
+    "events": [],
+    "childs": [
+        {
+            "isText": true,
+            "text": "Hello {{name}}!"
+        }
+    ],
+    "tagName": "p"
+}
+```
+
+### 属性
+
+属性信息是一个 `绑定信息对象`，其中：
+
+- name - 属性名
+- expr - 表达式信息对象
+
+下面例子的 title 属性绑定到一个 TEXT 类型的表达式中。
+
+```html
+<span title="This is {{name}}">{{name}}</span>
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [
+        {
+            "name": "title",
+            "expr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 1,
+                        "value": "This is "
+                    },
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 3,
+                            "name": "name"
+                        },
+                        "filters": []
+                    }
+                ]
+            },
+            "raw": "This is {{name}}"
+        }
+    ],
+    "events": [],
+    "childs": [
+        {
+            "isText": true,
+            "text": "{{name}}"
+        }
+    ],
+    "tagName": "span"
+}
+```
+
+### 双向绑定
+
+双向绑定的属性，绑定信息对象上包含 twoWay 属性，值为 true。
+
+```html
+<input type="text" value="{= name =}">
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [
+        {
+            "name": "type",
+            "expr": {
+                "type": 1,
+                "value": "text"
+            },
+            "raw": "text"
+        },
+        {
+            "name": "value",
+            "expr": {
+                "type": 3,
+                "name": "name"
+            },
+            "twoWay": true
+        }
+    ],
+    "events": [],
+    "childs": [],
+    "tagName": "input"
+}
+```
+
+### 复杂的插值
+
+
+```html
+<p title="{{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"></p>
+```
+
+```javascript
+    "directives": [],
+    "binds": [
+        {
+            "name": "title",
+            "expr": {
+                "type": 5,
+                "expr": {
+                    "type": 8,
+                    "segs": [
+                        {
+                            "type": 8,
+                            "segs": [
+                                {
+                                    "type": 8,
+                                    "segs": [
+                                        {
+                                            "type": 3,
+                                            "name": "var1"
+                                        },
+                                        {
+                                            "type": 3,
+                                            "name": "var2"
+                                        }
+                                    ],
+                                    "operator": 45
+                                },
+                                {
+                                    "type": 3,
+                                    "name": "var3"
+                                }
+                            ],
+                            "operator": 47
+                        },
+                        {
+                            "type": 1,
+                            "literal": "'static text'"
+                        }
+                    ],
+                    "operator": 43
+                },
+                "filters": [
+                    {
+                        "type": 6,
+                        "name": {
+                            "type": 3,
+                            "name": "comma"
+                        },
+                        "args": [
+                            {
+                                "type": 8,
+                                "segs": [
+                                    {
+                                        "type": 3,
+                                        "name": "commaLength"
+                                    },
+                                    {
+                                        "type": 2,
+                                        "literal": "1"
+                                    }
+                                ],
+                                "operator": 43
+                            }
+                        ]
+                    }
+                ]
+            },
+            "raw": "{{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"
+        }
+    ],
+    "events": [],
+    "childs": [],
+    "tagName": "p"
+}
+```
+
+### 事件绑定
+
+事件绑定信息与属性绑定信息类似，但是事件绑定信息对象的 expr 属性一定是一个 CALL 表达式的表示。
+
+```html
+<button type="button" on-click="clicker($event)">click here</button>
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [
+        {
+            "name": "type",
+            "expr": {
+                "type": 1,
+                "value": "button"
+            },
+            "raw": "button"
+        }
+    ],
+    "events": [
+        {
+            "name": "click",
+            "expr": {
+                "type": 6,
+                "name": {
+                    "type": 3,
+                    "name": "clicker"
+                },
+                "args": [
+                    {
+                        "type": 3,
+                        "name": "$event"
+                    }
+                ]
+            }
+        }
+    ],
+    "childs": [
+        {
+            "isText": true,
+            "text": "click here"
+        }
+    ],
+    "tagName": "button"
+}
+```
+
+### 条件指令
+
+if 指令的值是一个表达式信息对象，else 指令的值永远等于 true。
+
+```html
+<div>
+    <span san-if="isOnline">Hello!</span>
+    <span san-else>Offline</span>
+</div>
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [],
+    "events": [],
+    "childs": [
+        {
+            "directives": [
+                {
+                    "value": {
+                        "type": 3,
+                        "name": "isOnline"
+                    },
+                    "name": "if"
+                }
+            ],
+            "binds": [],
+            "events": [],
+            "childs": [
+                {
+                    "isText": true,
+                    "text": "Hello!"
+                }
+            ],
+            "tagName": "span"
+        },
+        {
+            "directives": [
+                {
+                    "value": true,
+                    "name": "else"
+                }
+            ],
+            "binds": [],
+            "events": [],
+            "childs": [
+                {
+                    "isText": true,
+                    "text": "Offline"
+                }
+            ],
+            "tagName": "span"
+        }
+    ],
+    "tagName": "div"
+}
+```
+
+### 循环指令
+
+循环指令对象的信息包括：
+
+- item - 字符串，表示循环过程中数据项对应的变量名
+- index - 字符串，表示循环过程中数据索引对应的变量名
+- list - 表达式对象，表示要循环的数据
+- name - 恒为 for
+
+```html
+<ul>
+    <li san-for="p, index in persons" >{{p.name}} - {{p.email}}</li>
+</ul>
+```
+
+```javascript
+aNode = {
+    "directives": [],
+    "binds": [],
+    "events": [],
+    "childs": [
+        {
+            "isText": true,
+            "text": "\n    "
+        },
+        {
+            "directives": [
+                {
+                    "item": "p",
+                    "index": "index",
+                    "list": {
+                        "type": 3,
+                        "name": "persons"
+                    },
+                    "name": "for"
+                }
+            ],
+            "binds": [],
+            "events": [],
+            "childs": [
+                {
+                    "isText": true,
+                    "text": "{{p.name}} - {{p.email}}"
+                }
+            ],
+            "tagName": "li"
+        },
+        {
+            "isText": true,
+            "text": "\n"
+        }
+    ],
+    "tagName": "ul"
+}
+```
 
