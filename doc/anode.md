@@ -278,8 +278,17 @@ exprInfo = {
 // segs - 包含两个表达式对象的数组
 exprInfo = {
     type: ExprType.BINARY,
-    operator: BinaryOp[248],
-    segs: [expr, readLogicalORExpr(walker)]
+    segs: [
+        {
+            type: ExprType.IDENT,
+            name: "commaLength"
+        },
+        {
+            type: ExprType.NUMBER,
+            literal: "1"
+        }
+    ],
+    operator: 43
 }
 ```
 
