@@ -414,6 +414,8 @@ ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 
 
 本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 实例结构请参考 [ANode 与相关类型结构](#user-content-anode-与相关类型结构) 章节。
 
+为方便表示，本章节所有示例，`binds`、`events`、`directives` 信息全部表示为数组形式，实际上应该是 IndexedList 类型的实例。
+
 ### 文本
 
 文本节点作为 p 标签的子节点存在。
