@@ -948,9 +948,10 @@
             }
         }
 
+        var literal = walker.cut(startIndex, walker.currentIndex());
         return {
             type: ExprType.STRING,
-            literal: walker.cut(startIndex, walker.currentIndex())
+            value: (new Function('return ' + literal))()
         };
     }
 
@@ -981,7 +982,7 @@
 
         return {
             type: ExprType.NUMBER,
-            literal: match[1]
+            value: match[1] - 0
         };
     }
 
@@ -1879,9 +1880,6 @@
 
             case ExprType.STRING:
             case ExprType.NUMBER:
-                if (expr.value == null) {
-                    expr.value = (new Function('return ' + expr.literal))();
-                }
                 return expr.value;
 
             case ExprType.IDENT:
