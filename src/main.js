@@ -652,6 +652,7 @@
                 currentNode.childs.push(new ANode({
                     isText: true,
                     text: text,
+                    textExpr: parseText(text),
                     parent: currentNode
                 }));
             }
@@ -2236,14 +2237,15 @@
     TextNode.prototype._init = function (options) {
         Node.prototype._init.call(this, options);
 
+        // from el
         if (this.el) {
             this.aNode.isText = true;
             this.aNode.tagName = null;
-            this.aNode.text = this.el.innerHTML;
+            this.aNode.textExpr = parseText(this.el.innerHTML);
             this.parent._pushChildANode(this.aNode);
         }
 
-        this.expr = parseText(this.aNode.text);
+        this.expr = this.aNode.textExpr;
     };
 
     /**

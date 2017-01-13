@@ -438,7 +438,24 @@ aNode = {
     "childs": [
         {
             "isText": true,
-            "text": "Hello {{name}}!"
+            "text": "Hello {{name}}!",
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 1,
+                        "value": "Hello "
+                    },
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 3,
+                            "name": "name"
+                        },
+                        "filters": []
+                    }
+                ]
+            }
         }
     ],
     "tagName": "p"
@@ -488,7 +505,20 @@ aNode = {
     "childs": [
         {
             "isText": true,
-            "text": "{{name}}"
+            "text": "click here",
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 3,
+                            "name": "name"
+                        },
+                        "filters": []
+                    }
+                ]
+            }
         }
     ],
     "tagName": "span"
@@ -655,7 +685,13 @@ aNode = {
     "childs": [
         {
             "isText": true,
-            "text": "click here"
+            "text": "click here",
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {"type": 1, "value": "click here"}
+                ]
+            }
         }
     ],
     "tagName": "button"
@@ -694,7 +730,13 @@ aNode = {
             "childs": [
                 {
                     "isText": true,
-                    "text": "Hello!"
+                    "text": "Hello!",
+                    "textExpr": {
+                        "type": 7,
+                        "segs": [
+                            {"type": 1, "value": "Hello!"}
+                        ]
+                    }
                 }
             ],
             "tagName": "span"
@@ -711,7 +753,13 @@ aNode = {
             "childs": [
                 {
                     "isText": true,
-                    "text": "Offline"
+                    "text": "Offline",
+                    "textExpr": {
+                        "type": 7,
+                        "segs": [
+                            {"type": 1, "value": "Offline"}
+                        ]
+                    }
                 }
             ],
             "tagName": "span"
