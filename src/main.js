@@ -1059,7 +1059,7 @@
                 walker.go(1);
                 return {
                     type: ExprType.BINARY,
-                    operator: BinaryOp[248],
+                    operator: 248,
                     segs: [expr, readLogicalORExpr(walker)]
                 };
             }
@@ -1086,7 +1086,7 @@
                 walker.go(1);
                 return {
                     type: ExprType.BINARY,
-                    operator: BinaryOp[76],
+                    operator: 76,
                     segs: [expr, readLogicalANDExpr(walker)]
                 };
             }
@@ -1121,7 +1121,7 @@
 
                     return {
                         type: ExprType.BINARY,
-                        operator: BinaryOp[code],
+                        operator: code,
                         segs: [expr, readEqualityExpr(walker)]
                     };
                 }
@@ -1154,7 +1154,7 @@
 
                 return {
                     type: ExprType.BINARY,
-                    operator: BinaryOp[code],
+                    operator: code,
                     segs: [expr, readRelationalExpr(walker)]
                 };
         }
@@ -1180,7 +1180,7 @@
                 walker.go(1);
                 return {
                     type: ExprType.BINARY,
-                    operator: BinaryOp[code],
+                    operator: code,
                     segs: [expr, readAdditiveExpr(walker)]
                 };
         }
@@ -1206,7 +1206,7 @@
                 walker.go(1);
                 return {
                     type: ExprType.BINARY,
-                    operator: BinaryOp[code],
+                    operator: code,
                     segs: [expr, readMultiplicativeExpr(walker)]
                 };
         }
@@ -1311,7 +1311,7 @@
         248: function (a, b) {
             return a || b;
         }
-        /* eslint-enable     */
+        /* eslint-enable */
     };
 
     /**
@@ -1874,10 +1874,14 @@
                 return !evalExpr(expr.expr, model, owner);
 
             case ExprType.BINARY:
-                return expr.operator(
-                    evalExpr(expr.segs[0], model, owner),
-                    evalExpr(expr.segs[1], model, owner)
-                );
+                var opHandler = BinaryOp[expr.operator];
+                if (typeof opHandler === 'function') {
+                    return opHandler(
+                        evalExpr(expr.segs[0], model, owner),
+                        evalExpr(expr.segs[1], model, owner)
+                    );
+                }
+                return;
 
             case ExprType.STRING:
             case ExprType.NUMBER:
