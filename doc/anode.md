@@ -780,7 +780,7 @@ aNode = {
 
 ```html
 <ul>
-    <li san-for="p, index in persons" >{{p.name}} - {{p.email}}</li>
+    <li san-for="p, index in persons">{{p.name}} - {{p.email}}</li>
 </ul>
 ```
 
@@ -811,7 +811,38 @@ aNode = {
             "childs": [
                 {
                     "isText": true,
-                    "text": "{{p.name}} - {{p.email}}"
+                    "text": "{{p.name}} - {{p.email}}",
+                    "textExpr": {
+                        "type": 7,
+                        "segs": [
+                            {
+                                "type": 5,
+                                "expr": {
+                                    "type": 4,
+                                    "paths": [
+                                        {"type": 3, "name": "p"},
+                                        {"type": 1, "value": "name"}
+                                    ]
+                                },
+                                "filters": []
+                            },
+                            {
+                                "type": 1,
+                                "value": " - "
+                            },
+                            {
+                                "type": 5,
+                                "expr": {
+                                    "type": 4,
+                                    "paths": [
+                                        {"type": 3, "name": "p"},
+                                        {"type": 1, "value": "email"}
+                                    ]
+                                },
+                                "filters": []
+                            }
+                        ]
+                    }
                 }
             ],
             "tagName": "li"
