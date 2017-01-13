@@ -143,12 +143,9 @@ exprInfo 中必须包含 type 属性，值为上面类型值之一。下面不�
 
 ```javascript
 // value - 字符串的值
-// literal - 字符串声明式，实际值需要再次计算
-// 通常 value 和 literal 只会存在一个
 exprInfo = {
     type: ExprType.STRING,
-    value: '你好',
-    literal: '"\\u4f60\\u597d"'
+    value: '你好'
 }
 ```
 
@@ -157,10 +154,10 @@ exprInfo = {
 数值表达式
 
 ```javascript
-// literal - 数值的声明式，实际值需要再次计算
+// value - 数值的值
 exprInfo = {
     type: ExprType.NUMBER,
-    literal: '123.456'
+    value: 123.456
 }
 ```
 
