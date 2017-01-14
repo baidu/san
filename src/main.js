@@ -1015,19 +1015,17 @@
             switch (code) {
                 case 46: // .
                     walker.go(1);
-                    result.paths.push(readIdentifier(walker));
+
+                    // ident as string
+                    result.paths.push({
+                        type: ExprType.STRING,
+                        value: readIdentifier(walker).name
+                    });
                     break;
 
                 case 91: // [
                     walker.go(1);
-                    var itemExpr = readLogicalORExpr(walker);
-                    if (itemExpr.type === ExprType.IDENT) {
-                        itemExpr = {
-                            type: ExprType.PROP_ACCESSOR,
-                            paths: [itemExpr]
-                        };
-                    }
-                    result.paths.push(itemExpr);
+                    result.paths.push(readLogicalORExpr(walker));
                     walker.goUntil(93);  // ]
                     break;
 
@@ -1409,22 +1407,23 @@
                 var paths = expr.paths;
                 var changePaths = changeExpr.paths;
 
-
                 /* eslint-disable no-redeclare */
-                var result = true;
+                var result = paths[0].name === changePaths[0].name;
                 /* eslint-enable no-redeclare */
-                for (var i = 0, len = paths.length, changeLen = changePaths.length; i < len; i++) {
+                for (var i = 1, len = paths.length, changeLen = changePaths.length; i < len; i++) {
                     var pathExpr = paths[i];
 
-                    if (pathExpr.type === ExprType.PROP_ACCESSOR
-                        && exprNeedsUpdate(pathExpr, changeExpr, model)
-                    ) {
-                        return true;
+                    switch (pathExpr.type) {
+                        case ExprType.PROP_ACCESSOR:
+                        case ExprType.IDENT:
+                            if (exprNeedsUpdate(pathExpr, changeExpr, model)) {
+                                return true;
+                            }
                     }
 
                     if (result && i < changeLen
                         /* eslint-disable eqeqeq */
-                        && accessorItemValue(pathExpr, model) != accessorItemValue(changePaths[i], model)
+                        && evalExpr(pathExpr, model) != evalExpr(changePaths[i], model)
                         /* eslint-enable eqeqeq */
                     ) {
                         result = false;
@@ -1522,7 +1521,7 @@
 
                 for (var i = 1, l = paths.length; value != null && i < l; i++) {
                     var path = paths[i];
-                    var pathValue = accessorItemValue(path, this);
+                    var pathValue = evalExpr(path, this);
                     value = value[pathValue];
                 }
         }
@@ -1558,18 +1557,24 @@
 
             case ExprType.PROP_ACCESSOR:
                 var paths = expr.paths;
-                for (var i = 0, l = paths.length; i < l - 1; i++) {
-                    var path = paths[i];
-                    var pathValue = accessorItemValue(path, this);
+                var len = paths.length;
 
-
-                    if (data[pathValue] == null) {
-                        data[pathValue] = {};
-                    }
-                    data = data[pathValue];
+                if (len === 1) {
+                    prop = paths[0].name;
                 }
+                else {
+                    data = data[paths[0].name];
+                    for (var i = 1; i < len - 1; i++) {
+                        var pathValue = evalExpr(paths[i], this);
 
-                prop = accessorItemValue(paths[i], this);
+                        if (data[pathValue] == null) {
+                            data[pathValue] = {};
+                        }
+                        data = data[pathValue];
+                    }
+
+                    prop = evalExpr(paths[i], this);
+                }
         }
 
         if (prop != null) {
@@ -1844,20 +1849,6 @@
             return source;
         }
     };
-
-    /**
-     * 获取property accessor单项对应的名称值
-     *
-     * @inner
-     * @param {Object} expr 单项的表达式
-     * @param {Model} model 数据对象
-     * @return {string}
-     */
-    function accessorItemValue(expr, model) {
-        return expr.type === ExprType.IDENT
-            ? expr.name
-            : evalExpr(expr, model);
-    }
 
     /**
      * 计算表达式的值
@@ -2882,7 +2873,7 @@
      *
      * @inner
      * @param {string} attrName 属性名
-     * @param {function(Element):boolean} 判断元素满足选择条件的函数
+     * @param {function(Element):boolean} chooseCondition 判断元素满足选择条件的函数
      * @return {Object}
      */
     function genBoolPropHandler(attrName, chooseCondition) {
@@ -4330,14 +4321,14 @@
         var changeIndex;
 
         for (var i = 0; i < changeLen && i < forLen; i++) {
-            if (accessorItemValue(changeSegs[i]) !== accessorItemValue(forSegs[i])) {
+            if (this.evalExpr(changeSegs[i]) !== this.evalExpr(forSegs[i])) {
                 changeInForExpr = -1;
                 break;
             }
         }
 
         if (changeInForExpr >= 0 && changeLen > forLen) {
-            changeIndex = +accessorItemValue(changeSegs[forLen]);
+            changeIndex = +this.evalExpr(changeSegs[forLen]);
             changeInForExpr = changeLen - forLen === 1 ? 1 : 2;
         }
 
@@ -4534,7 +4525,7 @@
         inherits(ComponentClass, Component);
 
         return ComponentClass;
-    };
+    }
 
     /* eslint-disable */
     if (isFEFFBeforeStump) {
