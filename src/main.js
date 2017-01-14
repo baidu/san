@@ -534,10 +534,12 @@
      * @param {boolean=} options.isText 是否文本节点
      */
     function ANode(options) {
-        this.directives = new IndexedList();
-        this.binds = new IndexedList();
-        this.events = new IndexedList();
-        this.childs = [];
+        if (!options || !options.isText) {
+            this.directives = new IndexedList();
+            this.binds = new IndexedList();
+            this.events = new IndexedList();
+            this.childs = [];
+        }
 
         extend(this, options);
     }
@@ -1948,6 +1950,10 @@
             parent: parent
         };
 
+        if (aNode.isText) {
+            return new TextNode(options);
+        }
+
         if (aNode.directives.get('if')) {
             return new IfDirective(options);
         }
@@ -1958,10 +1964,6 @@
 
         if (aNode.directives.get('for')) {
             return new ForDirective(options);
-        }
-
-        if (aNode.isText) {
-            return new TextNode(options);
         }
 
         var ComponentType = owner.components && owner.components[aNode.tagName];
@@ -3615,7 +3617,7 @@
             var givenSlots = {};
             each(givenANode.childs, function (child) {
                 var slotName = '__default__';
-                var slotBind = child.binds.get('slot');
+                var slotBind = !child.isText && child.binds.get('slot');
                 if (slotBind) {
                     slotName = slotBind.raw;
                 }
