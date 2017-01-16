@@ -323,6 +323,10 @@ template 的 parse 直接返回一个 ANode 类的实例。实例上不包含任
 
 文本节点的文本内容。当 isText 为 true 时有效
 
+#### {Object} textExpr
+
+文本节点的表达式信息对象。当 isText 为 true 时有效，一定是一个 TEXT 表达式
+
 #### {Array.<ANode>} childs
 
 ANode 的结构与 HTML 一样，是一个树状结构。childs 是当前节点的子节点列表。文本节点该属性无效
