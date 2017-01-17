@@ -4540,54 +4540,87 @@
     /* eslint-enable */
 
     // #region exports
-    var san = {};
+    var san = {
+        /**
+         * san版本号
+         *
+         * @type {string}
+         */
+        version: '3.0.3-rc.1',
 
-    /**
-     * 组件基类
-     *
-     * @type {Function}
-     */
-    san.Component = Component;
+        /**
+         * 组件基类
+         *
+         * @type {Function}
+         */
+        Component: Component,
 
-    /**
-     * 创建组件类
-     *
-     * @param {Object} proto 组件类的方法表
-     * @return {Function}
-     */
-    san.defineComponent = defineComponent;
+        /**
+         * 创建组件类
+         *
+         * @param {Object} proto 组件类的方法表
+         * @return {Function}
+         */
+        defineComponent: defineComponent,
 
-    /**
-     * 在下一个更新周期运行函数
-     *
-     * @param {Function} fn 要运行的函数
-     */
-    san.nextTick = nextTick;
+        /**
+         * 解析 template
+         *
+         * @inner
+         * @param {string} source template 源码
+         * @return {ANode}
+         */
+        parseTemplate: parseTemplate,
 
-    /**
-     * san版本号
-     *
-     * @type {string}
-     */
-    san.version = '3.0.2';
+        /**
+         * 解析表达式
+         *
+         * @param {string} source 源码
+         * @return {Object}
+         */
+        parseExpr: parseExpr,
 
-    /**
-     * 根据 DOM id 获取内部元素对象
-     *
-     * @param {string} id DOM元素的id
-     * @return {Element}
-     */
-    san.getEl = function (id) {
-        return elementContainer[id];
+        /**
+         * 表达式类型枚举
+         *
+         * @const
+         * @type {Object}
+         */
+        ExprType: ExprType,
+
+        /**
+         * 生命周期类
+         *
+         * @class
+         */
+        LifeCycle: LifeCycle,
+
+        /**
+         * 在下一个更新周期运行函数
+         *
+         * @param {Function} fn 要运行的函数
+         */
+        nextTick: nextTick,
+
+        /**
+         * 根据 DOM id 获取内部元素对象
+         *
+         * @param {string} id DOM元素的id
+         * @return {Element}
+         */
+        getEl: function (id) {
+            return elementContainer[id];
+        },
+
+        /**
+         * 构建类之间的继承关系
+         *
+         * @param {Function} subClass 子类函数
+         * @param {Function} superClass 父类函数
+         */
+        inherits: inherits
     };
 
-    /**
-     * 构建类之间的继承关系
-     *
-     * @param {Function} subClass 子类函数
-     * @param {Function} superClass 父类函数
-     */
-    san.inherits = inherits;
 
     // export
     if (typeof exports === 'object' && typeof module === 'object') {

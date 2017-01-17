@@ -2,6 +2,20 @@
 ChangeLog
 ========
 
+3.0.3
+-------
+
++ 【新特性】- 针对希望自建组件渲染体系的需求，暴露新的 API：
+    - {Object} ExprType
+    - {Class} LifeCycle
+    - {ANode} parseTemplate({string} source)
+    - {Object} parseExpr({string} source)
++ 【优化】- 对模板解析结果的结构进行了优化：
+    - text 预解析
+    - 删除 text 节点上多余的属性：childs、binds、directives、events等
+    - 解析阶段计算 number 与 string 表达式实际值
+    - property accessor 表达式结构优化
+    - binary 表达式结构优化，存储类型信息，不存储 operator 函数
 
 
 3.0.2
