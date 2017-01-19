@@ -625,7 +625,7 @@
                         integrateAttr(
                             aElement,
                             attrMatch[1],
-                            attrMatch[2] ? attrMatch[4] : ''
+                            attrMatch[2] ? attrMatch[4] : attrMatch[1]
                         );
                     }
                 }
@@ -3601,7 +3601,7 @@
 
                 proto.template = null;
             }
-
+console.log(proto.aNode)
             proto.aNode = proto.aNode || new ANode();
         }
 

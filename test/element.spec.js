@@ -200,5 +200,22 @@ describe("Element", function () {
         });
     });
 
+    it("no value attribute", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="text" disabled></div>'
+        });
+        var myComponent = new MyComponent();
 
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.disabled).toBeTruthy();
+        expect(input.getAttribute('disabled')).toBe('disabled');
+
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
