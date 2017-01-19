@@ -3601,7 +3601,7 @@
 
                 proto.template = null;
             }
-console.log(proto.aNode)
+
             proto.aNode = proto.aNode || new ANode();
         }
 
@@ -4546,7 +4546,7 @@ console.log(proto.aNode)
          *
          * @type {string}
          */
-        version: '3.0.3-rc.1',
+        version: '3.0.3-rc.2',
 
         /**
          * 组件基类

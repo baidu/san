@@ -16,6 +16,7 @@ ChangeLog
     - 解析阶段计算 number 与 string 表达式实际值
     - property accessor 表达式结构优化
     - binary 表达式结构优化，存储类型信息，不存储 operator 函数
++ 【bug修复】- 标签属性不包含值时（如 disabled 等）会被忽略，实际应生效
 
 
 3.0.2
