@@ -6,7 +6,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-// TODO: remove tagName toLowerCase
 
 /* eslint-disable fecs-max-statements */
 (function (root) {
@@ -2533,28 +2532,27 @@
                 return;
             }
 
-            var elTagName = this.el.tagName;
             var elType = this.el.type;
 
             switch (bindInfo.name) {
                 case 'value':
-                    switch (elTagName) {
-                        case 'INPUT':
-                        case 'TEXTAREA':
+                    switch (this.tagName) {
+                        case 'input':
+                        case 'textarea':
                             this.on(
                                 ('oninput' in this.el) ? 'input' : 'propertychange',
                                 bind(bindOutputer, this, bindInfo)
                             );
                             break;
 
-                        case 'SELECT':
+                        case 'select':
                             this.on('change', bind(bindOutputer, this, bindInfo));
                             break;
                     }
                     break;
 
                 case 'checked':
-                    if (elTagName === 'INPUT' && (elType === 'checkbox' || elType === 'radio')) {
+                    if (this.tagName === 'input' && (elType === 'checkbox' || elType === 'radio')) {
                         this.on('click', bind(bindOutputer, this, bindInfo));
                     }
                     break;
@@ -2914,7 +2912,7 @@
     var bindPropHandlers = [
         // 表单元素(input / button / textarea / select) 的 disabled
         genBoolPropHandler('disabled', function (element) {
-            switch (element.tagName.toLowerCase()) {
+            switch (element.tagName) {
                 case 'input':
                 case 'textarea':
                 case 'button':
@@ -2925,7 +2923,7 @@
 
         // 表单元素(input / textarea) 的 readonly
         genBoolPropHandler('readonly', function (element) {
-            switch (element.tagName.toLowerCase()) {
+            switch (element.tagName) {
                 case 'input':
                 case 'textarea':
                     return true;
@@ -2969,7 +2967,7 @@
             choose: function (element) {
                 if (element.aNode) {
                     var bindType = element.aNode.binds.get('type');
-                    return element.tagName.toLowerCase() === 'input'
+                    return element.tagName === 'input'
                         && bindType && element.evalExpr(bindType.expr) === 'checkbox'
                         && 'checked';
                 }
@@ -3018,7 +3016,7 @@
             choose: function (element) {
                 if (element.aNode) {
                     var bindType = element.aNode.binds.get('type');
-                    return element.tagName.toLowerCase() === 'input'
+                    return element.tagName === 'input'
                         && bindType && element.evalExpr(bindType.expr) === 'radio'
                         && 'checked';
                 }
@@ -3049,7 +3047,7 @@
             },
 
             choose: function (element) {
-                return element.tagName.toLowerCase() === 'select' && 'value';
+                return element.tagName === 'select' && 'value';
             }
         },
 
