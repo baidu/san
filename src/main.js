@@ -123,6 +123,18 @@
     }
 
     /**
+     * 将 DOM 从页面中移除
+     *
+     * @inner
+     * @param {HTMLElement} el DOM元素
+     */
+    function removeEl(el) {
+        if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+        }
+    }
+
+    /**
      * 唯一id的起始值
      *
      * @inner
@@ -267,7 +279,7 @@
     StringBuffer.prototype.push = isCompatStringJoin
         ? function (source) {
             this.length++;
-            this.raw.push(source);
+            this.raw[this.length++] = source;
         }
         : function (source) {
             this.length++;
@@ -2839,7 +2851,7 @@
     }
 
     function contains(array, value) {
-        var result = false;
+        var result;
         each(array, function (item) {
             result = item === value;
             return !result;
@@ -3218,9 +3230,7 @@
      * 将元素从页面上移除的行为
      */
     Element.prototype._detach = function () {
-        if (this.el && this.el.parentNode) {
-            this.el.parentNode.removeChild(this.el);
-        }
+        removeEl(this.el);
     };
 
     /**
@@ -3855,8 +3865,6 @@
     function createIfDirectiveChild(ifElement) {
         var aNode = ifElement.aNode;
         var childANode = new ANode({
-            text: aNode.text,
-            isText: aNode.isText,
             childs: aNode.childs,
             binds: aNode.binds,
             events: aNode.events,
@@ -4183,9 +4191,7 @@
         });
         this.childs.length = 0;
 
-        if (this.el && this.el.parentNode) {
-            this.el.parentNode.removeChild(this.el);
-        }
+        removeEl(this.el);
     };
 
     /**
@@ -4273,8 +4279,6 @@
         var aNode = forElement.aNode;
         return createNode(
             new ANode({
-                text: aNode.text,
-                isText: aNode.isText,
                 childs: aNode.childs,
                 binds: aNode.binds,
                 events: aNode.events,
@@ -4504,7 +4508,7 @@
                 var text = headingBlank[textProp];
 
                 if (!text || text === '\uFEFF') {
-                    headingBlank.parentNode.removeChild(headingBlank);
+                    removeEl(headingBlank);
                 }
             }
         }
