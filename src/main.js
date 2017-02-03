@@ -66,6 +66,25 @@
         }
     }
 
+
+    /**
+     * 判断数组中是否包含某项
+     *
+     * @inner
+     * @param {Array} array 数组
+     * @param {*} value 包含的项
+     * @return {boolean}
+     */
+    function contains(array, value) {
+        var result;
+        each(array, function (item) {
+            result = item === value;
+            return !result;
+        });
+
+        return result;
+    }
+
     /**
      * Function.prototype.bind 方法的兼容性封装
      *
@@ -2662,12 +2681,11 @@
         e = e || window.event;
 
         each(expr.args, function (argExpr) {
-            if (argExpr.type === ExprType.IDENT && argExpr.name === '$event') {
-                args.push(e);
-            }
-            else {
-                args.push(this.evalExpr(argExpr));
-            }
+            args.push(
+                argExpr.type === ExprType.IDENT && argExpr.name === '$event'
+                    ? e
+                    : this.evalExpr(argExpr)
+            );
         }, this);
 
         var owner = this.owner;
@@ -2685,14 +2703,11 @@
      * 绑定事件
      */
     Element.prototype.bindEvents = function () {
-        this.aNode.events.each(
-            function (eventBind) {
-                var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
-                var listener = provideFn(this, eventBind);
-                this.on(listener.name, listener.fn);
-            },
-            this
-        );
+        this.aNode.events.each(function (eventBind) {
+            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
+            var listener = provideFn(this, eventBind);
+            this.on(listener.name, listener.fn);
+        }, this);
     };
 
     /**
@@ -2796,13 +2811,9 @@
         stringBuffer.push('"');
 
         element.aNode.binds.each(function (bindItem) {
-            var value;
-            if (this instanceof Component && bindItem.isOwn) {
-                value = evalExpr(bindItem.expr, this.data, this);
-            }
-            else {
-                value = this.evalExpr(bindItem.expr);
-            }
+            var value = this instanceof Component && bindItem.isOwn
+                ? evalExpr(bindItem.expr, this.data, this)
+                : this.evalExpr(bindItem.expr);
 
             var propHandler = this.propHandlers[bindItem.name] || this.propHandlers['*'];
             stringBuffer.push(propHandler.input.attr(this, bindItem.name, value));
@@ -2820,9 +2831,6 @@
      */
     function elementGenCloseHTML(element, stringBuffer) {
         var tagName = element.tagName;
-        if (!tagName) {
-            return;
-        }
 
         if (!tagIsAutoClose(tagName)) {
             stringBuffer.push('</');
@@ -2848,16 +2856,6 @@
         });
 
         return buf.toString();
-    }
-
-    function contains(array, value) {
-        var result;
-        each(array, function (item) {
-            result = item === value;
-            return !result;
-        });
-
-        return result;
     }
 
     /**
@@ -2894,11 +2892,11 @@
         return {
             input: {
                 attr: function (element, name, value) {
-                    if (!value) {
-                        return '';
+                    if (value) {
+                        return ' ' + attrName + '="' + attrName + '"';
                     }
 
-                    return ' ' + attrName + '="' + attrName + '"';
+                    return '';
                 },
 
                 prop: function (element, name, value) {
@@ -3150,6 +3148,23 @@
     };
 
     /**
+     * 判断变更是否来源于元素自身，来源于自身时，视图更新需要阻断
+     *
+     * @inner
+     * @param {Object} change 变更对象
+     * @param {string} elementId 元素id
+     * @param {string?} propName 属性名，可选。需要精确判断是否来源于此属性时传入
+     * @return {boolean}
+     */
+    function isChangeBySelf(change, elementId, propName) {
+        var changeTarget = change.option.target;
+        if (changeTarget) {
+            return changeTarget.id === elementId
+                && (!propName || changeTarget.prop === propName);
+        }
+    }
+
+    /**
      * 绑定数据变化时的视图更新函数
      *
      * @param {Object} change 数据变化信息
@@ -3160,17 +3175,11 @@
             return;
         }
 
-        var changeTarget = change.option.target;
         var needUpdate = false;
         this.aNode.binds.each(function (bindItem) {
-            if (changeTarget
-                && changeTarget.id === this.id
-                && changeTarget.prop === bindItem.name
+            if (!isChangeBySelf(change, this.id, bindItem.name)
+                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
             ) {
-                return;
-            }
-
-            if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
@@ -3178,6 +3187,7 @@
 
                     this.setProp(bindItem.name, this.evalExpr(bindItem.expr));
                 }, this);
+
                 needUpdate = true;
             }
         }, this);
@@ -3746,17 +3756,11 @@
         }
 
         var needUpdate = false;
-        var changeTarget = change.option.target;
 
         this.aNode.binds.each(function (bindItem) {
-            if (bindItem.isOwn) {
-                if (changeTarget
-                    && changeTarget.id === this.id
-                    && changeTarget.prop === bindItem.name
-                ) {
-                    return;
-                }
-
+            if (bindItem.isOwn
+                && !isChangeBySelf(change, this.id, bindItem.name)
+            ) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
@@ -3800,10 +3804,9 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype.updateView = function (change) {
-        var changeTarget = change.option.target;
         if (this.lifeCycle.is('disposed')
             || this === this.owner
-            || (changeTarget && changeTarget.id === this.id)
+            || isChangeBySelf(change, this.id)
         ) {
             return;
         }
@@ -4514,6 +4517,16 @@
         }
     }
 
+    /* eslint-disable */
+    if (isFEFFBeforeStump) {
+        IfDirective.prototype.attached =
+        TextNode.prototype.attached =
+        ForDirective.prototype.attached = function () {
+            removeStumpHeadingBlank(this);
+        };
+    }
+    /* eslint-enable */
+
     /**
      * 创建组件类
      *
@@ -4530,16 +4543,6 @@
 
         return ComponentClass;
     }
-
-    /* eslint-disable */
-    if (isFEFFBeforeStump) {
-        IfDirective.prototype.attached =
-        TextNode.prototype.attached =
-        ForDirective.prototype.attached = function () {
-            removeStumpHeadingBlank(this);
-        };
-    }
-    /* eslint-enable */
 
     // #region exports
     var san = {
