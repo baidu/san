@@ -297,7 +297,6 @@
      */
     StringBuffer.prototype.push = isCompatStringJoin
         ? function (source) {
-            this.length++;
             this.raw[this.length++] = source;
         }
         : function (source) {

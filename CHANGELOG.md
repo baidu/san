@@ -17,6 +17,7 @@ ChangeLog
     - property accessor 表达式结构优化
     - binary 表达式结构优化，存储类型信息，不存储 operator 函数
 + 【bug修复】- 标签属性不包含值时（如 disabled 等）会被忽略，实际应生效
++ 【bug修复】- 低版本 IE 下 HTML 片段拼接错误
 
 
 3.0.2
