@@ -565,7 +565,7 @@
     function ANode(options) {
         if (!options || !options.isText) {
             this.directives = new IndexedList();
-            this.binds = new IndexedList();
+            this.props = new IndexedList();
             this.events = new IndexedList();
             this.childs = [];
         }
@@ -750,7 +750,7 @@
         var twoWayMatch = value.match(/^\{=\s*(\S[\s\S]*?)\s*=\}$/);
 
         if (twoWayMatch) {
-            aNode.binds.push({
+            aNode.props.push({
                 name: name,
                 expr: parseExpr(twoWayMatch[1]),
                 twoWay: true
@@ -769,7 +769,7 @@
             expr = expr.segs[0];
         }
 
-        aNode.binds.push(textBindExtra({
+        aNode.props.push(textBindExtra({
             name: name,
             expr: expr,
             raw: value
@@ -2359,7 +2359,7 @@
      * @param {Object} options 初始化参数
      */
     SlotElement.prototype._init = function (options) {
-        var nameBind = options.aNode.binds.get('name');
+        var nameBind = options.aNode.props.get('name');
         this.name = nameBind ? nameBind.raw : '__default__';
 
         var literalOwner = options.owner;
@@ -2475,6 +2475,8 @@
 
         this._initFromEl(options);
         elementContainer[this.id] = this;
+
+        this.props = this.binds = this.aNode && this.aNode.props;
         this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
         this._initPropHandlers();
     };
@@ -2516,17 +2518,17 @@
             this.el = document.createElement(this.tagName);
             this.el.id = this.id;
 
-            this.aNode.binds.each(function (bindItem) {
+            this.props.each(function (prop) {
                 var value;
-                if (this instanceof Component && bindItem.isOwn) {
-                    value = evalExpr(bindItem.expr, this.data, this);
+                if (this instanceof Component) {
+                    value = evalExpr(prop.expr, this.data, this);
                 }
                 else {
-                    value = this.evalExpr(bindItem.expr);
+                    value = this.evalExpr(prop.expr);
                 }
 
                 if (value != null && typeof value !== 'object') {
-                    this.el.setAttribute(bindItem.name, value);
+                    this.el.setAttribute(prop.name, value);
                 }
             }, this);
         }
@@ -2557,7 +2559,7 @@
      * @private
      */
     Element.prototype._initBindx = function () {
-        this.aNode.binds.each(function (bindInfo) {
+        this.binds.each(function (bindInfo) {
             if (!bindInfo.twoWay) {
                 return;
             }
@@ -2809,13 +2811,13 @@
         stringBuffer.push(element.id);
         stringBuffer.push('"');
 
-        element.aNode.binds.each(function (bindItem) {
-            var value = this instanceof Component && bindItem.isOwn
-                ? evalExpr(bindItem.expr, this.data, this)
-                : this.evalExpr(bindItem.expr);
+        element.props.each(function (prop) {
+            var value = this instanceof Component
+                ? evalExpr(prop.expr, this.data, this)
+                : this.evalExpr(prop.expr);
 
-            var propHandler = this.propHandlers[bindItem.name] || this.propHandlers['*'];
-            stringBuffer.push(propHandler.input.attr(this, bindItem.name, value));
+            var propHandler = this.propHandlers[prop.name] || this.propHandlers['*'];
+            stringBuffer.push(propHandler.input.attr(this, prop.name, value));
         }, element);
 
         stringBuffer.push('>');
@@ -2913,12 +2915,12 @@
     }
 
     /**
-     * 绑定元素的属性设置的变换方法集合
+     * 元素的属性设置的变换方法集合
      *
      * @inner
      * @type {Array}
      */
-    var bindPropHandlers = [
+    var elementPropHandlers = [
         // 表单元素(input / button / textarea / select) 的 disabled
         genBoolPropHandler('disabled', function (element) {
             switch (element.tagName) {
@@ -2943,7 +2945,7 @@
         {
             input: {
                 attr: function (element, name, value) {
-                    var bindValue = element.aNode.binds.get('value');
+                    var bindValue = element.props.get('value');
                     if (bindValue) {
                         var elementValue = element.evalExpr(bindValue.expr);
                         if (contains(value, elementValue)) {
@@ -2955,7 +2957,7 @@
                 },
 
                 prop: function (element, name, value) {
-                    var bindValue = element.aNode.binds.get('value');
+                    var bindValue = element.props.get('value');
                     if (bindValue) {
                         var elementValue = element.evalExpr(bindValue.expr);
                         if (contains(value, elementValue)) {
@@ -2975,7 +2977,7 @@
 
             choose: function (element) {
                 if (element.aNode) {
-                    var bindType = element.aNode.binds.get('type');
+                    var bindType = element.props.get('type');
                     return element.tagName === 'input'
                         && bindType && element.evalExpr(bindType.expr) === 'checkbox'
                         && 'checked';
@@ -2987,7 +2989,7 @@
         {
             input: {
                 attr: function (element, name, value) {
-                    var bindValue = element.aNode.binds.get('value');
+                    var bindValue = element.props.get('value');
                     if (bindValue) {
                         var elementValue = element.evalExpr(bindValue.expr);
                         if (value === elementValue) {
@@ -2999,7 +3001,7 @@
                 },
 
                 prop: function (element, name, value) {
-                    var bindValue = element.aNode.binds.get('value');
+                    var bindValue = element.props.get('value');
                     if (bindValue) {
                         var elementValue = element.evalExpr(bindValue.expr);
                         if (value === elementValue) {
@@ -3024,7 +3026,7 @@
 
             choose: function (element) {
                 if (element.aNode) {
-                    var bindType = element.aNode.binds.get('type');
+                    var bindType = element.props.get('type');
                     return element.tagName === 'input'
                         && bindType && element.evalExpr(bindType.expr) === 'radio'
                         && 'checked';
@@ -3119,10 +3121,9 @@
      * 所以需要一些 handler 做输入输出的属性名与值变换。这里就是初始化这些 handler
      */
     Element.prototype._initPropHandlers = function () {
-        // TODO: clear prop in dispose
         this.propHandlers = {};
         each(
-            bindPropHandlers,
+            elementPropHandlers,
             function (propHandler) {
                 var name = propHandler.choose(this);
                 if (name) {
@@ -3175,16 +3176,16 @@
         }
 
         var needUpdate = false;
-        this.aNode.binds.each(function (bindItem) {
-            if (!isChangeBySelf(change, this.id, bindItem.name)
-                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
+        this.props.each(function (prop) {
+            if (!isChangeBySelf(change, this.id, prop.name)
+                && exprNeedsUpdate(prop.expr, change.expr, this.scope)
             ) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
                     }
 
-                    this.setProp(bindItem.name, this.evalExpr(bindItem.expr));
+                    this.setProp(prop.name, this.evalExpr(prop.expr));
                 }, this);
 
                 needUpdate = true;
@@ -3256,6 +3257,10 @@
         }
         this.el = null;
         this.childs = null;
+
+        this.propHandlers = null;
+        this.props = null;
+        this.binds = null;
         delete elementContainer[this.id];
         Node.prototype._dispose.call(this);
     };
@@ -3329,17 +3334,15 @@
         this._compile();
         this._callHook('compiled');
 
-        this.scope && this.aNode.binds.each(function (bind) {
+        this.scope && this.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
 
         // 如果从el编译的，认为已经attach了，触发钩子
-        // TODO: listen in created or attached
         if (this.isCompileFromEl) {
             this._callHook('created');
             this._callHook('attached');
-            this._listenDataChange();
         }
     };
 
@@ -3403,6 +3406,8 @@
     Component.prototype._compileFromEl = function () {
         this.isCompileFromEl = true;
         this.aNode = parseANodeFromEl(this.el);
+        this.aNode.binds = this.aNode.props;
+        this.aNode.props = new IndexedList();
 
         this.parent && this.parent._pushChildANode(this.aNode);
         compileChildsFromEl(this);
@@ -3561,7 +3566,7 @@
      * @private
      */
     Component.prototype._preDefineComponents = function () {
-        // pre compile template
+        // pre define components class
         var proto = this.constructor.prototype;
         for (var key in proto.components) {
             if (proto.components.hasOwnProperty(key)) {
@@ -3574,22 +3579,11 @@
     };
 
     /**
-     * 模板编译行为
+     * 预编译组件模板
      *
      * @private
      */
-    Component.prototype._compile = function () {
-        if (this.lifeCycle.is('compiled')) {
-            return;
-        }
-
-        this._preDefineComponents();
-
-        if (this.el) {
-            this._compileFromEl();
-            return;
-        }
-
+    Component.prototype._preCompile = function () {
         // pre compile template
         var proto = this.constructor.prototype;
 
@@ -3604,10 +3598,6 @@
                         firstChild.tagName = null;
                     }
 
-                    firstChild.binds.each(function (item) {
-                        item.isOwn = true;
-                    });
-
                     firstChild.events.each(function (item) {
                         item.isOwn = true;
                     });
@@ -3621,47 +3611,69 @@
 
             proto.aNode = proto.aNode || new ANode();
         }
+    };
 
-
-        var protoANode = proto.aNode;
-        if (!this.aNode) {
-            this.aNode = protoANode;
-        }
-        else if (this.aNode !== protoANode) {
-            var givenANode = this.aNode;
-
-            // 组件运行时传入的结构，做slot解析
-            var givenSlots = {};
-            each(givenANode.childs, function (child) {
-                var slotName = '__default__';
-                var slotBind = !child.isText && child.binds.get('slot');
-                if (slotBind) {
-                    slotName = slotBind.raw;
-                }
-
-                if (!givenSlots[slotName]) {
-                    givenSlots[slotName] = [];
-                }
-
-                givenSlots[slotName].push(child);
-            }, this);
-
-            this.aNode = new ANode({
-                tagName: givenANode.tagName,
-                givenSlots: givenSlots,
-
-                // 组件的实际结构应为template编译的结构
-                childs: protoANode.childs,
-
-                // 合并运行时的一些绑定和事件声明
-                binds: givenANode.binds.concat(protoANode.binds),
-                events: givenANode.events.concat(protoANode.events),
-                directives: givenANode.directives.concat(protoANode.directives)
-            });
+    /**
+     * 模板编译行为
+     *
+     * @private
+     */
+    Component.prototype._compile = function () {
+        if (this.lifeCycle.is('compiled')) {
+            return;
         }
 
+        this._preDefineComponents();
+        this._preCompile();
 
-        this.tagName = protoANode.tagName || this.aNode.tagName || 'div';
+        if (this.el) {
+            this._compileFromEl();
+        }
+        else {
+            var protoANode = this.constructor.prototype.aNode;
+
+            if (!this.aNode) {
+                this.aNode = protoANode;
+            }
+            else {
+                var givenANode = this.aNode;
+
+                // 组件运行时传入的结构，做slot解析
+                var givenSlots = {};
+                each(givenANode.childs, function (child) {
+                    var slotName = '__default__';
+                    var slotBind = !child.isText && child.props.get('slot');
+                    if (slotBind) {
+                        slotName = slotBind.raw;
+                    }
+
+                    if (!givenSlots[slotName]) {
+                        givenSlots[slotName] = [];
+                    }
+
+                    givenSlots[slotName].push(child);
+                }, this);
+
+                this.aNode = new ANode({
+                    tagName: givenANode.tagName,
+                    givenSlots: givenSlots,
+
+                    // 组件的实际结构应为template编译的结构
+                    childs: protoANode.childs,
+
+                    // 合并运行时的一些绑定和事件声明
+                    props: protoANode.props,
+                    binds: givenANode.props,
+                    events: givenANode.events.concat(protoANode.events),
+                    directives: givenANode.directives.concat(protoANode.directives)
+                });
+            }
+        }
+
+        this.binds = this.aNode.binds || new IndexedList();
+        this.props = this.aNode.props;
+
+        this.tagName = (protoANode && protoANode.tagName) || this.aNode.tagName || 'div';
         // ie8- 不支持innerHTML输出自定义标签
         if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
             this.tagName = 'div';
@@ -3674,7 +3686,7 @@
      * @private
      */
     Component.prototype._initBindx = function () {
-        this.aNode.binds.each(function (bindInfo) {
+        this.binds.each(function (bindInfo) {
             if (!bindInfo.twoWay) {
                 return;
             }
@@ -3756,18 +3768,16 @@
 
         var needUpdate = false;
 
-        this.aNode.binds.each(function (bindItem) {
-            if (bindItem.isOwn
-                && !isChangeBySelf(change, this.id, bindItem.name)
-            ) {
+        this.props.each(function (prop) {
+            if (!isChangeBySelf(change, this.id, prop.name)) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
                     }
 
                     this.setProp(
-                        bindItem.name,
-                        evalExpr(bindItem.expr, this.data, this)
+                        prop.name,
+                        evalExpr(prop.expr, this.data, this)
                     );
                 }, this);
             }
@@ -3812,10 +3822,8 @@
 
         var needUpdate = false;
 
-        this.aNode.binds.each(function (bindItem) {
-            if (!bindItem.isOwn
-                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
-            ) {
+        this.binds.each(function (bindItem) {
+            if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 this.data.set(
                     bindItem.name,
                     this.evalExpr(bindItem.expr)
@@ -3868,7 +3876,7 @@
         var aNode = ifElement.aNode;
         var childANode = new ANode({
             childs: aNode.childs,
-            binds: aNode.binds,
+            props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName
         });
@@ -4282,7 +4290,7 @@
         return createNode(
             new ANode({
                 childs: aNode.childs,
-                binds: aNode.binds,
+                props: aNode.props,
                 events: aNode.events,
                 tagName: aNode.tagName
             }),

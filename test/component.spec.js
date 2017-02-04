@@ -241,6 +241,92 @@ describe("Component", function () {
 
     });
 
+    it("outer bind declaration should not set main element property", function (done) {
+        var times = 0;
+        var subTimes = 0;
+
+        var Label = san.defineComponent({
+            template: '<b><span title="{{title}}">{{text}}</span></b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
+        });
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('jokeName', 'airike');
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('school', 'none');
+        myComponent.data.set('company', 'bidu');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.getAttribute('title')).toBeNull();
+
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        san.nextTick(function () {
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(b.title).toBe('');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("outer bind declaration can use same name as main element property", function (done) {
+        var times = 0;
+        var subTimes = 0;
+
+        var Label = san.defineComponent({
+            template: '<b title="{{title}}"><span title="{{title}}">{{text}}</span></b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
+        });
+
+        var myComponent = new MyComponent();
+        myComponent.data.set('jokeName', 'airike');
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('school', 'none');
+        myComponent.data.set('company', 'bidu');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.getAttribute('title')).toBe('errorrik');
+
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        san.nextTick(function () {
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(b.title).toBe('erik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("given raw object to components config, auto use it to define component", function (done) {
         var MyComponent = san.defineComponent({
             components: {
