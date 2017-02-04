@@ -331,16 +331,16 @@ template 的 parse 直接返回一个 ANode 类的实例。实例上不包含任
 
 ANode 的结构与 HTML 一样，是一个树状结构。childs 是当前节点的子节点列表。文本节点该属性无效
 
-#### {IndexedList} binds
+#### {IndexedList} props
 
 节点的属性绑定信息。文本节点该属性无效
 
 ```javascript
 // 获取 title 属性绑定信息。该信息是一个表达式
-aNode.binds.get('title');
+aNode.props.get('title');
 
 // 遍历所有绑定属性
-aNode.binds.each(function (bindItem) {
+aNode.props.each(function (bindItem) {
 });
 ```
 
@@ -386,7 +386,7 @@ list.push({name: 'test', text: 'hello'});
 console.log(list.get('test')); 
 ```
 
-ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 访问，以及遍历操作，直接使用 Array 或 Object 都会存在弊端，故使用 IndexedList。
+ANode 的 props、events、directives 属性因为需要较频繁的根据 name 访问，以及遍历操作，直接使用 Array 或 Object 都会存在弊端，故使用 IndexedList。
 
 #### {void} push({Object} item)
 
@@ -420,11 +420,11 @@ ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 
 模板解析结果
 ----------
 
-模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `childs` 包含节点结构、`binds` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
+模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `childs` 包含节点结构、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
 
 本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 实例结构请参考 [ANode 与相关类型结构](#user-content-anode-与相关类型结构) 章节。
 
-为方便表示，本章节所有示例，`binds`、`events`、`directives` 信息全部表示为数组形式，实际上应该是 IndexedList 类型的实例。
+为方便表示，本章节所有示例，`props`、`events`、`directives` 信息全部表示为数组形式，实际上应该是 IndexedList 类型的实例。
 
 ### 文本
 
@@ -437,7 +437,7 @@ ANode 的 binds、events、directives 属性因为需要较频繁的根据 name 
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [],
+    "props": [],
     "events": [],
     "childs": [
         {
@@ -482,7 +482,7 @@ aNode = {
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [
+    "props": [
         {
             "name": "title",
             "expr": {
@@ -540,7 +540,7 @@ aNode = {
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [
+    "props": [
         {
             "name": "type",
             "expr": {
@@ -573,7 +573,7 @@ aNode = {
 
 ```javascript
     "directives": [],
-    "binds": [
+    "props": [
         {
             "name": "title",
             "expr": {
@@ -658,7 +658,7 @@ aNode = {
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [
+    "props": [
         {
             "name": "type",
             "expr": {
@@ -716,7 +716,7 @@ if 指令的值是一个表达式信息对象，else 指令的值永远等于 tr
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [],
+    "props": [],
     "events": [],
     "childs": [
         {
@@ -729,7 +729,7 @@ aNode = {
                     "name": "if"
                 }
             ],
-            "binds": [],
+            "props": [],
             "events": [],
             "childs": [
                 {
@@ -752,7 +752,7 @@ aNode = {
                     "name": "else"
                 }
             ],
-            "binds": [],
+            "props": [],
             "events": [],
             "childs": [
                 {
@@ -791,7 +791,7 @@ aNode = {
 ```javascript
 aNode = {
     "directives": [],
-    "binds": [],
+    "props": [],
     "events": [],
     "childs": [
         {
@@ -810,7 +810,7 @@ aNode = {
                     "name": "for"
                 }
             ],
-            "binds": [],
+            "props": [],
             "events": [],
             "childs": [
                 {
