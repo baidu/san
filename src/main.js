@@ -2016,13 +2016,13 @@
      * @type {Object}
      */
     var LifeCycles = {
-        inited: {
-            name: 'inited',
+        compiled: {
+            name: 'compiled',
             value: 1
         },
 
-        compiled: {
-            name: 'compiled',
+        inited: {
+            name: 'inited',
             value: 2
         },
 
@@ -2169,7 +2169,7 @@
         this.owner = options.owner;
         this.parent = options.parent;
         this.scope = options.scope;
-        this.aNode = options.aNode;
+        this.aNode = this.aNode || options.aNode;
         this.el = options.el;
 
         this.id = (this.el && this.el.id)
@@ -2473,12 +2473,17 @@
     Element.prototype._init = function (options) {
         Node.prototype._init.call(this, options);
 
-        this._initFromEl(options);
+        if (this.el) {
+            this._initFromEl(options);
+        }
+
         elementContainer[this.id] = this;
 
-        this.props = this.binds = this.aNode && this.aNode.props;
-        this.tagName = this.tagName || (this.aNode && this.aNode.tagName) || 'div';
-        this._initPropHandlers();
+        this.tagName = this.tagName || this.aNode.tagName || 'div';
+        // ie8- 不支持innerHTML输出自定义标签
+        if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
+            this.tagName = 'div';
+        }
     };
 
     /**
@@ -2487,17 +2492,18 @@
      * @param {Object} options 初始化参数
      */
     Element.prototype._initFromEl = function () {
-        if (this.el) {
-            this.aNode = parseANodeFromEl(this.el);
-            this.parent._pushChildANode(this.aNode);
-            this.tagName = this.aNode.tagName;
-        }
+        this.aNode = parseANodeFromEl(this.el);
+        this.parent._pushChildANode(this.aNode);
+        this.tagName = this.aNode.tagName;
     };
 
     /**
      * 初始化完成后的行为
      */
     Element.prototype._inited = function () {
+        this.props = this.binds = this.aNode && this.aNode.props;
+        this._initPropHandlers();
+
         if (this.el) {
             this.tagName = this.el.tagName.toLowerCase();
 
@@ -2559,7 +2565,7 @@
      * @private
      */
     Element.prototype._initBindx = function () {
-        this.binds.each(function (bindInfo) {
+        this.binds && this.binds.each(function (bindInfo) {
             if (!bindInfo.twoWay) {
                 return;
             }
@@ -3295,6 +3301,7 @@
      */
     function Component(options) {
         this.slotChilds = [];
+        this.data = new Model();
 
         Element.call(this, options);
     }
@@ -3307,16 +3314,62 @@
      * @param {Object} options 初始化参数
      */
     Component.prototype.init = function (options) {
-        Element.prototype._init.call(this, options);
-
         this.filters = options.filters || this.filters || {};
+
+        // compile
+        this._compile();
+
+        if (!options.el) {
+            var protoANode = this.constructor.prototype.aNode;
+
+            if (options.aNode) {
+                var givenANode = options.aNode;
+
+                // 组件运行时传入的结构，做slot解析
+                var givenSlots = {};
+                each(givenANode.childs, function (child) {
+                    var slotName = '__default__';
+                    var slotBind = !child.isText && child.props.get('slot');
+                    if (slotBind) {
+                        slotName = slotBind.raw;
+                    }
+
+                    if (!givenSlots[slotName]) {
+                        givenSlots[slotName] = [];
+                    }
+
+                    givenSlots[slotName].push(child);
+                }, this);
+
+                this.aNode = new ANode({
+                    tagName: protoANode.tagName || givenANode.tagName,
+                    givenSlots: givenSlots,
+
+                    // 组件的实际结构应为template编译的结构
+                    childs: protoANode.childs,
+
+                    // 合并运行时的一些绑定和事件声明
+                    props: protoANode.props,
+                    binds: givenANode.props,
+                    events: givenANode.events.concat(protoANode.events),
+                    directives: givenANode.directives.concat(protoANode.directives)
+                });
+            }
+        }
+
+        this._callHook('compiled');
+
+
+        Element.prototype._init.call(this, options);
+        this.binds = this.aNode.binds || new IndexedList();
+        this.props = this.aNode.props;
+
+
         if (!this.owner) {
             this.owner = this;
         }
 
         // init data
-        this.data = new Model();
-
         var initData = options.data;
         if (!initData && typeof this.initData === 'function') {
             initData = this.initData();
@@ -3328,39 +3381,25 @@
             }
         }
 
-        this._callHook('inited');
-
-        // compile
-        this._compile();
-        this._callHook('compiled');
-
         this.scope && this.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
+        this._callHook('inited');
 
         // 如果从el编译的，认为已经attach了，触发钩子
-        if (this.isCompileFromEl) {
+        if (this._isInitFromEl) {
             this._callHook('created');
             this._callHook('attached');
         }
     };
-
-
-    /* eslint-disable operator-linebreak */
-    /**
-     * 清空从已有的el进行初始化的行为
-     *
-     * @param {Object} options 初始化参数
-     */
-    Component.prototype._initFromEl =
-    /* eslint-enable operator-linebreak */
 
     /**
      * 初始化完成后的行为
      * 清空Element.prototype._inited的行为
      */
     Component.prototype._inited = function () {
+        this._initPropHandlers();
     };
 
     /**
@@ -3403,8 +3442,8 @@
     /**
      * 从存在的 el 中编译抽象节点
      */
-    Component.prototype._compileFromEl = function () {
-        this.isCompileFromEl = true;
+    Component.prototype._initFromEl = function () {
+        this._isInitFromEl = true;
         this.aNode = parseANodeFromEl(this.el);
         this.aNode.binds = this.aNode.props;
         this.aNode.props = new IndexedList();
@@ -3561,33 +3600,32 @@
     };
 
     /**
-     * 预定义子组件类型
+     * 模板编译行为
      *
      * @private
      */
-    Component.prototype._preDefineComponents = function () {
-        // pre define components class
+    Component.prototype._compile = function () {
         var proto = this.constructor.prototype;
-        for (var key in proto.components) {
-            if (proto.components.hasOwnProperty(key)) {
-                var value = proto.components[key];
-                if (Object.prototype.toString.call(value) === '[object Object]') {
-                    proto.components[key] = defineComponent(value);
+
+        // pre define components class
+        if (!proto._isComponentsPreDefined) {
+            var components = proto.components;
+
+            for (var key in components) {
+                if (components.hasOwnProperty(key)
+                    && Object.prototype.toString.call(components[key]) === '[object Object]'
+                ) {
+                    components[key] = defineComponent(components[key]);
                 }
             }
+
+            proto._isComponentsPreDefined = true;
         }
-    };
 
-    /**
-     * 预编译组件模板
-     *
-     * @private
-     */
-    Component.prototype._preCompile = function () {
         // pre compile template
-        var proto = this.constructor.prototype;
-
         if (!proto.aNode) {
+            proto.aNode = new ANode();
+
             if (proto.template) {
                 var aNode = parseTemplate(proto.template);
                 var firstChild = aNode.childs[0];
@@ -3608,75 +3646,6 @@
 
                 proto.template = null;
             }
-
-            proto.aNode = proto.aNode || new ANode();
-        }
-    };
-
-    /**
-     * 模板编译行为
-     *
-     * @private
-     */
-    Component.prototype._compile = function () {
-        if (this.lifeCycle.is('compiled')) {
-            return;
-        }
-
-        this._preDefineComponents();
-        this._preCompile();
-
-        if (this.el) {
-            this._compileFromEl();
-        }
-        else {
-            var protoANode = this.constructor.prototype.aNode;
-
-            if (!this.aNode) {
-                this.aNode = protoANode;
-            }
-            else {
-                var givenANode = this.aNode;
-
-                // 组件运行时传入的结构，做slot解析
-                var givenSlots = {};
-                each(givenANode.childs, function (child) {
-                    var slotName = '__default__';
-                    var slotBind = !child.isText && child.props.get('slot');
-                    if (slotBind) {
-                        slotName = slotBind.raw;
-                    }
-
-                    if (!givenSlots[slotName]) {
-                        givenSlots[slotName] = [];
-                    }
-
-                    givenSlots[slotName].push(child);
-                }, this);
-
-                this.aNode = new ANode({
-                    tagName: givenANode.tagName,
-                    givenSlots: givenSlots,
-
-                    // 组件的实际结构应为template编译的结构
-                    childs: protoANode.childs,
-
-                    // 合并运行时的一些绑定和事件声明
-                    props: protoANode.props,
-                    binds: givenANode.props,
-                    events: givenANode.events.concat(protoANode.events),
-                    directives: givenANode.directives.concat(protoANode.directives)
-                });
-            }
-        }
-
-        this.binds = this.aNode.binds || new IndexedList();
-        this.props = this.aNode.props;
-
-        this.tagName = (protoANode && protoANode.tagName) || this.aNode.tagName || 'div';
-        // ie8- 不支持innerHTML输出自定义标签
-        if (ie && ie < 9 && /^[a-z0-9]+-[a-z0-9]+$/i.test(this.tagName)) {
-            this.tagName = 'div';
         }
     };
 
@@ -3747,12 +3716,10 @@
      * @private
      */
     Component.prototype._listenDataChange = function () {
-        if (this.dataChanger) {
-            return;
+        if (!this.dataChanger) {
+            this.dataChanger = bind(this._dataChanger, this);
+            this.data.onChange(this.dataChanger);
         }
-
-        this.dataChanger = bind(this._dataChanger, this);
-        this.data.onChange(this.dataChanger);
     };
 
     /**
@@ -3762,14 +3729,12 @@
      * @param {Object} change 数据变化信息
      */
     Component.prototype._dataChanger = function (change) {
-        if (this.lifeCycle.is('disposed')) {
-            return;
-        }
-
         var needUpdate = false;
 
         this.props.each(function (prop) {
-            if (!isChangeBySelf(change, this.id, prop.name)) {
+            if (!isChangeBySelf(change, this.id, prop.name)
+                && exprNeedsUpdate(prop.expr, change.expr, this)
+            ) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
@@ -3794,17 +3759,6 @@
         needUpdate && this._noticeUpdatedSoon();
     };
 
-    /**
-     * 移除数据变化的行为的监听
-     *
-     * @private
-     */
-    Component.prototype._unlistenDataChange = function () {
-        if (this.dataChanger) {
-            this.data.unChange(this.dataChanger);
-            this.dataChanger = null;
-        }
-    };
 
     /**
      * 绑定数据变化时的视图更新函数
@@ -3848,10 +3802,15 @@
     Component.prototype._dispose = function () {
         // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
         this.slotChilds = null;
-        this._unlistenDataChange();
+
+        if (this.dataChanger) {
+            this.data.unChange(this.dataChanger);
+            this.dataChanger = null;
+        }
+
+        this.data = null;
         Element.prototype._dispose.call(this);
     };
-
 
 
     /**
