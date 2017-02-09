@@ -3095,9 +3095,13 @@
         {
             input: {
                 attr: function (element, name, value) {
-                    nextTick(function () {
-                        element.el[name] = value;
-                    });
+                    if (value) {
+                        nextTick(function () {
+                            element.el[name] = value;
+                        });
+                    }
+
+                    return '';
                 },
 
                 prop: function (element, name, value) {
