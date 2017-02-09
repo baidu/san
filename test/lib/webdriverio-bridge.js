@@ -106,6 +106,20 @@
             this.action = new Queue();
         },
 
+        /**
+         * proxy queue
+         *
+         * @param  {string} type  type
+         * @param  {string} value value
+         * @return {string}       ret
+         */
+        getHandler: function(key) {
+            var me = this;
+            return function (type, value) {
+                return me[type][key](value);
+            };
+        },
+
         init: function () {
 
             this.reset();
@@ -113,16 +127,7 @@
             // 统一个 API
             var me = this;
             for (var key in Queue.prototype) {
-                /**
-                 * proxy queue
-                 *
-                 * @param  {string} type  type
-                 * @param  {string} value value
-                 * @return {string}       ret
-                 */
-                me[key] = function (type, value) {
-                    return me[type][key](value);
-                };
+                me[key] = me.getHandler(key);
             }
 
         },
@@ -160,6 +165,7 @@ jasmine.getEnv().addReporter(new jasmine.ConsoleReporter({
     timer: new jasmine.Timer(),
     showColors: true,
     print: function(message) {
+
         WDBridge.send('message', message);
     }
 }));

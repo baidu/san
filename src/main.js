@@ -153,6 +153,57 @@
         }
     }
 
+
+    /**
+     * 点分字符串转对象，便于查找
+     *
+     * @inner
+     * @param  {string} str 点分字符串
+     * @return {Object}     map
+     */
+    function splitMap(str) {
+        var map = {};
+        each(str.split(','), function (key) {
+            map[key] = true;
+        });
+        return map;
+    }
+
+    /**
+     * svgTags
+     *
+     * @see https://www.w3.org/TR/SVG/svgdtd.html 只取常用
+     * @inner
+     * @type {Object}
+     */
+    var svgTags = splitMap(''
+        // structure
+        + 'svg,g,defs,desc,metadata,symbol,use,'
+        // image & shape
+        + 'image,path,rect,circle,line,ellipse,polyline,polygon,'
+        // text
+        + 'text,tspan,tref,textpath,'
+        // other
+        + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
+        // font
+        + 'font,font-face,glyph,missing-glyph');
+
+    /**
+     * 创建 DOM 元素
+     *
+     * @inner
+     * @param  {string} tagName tagName
+     * @return {HTMLElement}         Element
+     */
+    function createEl(tagName) {
+
+        if (svgTags[tagName]) {
+            return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+        }
+
+        return document.createElement(tagName);
+    }
+
     /**
      * 唯一id的起始值
      *
@@ -419,8 +470,9 @@
      * @return {boolean}
      */
     function tagIsAutoClose(tagName) {
-        return /^(area|br|col|embed|hr|img|input|keygen|param|source|track|wbr)$/i.test(tagName);
+        return /^(area|base|br|col|embed|hr|img|input|keygen|param|source|track|wbr)$/i.test(tagName);
     }
+
 
     // #region parse
     /**
@@ -2521,7 +2573,7 @@
      */
     Element.prototype._create = function () {
         if (!this.el) {
-            this.el = document.createElement(this.tagName);
+            this.el = createEl(this.tagName);
             this.el.id = this.id;
 
             this.props.each(function (prop) {
