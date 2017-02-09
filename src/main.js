@@ -2612,7 +2612,6 @@
     Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.lifeCycle.is('attached')) {
             this._attach(parentEl, beforeEl);
-            this.bindEvents();
             this._noticeAttached();
         }
     };
