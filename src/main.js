@@ -470,8 +470,9 @@
      * @return {boolean}
      */
     function tagIsAutoClose(tagName) {
-        return /^(img|input)$/i.test(tagName);
+        return /^(area|base|br|col|embed|img|input)$/i.test(tagName);
     }
+
 
     // #region parse
     /**
