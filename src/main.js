@@ -419,7 +419,7 @@
      * @return {boolean}
      */
     function tagIsAutoClose(tagName) {
-        return /^(img|input)$/i.test(tagName);
+        return /^(area|br|col|embed|hr|img|input|keygen|param|source|track|wbr)$/i.test(tagName);
     }
 
     // #region parse
