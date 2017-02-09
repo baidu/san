@@ -11,6 +11,7 @@ ChangeLog
     - {Class} LifeCycle
     - {ANode} parseTemplate({string} source)
     - {Object} parseExpr({string} source)
++ 【新特性】- 增加对常用 SVG 标签的创建支持
 + 【优化】- 对模板解析结果的结构进行了优化：
     - text 预解析
     - 删除 text 节点上多余的属性：childs、binds、directives、events等
