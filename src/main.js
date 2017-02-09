@@ -470,7 +470,7 @@
      * @return {boolean}
      */
     function tagIsAutoClose(tagName) {
-        return /^(area|base|br|col|embed|img|input)$/i.test(tagName);
+        return /^(area|base|br|col|embed|hr|img|input|keygen|param|source|track|wbr)$/i.test(tagName);
     }
 
 
@@ -2664,7 +2664,6 @@
     Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.lifeCycle.is('attached')) {
             this._attach(parentEl, beforeEl);
-            this.bindEvents();
             this._noticeAttached();
         }
     };
