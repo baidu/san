@@ -2507,7 +2507,6 @@
      */
     function Element(options) {
         this.childs = [];
-        // this.listeners = {};
         this.eventListeners = {};
         this._updatedOp = 0;
         this._updateOpCount = 0;
@@ -2650,9 +2649,12 @@
         }, this);
     };
 
+    function getPropHandler(element, name) {
+        return element.propHandlers[name] || element.propHandlers['*'];
+    }
+
     function bindOutputer(bindInfo) {
-        var propHandler = this.propHandlers[bindInfo.name] || this.propHandlers['*'];
-        propHandler.output(this, bindInfo);
+        getPropHandler(this, bindInfo.name).output(this, bindInfo);
     }
 
     /**
@@ -2846,7 +2848,6 @@
         buf.push(elementGenChildsHTML(this));
         elementGenCloseHTML(this, buf);
 
-        // this.bindDataListener();
         return buf.toString();
     };
 
@@ -2873,8 +2874,12 @@
                 ? evalExpr(prop.expr, this.data, this)
                 : this.evalExpr(prop.expr);
 
-            var propHandler = this.propHandlers[prop.name] || this.propHandlers['*'];
-            stringBuffer.push(propHandler.input.attr(this, prop.name, value));
+            stringBuffer.push(
+                getPropHandler(this, prop.name)
+                    .input
+                    .attr(this, prop.name, value)
+                || ''
+            );
         }, element);
 
         stringBuffer.push('>');
@@ -2953,8 +2958,6 @@
                     if (value) {
                         return ' ' + attrName + '="' + attrName + '"';
                     }
-
-                    return '';
                 },
 
                 prop: function (element, name, value) {
@@ -3009,8 +3012,6 @@
                             return ' checked="checked"';
                         }
                     }
-
-                    return '';
                 },
 
                 prop: function (element, name, value) {
@@ -3053,8 +3054,6 @@
                             return ' checked="checked"';
                         }
                     }
-
-                    return '';
                 },
 
                 prop: function (element, name, value) {
@@ -3100,8 +3099,6 @@
                             element.el[name] = value;
                         });
                     }
-
-                    return '';
                 },
 
                 prop: function (element, name, value) {
@@ -3127,11 +3124,9 @@
         {
             input: {
                 attr: function (element, name, value) {
-                    if (!value) {
-                        return '';
+                    if (value) {
+                        return ' style="' + value + '"';
                     }
-
-                    return ' style="' + value + '"';
                 },
 
                 prop: function (element, name, value) {
@@ -3148,11 +3143,9 @@
         {
             input: {
                 attr: function (element, name, value) {
-                    if (value == null) {
-                        return '';
+                    if (value != null) {
+                        return ' ' + name + '="' + value + '"';
                     }
-
-                    return ' ' + name + '="' + value + '"';
                 },
 
                 prop: function (element, name, value) {
@@ -3203,8 +3196,7 @@
      */
     Element.prototype.setProp = function (name, value) {
         if (this.el && this.lifeCycle.is('created')) {
-            var propHandler = this.propHandlers[name] || this.propHandlers['*'];
-            propHandler.input.prop(this, name, value);
+            getPropHandler(this, name).input.prop(this, name, value);
         }
     };
 
@@ -3798,9 +3790,7 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     Component.prototype.updateView = function (change) {
-        if (this.lifeCycle.is('disposed')
-            // || this === this.owner
-        ) {
+        if (this.lifeCycle.is('disposed')) {
             return;
         }
 
