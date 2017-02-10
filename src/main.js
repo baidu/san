@@ -4497,35 +4497,26 @@
         }
     }
 
-    /**
-     * 移除节点桩元素前面的空白 FEFF 字符
-     *
-     * @inner
-     * @param {Node} node 要操作的节点
-     */
-    function removeStumpHeadingBlank(node) {
-        if (node.el) {
-            var headingBlank = node.el.previousSibling;
-
-            if (headingBlank && headingBlank.nodeType === 3) {
-                var textProp = typeof headingBlank.textContent === 'string'
-                    ? 'textContent'
-                    : 'data';
-                var text = headingBlank[textProp];
-
-                if (!text || text === '\uFEFF') {
-                    removeEl(headingBlank);
-                }
-            }
-        }
-    }
-
     /* eslint-disable */
     if (isFEFFBeforeStump) {
         IfDirective.prototype.attached =
         TextNode.prototype.attached =
         ForDirective.prototype.attached = function () {
-            removeStumpHeadingBlank(this);
+            // 移除节点桩元素前面的空白 FEFF 字符
+            if (this.el) {
+                var headingBlank = this.el.previousSibling;
+
+                if (headingBlank && headingBlank.nodeType === 3) {
+                    var textProp = typeof headingBlank.textContent === 'string'
+                        ? 'textContent'
+                        : 'data';
+                    var text = headingBlank[textProp];
+
+                    if (!text || text === '\uFEFF') {
+                        removeEl(headingBlank);
+                    }
+                }
+            }
         };
     }
     /* eslint-enable */
