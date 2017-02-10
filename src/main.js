@@ -3300,7 +3300,6 @@
      * 销毁释放元素的行为
      */
     Element.prototype._dispose = function () {
-        this.listeners = null;
         this._disposeChilds();
         this.detach();
         this.unbindEvents();
@@ -3446,6 +3445,7 @@
      * 清空Element.prototype._inited的行为
      */
     Component.prototype._inited = function () {
+        // TODO: need?
         this._initPropHandlers();
     };
 
