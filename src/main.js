@@ -2607,16 +2607,16 @@
      */
     Element.prototype._created = function () {
         Node.prototype._created.call(this);
-        this._initBindx();
+        this._initSelfChanger();
         this.bindEvents();
     };
 
     /**
-     * 处理双绑的逻辑
+     * 处理自身变化时双绑的逻辑
      *
      * @private
      */
-    Element.prototype._initBindx = function () {
+    Element.prototype._initSelfChanger = function () {
         this.binds && this.binds.each(function (bindInfo) {
             if (!bindInfo.twoWay) {
                 return;
@@ -3209,18 +3209,18 @@
     };
 
     /**
-     * 判断变更是否来源于元素自身，来源于自身时，视图更新需要阻断
+     * 判断变更是否来源于元素，来源于元素时，视图更新需要阻断
      *
      * @inner
      * @param {Object} change 变更对象
-     * @param {string} elementId 元素id
+     * @param {Element} element 元素
      * @param {string?} propName 属性名，可选。需要精确判断是否来源于此属性时传入
      * @return {boolean}
      */
-    function isChangeBySelf(change, elementId, propName) {
+    function isDataChangeByElement(change, element, propName) {
         var changeTarget = change.option.target;
         if (changeTarget) {
-            return changeTarget.id === elementId
+            return changeTarget.id === element.id
                 && (!propName || changeTarget.prop === propName);
         }
     }
@@ -3238,7 +3238,7 @@
 
         var needUpdate = false;
         this.props.each(function (prop) {
-            if (!isChangeBySelf(change, this.id, prop.name)
+            if (!isDataChangeByElement(change, this, prop.name)
                 && exprNeedsUpdate(prop.expr, change.expr, this.scope)
             ) {
                 nextTick(function () {
@@ -3705,72 +3705,11 @@
     };
 
     /**
-     * 处理双绑的逻辑
+     * 初始化自身变化时，监听数据变化的行为
      *
      * @private
      */
-    Component.prototype._initBindx = function () {
-        this.binds.each(function (bindInfo) {
-            if (!bindInfo.twoWay) {
-                return;
-            }
-
-            this.watch(bindInfo.name, function (value, change) {
-                var updateScopeExpr = bindInfo.expr;
-                if (change.expr.type === ExprType.PROP_ACCESSOR) {
-                    updateScopeExpr = {
-                        type: ExprType.PROP_ACCESSOR,
-                        paths: []
-                    };
-
-                    switch (bindInfo.expr.type) {
-                        case ExprType.IDENT:
-                            updateScopeExpr.paths.push(bindInfo.expr);
-                            break;
-                        case ExprType.PROP_ACCESSOR:
-                            Array.prototype.push.apply(updateScopeExpr.paths, bindInfo.expr.paths);
-                    }
-
-                    Array.prototype.push.apply(updateScopeExpr.paths, change.expr.paths.slice(1));
-                }
-
-                this.scope.set(
-                    updateScopeExpr,
-                    evalExpr(change.expr, this.data, this),
-                    {
-                        target: {
-                            id: this.id,
-                            prop: bindInfo.name
-                        }
-                    }
-                );
-            });
-        }, this);
-    };
-
-    /**
-     * 监听组件的数据变化
-     *
-     * @param {string} dataName 变化的数据项
-     * @param {Function} listener 监听函数
-     */
-    Component.prototype.watch = function (dataName, listener) {
-        var dataExpr = parseExpr(dataName);
-        var me = this;
-
-        this.data.onChange(function (change) {
-            if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                listener.call(me, evalExpr(dataExpr, this, me), change);
-            }
-        });
-    };
-
-    /**
-     * 监听数据变化的行为
-     *
-     * @private
-     */
-    Component.prototype._listenDataChange = function () {
+    Component.prototype._initSelfChanger = function () {
         if (!this.dataChanger) {
             this.dataChanger = bind(this._dataChanger, this);
             this.data.onChange(this.dataChanger);
@@ -3787,9 +3726,7 @@
         var needUpdate = false;
 
         this.props.each(function (prop) {
-            if (!isChangeBySelf(change, this.id, prop.name)
-                && exprNeedsUpdate(prop.expr, change.expr, this)
-            ) {
+            if (exprNeedsUpdate(prop.expr, change.expr, this)) {
                 nextTick(function () {
                     if (this.lifeCycle.is('disposed')) {
                         return;
@@ -3812,6 +3749,45 @@
         });
 
         needUpdate && this._noticeUpdatedSoon();
+
+        this.binds.each(function (bindItem) {
+            if (bindItem.twoWay && !isDataChangeByElement(change, this.owner)) {
+                var updateScopeExpr = bindItem.expr;
+                if (change.expr.type === ExprType.PROP_ACCESSOR) {
+                    updateScopeExpr = {
+                        type: ExprType.PROP_ACCESSOR,
+                        paths: []
+                    };
+
+                    switch (bindItem.expr.type) {
+                        case ExprType.IDENT:
+                            updateScopeExpr.paths.push(bindItem.expr);
+                            break;
+                        case ExprType.PROP_ACCESSOR:
+                            Array.prototype.push.apply(
+                                updateScopeExpr.paths,
+                                bindItem.expr.paths
+                            );
+                    }
+
+                    Array.prototype.push.apply(
+                        updateScopeExpr.paths,
+                        change.expr.paths.slice(1)
+                    );
+                }
+
+                this.scope.set(
+                    updateScopeExpr,
+                    evalExpr(change.expr, this.data, this),
+                    {
+                        target: {
+                            id: this.id,
+                            prop: bindItem.name
+                        }
+                    }
+                );
+            }
+        }, this);
     };
 
 
@@ -3823,8 +3799,7 @@
      */
     Component.prototype.updateView = function (change) {
         if (this.lifeCycle.is('disposed')
-            || this === this.owner
-            || isChangeBySelf(change, this.id)
+            // || this === this.owner
         ) {
             return;
         }
@@ -3832,10 +3807,16 @@
         var needUpdate = false;
 
         this.binds.each(function (bindItem) {
-            if (exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
+            if (!isDataChangeByElement(change, this, bindItem.name)
+                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
                 this.data.set(
                     bindItem.name,
-                    this.evalExpr(bindItem.expr)
+                    this.evalExpr(bindItem.expr),
+                    {
+                        target: {
+                            id: this.owner.id
+                        }
+                    }
                 );
                 needUpdate = true;
             }
@@ -3844,11 +3825,22 @@
         return needUpdate;
     };
 
+
     /**
-     * 将元素attach到页面后的行为
+     * 监听组件的数据变化
+     *
+     * @param {string} dataName 变化的数据项
+     * @param {Function} listener 监听函数
      */
-    Component.prototype._attached = function () {
-        this._listenDataChange();
+    Component.prototype.watch = function (dataName, listener) {
+        var dataExpr = parseExpr(dataName);
+        var me = this;
+
+        this.data.onChange(function (change) {
+            if (exprNeedsUpdate(dataExpr, change.expr, this)) {
+                listener.call(me, evalExpr(dataExpr, this, me), change);
+            }
+        });
     };
 
     /**

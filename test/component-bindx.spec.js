@@ -449,4 +449,85 @@ describe("Component-TwoWay Binding", function () {
             done();
         }, 1500);
     });
+
+    it("nested, simple data with if, data change by root", function (done) {
+        var Text = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-text': Text
+            },
+
+            template: '<div><b san-if="!name">null</b><ui-text text="{= name =}"></ui-text></div>'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        var myComponent = new MyComponent();
+        myComponent.attach(wrap);
+
+        setTimeout(function () {
+            myComponent.data.set('name', 'erik');
+        }, 1000);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(1);
+        var spans = wrap.getElementsByTagName('span');
+        expect(!!spans[0].title).toBeFalsy();
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(0);
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans[0].title).toBe('erik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 1500);
+    });
+
+    it("nested, simple data with if, data change by sub", function (done) {
+        var Text = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+
+            attached: function () {
+                var me = this;
+                setTimeout(function () {
+                    me.data.set('text', 'erik');
+                }, 1000);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-text': Text
+            },
+
+            template: '<div><b san-if="!name">null</b><ui-text text="{= name =}"></ui-text></div>'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        var myComponent = new MyComponent();
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(1);
+        var spans = wrap.getElementsByTagName('span');
+        expect(!!spans[0].title).toBeFalsy();
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(0);
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans[0].title).toBe('erik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 1500);
+    });
 });
