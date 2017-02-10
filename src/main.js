@@ -3840,10 +3840,8 @@
         // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
         this.slotChilds = null;
 
-        if (this.dataChanger) {
-            this.data.unChange(this.dataChanger);
-            this.dataChanger = null;
-        }
+        this.data.unChange(this.dataChanger);
+        this.dataChanger = null;
 
         this.data = null;
         Element.prototype._dispose.call(this);
