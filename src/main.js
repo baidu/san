@@ -153,22 +153,6 @@
         }
     }
 
-
-    /**
-     * 点分字符串转对象，便于查找
-     *
-     * @inner
-     * @param  {string} str 点分字符串
-     * @return {Object}     map
-     */
-    function splitMap(str) {
-        var map = {};
-        each(str.split(','), function (key) {
-            map[key] = true;
-        });
-        return map;
-    }
-
     /**
      * svgTags
      *
@@ -176,27 +160,35 @@
      * @inner
      * @type {Object}
      */
-    var svgTags = splitMap(''
-        // structure
-        + 'svg,g,defs,desc,metadata,symbol,use,'
-        // image & shape
-        + 'image,path,rect,circle,line,ellipse,polyline,polygon,'
-        // text
-        + 'text,tspan,tref,textpath,'
-        // other
-        + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
-        // font
-        + 'font,font-face,glyph,missing-glyph');
+    var svgTags = (function () {
+        var map = {};
+        each((''
+            // structure
+            + 'svg,g,defs,desc,metadata,symbol,use,'
+            // image & shape
+            + 'image,path,rect,circle,line,ellipse,polyline,polygon,'
+            // text
+            + 'text,tspan,tref,textpath,'
+            // other
+            + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
+            // font
+            + 'font,font-face,glyph,missing-glyph').split(','),
+            function (key) {
+                map[key] = true;
+            }
+        );
+
+        return map;
+    })();
 
     /**
      * 创建 DOM 元素
      *
      * @inner
      * @param  {string} tagName tagName
-     * @return {HTMLElement}         Element
+     * @return {HTMLElement}
      */
     function createEl(tagName) {
-
         if (svgTags[tagName]) {
             return document.createElementNS('http://www.w3.org/2000/svg', tagName);
         }
@@ -574,15 +566,17 @@
     Walker.prototype.goUntil = function (charCode) {
         var code;
         while (this.index < this.len && (code = this.currentCode())) {
-            if (code === 32 || code === 9) {
-                this.index++;
-            }
-            else {
-                if (code === charCode) {
+            switch (code) {
+                case 32:
+                case 9:
                     this.index++;
-                    return true;
-                }
-                return false;
+                    break;
+                default:
+                    if (code === charCode) {
+                        this.index++;
+                        return true;
+                    }
+                    return false;
             }
         }
     };
@@ -836,25 +830,24 @@
      * @return {Object}
      */
     function textBindExtra(bind) {
-        switch (bind.name) {
-            case 'class':
-                each(bind.expr.segs, function (seg) {
-                    if (seg.type === ExprType.INTERPOLATION) {
-                        seg.filters.push({
-                            type: ExprType.CALL,
-                            name: {
-                                type: ExprType.IDENT,
-                                name: 'join'
-                            },
-                            args: [
-                                {
-                                    type: ExprType.STRING,
-                                    value: ' '
-                                }
-                            ]
-                        });
-                    }
-                });
+        if (bind.name === 'class') {
+            each(bind.expr.segs, function (seg) {
+                if (seg.type === ExprType.INTERPOLATION) {
+                    seg.filters.push({
+                        type: ExprType.CALL,
+                        name: {
+                            type: ExprType.IDENT,
+                            name: 'join'
+                        },
+                        args: [
+                            {
+                                type: ExprType.STRING,
+                                value: ' '
+                            }
+                        ]
+                    });
+                }
+            });
         }
 
         return bind;
@@ -907,7 +900,7 @@
      * @inner
      * @param {string} name 指令名称
      * @param {string} value 指令值
-     * @return {Object}
+     * @return {Object?}
      */
     function parseDirective(name, value) {
         var parser = directiveParsers[name];
@@ -916,8 +909,6 @@
             result.name = name;
             return result;
         }
-
-        return null;
     }
 
     /**
@@ -932,27 +923,26 @@
         var exprMatch;
 
         var walker = new Walker(source);
-        var segs = [];
         var beforeIndex = 0;
+
+        var segs = [];
+        function pushStringToSeg(text) {
+            text && segs.push({
+                type: ExprType.STRING,
+                value: text
+            })
+        }
+
         while ((exprMatch = walker.match(exprStartReg)) != null) {
-            var beforeText = walker.cut(
+            pushStringToSeg(walker.cut(
                 beforeIndex,
                 walker.currentIndex() - exprMatch[0].length
-            );
-
-            beforeText && segs.push({
-                type: ExprType.STRING,
-                value: beforeText
-            });
+            ));
             segs.push(parseInterpolation(exprMatch[1]));
             beforeIndex = walker.currentIndex();
         }
 
-        var tail = walker.cut(beforeIndex);
-        tail && segs.push({
-            type: ExprType.STRING,
-            value: tail
-        });
+        pushStringToSeg(walker.cut(beforeIndex))
 
         return {
             type: ExprType.TEXT,
@@ -1587,9 +1577,7 @@
      * @return {*}
      */
     Model.prototype.get = function (expr) {
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
 
         var value = null;
 
@@ -1626,9 +1614,7 @@
      */
     Model.prototype.set = function (expr, value, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
 
         var data = this.data;
         var prop;
@@ -1681,9 +1667,8 @@
      */
     Model.prototype.push = function (expr, item, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1707,9 +1692,8 @@
      */
     Model.prototype.pop = function (expr, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1733,9 +1717,8 @@
      */
     Model.prototype.shift = function (expr, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1759,9 +1742,8 @@
      */
     Model.prototype.unshift = function (expr, item, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1785,9 +1767,8 @@
      */
     Model.prototype.removeAt = function (expr, index, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1818,9 +1799,8 @@
      */
     Model.prototype.remove = function (expr, value, option) {
         option = option || {};
-        if (typeof expr === 'string') {
-            expr = parseExpr(expr);
-        }
+        expr = parseExpr(expr);
+
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -2124,12 +2104,6 @@
             return;
         }
 
-        if (typeof lifeCycle !== 'object') {
-            lifeCycle = {
-                value: lifeCycle
-            };
-        }
-
         if (lifeCycle.mutex) {
             if (lifeCycle.mutex === '*') {
                 this.raw = {};
@@ -2150,13 +2124,11 @@
      */
     LifeCycle.prototype.is = function (name) {
         var lifeCycle = LifeCycles[name];
-        if (typeof lifeCycle !== 'object') {
-            lifeCycle = {
-                value: lifeCycle
-            };
+        if (lifeCycle) {
+            return !!this.raw[lifeCycle.value];
         }
 
-        return !!this.raw[lifeCycle.value];
+        return false;
     };
 
     /**
@@ -2455,7 +2427,6 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     SlotElement.prototype.updateView = function () {
-        return false;
     };
 
     /**
@@ -2552,7 +2523,7 @@
      * 初始化完成后的行为
      */
     Element.prototype._inited = function () {
-        this.props = this.binds = this.aNode && this.aNode.props;
+        this.props = this.binds = this.aNode.props;
         this._initPropHandlers();
 
         if (this.el) {
