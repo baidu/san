@@ -2547,13 +2547,9 @@
             this.el.id = this.id;
 
             this.props.each(function (prop) {
-                var value;
-                if (this instanceof Component) {
-                    value = evalExpr(prop.expr, this.data, this);
-                }
-                else {
-                    value = this.evalExpr(prop.expr);
-                }
+                var value = this instanceof Component
+                    ? evalExpr(prop.expr, this.data, this)
+                    : this.evalExpr(prop.expr);
 
                 if (value != null && typeof value !== 'object') {
                     this.el.setAttribute(prop.name, value);
@@ -2592,8 +2588,6 @@
                 return;
             }
 
-            var elType = this.el.type;
-
             switch (bindInfo.name) {
                 case 'value':
                     switch (this.tagName) {
@@ -2612,8 +2606,12 @@
                     break;
 
                 case 'checked':
-                    if (this.tagName === 'input' && (elType === 'checkbox' || elType === 'radio')) {
-                        this.on('click', bind(bindOutputer, this, bindInfo));
+                    if (this.tagName === 'input') {
+                        switch (this.el.type) {
+                            case 'checkbox':
+                            case 'radio':
+                                this.on('click', bind(bindOutputer, this, bindInfo));
+                        }
                     }
                     break;
             }
@@ -2750,7 +2748,6 @@
         for (var key in eventListeners) {
             if (eventListeners.hasOwnProperty(key)) {
                 this.un(key);
-                eventListeners[key] = null;
             }
         }
 
@@ -2776,16 +2773,14 @@
      * @param {Function} listener 监听器
      */
     Element.prototype.on = function (name, listener) {
-        if (typeof listener !== 'function') {
-            return;
-        }
+        if (typeof listener === 'function') {
+            if (!this.eventListeners[name]) {
+                this.eventListeners[name] = [];
+            }
+            this.eventListeners[name].push(listener);
 
-        if (!this.eventListeners[name]) {
-            this.eventListeners[name] = [];
+            on(this.el, name, listener);
         }
-        this.eventListeners[name].push(listener);
-
-        on(this.el, name, listener);
     };
 
     /**
@@ -2978,8 +2973,7 @@
                 attr: function (element, name, value) {
                     var bindValue = element.props.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr);
-                        if (contains(value, elementValue)) {
+                        if (contains(value, element.evalExpr(bindValue.expr))) {
                             return ' checked="checked"';
                         }
                     }
@@ -2988,8 +2982,7 @@
                 prop: function (element, name, value) {
                     var bindValue = element.props.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr);
-                        if (contains(value, elementValue)) {
+                        if (contains(value, element.evalExpr(bindValue.expr))) {
                             element.el.checked = true;
                             return;
                         }
@@ -3020,8 +3013,7 @@
                 attr: function (element, name, value) {
                     var bindValue = element.props.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr);
-                        if (value === elementValue) {
+                        if (value === element.evalExpr(bindValue.expr)) {
                             return ' checked="checked"';
                         }
                     }
@@ -3030,8 +3022,7 @@
                 prop: function (element, name, value) {
                     var bindValue = element.props.get('value');
                     if (bindValue) {
-                        var elementValue = element.evalExpr(bindValue.expr);
-                        if (value === elementValue) {
+                        if (value === element.evalExpr(bindValue.expr)) {
                             element.el.checked = true;
                             return;
                         }
@@ -3166,7 +3157,7 @@
      * @param {*} value 属性值
      */
     Element.prototype.setProp = function (name, value) {
-        if (this.el && this.lifeCycle.is('created')) {
+        if (this.lifeCycle.is('created')) {
             getPropHandler(this, name).input.prop(this, name, value);
         }
     };
@@ -3182,10 +3173,8 @@
      */
     function isDataChangeByElement(change, element, propName) {
         var changeTarget = change.option.target;
-        if (changeTarget) {
-            return changeTarget.id === element.id
-                && (!propName || changeTarget.prop === propName);
-        }
+        return changeTarget && changeTarget.id === element.id
+            && (!propName || changeTarget.prop === propName);
     }
 
     /**
@@ -3444,7 +3433,6 @@
                         && evalExpr(refDirective.value, owner.data, owner) === name
                     ) {
                         refComponent = child;
-                        return;
                     }
                 }
                 else if (child instanceof Element) {
@@ -3631,7 +3619,7 @@
 
             for (var key in components) {
                 if (components.hasOwnProperty(key)
-                    && Object.prototype.toString.call(components[key]) === '[object Object]'
+                    && typeof components[key] === 'object'
                 ) {
                     components[key] = defineComponent(components[key]);
                 }
@@ -3659,7 +3647,7 @@
                     });
                 }
                 else {
-                    throw new Error('[SAN FATEL] template shoule have a root element.');
+                    throw new Error('[SAN FATEL] template must have a root element.');
                 }
 
                 proto.template = null;
@@ -3726,11 +3714,13 @@
                         case ExprType.IDENT:
                             updateScopeExpr.paths.push(bindItem.expr);
                             break;
+
                         case ExprType.PROP_ACCESSOR:
                             Array.prototype.push.apply(
                                 updateScopeExpr.paths,
                                 bindItem.expr.paths
                             );
+                            break;
                     }
 
                     Array.prototype.push.apply(
@@ -3769,7 +3759,8 @@
 
         this.binds.each(function (bindItem) {
             if (!isDataChangeByElement(change, this, bindItem.name)
-                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)) {
+                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
+            ) {
                 this.data.set(
                     bindItem.name,
                     this.evalExpr(bindItem.expr),
