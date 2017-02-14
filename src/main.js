@@ -252,9 +252,9 @@
             nextTasks = [];
             nextHandler = null;
 
-            for (var i = 0, l = tasks.length; i < l; i++) {
-                tasks[i]();
-            }
+            each(tasks, function (task) {
+                task();
+            });
         };
 
         if (typeof MutationObserver === 'function') {
@@ -1565,9 +1565,9 @@
      * @param {Object} change 变更信息对象
      */
     Model.prototype.fireChange = function (change) {
-        for (var i = 0; i < this.listeners.length; i++) {
-            this.listeners[i].call(this, change);
-        }
+        each(this.listeners, function (listener) {
+            listener.call(this, change);
+        }, this);
     };
 
     /**
@@ -2216,9 +2216,9 @@
      * @protected
      */
     Node.prototype._noticeAttached = function () {
-        for (var i = 0, l = this.childs ? this.childs.length : 0; i < l; i++) {
-            this.childs[i]._noticeAttached();
-        }
+        each(this.childs, function (child) {
+            child._noticeAttached();
+        });
 
         this._callHook('created');
         this._callHook('attached');
