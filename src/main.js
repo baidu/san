@@ -3702,7 +3702,10 @@
         needUpdate && this._noticeUpdatedSoon();
 
         this.binds.each(function (bindItem) {
-            if (bindItem.twoWay && !isDataChangeByElement(change, this.owner)) {
+            if (bindItem.twoWay
+                && !isDataChangeByElement(change, this.owner)
+                && exprNeedsUpdate(parseExpr(bindItem.name), change.expr, this.data)
+            ) {
                 var updateScopeExpr = bindItem.expr;
                 if (change.expr.type === ExprType.PROP_ACCESSOR) {
                     updateScopeExpr = {
