@@ -509,15 +509,6 @@
     };
 
     /**
-     * 获取当前读取位置
-     *
-     * @return {number}
-     */
-    Walker.prototype.currentIndex = function () {
-        return this.index;
-    };
-
-    /**
      * 截取字符串片段
      *
      * @param {number} start 起始位置
@@ -649,7 +640,7 @@
 
             pushTextNode(source.slice(
                 beforeLastIndex,
-                walker.currentIndex() - tagMatch[0].length
+                walker.index - tagMatch[0].length
             ));
 
             // 62: >
@@ -687,7 +678,7 @@
                         break;
                     }
                     else if (nextCharCode === 47
-                        && walker.charCode(walker.currentIndex() + 1) === 62
+                        && walker.charCode(walker.index + 1) === 62
                     ) {
                         walker.go(2);
                         tagClose = true;
@@ -711,7 +702,7 @@
                 }
             }
 
-            beforeLastIndex = walker.currentIndex();
+            beforeLastIndex = walker.index;
         }
 
         pushTextNode(walker.cut(beforeLastIndex));
@@ -936,10 +927,10 @@
         while ((exprMatch = walker.match(exprStartReg)) != null) {
             pushStringToSeg(walker.cut(
                 beforeIndex,
-                walker.currentIndex() - exprMatch[0].length
+                walker.index - exprMatch[0].length
             ));
             segs.push(parseInterpolation(exprMatch[1]));
-            beforeIndex = walker.currentIndex();
+            beforeIndex = walker.index;
         }
 
         pushStringToSeg(walker.cut(beforeIndex))
@@ -1008,7 +999,7 @@
      */
     function readString(walker) {
         var startCode = walker.currentCode();
-        var startIndex = walker.currentIndex();
+        var startIndex = walker.index;
         var charCode;
 
         walkLoop: while ((charCode = walker.nextCode())) {
@@ -1022,7 +1013,7 @@
             }
         }
 
-        var literal = walker.cut(startIndex, walker.currentIndex());
+        var literal = walker.cut(startIndex, walker.index);
         return {
             type: ExprType.STRING,
             value: (new Function('return ' + literal))()
