@@ -1,5 +1,23 @@
 describe("Element", function () {
 
+    it("empty string prop, ", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span class="">test</span><span class="test2">test2</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans[0].className).toBe('');
+        expect(spans[1].className).toBe('test2');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("bind prop, data change before attach", function () {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span></a>'
