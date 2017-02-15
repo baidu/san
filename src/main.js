@@ -3194,10 +3194,6 @@
                 && exprNeedsUpdate(prop.expr, change.expr, this.scope)
             ) {
                 nextTick(function () {
-                    if (this.lifeCycle.is('disposed')) {
-                        return;
-                    }
-
                     this.setProp(prop.name, this.evalExpr(prop.expr));
                 }, this);
 
@@ -3677,12 +3673,8 @@
         var needUpdate = false;
 
         this.props.each(function (prop) {
-            if (exprNeedsUpdate(prop.expr, change.expr, this)) {
+            if (exprNeedsUpdate(prop.expr, change.expr, this.data)) {
                 nextTick(function () {
-                    if (this.lifeCycle.is('disposed')) {
-                        return;
-                    }
-
                     this.setProp(
                         prop.name,
                         evalExpr(prop.expr, this.data, this)
