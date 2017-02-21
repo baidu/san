@@ -2542,9 +2542,7 @@
                     ? evalExpr(prop.expr, this.data, this)
                     : this.evalExpr(prop.expr);
 
-                if (value != null && typeof value !== 'object') {
-                    this.el.setAttribute(prop.name, value);
-                }
+                getPropHandler(this, prop.name).input.prop(this, prop.name, value);
             }, this);
         }
     };
