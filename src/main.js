@@ -3772,13 +3772,12 @@
      */
     Component.prototype.watch = function (dataName, listener) {
         var dataExpr = parseExpr(dataName);
-        var me = this;
 
-        this.data.onChange(function (change) {
-            if (exprNeedsUpdate(dataExpr, change.expr, this)) {
-                listener.call(me, evalExpr(dataExpr, this, me), change);
+        this.data.onChange(bind(function (change) {
+            if (exprNeedsUpdate(dataExpr, change.expr, this.data)) {
+                listener.call(this, evalExpr(dataExpr, this.data, this), change);
             }
-        });
+        }, this));
     };
 
     /**
