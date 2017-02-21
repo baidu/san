@@ -1544,7 +1544,7 @@
     Model.prototype.unChange = function (listener) {
         var len = this.listeners.length;
         while (len--) {
-            if (listener == null || this.listeners[len] === listener) {
+            if (!listener || this.listeners[len] === listener) {
                 this.listeners.splice(len, 1);
             }
         }
