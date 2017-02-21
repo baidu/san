@@ -1544,7 +1544,7 @@
     Model.prototype.unChange = function (listener) {
         var len = this.listeners.length;
         while (len--) {
-            if (this.listeners[len] === listener) {
+            if (listener == null || this.listeners[len] === listener) {
                 this.listeners.splice(len, 1);
             }
         }
@@ -3788,7 +3788,7 @@
         // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
         this.slotChilds = null;
 
-        this.data.unChange(this.dataChanger);
+        this.data.unChange();
         this.dataChanger = null;
 
         this.data = null;
