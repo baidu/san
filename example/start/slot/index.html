@@ -15,7 +15,7 @@
         font-size: 18px;
     }
 
-    .folder main {
+    .folder-main {
         padding: 10px;
     }
     </style>
@@ -27,8 +27,8 @@
     var Folder = san.defineComponent({
         template: ''
             + '<div class="folder">'
-            + '    <header class="folder-title" on-click="toggle">{{title}}</header>'
-            + '    <main style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></main>'
+            + '    <div class="folder-title" on-click="toggle">{{title}}</div>'
+            + '    <div class="folder-main" style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></div>'
             + '</div>',
 
         toggle: function () {
