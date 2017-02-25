@@ -175,6 +175,98 @@ describe("Component", function () {
 
     });
 
+    it("custom event should not pass DOM Event object, when fire with no arg", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span on-click="clicker" id="component-custom-event1" style="cursor:pointer">click here to fire change event with no arg</span></a>',
+
+            clicker: function () {
+                this.fire('change');
+            }
+        });
+
+        var changed = false;
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label on-change="labelChange($event)"></ui-label></div>',
+
+            labelChange: function (event) {
+                expect(event).toBeUndefined();
+                changed = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+            if (changed) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        WDBridge.send('action', 'click:#component-custom-event1');
+        doneSpec();
+    });
+
+    it("custom event should not pass DOM Event object, when fire with equal-false value, like 0", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span on-click="clicker" id="component-custom-event2" style="cursor:pointer">click here to fire change event with arg 0</span></a>',
+
+            clicker: function () {
+                this.fire('change', 0);
+            }
+        });
+
+        var changed = false;
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label on-change="labelChange($event)"></ui-label></div>',
+
+            labelChange: function (event) {
+                expect(event).toBe(0);
+                changed = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+            if (changed) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        WDBridge.send('action', 'click:#component-custom-event2');
+        doneSpec();
+    });
+
     it("life cycle updated, nested component", function (done) {
         var times = 0;
         var subTimes = 0;

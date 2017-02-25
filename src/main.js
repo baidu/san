@@ -2696,12 +2696,10 @@
         var args = [];
         var expr = eventBind.expr;
 
-        e = e || window.event;
-
         each(expr.args, function (argExpr) {
             args.push(
                 argExpr.type === ExprType.IDENT && argExpr.name === '$event'
-                    ? e
+                    ? (this instanceof Component ? e : e || window.event)
                     : this.evalExpr(argExpr)
             );
         }, this);
