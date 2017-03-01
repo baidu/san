@@ -1522,7 +1522,8 @@
         ARRAY_POP: 3,
         ARRAY_SHIFT: 4,
         ARRAY_UNSHIFT: 5,
-        ARRAY_REMOVE: 6
+        ARRAY_REMOVE: 6,
+        ARRAY_SPLICE: 7
     };
 
     /**
@@ -1803,6 +1804,38 @@
                 }
             }
         }
+    };
+
+    Model.prototype.splice = function (expr, index, deleteCount, insertions, option) {
+        option = option || {};
+        expr = parseExpr(expr);
+
+        var target = this.get(expr);
+        var returnValue = [];
+
+        if (target instanceof Array) {
+            if (index < 0 || index >= target.length) {
+                return;
+            }
+
+            var args = [index, deleteCount];
+            each(insertions, function (insertion) {
+                args.push(insertion);
+            });
+            returnValue = target.splice.apply(target, args);
+
+            !option.silence && this.fireChange({
+                expr: expr,
+                type: Model.ChangeType.ARRAY_SPLICE,
+                index: index,
+                deleteCount: returnValue.length,
+                value: returnValue,
+                insertions: insertions || [],
+                option: option
+            });
+        }
+
+        return returnValue;
     };
 
     /**
@@ -4225,7 +4258,7 @@
         });
 
         var aNode = forElement.aNode;
-        return createNode(
+        var directiveChild = createNode(
             new ANode({
                 childs: aNode.childs,
                 props: aNode.props,
@@ -4235,6 +4268,15 @@
             forElement,
             itemScope
         );
+
+        // TODO: itemScope 可能清理的不干净
+        itemScope.onChange(function (change) {
+            if (change.expr.type === ExprType.IDENT && change.expr.name === forDirective.index) {
+                directiveChild.updateView(change);
+            }
+        });
+
+        return directiveChild;
     }
 
     /**
@@ -4360,8 +4402,33 @@
                             this.childs[change.index].dispose();
                             this.childs.splice(change.index, 1);
                         }, this);
-                        updateForDirectiveIndex(this, change.index, function (i) {
+                        updateForDirectiveIndex(this, change.index + 1, function (i) {
                             return i - 1;
+                        });
+                        break;
+
+                    case Model.ChangeType.ARRAY_SPLICE:
+                        nextTick(function () {
+                            if (this.lifeCycle.is('disposed')) {
+                                return;
+                            }
+
+                            var spliceArgs = [change.index, change.deleteCount];
+                            for (var i = 0; i < change.deleteCount; i++) {
+                                this.childs[change.index + i].dispose();
+                            }
+
+                            var nextChild = this.childs[change.index + change.deleteCount] || this;
+                            each(change.insertions, function (insertion, index) {
+                                var newChild = createForDirectiveChild(this, insertion, change.index + index);
+                                spliceArgs.push(newChild);
+                                newChild.attach(nextChild.el.parentNode, nextChild.el);
+                            }, this);
+
+                            this.childs.splice.apply(this.childs, spliceArgs);
+                        }, this);
+                        updateForDirectiveIndex(this, change.index + change.deleteCount, function (i) {
+                            return i - change.deleteCount + change.insertions.length;
                         });
                         break;
 
@@ -4383,6 +4450,8 @@
                             this.el.insertAdjacentHTML('beforebegin', buf.toString());
                             this._noticeAttached();
                         }, this);
+                        break;
+
                 }
 
                 needUpdate = true;
