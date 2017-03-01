@@ -350,4 +350,107 @@ describe("IfDirective", function () {
         });
     });
 
+    it("change condition expr data twice, first time diffent and second time same", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    totalPage: 5,
+                    current: 5
+                };
+            },
+            template: '<div><span san-if="current - 1 < totalPage">{{ current - 1 }}</span></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+
+        myComponent.data.set('current', 6);
+        myComponent.data.set('totalPage', 6);
+
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("change condition expr data twice, first time same and second time different", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    totalPage: 5,
+                    current: 5
+                };
+            },
+            template: '<div><span san-if="current - 1 < totalPage">{{ current - 1 }}</span></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+
+
+        myComponent.data.set('totalPage', 6);
+        myComponent.data.set('current', 6);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("change condition expr data many times", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    totalPage: 5,
+                    current: 5
+                };
+            },
+            template: '<div><span san-if="current - 1 < totalPage">{{ current - 1 }}</span></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+
+
+        myComponent.data.set('totalPage', 6);
+        myComponent.data.set('current', 6);
+        myComponent.data.set('current', 7);
+        myComponent.data.set('totalPage', 8);
+        myComponent.data.set('current', 9);
+        myComponent.data.set('totalPage', 9);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });

@@ -3924,28 +3924,29 @@
         }
 
         var ifExpr = this.aNode.directives.get('if').value;
-        var child = this.childs[0];
         if (exprNeedsUpdate(ifExpr, change.expr, this.scope)) {
-            var isChildExists = !!this.evalExpr(ifExpr);
+            var child = this.childs[0];
 
-            if (isChildExists) {
-                if (child) {
-                    child.updateView(change);
-                }
-                else {
-                    nextTick(function () {
+            if (this.evalExpr(ifExpr) && child) {
+                child.updateView(change);
+            }
+
+            nextTick(function () {
+                var conditionValue = this.evalExpr(ifExpr);
+                var child = this.childs[0];
+
+                if (conditionValue) {
+                    if (!child) {
                         child = createIfDirectiveChild(this);
                         child.attach(this.el.parentNode, this.el);
                         this.childs[0] = child;
-                    }, this);
+                    }
                 }
-            }
-            else if (child) {
-                nextTick(function () {
+                else if (child) {
                     child.dispose();
                     this.childs.length = 0;
-                }, this);
-            }
+                }
+            }, this);
 
             return true;
         }
