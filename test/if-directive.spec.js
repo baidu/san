@@ -453,4 +453,40 @@ describe("IfDirective", function () {
         });
     });
 
+    it("condition expr data not be changed, inner element should update view", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    condition: true,
+                    list: ['one', 'two']
+                };
+            },
+            template: '<div><div san-if="condition"><u san-for="item,index in list" title="{{index}}{{item}}">{{index}}{{item}}</u></span></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(2);
+        expect(us[0].title).toBe('0one');
+        expect(us[0].innerHTML.indexOf('0one')).toBe(0);
+
+
+        myComponent.data.set('list', ['three']);
+
+        san.nextTick(function () {
+            var us = wrap.getElementsByTagName('u');
+            expect(us.length).toBe(1);
+            expect(us[0].title).toBe('0three');
+            expect(us[0].innerHTML.indexOf('0three')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });

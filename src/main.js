@@ -3970,9 +3970,8 @@
         }
 
         var ifExpr = this.aNode.directives.get('if').value;
+        var child = this.childs[0];
         if (exprNeedsUpdate(ifExpr, change.expr, this.scope)) {
-            var child = this.childs[0];
-
             if (this.evalExpr(ifExpr) && child) {
                 child.updateView(change);
             }
