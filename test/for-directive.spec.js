@@ -532,7 +532,7 @@ describe("ForDirective", function () {
             data: {
                 list: [
                     {name: 'one'},
-                    {name: 'two'},
+                    {name: 'two'}
                 ],
                 dep: 'dep'
             }
