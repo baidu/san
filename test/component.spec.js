@@ -576,6 +576,159 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("dynamic ref in for", function (done) {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-color': ColorPicker
+            },
+            initData: function () {
+                return {
+                    colors: ['blue', 'green']
+                };
+            },
+            template: '<div><p san-for="color, index in colors"><ui-color value="{=color=}" san-ref="color-{{index}}"></ui-color></p></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var color0 = myComponent.ref('color-0');
+        expect(color0 instanceof ColorPicker).toBe(true);
+        expect(color0.data.get('value')).toBe('blue');
+
+        myComponent.data.set('colors', ['red', 'yellow']);
+
+        san.nextTick(function () {
+            var color0 = myComponent.ref('color-0');
+            var color1 = myComponent.ref('color-1');
+
+            expect(color0 instanceof ColorPicker).toBe(true);
+            expect(color0.data.get('value')).toBe('red');
+            expect(color1 instanceof ColorPicker).toBe(true);
+            expect(color1.data.get('value')).toBe('yellow');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("dynamic ref in for directly", function (done) {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-color': ColorPicker
+            },
+            initData: function () {
+                return {
+                    colors: ['blue', 'green']
+                };
+            },
+            template: '<div><ui-color san-for="color, index in colors" value="{=color=}" san-ref="color-{{index}}"></ui-color></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var color0 = myComponent.ref('color-0');
+        expect(color0 instanceof ColorPicker).toBe(true);
+        expect(color0.data.get('value')).toBe('blue');
+
+        myComponent.data.set('colors', ['red', 'yellow']);
+
+        san.nextTick(function () {
+            var color0 = myComponent.ref('color-0');
+            var color1 = myComponent.ref('color-1');
+
+            expect(color0 instanceof ColorPicker).toBe(true);
+            expect(color0.data.get('value')).toBe('red');
+            expect(color1 instanceof ColorPicker).toBe(true);
+            expect(color1.data.get('value')).toBe('yellow');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("dynamic ref in if", function (done) {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-color': ColorPicker
+            },
+            initData: function () {
+                return {
+                    name: 'test',
+                    color: 'green'
+                };
+            },
+            template: '<div><div san-if="condition"><ui-color value="{=color=}" san-ref="color-{{name}}"></ui-color></div></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var color0 = myComponent.ref('color-test');
+        expect(color0 == null).toBeTruthy();
+
+        myComponent.data.set('condition', 1);
+
+        san.nextTick(function () {
+            var color0 = myComponent.ref('color-test');
+
+            expect(color0 instanceof ColorPicker).toBe(true);
+            expect(color0.data.get('value')).toBe('green');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("dynamic ref in if directly", function (done) {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-color': ColorPicker
+            },
+            initData: function () {
+                return {
+                    name: 'test',
+                    color: 'green'
+                };
+            },
+            template: '<div><ui-color value="{=color=}" san-if="condition" san-ref="color-{{name}}"></ui-color></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var color0 = myComponent.ref('color-test');
+        expect(color0 == null).toBeTruthy();
+
+        myComponent.data.set('condition', 1);
+
+        san.nextTick(function () {
+            var color0 = myComponent.ref('color-test');
+
+            expect(color0 instanceof ColorPicker).toBe(true);
+            expect(color0.data.get('value')).toBe('green');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 
 
     it("update prop", function (done) {

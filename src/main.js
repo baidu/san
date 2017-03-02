@@ -3453,7 +3453,7 @@
                 if (child instanceof Component) {
                     var refDirective = child.aNode.directives.get('ref');
                     if (refDirective
-                        && evalExpr(refDirective.value, owner.data, owner) === name
+                        && evalExpr(refDirective.value, child.scope || owner.data, owner) === name
                     ) {
                         refComponent = child;
                     }
@@ -3463,6 +3463,7 @@
                 }
             }
         }
+
 
         childsTraversal(owner);
         return refComponent;
@@ -3858,9 +3859,14 @@
             tagName: aNode.tagName
         });
 
+        // TODO: else 那边应该可以不负责清理了
         ifElement.aNode.directives.each(function (directive) {
-            if (directive.name !== 'if') {
-                childANode.directives.push(directive);
+            switch (directive.name) {
+                case 'if':
+                case 'else':
+                    break;
+                default:
+                    childANode.directives.push(directive);
             }
         });
 
@@ -4265,16 +4271,20 @@
         });
 
         var aNode = forElement.aNode;
-        var directiveChild = createNode(
-            new ANode({
-                childs: aNode.childs,
-                props: aNode.props,
-                events: aNode.events,
-                tagName: aNode.tagName
-            }),
-            forElement,
-            itemScope
-        );
+        var directiveANode = new ANode({
+            childs: aNode.childs,
+            props: aNode.props,
+            events: aNode.events,
+            tagName: aNode.tagName
+        });
+
+        aNode.directives.each(function (directive) {
+            if (directive.name !== 'for') {
+                directiveANode.directives.push(directive);
+            }
+        });
+
+        var directiveChild = createNode(directiveANode, forElement, itemScope);
 
         // TODO: itemScope 可能清理的不干净
         itemScope.onChange(function (change) {
