@@ -2349,6 +2349,10 @@
      * 刷新文本节点的内容
      */
     TextNode.prototype.update = function () {
+        if (this.lifeCycle.is('disposed')) {
+            return;
+        }
+
         var node = this.el.previousSibling;
 
         if (node && node.nodeType === 3) {
@@ -3214,6 +3218,9 @@
                 && exprNeedsUpdate(prop.expr, change.expr, this.scope)
             ) {
                 nextTick(function () {
+                    if (this.lifeCycle.is('disposed')) {
+                        return;
+                    }
                     this.setProp(prop.name, this.evalExpr(prop.expr));
                 }, this);
 

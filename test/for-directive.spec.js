@@ -524,6 +524,50 @@ describe("ForDirective", function () {
         });
     });
 
+    it("multi data set after attach, that will influence exists item which should be removed", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><a san-for="item, index in list" title="{{dep}} {{item.name}}">{{dep}} {{item.name}}</a></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                list: [
+                    {name: 'one'},
+                    {name: 'two'},
+                ],
+                dep: 'dep'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var aEls = wrap.getElementsByTagName('a');
+
+        expect(aEls.length).toBe(2);
+        expect(aEls[0].getAttribute('title')).toBe('dep one');
+        expect(aEls[0].innerHTML.indexOf('dep one')).toBe(0);
+        expect(aEls[1].getAttribute('title')).toBe('dep two');
+        expect(aEls[1].innerHTML.indexOf('dep two')).toBe(0);
+
+        myComponent.data.set('list', [
+            {name: 'three'}
+        ]);
+        myComponent.data.set('dep', 'DEPT');
+
+        san.nextTick(function () {
+             var aEls = wrap.getElementsByTagName('a');
+
+            expect(aEls.length).toBe(1);
+            expect(aEls[0].getAttribute('title')).toBe('DEPT three');
+            expect(aEls[0].innerHTML.indexOf('DEPT three')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("nested, data fill before attach", function () {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}<b san-for="tel in p.tels">{{tel}}</b></li></ul>'
