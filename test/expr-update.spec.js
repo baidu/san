@@ -437,4 +437,64 @@ describe("Expression Update Detect", function () {
             done();
         });
     });
+
+    it("tertiary expr, condition expr change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{a1+a2 ? v1 : v2}}">{{a1+a2 ? v1 : v2}}</span></a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                a1: 0,
+                a2: 1,
+                v1: 'v1',
+                v2: 'v2'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('v1');
+        myComponent.data.set('a2', 0);
+        san.nextTick(function () {
+            expect(span.title).toBe('v2');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("tertiary expr, value expr change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{a1+a2 ? v1 : v2}}">{{a1+a2 ? v1 : v2}}</span></a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                a1: 0,
+                a2: 1,
+                v1: 'v1',
+                v2: 'v2'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('v1');
+        myComponent.data.set('v1', 'vv1');
+        san.nextTick(function () {
+            expect(span.title).toBe('vv1');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });

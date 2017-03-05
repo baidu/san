@@ -483,7 +483,8 @@
         CALL: 6,
         TEXT: 7,
         BINARY: 8,
-        UNARY: 9
+        UNARY: 9,
+        TERTIARY: 10
     };
 
     /**
@@ -950,7 +951,7 @@
      */
     function parseInterpolation(source) {
         var walker = new Walker(source);
-        var expr = readLogicalORExpr(walker);
+        var expr = readTertiaryExpr(walker);
 
         var filters = [];
         while (walker.goUntil(124)) { // |
@@ -976,7 +977,7 @@
             return source;
         }
 
-        return readLogicalORExpr(new Walker(source));
+        return readTertiaryExpr(new Walker(source));
     }
 
     /**
@@ -1089,7 +1090,7 @@
 
                 case 91: // [
                     walker.go(1);
-                    result.paths.push(readLogicalORExpr(walker));
+                    result.paths.push(readTertiaryExpr(walker));
                     walker.goUntil(93);  // ]
                     break;
 
@@ -1103,6 +1104,36 @@
         }
 
         return result;
+    }
+
+    /**
+     * 读取三元表达式
+     *
+     * @inner
+     * @param {Walker} walker 源码读取对象
+     * @return {Object}
+     */
+    function readTertiaryExpr(walker) {
+        var conditional = readLogicalORExpr(walker);
+        walker.goUntil();
+
+        if (walker.currentCode() === 63) { // ?
+            walker.go(1);
+            var yesExpr = readTertiaryExpr(walker);
+            walker.goUntil();
+
+            if (walker.currentCode() === 58) { // :
+                walker.go(1);
+                return {
+                    type: ExprType.TERTIARY,
+                    cond: conditional,
+                    yes: yesExpr,
+                    no: readTertiaryExpr(walker)
+                };
+            }
+        }
+
+        return conditional;
     }
 
     /**
@@ -1317,7 +1348,7 @@
 
     function readParenthesizedExpr(walker) {
         walker.go(1);
-        var expr = readLogicalORExpr(walker);
+        var expr = readTertiaryExpr(walker);
         walker.goUntil(41);  // )
 
         return expr;
@@ -1390,7 +1421,7 @@
 
         if (walker.goUntil(40)) { // (
             while (!walker.goUntil(41)) { // )
-                args.push(readLogicalORExpr(walker));
+                args.push(readTertiaryExpr(walker));
                 walker.goUntil(44); // ,
             }
         }
@@ -1448,6 +1479,16 @@
             case ExprType.BINARY:
                 return exprsNeedsUpdate(expr.segs, changeExpr, model);
 
+            case ExprType.TERTIARY:
+                return exprsNeedsUpdate(
+                    [
+                        expr.cond,
+                        expr.yes,
+                        expr.no
+                    ],
+                    changeExpr,
+                    model
+                );
 
             case ExprType.IDENT:
                 return expr.name === changeExpr.paths[0].name;
@@ -1960,6 +2001,13 @@
                     );
                 }
                 return;
+
+            case ExprType.TERTIARY:
+                var cond = evalExpr(expr.cond, model, owner);
+                if (cond) {
+                    return evalExpr(expr.yes, model, owner);
+                }
+                return evalExpr(expr.no, model, owner);
 
             case ExprType.STRING:
             case ExprType.NUMBER:

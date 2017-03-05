@@ -38,6 +38,58 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("tertiary when cond true", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{a+b-c ? v1 + v2 : v3 + v4 | tobe(\'hello erik\')}}</b>',
+            filters: {tobe: tobeFilter},
+            initData: function () {
+                return {
+                    a: 1,
+                    b: 2,
+                    c: 2,
+                    v1: 'hello ',
+                    v2: 'erik',
+                    v3: 'bye ',
+                    v4: 'moon'
+                }
+            }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("tertiary when cond false", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{a+b-c ? v1 + v2 : v3 + v4 | tobe(\'bye moon\')}}</b>',
+            filters: {tobe: tobeFilter},
+            initData: function () {
+                return {
+                    a: 1,
+                    b: 2,
+                    c: 3,
+                    v1: 'hello ',
+                    v2: 'erik',
+                    v3: 'bye ',
+                    v4: 'moon'
+                }
+            }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("binary number +", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{num1 + num2 | tobe(4)}}</b>',
@@ -343,6 +395,90 @@ describe("Expression", function () {
         myComponent.data.set('val3', 5);
         myComponent.data.set('val4', 6);
 
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("confuse a * b <= c + d ? a1 * b1 <= c1 + d1 ? xxx : xxxx : xxx", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1 * val2 <= val3 + val4 ? va1 * va2 <= va3 + va4 ? \'3\' : yno: \'1\' | tobe(\'yno\')}}</b>',
+            filters: {tobe: tobeFilter},
+            initData: function () {
+                return {
+                    val1: 3,
+                    val2: 4,
+                    val3: 7,
+                    val4: 6,
+                    va1: 3,
+                    va2: 4,
+                    va3: 5,
+                    va4: 6,
+                    yno: 'yno'
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("confuse a * b <= c + d ? a1 * b1 <= c1 + d1 ? xxx : xxxx : xxx", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1 * val2 <= val3 + val4 ? va1 * va2 <= va3 + va4 ? \'3\' : yno: \'1\' | tobe(\'1\')}}</b>',
+            filters: {tobe: tobeFilter},
+            initData: function () {
+                return {
+                    val1: 3,
+                    val2: 4,
+                    val3: 5,
+                    val4: 6,
+                    va1: 3,
+                    va2: 4,
+                    va3: 5,
+                    va4: 6,
+                    yno: 'yno'
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("confuse a * b <= c + d ? a1 * b1 <= c1 + d1 ? xxx : xxxx : xxx", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1 * val2 <= val3 + val4 ? \'1\' : va1 * va2 > va3 + va4 ? \'3\' : yno | tobe(\'3\')}}</b>',
+            filters: {tobe: tobeFilter},
+            initData: function () {
+                return {
+                    val1: 3,
+                    val2: 4,
+                    val3: 5,
+                    val4: 6,
+                    va1: 3,
+                    va2: 4,
+                    va3: 5,
+                    va4: 6,
+                    yno: 'yno'
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
