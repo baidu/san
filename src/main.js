@@ -1559,12 +1559,7 @@
 
     Model.ChangeType = {
         SET: 1,
-        ARRAY_PUSH: 2,
-        ARRAY_POP: 3,
-        ARRAY_SHIFT: 4,
-        ARRAY_UNSHIFT: 5,
-        ARRAY_REMOVE: 6,
-        ARRAY_SPLICE: 7
+        ARRAY_SPLICE: 2
     };
 
     /**
@@ -1705,14 +1700,7 @@
         var target = this.get(expr);
 
         if (target instanceof Array) {
-            target.push(item);
-            !option.silence && this.fireChange({
-                expr: expr,
-                type: Model.ChangeType.ARRAY_PUSH,
-                value: item,
-                index: target.length - 1,
-                option: option
-            });
+            this.splice(expr, target.length, 0, [item], option);
         }
     };
 
@@ -1730,14 +1718,10 @@
         var target = this.get(expr);
 
         if (target instanceof Array) {
-            var value = target.pop();
-            !option.silence && this.fireChange({
-                expr: expr,
-                type: Model.ChangeType.ARRAY_POP,
-                value: value,
-                index: target.length,
-                option: option
-            });
+            var len = target.length;
+            if (len) {
+                return this.splice(expr, len - 1, 1, null, option)[0];
+            }
         }
     };
 
@@ -1749,20 +1733,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.shift = function (expr, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
-        var target = this.get(expr);
-
-        if (target instanceof Array) {
-            var value = target.shift();
-            !option.silence && this.fireChange({
-                expr: expr,
-                type: Model.ChangeType.ARRAY_SHIFT,
-                value: value,
-                option: option
-            });
-        }
+        return this.splice(expr, 0, 1, null, option)[0];
     };
 
     /**
@@ -1774,20 +1745,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.unshift = function (expr, item, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
-        var target = this.get(expr);
-
-        if (target instanceof Array) {
-            target.unshift(item);
-            !option.silence && this.fireChange({
-                expr: expr,
-                type: Model.ChangeType.ARRAY_UNSHIFT,
-                value: item,
-                option: option
-            });
-        }
+        this.splice(expr, 0, 0, [item], option);
     };
 
     /**
@@ -1799,27 +1757,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.removeAt = function (expr, index, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
-        var target = this.get(expr);
-
-        if (target instanceof Array) {
-            if (index < 0 || index >= target.length) {
-                return;
-            }
-
-            var value = target[index];
-            target.splice(index, 1);
-
-            !option.silence && this.fireChange({
-                expr: expr,
-                type: Model.ChangeType.ARRAY_REMOVE,
-                value: value,
-                index: index,
-                option: option
-            });
-        }
+        this.splice(expr, index, 1, null, option);
     };
 
     /**
@@ -1840,7 +1778,7 @@
             var len = target.length;
             while (len--) {
                 if (target[len] === value) {
-                    this.removeAt(expr, len, option);
+                    this.splice(expr, len, 1, null, option);
                     break;
                 }
             }
@@ -1855,7 +1793,7 @@
         var returnValue = [];
 
         if (target instanceof Array) {
-            if (index < 0 || index >= target.length) {
+            if (index < 0 || index > target.length) {
                 return;
             }
 
@@ -2057,9 +1995,6 @@
                 return buf.toString();
         }
     }
-
-
-
 
     // #region node
 
@@ -4336,16 +4271,19 @@
             return resolvedExpr;
         }
 
-        each(['set', 'remove', 'unshift', 'shift', 'push', 'pop'], function (method) {
-            var rawFn = forElement.scope[method];
-            itemScope[method] = function (expr) {
-                expr = exprResolve(parseExpr(expr));
-                rawFn.apply(
-                    forElement.scope,
-                    [expr].concat(Array.prototype.slice.call(arguments, 1))
-                );
-            };
-        });
+        each(
+            ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
+            function (method) {
+                var rawFn = forElement.scope[method];
+                itemScope[method] = function (expr) {
+                    expr = exprResolve(parseExpr(expr));
+                    rawFn.apply(
+                        forElement.scope,
+                        [expr].concat(Array.prototype.slice.call(arguments, 1))
+                    );
+                };
+            }
+        );
 
         var aNode = forElement.aNode;
         var directiveANode = new ANode({
@@ -4433,74 +4371,6 @@
                 // 对表达式数据本身的数组操作
                 // 根据变更类型执行不同的视图更新行为
                 switch (change.type) {
-                    case Model.ChangeType.ARRAY_PUSH:
-                        nextTick(function () {
-                            if (this.lifeCycle.is('disposed')) {
-                                return;
-                            }
-
-                            var newChild = createForDirectiveChild(this, change.value, change.index);
-                            this.childs.push(newChild);
-                            newChild.attach(this.el.parentNode, this.el);
-                        }, this);
-                        break;
-
-                    case Model.ChangeType.ARRAY_POP:
-                        nextTick(function () {
-                            if (this.lifeCycle.is('disposed')) {
-                                return;
-                            }
-
-                            var index = this.childs.length - 1;
-                            this.childs[index].dispose();
-                            this.childs.splice(index, 1);
-                        }, this);
-                        break;
-
-                    case Model.ChangeType.ARRAY_UNSHIFT:
-                        nextTick(function () {
-                            if (this.lifeCycle.is('disposed')) {
-                                return;
-                            }
-
-                            var newChild = createForDirectiveChild(this, change.value, 0);
-                            var nextChild = this.childs[0] || this;
-                            this.childs.unshift(newChild);
-                            newChild.attach(nextChild.el.parentNode, nextChild.el);
-                        }, this);
-                        updateForDirectiveIndex(this, 0, function (i) {
-                            return i + 1;
-                        });
-                        break;
-
-                    case Model.ChangeType.ARRAY_SHIFT:
-                        nextTick(function () {
-                            if (this.lifeCycle.is('disposed')) {
-                                return;
-                            }
-
-                            this.childs[0].dispose();
-                            this.childs.splice(0, 1);
-                        }, this);
-                        updateForDirectiveIndex(this, 1, function (i) {
-                            return i - 1;
-                        });
-                        break;
-
-                    case Model.ChangeType.ARRAY_REMOVE:
-                        nextTick(function () {
-                            if (this.lifeCycle.is('disposed')) {
-                                return;
-                            }
-
-                            this.childs[change.index].dispose();
-                            this.childs.splice(change.index, 1);
-                        }, this);
-                        updateForDirectiveIndex(this, change.index + 1, function (i) {
-                            return i - 1;
-                        });
-                        break;
-
                     case Model.ChangeType.ARRAY_SPLICE:
                         nextTick(function () {
                             if (this.lifeCycle.is('disposed')) {
@@ -4545,7 +4415,6 @@
                             this._noticeAttached();
                         }, this);
                         break;
-
                 }
 
                 needUpdate = true;
