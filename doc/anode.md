@@ -16,7 +16,7 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[NUMBER](#user-content-number)  
 　　[IDENT](#user-content-ident)  
 　　[PROP_ACCESSOR](#user-content-prop_accessor)  
-　　[INTERPOLATION](#user-content-interpolation)  
+　　[INTERP](#user-content-interp)  
 　　[CALL](#user-content-call)  
 　　[TEXT](#user-content-text)  
 　　[BINARY](#user-content-binary)  
@@ -126,7 +126,7 @@ var ExprType = {
     NUMBER: 2,
     IDENT: 3,
     PROP_ACCESSOR: 4,
-    INTERPOLATION: 5,
+    INTERP: 5,
     CALL: 6,
     TEXT: 7,
     BINARY: 8,
@@ -195,7 +195,7 @@ exprInfo = {
 }
 ```
 
-### INTERPOLATION
+### INTERP
 
 插值。解析器为了方便解析和求值，将插值看成一种表达式
 
@@ -203,7 +203,7 @@ exprInfo = {
 // expr - 数据访问部分表达式信息，一个表达式对象
 // filters - 过滤器部分信息。数组，其中每一项是一个 CALL 表达式对象
 exprInfo = {
-    type: ExprType.INTERPOLATION,
+    type: ExprType.INTERP,
     expr: {
         type: ExprType.PROP_ACCESSOR,
         paths: [
@@ -248,13 +248,13 @@ exprInfo = {
 
 ```javascript
 
-// segs - 文本组成片段。数组，其中每一项是一个 STRING 或 INTERPOLATION表达式对象
+// segs - 文本组成片段。数组，其中每一项是一个 STRING 或 INTERP表达式对象
 exprInfo = {
     type: ExprType.TEXT,
     segs: [
         {type: ExprType.STRING, value: 'Hello '},
         {
-            type: ExprType.INTERPOLATION,
+            type: ExprType.INTERP,
             expr: {
                 type: ExprType.IDENT,
                 name: 'whoAmI'

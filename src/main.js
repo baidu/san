@@ -479,7 +479,7 @@
         NUMBER: 2,
         IDENT: 3,
         PROP_ACCESSOR: 4,
-        INTERPOLATION: 5,
+        INTERP: 5,
         CALL: 6,
         TEXT: 7,
         BINARY: 8,
@@ -800,8 +800,8 @@
         // parse normal prop
         var expr = parseText(value);
 
-        // 当 text 解析只有一项时，要么就是 string，要么就是 interpolation
-        // interpolation 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
+        // 当 text 解析只有一项时，要么就是 string，要么就是 interp
+        // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
         // 所以这里做个处理，只有一项时直接抽出来
         if (expr.segs.length === 1) {
             expr = expr.segs[0];
@@ -824,7 +824,7 @@
     function textBindExtra(bind) {
         if (bind.name === 'class') {
             each(bind.expr.segs, function (seg) {
-                if (seg.type === ExprType.INTERPOLATION) {
+                if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
                         name: {
@@ -930,7 +930,7 @@
                 beforeIndex,
                 walker.index - exprMatch[0].length
             ));
-            segs.push(parseInterpolation(exprMatch[1]));
+            segs.push(parseInterp(exprMatch[1]));
             beforeIndex = walker.index;
         }
 
@@ -949,7 +949,7 @@
      * @param {string} source 源码
      * @return {Object}
      */
-    function parseInterpolation(source) {
+    function parseInterp(source) {
         var walker = new Walker(source);
         var expr = readTertiaryExpr(walker);
 
@@ -959,7 +959,7 @@
         }
 
         return {
-            type: ExprType.INTERPOLATION,
+            type: ExprType.INTERP,
             expr: expr,
             filters: filters
         };
@@ -1126,9 +1126,11 @@
                 walker.go(1);
                 return {
                     type: ExprType.TERTIARY,
-                    cond: conditional,
-                    yes: yesExpr,
-                    no: readTertiaryExpr(walker)
+                    segs: [
+                        conditional,
+                        yesExpr,
+                        readTertiaryExpr(walker)
+                    ]
                 };
             }
         }
@@ -1477,24 +1479,14 @@
 
             case ExprType.TEXT:
             case ExprType.BINARY:
-                return exprsNeedsUpdate(expr.segs, changeExpr, model);
-
             case ExprType.TERTIARY:
-                return exprsNeedsUpdate(
-                    [
-                        expr.cond,
-                        expr.yes,
-                        expr.no
-                    ],
-                    changeExpr,
-                    model
-                );
+                return exprsNeedsUpdate(expr.segs, changeExpr, model);
 
             case ExprType.IDENT:
                 return expr.name === changeExpr.paths[0].name;
 
 
-            case ExprType.INTERPOLATION:
+            case ExprType.INTERP:
                 if (!exprNeedsUpdate(expr.expr, changeExpr, model)) {
                     var result = false;
                     each(expr.filters, function (filter) {
@@ -1557,9 +1549,9 @@
         this.data = {};
     }
 
-    Model.ChangeType = {
+    var ModelChangeType = {
         SET: 1,
-        ARRAY_SPLICE: 2
+        SPLICE: 2
     };
 
     /**
@@ -1677,7 +1669,7 @@
         if (prop != null) {
             data[prop] = value;
             !option.silence && this.fireChange({
-                type: Model.ChangeType.SET,
+                type: ModelChangeType.SET,
                 expr: expr,
                 value: value,
                 option: option
@@ -1694,9 +1686,6 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.push = function (expr, item, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1712,9 +1701,6 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.pop = function (expr, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1769,9 +1755,6 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.remove = function (expr, value, option) {
-        option = option || {};
-        expr = parseExpr(expr);
-
         var target = this.get(expr);
 
         if (target instanceof Array) {
@@ -1805,7 +1788,7 @@
 
             !option.silence && this.fireChange({
                 expr: expr,
-                type: Model.ChangeType.ARRAY_SPLICE,
+                type: ModelChangeType.SPLICE,
                 index: index,
                 deleteCount: returnValue.length,
                 value: returnValue,
@@ -1941,11 +1924,12 @@
                 return;
 
             case ExprType.TERTIARY:
-                var cond = evalExpr(expr.cond, model, owner);
-                if (cond) {
-                    return evalExpr(expr.yes, model, owner);
-                }
-                return evalExpr(expr.no, model, owner);
+                var cond = evalExpr(expr.segs[0], model, owner);
+                return evalExpr(
+                    cond ? expr.segs[1] : expr.segs[2],
+                    model,
+                    owner
+                );
 
             case ExprType.STRING:
             case ExprType.NUMBER:
@@ -1955,7 +1939,7 @@
             case ExprType.PROP_ACCESSOR:
                 return model.get(expr);
 
-            case ExprType.INTERPOLATION:
+            case ExprType.INTERP:
                 var value = evalExpr(expr.expr, model, owner);
 
                 owner && each(expr.filters, function (filter) {
@@ -1986,7 +1970,7 @@
                     var segValue = evalExpr(seg, model, owner);
 
                     // use html filter by default
-                    if (seg.type === ExprType.INTERPOLATION && !seg.filters[0]) {
+                    if (seg.type === ExprType.INTERP && !seg.filters[0]) {
                         segValue = DEFAULT_FILTERS.html(segValue);
                     }
 
@@ -4371,7 +4355,7 @@
                 // 对表达式数据本身的数组操作
                 // 根据变更类型执行不同的视图更新行为
                 switch (change.type) {
-                    case Model.ChangeType.ARRAY_SPLICE:
+                    case ModelChangeType.SPLICE:
                         nextTick(function () {
                             if (this.lifeCycle.is('disposed')) {
                                 return;
@@ -4396,7 +4380,7 @@
                         });
                         break;
 
-                    case Model.ChangeType.SET:
+                    case ModelChangeType.SET:
                         // 重新构建整个childs
                         nextTick(function () {
                             if (this.lifeCycle.is('disposed')) {
@@ -4422,7 +4406,7 @@
 
             case 1:
             case 2:
-                if (change.type === Model.ChangeType.SET) {
+                if (change.type === ModelChangeType.SET) {
                     change = extend({}, change);
                     change.expr = {
                         type: ExprType.PROP_ACCESSOR,
