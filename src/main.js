@@ -2216,6 +2216,11 @@
     Node.prototype._init = function (options) {
         this.owner = options.owner;
         this.parent = options.parent;
+        if (this.parent) {
+            this.parentComponent = this.parent instanceof Component
+                ? this.parent
+                : this.parent.parentComponent;
+        }
         this.scope = options.scope;
         this.aNode = this.aNode || options.aNode;
         this.el = options.el;
@@ -2265,6 +2270,7 @@
         this.scope = null;
         this.aNode = null;
         this.parent = null;
+        this.parentComponent = null;
     };
 
     /**
@@ -3344,6 +3350,7 @@
      */
     Component.prototype.init = function (options) {
         this.filters = options.filters || this.filters || {};
+        this.messages = options.messages || this.messages || {};
 
         // compile
         this._compile();
@@ -3430,6 +3437,29 @@
     Component.prototype._inited = function () {
         // TODO: need?
         this._initPropHandlers();
+    };
+
+    /**
+     * 派发消息
+     * 组件可以派发消息，消息将沿着组件树向上传递，直到遇上第一个处理消息的组件
+     *
+     * @param {string} name 消息名称
+     * @param {*?} value 消息值
+     */
+    Component.prototype.dispatch = function (name, value) {
+        var parentComponent = this.parentComponent;
+
+        while (parentComponent) {
+            if (typeof parentComponent.messages[name] === 'function') {
+                parentComponent.messages[name].call(
+                    parentComponent,
+                    {target: this, value: value}
+                );
+                break;
+            }
+
+            parentComponent = parentComponent.parentComponent;
+        }
     };
 
     /**
