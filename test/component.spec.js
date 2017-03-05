@@ -369,6 +369,7 @@ describe("Component", function () {
         });
 
         var selectValue;
+        var itemId;
         var SelectItem = san.defineComponent({
             template: '<li on-click="select" style="{{value === selectValue | yesToBe(\'border: 1px solid red\')}}"><slot></slot></li>',
 
@@ -379,6 +380,7 @@ describe("Component", function () {
             },
 
             attached: function () {
+                itemId = this.id;
                 this.dispatch('UI:select-item-attached');
             },
 
@@ -433,6 +435,7 @@ describe("Component", function () {
         }
 
         detectDone();
+        WDBridge.send('action', 'click:#' + itemId);
     });
 
     it("outer bind declaration should not set main element property", function (done) {
