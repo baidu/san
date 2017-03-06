@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>表单 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。
+输入框输入框的绑定方法比较简单，直接应用 bind- 到输入框的 value 属性就行了。
+1&amp;lt;input type=&quot;text&quot; bindx-value=&quot;name&quot;&amp;gt;
+checkboxcheckbox 常见的使用场景是分组，在组件模板中，我们把需要分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="表单">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/form/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。
+输入框输入框的绑定方法比较简单，直接应用 bind- 到输入框的 value 属性就行了。
+1&amp;lt;input type=&quot;text&quot; bindx-value=&quot;name&quot;&amp;gt;
+checkboxcheckbox 常见的使用场景是分组，在组件模板中，我们把需要分">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="表单">
+<meta name="twitter:description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。
+输入框输入框的绑定方法比较简单，直接应用 bind- 到输入框的 value 属性就行了。
+1&amp;lt;input type=&quot;text&quot; bindx-value=&quot;name&quot;&amp;gt;
+checkboxcheckbox 常见的使用场景是分组，在组件模板中，我们把需要分">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-form" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      表单
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 <strong>双向绑定</strong>。</p>
+<h2 id="输入框"><a href="#输入框" class="headerlink" title="输入框"></a>输入框</h2><p>输入框的绑定方法比较简单，直接应用 <strong>bind-</strong> 到输入框的 value 属性就行了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">bindx-value</span>=<span class="string">"name"</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="checkbox"><a href="#checkbox" class="headerlink" title="checkbox"></a>checkbox</h2><p>checkbox 常见的使用场景是分组，在组件模板中，我们把需要分组的 checkbox 将 checked 属性双向绑定到同名的组件数据中。</p>
+<p><code>提示</code>：除非你需要进行传统的表单提交，否则无需指定 checkbox 的 name 属性。San 仅以 checked 作为分组的依据。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- Template --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"otakustay"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"firede"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>我们期望 checkbox 绑定到的数据项是一个 <strong>Array&lt;string&gt;</strong> 。当 checkbox 被选中时，其 value 会被添加到绑定的数据项中；当 checkbox 被取消选中时，其 value 会从绑定数据项中移除。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Component</span></div><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">online</span>: []</div><div class="line">        &#125;;</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    <span class="attr">attached</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.set(<span class="string">'online'</span>, [<span class="string">'errorrik'</span>, <span class="string">'otakustay'</span>]);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="radio"><a href="#radio" class="headerlink" title="radio"></a>radio</h2><p>与 checkbox 类似，我们在组件模板中，把需要分组的 radio 将 checked 属性绑定到同名的组件数据中。</p>
+<p><code>提示</code>：你需要手工指定分组 radio 的 name 属性，使浏览器能处理 radio 选择的互斥。可以把它设置成与绑定数据的名称相同。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- Template --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"otakustay"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"firede"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">label</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>我们期望 radio 绑定到的数据项是一个 <strong>string</strong> 。当 radio 被选中时，绑定的数据项值被设置成选中的 radio 的 value 属性值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Component</span></div><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">online</span>: <span class="string">'errorrik'</span></div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="select"><a href="#select" class="headerlink" title="select"></a>select</h2><p>select 的使用方式和输入框类似，直接应用 <strong>bind-</strong> 到 value 属性。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- Template --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">value</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"otakustay"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"firede"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>提示</code>：在浏览器中，select 的 value 属性并不控制其选中项，select 的选中项是由 option 的 selected 属性控制的。考虑到开发的方便，开发者不需要编写 option 的 selected 属性，San 会在下一个视图更新时间片中刷新 select 的选中状态。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Component</span></div><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">online</span>: <span class="string">'errorrik'</span></div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#输入框"><span class="toc-text">输入框</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#checkbox"><span class="toc-text">checkbox</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#radio"><span class="toc-text">radio</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#select"><span class="toc-text">select</span></a></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

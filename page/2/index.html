@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="San">
+<meta property="og:url" content="http://ecomfe.github.io/page/2/index.html">
+<meta property="og:site_name" content="San">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="San">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+    <header class="header-index">
+        <img height="220" src="/san/img/logo-colorful.svg" class="logo" alt="LOGO" title="San">
+        <h1>San</h1>
+        <p>a MVVM Component Framework for the Web</p>
+        <a href="/san/tutorial/start/" class="get-start">GET STARTED</a>
+    </header>
+
+    <section class="feature">
+        <h4><b>FEATURES</b></h4>
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <i class="fa fa-code" aria-hidden="true"></i>
+                <h5>HTML模版</h5>
+                <p>声明式的模板，在编写视图时就像是在写一个普通的页面，更符合HTML开发人员的习惯。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-database" aria-hidden="true"></i>
+                <h5>数据驱动</h5>
+                <p>修改数据，视图引擎会根据绑定关系自动刷新视图，从此摆脱手工调用DOM API的繁琐与可能的遗漏。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-cube" aria-hidden="true"></i>
+                <h5>组件化</h5>
+                <p>组件是数据、逻辑与视图的聚合体。通过组件，我们封装独立的功能区块，小到输入组合，大到一个页面。</p>
+            </div>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <i class="fa fa-flash" aria-hidden="true"></i>
+                <h5>高性能视图</h5>
+                <p>通过修改数据的方法，视图引擎能够直接刷新需要变更的视图区域，无需进行任何检测，性能更高。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-retweet" aria-hidden="true"></i>
+                <h5>组件反解</h5>
+                <p>为首屏时间优化，服务端通常直接输出HTML。我们能从现有的元素中反向解析出组件，并构建绑定关系。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-download" aria-hidden="true"></i>
+                <h5>体积小巧</h5>
+                <p>~9.8k(gzipped) 的体积，无需担心对页面下载带来负担。体积强迫症患者的福音。</p>
+            </div>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <i class="fa fa-internet-explorer" aria-hidden="true"></i>
+                <h5>良好的兼容性</h5>
+                <p>通过修改数据方法的另一好处是，可以获得更好的浏览器兼容性。毕竟有时我们产品的受众用户有点死板。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-cogs" aria-hidden="true"></i>
+                <h5>模块管理自由</h5>
+                <p>项目中可以任意选择 ESNext Module 或 AMD 管理模块。当然，如果你想要用全局变量也是支持的。</p>
+            </div>
+            <div class="feature-item">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+                <h5>引用方便</h5>
+                <p>NPM、GitHub、下载多种引用方式让开发更便利。另外，我们还提供了 HTTP 与 HTTPS 的 CDN。</p>
+            </div>
+        </div>
+    </section>
+
+<section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

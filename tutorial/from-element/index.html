@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>组件反解 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。
+该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续的用户交互行为与视图变换通过组件管理。
+数据和视图是组件重要的组成部分，我们将从这两个方面说明组件反解的功能。
+数据以 el 初始化组件时，San 只会从 el 中解析出视图结构。San 无法从现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组件反解">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/from-element/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。
+该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续的用户交互行为与视图变换通过组件管理。
+数据和视图是组件重要的组成部分，我们将从这两个方面说明组件反解的功能。
+数据以 el 初始化组件时，San 只会从 el 中解析出视图结构。San 无法从现">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="组件反解">
+<meta name="twitter:description" content="组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。
+该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续的用户交互行为与视图变换通过组件管理。
+数据和视图是组件重要的组成部分，我们将从这两个方面说明组件反解的功能。
+数据以 el 初始化组件时，San 只会从 el 中解析出视图结构。San 无法从现">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-from-element" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      组件反解
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>组件初始化时传入 <strong>el</strong>，其将作为组件根元素，并以此反解析出视图结构。</p>
+<p>该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续的用户交互行为与视图变换通过组件管理。</p>
+<p>数据和视图是组件重要的组成部分，我们将从这两个方面说明组件反解的功能。</p>
+<h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><p>以 <strong>el</strong> 初始化组件时，San 只会从 <strong>el</strong> 中解析出视图结构。San 无法从现有 HTML 结构和复杂的表达式中反向得出数据信息。我们需要通过在初始化时传入 <strong>data</strong>，以指定正确的初始数据。</p>
+<p>有时我们不传入正确的数据也没有太大问题，但是不一致总会埋下隐患。比如下面这种尴尬的场景：传入的初始数据与视图上呈现的数据并不同，后续设置的数据如果与初始数据相等时，视图不会刷新，视图上的数据还是错的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"wrap"</span>&gt;</span><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</div><div class="line">    <span class="attr">el</span>: <span class="built_in">document</span>.getElementById(<span class="string">'wrap'</span>),</div><div class="line">    </div><div class="line">    <span class="attr">data</span>: &#123;</div><div class="line">        <span class="attr">email</span>: <span class="string">'error@gmail.com'</span>,</div><div class="line">        <span class="attr">name</span>: <span class="string">'errorrik'</span></div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">myComponent.data.set(<span class="string">'email'</span>, <span class="string">'error@gmail.com'</span>);</div></pre></td></tr></table></figure>
+<p><code>另外特别强调的</code>：对于列表数据应该在初始化时保证数据与视图的一致，因为列表的添加删除等复杂操作与视图更新上关系密切，如果一开始对应不上，视图更新可能产生难以预测的结果。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik - errorrik@gmail.com<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span>otakustay - otakustay@gmail.com<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"for"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> MyComponent(&#123;</div><div class="line">    <span class="attr">el</span>: wrap.firstChild,</div><div class="line">    <span class="attr">data</span>: &#123;</div><div class="line">        <span class="string">'persons'</span>: [</div><div class="line">            &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</div><div class="line">            &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</div><div class="line">        ]</div><div class="line">    &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>以 <strong>el</strong> 初始化组件时，San 会尊重 <strong>el</strong> 的现时 HTML 形态，不会执行任何额外影响视觉的渲染动作。</p>
+<ul>
+<li>不会使用预设的 template 渲染视图</li>
+<li>不会创建根元素</li>
+<li>直接到达 compiled、created、attached 生命周期</li>
+</ul>
+<p>但是，<strong>el</strong> 可能需要一些额外的标记，来帮助 San 认识视图的结构（插值、绑定、循环、分支、组件等），以便于后续的行为管理与视图刷新。</p>
+<h3 id="插值文本"><a href="#插值文本" class="headerlink" title="插值文本"></a>插值文本</h3><p>插值文本的标记方式是：在文本后添加一个 <strong>type=”text/san”</strong> 的 <strong>script</strong> 标签，里面的内容是插值文本的内容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span>&gt;</span>errorrik - errorrik@gmail.com<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>提示</code>：<strong>type=”text/san”</strong> 的 <strong>script</strong> 是重要的标记手段，在循环与分支标记中也会用到它。</p>
+<h3 id="插值属性"><a href="#插值属性" class="headerlink" title="插值属性"></a>插值属性</h3><p>插值属性的标记方式是：在 <strong>prop-</strong> 为前缀的属性上声明属性的内容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik - errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="绑定"><a href="#绑定" class="headerlink" title="绑定"></a>绑定</h3><p>绑定属性的标记方式与插值属性完全一样：在 <strong>prop-</strong> 为前缀的属性上声明属性的内容，双向绑定用 <strong>{= expression =}</strong> 的形式。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;jokeName&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span></div><div class="line">        errorrik - errorrik@gmail.com</div><div class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span></div><div class="line">        otakustay - otakustay@gmail.com</div><div class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"for"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>循环的标记分成两个部分。首先，对于循环的每个元素，需要标记 <strong>san-for</strong>。通常它们在 HTML 输出端也是以循环的形式存在，不会带来重复编写的工作量。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span></div><div class="line">    errorrik - errorrik@gmail.com</div><div class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">li</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在循环的结束以一个桩元素标记，桩元素是一个具有 <strong>type=”text/san”</strong> 和 <strong>san-stump=”for”</strong> 的 script。在 script 的内部声明循环的语句。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"for"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">li</span> <span class="attr">san-for</span>=<span class="string">"p,i in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>提示</code>：当初始没有数据时，标记一个循环只需要声明桩即可。</p>
+<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>分支的标记比较简单，以 <strong>san-if</strong> 标记分支元素即可。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"condition"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>当初始条件为假时，分支元素不会出现，此时以 <strong>type=”text/san”</strong> 和 <strong>san-stump=”if”</strong> 的 script 作为桩，标记分支。在 script 的内部声明分支的语句。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"if"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"cond"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>一个包含完整 if-else 的分支，总有一个元素是具体元素，有一个元素是桩。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"if"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"isErik"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-else</span> <span class="attr">title</span>=<span class="string">"otakustay"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name2&#125;&#125;"</span>&gt;</span>otakustay<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;name2&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"isErik"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span>errorrik<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;name&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span> <span class="attr">san-stump</span>=<span class="string">"else"</span>&gt;</span><span class="xml"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-else</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;name2&#125;&#125;"</span>&gt;</span>&#123;&#123;name2&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">components</span>: &#123;</div><div class="line">        <span class="string">'ui-label'</span>: Label</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>组件的标记与视图模板中声明是一样的，在相应的自定义元素上标记绑定。San 将根据自定义元素的标签自动识别组件。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik@gmail.com<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;text&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>我们可能因为样式、兼容性等原因不想使用自定义元素。当组件未使用自定义元素时，可以在元素上通过 <strong>san-component</strong> 标记组件类型。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">san-component</span>=<span class="string">"ui-label"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik@gmail.com<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/san"</span>&gt;</span><span class="undefined">&#123;&#123;text&#125;&#125;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">label</span>&gt;</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数据"><span class="toc-text">数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#视图"><span class="toc-text">视图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#插值文本"><span class="toc-text">插值文本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插值属性"><span class="toc-text">插值属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#绑定"><span class="toc-text">绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#循环"><span class="toc-text">循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分支"><span class="toc-text">分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组件"><span class="toc-text">组件</span></a></li></ol></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

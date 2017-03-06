@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>循环 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="通过循环渲染列表是常见的场景。通过在元素上作用 san-for 指令，我们可以渲染一个列表。
+语法san-for 指令的语法形式如下：
+1item-identifier[, index-identifier] in expression
+列表渲染下面的代码描述了在元素上作用 san-for 指令，渲染一个列表。在列表渲染的元素内部，可以正常访问到 owner 组件上的其他数据（下面例子中的dept">
+<meta property="og:type" content="article">
+<meta property="og:title" content="循环">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/for/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="通过循环渲染列表是常见的场景。通过在元素上作用 san-for 指令，我们可以渲染一个列表。
+语法san-for 指令的语法形式如下：
+1item-identifier[, index-identifier] in expression
+列表渲染下面的代码描述了在元素上作用 san-for 指令，渲染一个列表。在列表渲染的元素内部，可以正常访问到 owner 组件上的其他数据（下面例子中的dept">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="循环">
+<meta name="twitter:description" content="通过循环渲染列表是常见的场景。通过在元素上作用 san-for 指令，我们可以渲染一个列表。
+语法san-for 指令的语法形式如下：
+1item-identifier[, index-identifier] in expression
+列表渲染下面的代码描述了在元素上作用 san-for 指令，渲染一个列表。在列表渲染的元素内部，可以正常访问到 owner 组件上的其他数据（下面例子中的dept">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-for" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      循环
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>通过循环渲染列表是常见的场景。通过在元素上作用 <strong>san-for</strong> 指令，我们可以渲染一个列表。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p><strong>san-for</strong> 指令的语法形式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">item-identifier[, index-identifier] in expression</div></pre></td></tr></table></figure>
+<h2 id="列表渲染"><a href="#列表渲染" class="headerlink" title="列表渲染"></a>列表渲染</h2><p>下面的代码描述了在元素上作用 <strong>san-for</strong> 指令，渲染一个列表。在列表渲染的元素内部，可以正常访问到 owner 组件上的其他数据（下面例子中的dept）。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- Template --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">san-for</span>=<span class="string">"p in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Component</span></div><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="comment">// template</span></div><div class="line"></div><div class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">dept</span>: <span class="string">'ssg'</span>,</div><div class="line">            <span class="attr">persons</span>: [</div><div class="line">                &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</div><div class="line">                &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</div><div class="line">            ]</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><p><strong>san-for</strong> 指令中可以指定索引变量名（下面例子中的index），从而在列表渲染过程获得列表元素的索引。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- Template --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">san-for</span>=<span class="string">"p, index in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;index + 1&#125;&#125;. &#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Component</span></div><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="comment">// template</span></div><div class="line"></div><div class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">dept</span>: <span class="string">'ssg'</span>,</div><div class="line">            <span class="attr">persons</span>: [</div><div class="line">                &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</div><div class="line">                &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</div><div class="line">            ]</div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="列表数据操作"><a href="#列表数据操作" class="headerlink" title="列表数据操作"></a>列表数据操作</h2><p>列表数据的增加、删除等操作请使用组件 data 提供的数组方法。详细请参考<a href="../data-method/#数组方法">数组方法</a>文档。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#语法"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表渲染"><span class="toc-text">列表渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#索引"><span class="toc-text">索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#列表数据操作"><span class="toc-text">列表数据操作</span></a></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

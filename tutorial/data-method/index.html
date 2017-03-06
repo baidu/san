@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>数据操作 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="San 在组件的 data 上提供了一些数据操作的方法。通过这些方法操作数据，相应的视图会被自动刷新。
+说明：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineSetter并未被国内常用的浏览器广泛支持，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图才会自动刷新。
+初始化通过定义 initData 方法，可以在定义组件时指定组件初始化时的数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据操作">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/data-method/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="San 在组件的 data 上提供了一些数据操作的方法。通过这些方法操作数据，相应的视图会被自动刷新。
+说明：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineSetter并未被国内常用的浏览器广泛支持，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图才会自动刷新。
+初始化通过定义 initData 方法，可以在定义组件时指定组件初始化时的数据">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.315Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据操作">
+<meta name="twitter:description" content="San 在组件的 data 上提供了一些数据操作的方法。通过这些方法操作数据，相应的视图会被自动刷新。
+说明：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineSetter并未被国内常用的浏览器广泛支持，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图才会自动刷新。
+初始化通过定义 initData 方法，可以在定义组件时指定组件初始化时的数据">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-data-method" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数据操作
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>San 在组件的 data 上提供了一些数据操作的方法。通过这些方法操作数据，相应的视图会被自动刷新。</p>
+<p><code>说明</code>：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineSetter并未被国内常用的浏览器广泛支持，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图才会自动刷新。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>通过定义 initData 方法，可以在定义组件时指定组件初始化时的数据。initData 方法返回组件实例的初始化数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">initData</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">width</span>: <span class="number">200</span>,</div><div class="line">            <span class="attr">top</span>: <span class="number">100</span>,</div><div class="line">            <span class="attr">left</span>: <span class="number">-1000</span></div><div class="line">        &#125;;</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><p>set 方法是最常用的操作数据的方法，作用相当于 JavaScript 中的赋值 (=)。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">attached</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        requestUser().then(<span class="keyword">this</span>.userReceived.bind(<span class="keyword">this</span>));</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    <span class="attr">userReceived</span>: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user'</span>, data);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    <span class="attr">changeEmail</span>: <span class="function"><span class="keyword">function</span> (<span class="params">email</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user.email'</span>, email);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h2 id="数组方法"><a href="#数组方法" class="headerlink" title="数组方法"></a>数组方法</h2><p>我们提供了一些数组操作的方法，这些方法与 JavaScript 的数组操作方法基本同名，以减少使用者的学习与记忆成本。除了 <strong>删除</strong> 操作。</p>
+<p><code>提示</code>：修改数组项还是直接使用 set 方法。我们可以认为，基本上所有写 JavaScript 时使用 = 赋值的场景，都用 set 方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">flag</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.set(<span class="string">'users[0].flag'</span>, <span class="literal">true</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="push"><a href="#push" class="headerlink" title="push"></a>push</h3><p>在数组末尾插入一条数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">addUser</span>: <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.push(<span class="string">'users'</span>, &#123;<span class="attr">name</span>: name&#125;);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h3><p>在数组末尾弹出一条数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">rmLast</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.pop(<span class="string">'users'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="unshift"><a href="#unshift" class="headerlink" title="unshift"></a>unshift</h3><p>在数组开始插入一条数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">addUser</span>: <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.unshift(<span class="string">'users'</span>, &#123;<span class="attr">name</span>: name&#125;);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="shift"><a href="#shift" class="headerlink" title="shift"></a>shift</h3><p>在数组开始弹出一条数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">rmFirst</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.shift(<span class="string">'users'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h3><p>移除一条数据。只有当数组项与传入项完全相等(===)时，数组项才会被移除。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">rm</span>: <span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.remove(<span class="string">'users'</span>, user);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="removeAt"><a href="#removeAt" class="headerlink" title="removeAt"></a>removeAt</h3><p>通过数据项的索引移除一条数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">san.defineComponent(&#123;</div><div class="line">    <span class="attr">rmAt</span>: <span class="function"><span class="keyword">function</span> (<span class="params">index</span>) </span>&#123;</div><div class="line">        <span class="keyword">this</span>.data.removeAt(<span class="string">'users'</span>, index);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初始化"><span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数组方法"><span class="toc-text">数组方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#push"><span class="toc-text">push</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pop"><span class="toc-text">pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unshift"><span class="toc-text">unshift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shift"><span class="toc-text">shift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-text">remove</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#removeAt"><span class="toc-text">removeAt</span></a></li></ol></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

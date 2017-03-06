@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>数据绑定 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在模板 HTML 中，我们通过一定的数据绑定语法编写，相应的数据就能在视图上呈现。
+场景插值和许多模板引擎一样，插值的语法形式是表达式位于双大括号中，表达式后可以接任意多个过滤器。
+1&amp;#123;&amp;#123; expr [[| filter-call1] | filter-call2...] &amp;#125;&amp;#125;
+在文本内容区域我们可以使用插值替换。
+1&amp;lt;p&amp;gt;Hello &amp;#123">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据绑定">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/data-binding/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="在模板 HTML 中，我们通过一定的数据绑定语法编写，相应的数据就能在视图上呈现。
+场景插值和许多模板引擎一样，插值的语法形式是表达式位于双大括号中，表达式后可以接任意多个过滤器。
+1&amp;#123;&amp;#123; expr [[| filter-call1] | filter-call2...] &amp;#125;&amp;#125;
+在文本内容区域我们可以使用插值替换。
+1&amp;lt;p&amp;gt;Hello &amp;#123">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.315Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据绑定">
+<meta name="twitter:description" content="在模板 HTML 中，我们通过一定的数据绑定语法编写，相应的数据就能在视图上呈现。
+场景插值和许多模板引擎一样，插值的语法形式是表达式位于双大括号中，表达式后可以接任意多个过滤器。
+1&amp;#123;&amp;#123; expr [[| filter-call1] | filter-call2...] &amp;#125;&amp;#125;
+在文本内容区域我们可以使用插值替换。
+1&amp;lt;p&amp;gt;Hello &amp;#123">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-data-binding" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数据绑定
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在模板 HTML 中，我们通过一定的数据绑定语法编写，相应的数据就能在视图上呈现。</p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><h3 id="插值"><a href="#插值" class="headerlink" title="插值"></a>插值</h3><p>和许多模板引擎一样，插值的语法形式是表达式位于双大括号中，表达式后可以接任意多个过滤器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&#123; expr [[| filter-call1] | filter-call2...] &#125;&#125;</div></pre></td></tr></table></figure>
+<p>在文本内容区域我们可以使用插值替换。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello &#123;&#123;name&#125;&#125;!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在 HTML 标签的 属性(attribute) 内，我们也可以使用插值替换。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"This is &#123;&#123;name&#125;&#125;"</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>使用过滤器可以对插值数据进行处理。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello &#123;&#123;name | upper&#125;&#125;!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>表达式</code>：在插值替换的双大括号中，San 提供了丰富的表达式支持，具体请参考本篇后续的<a href="#表达式">表达式</a>章节。</p>
+<p><code>过滤器</code>：过滤器相关描述请参考本篇后续的<a href="#过滤器">过滤器</a>章节。</p>
+<h3 id="属性绑定"><a href="#属性绑定" class="headerlink" title="属性绑定"></a>属性绑定</h3><p>顾名思义，属性绑定的意思是，将数据绑定到子组件的 属性(property) 上。属性绑定的形式和插值绑定相同，通过 HTML 标签的 属性(attribute)声明，通常情况只声明一个 <strong></strong>。</p>
+<p>下面的例子中，当 jokeName 数据变化时，会自动将新的值设置到 label 组件的 text 属性中。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">text</span>=<span class="string">"&#123;&#123;jokeName&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>表达式</code>：属性绑定支持任意类型的表达式，具体请参考本篇后续的<a href="#表达式">表达式</a>章节。</p>
+<h3 id="双向绑定"><a href="#双向绑定" class="headerlink" title="双向绑定"></a>双向绑定</h3><p>通过  HTML 标签的 属性(attribute)声明 <strong>{= expression =}</strong> 的形式，可以声明双向绑定。</p>
+<p>双向绑定通常出现在 <strong>用户输入</strong> 的场景，将用户输入结果自动更新到组件数据。所以我们通常在 <strong>输入表单元素</strong> 或 <strong>具有输入反馈的自定义组件</strong> 上应用双向绑定。</p>
+<p>下面的例子将 input、select、自定义组件的 value 属性与声明的数据项（name、online、color）建立了双向绑定关系。当用户输入时，相应数据项的值会发生变化。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"&#123;= name =&#125;"</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">value</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"otakustay"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"firede"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">option</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">ui-colorpicker</span> <span class="attr">value</span>=<span class="string">"&#123;= color =&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-colorpicker</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>表达式</code>：双向绑定仅支持普通变量和属性访问表达式，否则可能导致不可预测的问题。</p>
+<h2 id="表达式"><a href="#表达式" class="headerlink" title="表达式"></a>表达式</h2><p>San 提供了丰富的表达式类型支持，让使用者在编写视图模板时更方便。下面通过插值替换的例子列举支持的表达式类型。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 普通变量 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 属性访问 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;person.name&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;persons[1]&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 一元否定 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;!isOK&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;!!isOK&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 二元运算 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 + num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 - num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 * num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 / num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 + num2 * num3&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 二元关系 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 &gt; num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 !== num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 三元条件 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 &gt; num2 ? num1 : num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"></div><div class="line"><span class="comment">&lt;!-- 括号 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;a * (b + c)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>注意</code>：双向绑定仅支持普通变量和属性访问表达式。</p>
+<h2 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h2><p>在插值替换时，过滤器可以实现对插值数据的处理和变换，使其转换成更适合视图呈现的数据形式。<code>注意</code>：过滤器仅在插值替换时支持。</p>
+<p>插值替换支持多过滤器处理。过滤器之间以类似管道的方式，前一个过滤器的输出做为后一个过滤器的输入，向后传递。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 普通变量 --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | html | url&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>filter支持参数传递，参数可以是任何支持的<a href="#表达式">表达式</a>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- // 假设存在过滤器: comma --&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(3)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(commaLength)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(commaLength + 1)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>过滤器在组件声明时注册，具体请参考组件文档。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景"><span class="toc-text">场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#插值"><span class="toc-text">插值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#属性绑定"><span class="toc-text">属性绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#双向绑定"><span class="toc-text">双向绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#表达式"><span class="toc-text">表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#过滤器"><span class="toc-text">过滤器</span></a></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>

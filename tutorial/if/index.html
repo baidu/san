@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  
+  <title>条件 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="san-if通过 san-if 指令，我们可以为元素指定条件。当条件成立时元素可见，当条件不成立时元素不存在。
+提示：当不满足条件时，San 会将元素从当前页面中移除，而不是隐藏。
+1&amp;lt;span san-if=&quot;isOK&quot;&amp;gt;Hello San!&amp;lt;/span&amp;gt;
+san-if 指令的值可以是任何类型的表达式。
+1&amp;lt;span san-if=&quot;isReady &amp;amp;&amp;am">
+<meta property="og:type" content="article">
+<meta property="og:title" content="条件">
+<meta property="og:url" content="http://ecomfe.github.io/tutorial/if/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="san-if通过 san-if 指令，我们可以为元素指定条件。当条件成立时元素可见，当条件不成立时元素不存在。
+提示：当不满足条件时，San 会将元素从当前页面中移除，而不是隐藏。
+1&amp;lt;span san-if=&quot;isOK&quot;&amp;gt;Hello San!&amp;lt;/span&amp;gt;
+san-if 指令的值可以是任何类型的表达式。
+1&amp;lt;span san-if=&quot;isReady &amp;amp;&amp;am">
+<meta property="og:updated_time" content="2017-03-06T14:40:15.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="条件">
+<meta name="twitter:description" content="san-if通过 san-if 指令，我们可以为元素指定条件。当条件成立时元素可见，当条件不成立时元素不存在。
+提示：当不满足条件时，San 会将元素从当前页面中移除，而不是隐藏。
+1&amp;lt;span san-if=&quot;isOK&quot;&amp;gt;Hello San!&amp;lt;/span&amp;gt;
+san-if 指令的值可以是任何类型的表达式。
+1&amp;lt;span san-if=&quot;isReady &amp;amp;&amp;am">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+</head>
+
+<body>
+  <header>
+    <a href="/san/" class="logo-s-link"><img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San"></a>
+    <b>San</b>
+    <nav>
+        <ul>
+            <li><a href="/san/">HOME</a>
+            <li><a href="/san/tutorial/start/">教程</a>
+            <li><a href="/san/example/">示例</a>
+            <li><a href="/san/doc/api/">API</a>
+            <li><a href="https://github.com/ecomfe/san" class="github" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
+        </ul>
+    </nav>
+</header>
+  <main>
+<aside class="recommend">
+    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/data-binding/">数据绑定</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">分支</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/from-element/">组件反解</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">API DOC</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        
+        <dt>周边</dt>
+        <dd><a href="https://github.com/ecomfe/san-router" target="_blank">san-router</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/ecomfe/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+    </dl>
+</aside>
+<article id="post-if" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        
+  
+    <h1 class="article-title" itemprop="name">
+      条件
+    </h1>
+  
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="san-if"><a href="#san-if" class="headerlink" title="san-if"></a>san-if</h2><p>通过 <strong>san-if</strong> 指令，我们可以为元素指定条件。当条件成立时元素可见，当条件不成立时元素不存在。</p>
+<p><code>提示</code>：当不满足条件时，San 会将元素从当前页面中移除，而不是隐藏。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"isOK"</span>&gt;</span>Hello San!<span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>san-if</strong> 指令的值可以是任何类型的<a href="../data-binding/#表达式">表达式</a>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"isReady &amp;&amp; isActive"</span>&gt;</span>Hello San!<span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>提示</code>：San 的条件判断不是严格的 === false。所以，一切 JavaScript 的假值都会认为条件不成立：0、空字符串、null、undefined、NaN等。</p>
+<h2 id="san-else"><a href="#san-else" class="headerlink" title="san-else"></a>san-else</h2><p><strong>san-else</strong> 指令可以给 <strong>san-if</strong> 增加一个不满足条件的分支块。<strong>san-else</strong> 指令没有值。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-if</span>=<span class="string">"isOnline"</span>&gt;</span>Hello!<span class="tag">&lt;/<span class="name">span</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">san-else</span>&gt;</span>Offline<span class="tag">&lt;/<span class="name">span</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><code>提示</code>：<strong>san-else</strong> 指令元素必须跟在 <strong>san-if</strong> 指令元素后，否则将抛出 <strong>else not match if</strong> 的异常。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <a href="#" class="toc-top"><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i></a>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#san-if"><span class="toc-text">san-if</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#san-else"><span class="toc-text">san-else</span></a></li></ol>
+</aside>
+
+</main>
+  <section class="resource">
+    <h4><b>RESOURCES</b></h4>
+
+    <div class="resource-row">
+        <a class="resource-item" href="/san/tutorial/start/">
+            <h5>教程</h5>
+            <p>教程是入门的捷径，请从这里开始了解San。</p>
+        </a>
+        <a class="resource-item resource-item-unready">
+            <h5>指南</h5>
+            <p>我们正在编写指南手册，以指导各种应用场景下怎么使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/example/">
+            <h5>示例</h5>
+            <p>这里展示了一些简单例子，以及在实际项目如何使用San。</p>
+        </a>
+        <a class="resource-item" href="/san/doc/api/">
+            <h5>API</h5>
+            <p>当你想不起来San提供的接口时，请查阅这里。</p>
+        </a>
+    </div>
+</section>
+<footer>
+    <div class="efe-products" id="links">
+        <p>开源的 San 来自百度 EFE。在 <a target="_blank" href="http://efe.baidu.com">EFE</a>，我们有一系列开源产品：</p>
+        <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/efe-meta/html/full-intro.html', true);
+        xhr.send();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('links').insertAdjacentHTML('beforeend', xhr.responseText);
+            }
+        };
+        </script>
+    </div>
+    <div class="copyright">
+        &copy; 2016 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</footer>
+</body>
+</html>
