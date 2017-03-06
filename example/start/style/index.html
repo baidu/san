@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - hello</title>
+</head>
+
+<body>
+    <script src="../../../src/main.js"></script>
+    <script>
+    var MyApp = san.defineComponent({
+        template: '<p><button on-click="toggle">toggle</button>'
+            + '<b style="{{isShow ? \'\' : \'display:none\'}}">Hello!</b></p>',
+
+        toggle: function () {
+            this.data.set('isShow', !this.data.get('isShow'));
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+
