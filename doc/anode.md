@@ -21,6 +21,7 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[TEXT](#user-content-text)  
 　　[BINARY](#user-content-binary)  
 　　[UNARY](#user-content-unary)  
+　　[TERTIARY](#user-content-tertiary)  
 [ANode 与相关类型结构](#user-content-anode-与相关类型结构)  
 　　[ANode](#user-content-anode)  
 　　[IndexedList](#user-content-indexedlist)  
@@ -303,6 +304,34 @@ exprInfo = {
             {type: ExprType.STRING, value: 'isLogin'}
         ]
     }
+}
+```
+
+### TERTIARY
+
+三元表达式，其实就是 `conditional ? yes-expr : no-expr` 的条件表达式。
+
+```javascript
+// segs - 包含3个表达式对象的数组，第一个是条件表达式，第二个是值为真时的表达式，第三个是值为假时的表达式
+exprInfo = {
+    type: ExprType.TERTIARY,
+    segs: [
+        {
+            type: ExprType.PROP_ACCESSOR,
+            paths: [
+                {type: ExprType.IDENT, name: 'user'},
+                {type: ExprType.STRING, value: 'isLogin'}
+            ]
+        },
+        {
+            type: ExprType.STRING,
+            value: 'yes'
+        },
+        {
+            type: ExprType.STRING,
+            value: 'no'
+        }
+    ]
 }
 ```
 
