@@ -103,7 +103,7 @@
 
         var args = slice.call(arguments, 2);
         return function () {
-            func.apply(thisArg, args.concat(slice.call(arguments)));
+            return func.apply(thisArg, args.concat(slice.call(arguments)));
         };
     }
 
@@ -3388,6 +3388,14 @@
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
 
+
+        this.computedDeps = {};
+        for (var expr in this.computed) {
+            if (!this.computedDeps[expr]) {
+                this._calcComputed(expr);
+            }
+        }
+
         this._callHook('inited');
 
         // 如果从el编译的，认为已经attach了，触发钩子
@@ -3395,6 +3403,41 @@
             this._callHook('created');
             this._callHook('attached');
         }
+    };
+
+    /**
+     * 计算 computed 属性的值
+     *
+     * @private
+     * @param {string} computedExpr computed表达式串
+     */
+    Component.prototype._calcComputed = function (computedExpr) {
+        var needAnalyse;
+        var computedDeps = this.computedDeps[computedExpr];
+        if (!computedDeps) {
+            computedDeps = this.computedDeps[computedExpr] = {};
+            needAnalyse = 1;
+        }
+
+        this.data.set(computedExpr, this.computed[computedExpr].call({
+            data: {
+                get: bind(function (expr) {
+                    if (needAnalyse && !computedDeps[expr]) {
+                        computedDeps[expr] = 1;
+
+                        if (this.computed[expr]) {
+                            this._calcComputed(expr);
+                        }
+
+                        this.watch(expr, function () {
+                            this._calcComputed(computedExpr);
+                        });
+                    }
+
+                    return this.data.get(expr);
+                }, this)
+            }
+        }));
     };
 
     /**
@@ -4356,27 +4399,30 @@
                 // 根据变更类型执行不同的视图更新行为
                 switch (change.type) {
                     case ModelChangeType.SPLICE:
+                        var changeStart = change.index;
+                        var deleteCount = change.deleteCount;
+
                         nextTick(function () {
                             if (this.lifeCycle.is('disposed')) {
                                 return;
                             }
 
-                            var spliceArgs = [change.index, change.deleteCount];
-                            for (var i = 0; i < change.deleteCount; i++) {
-                                this.childs[change.index + i].dispose();
+                            var spliceArgs = [changeStart, deleteCount];
+                            for (var i = 0; i < deleteCount; i++) {
+                                this.childs[changeStart + i].dispose();
                             }
 
-                            var nextChild = this.childs[change.index + change.deleteCount] || this;
+                            var nextChild = this.childs[changeStart + deleteCount] || this;
                             each(change.insertions, function (insertion, index) {
-                                var newChild = createForDirectiveChild(this, insertion, change.index + index);
+                                var newChild = createForDirectiveChild(this, insertion, changeStart + index);
                                 spliceArgs.push(newChild);
                                 newChild.attach(nextChild.el.parentNode, nextChild.el);
                             }, this);
 
                             this.childs.splice.apply(this.childs, spliceArgs);
                         }, this);
-                        updateForDirectiveIndex(this, change.index + change.deleteCount, function (i) {
-                            return i - change.deleteCount + change.insertions.length;
+                        updateForDirectiveIndex(this, changeStart + deleteCount, function (i) {
+                            return i - deleteCount + change.insertions.length;
                         });
                         break;
 

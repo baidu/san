@@ -594,6 +594,139 @@ describe("Component", function () {
         });
     });
 
+    it("computed", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{name}}</span></div>',
+
+            initData: function () {
+                return {
+                    'first': 'first',
+                    'last': 'last'
+                }
+            },
+
+            computed: {
+                name: function () {
+                    return this.data.get('first') + ' ' + this.data.get('last');
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+
+        myComponent.data.set('last', 'xxx')
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed has computed dependency, computed item change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{msg}}">{{msg}}</span></div>',
+
+            initData: function () {
+                return {
+                    first: 'first',
+                    last: 'last',
+                    email: 'name@name.com'
+                }
+            },
+
+            computed: {
+                msg: function () {
+                    return this.data.get('name') + '(' + this.data.get('email') + ')'
+                },
+
+                name: function () {
+                    return this.data.get('first') + ' ' + this.data.get('last');
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last(name@name.com)');
+
+        myComponent.data.set('last', 'xxx')
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx(name@name.com)');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed has computed dependency, normal data change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{msg}}">{{msg}}</span></div>',
+
+            initData: function () {
+                return {
+                    first: 'first',
+                    last: 'last',
+                    email: 'name@name.com'
+                }
+            },
+
+            computed: {
+                msg: function () {
+                    return this.data.get('name') + '(' + this.data.get('email') + ')'
+                },
+
+                name: function () {
+                    return this.data.get('first') + ' ' + this.data.get('last');
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last(name@name.com)');
+
+        myComponent.data.set('email', 'san@san.com')
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first last(san@san.com)');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("custom event listen and fire", function () {
         var receive;
 
