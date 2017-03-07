@@ -43,11 +43,11 @@ define(function (require) {
         },
 
         rmTodo: function (index) {
-            var todo = this.data.get('todos', index);
-            service.rmTodo(todo.id);
+            var todos = this.data.get('todos');
+            service.rmTodo(todos[index].id);
 
             var now = new Date();
-            this.data.remove('todos', index);
+            this.data.removeAt('todos', index);
             san.nextTick(function () {
                 alert('List item delete: ' + ((new Date) - now));
             });

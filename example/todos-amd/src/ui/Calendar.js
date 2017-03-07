@@ -8,10 +8,12 @@ define(function (require) {
         template: layerTemplate,
 
         filters: {
-            isSelected: function (date, value) {
+            selectedClass: function (date, value) {
                 return date === value.getDate()
                     && this.data.get('viewMonth') === value.getMonth()
-                    && this.data.get('viewYear') === value.getFullYear();
+                    && this.data.get('viewYear') === value.getFullYear()
+                    ? 'selected'
+                    : '';
             }
         },
 
@@ -72,7 +74,7 @@ define(function (require) {
         },
 
         select: function (date) {
-            this.data.set('value', new Date(
+            this.fire('select', new Date(
                 this.data.get('viewYear'),
                 this.data.get('viewMonth'),
                 date
@@ -99,17 +101,16 @@ define(function (require) {
                 layer.data.set('value', this.data.get('value'));
 
                 this.layer = layer;
+                this.layer.attach(document.body);
 
                 var calendar = this;
-                layer.watch('value', function (value) {
+                layer.on('select', function (value) {
                     calendar.data.set('value', value);
                 });
 
                 this.watch('value', function (value) {
                     layer.data.set('value', value);
                 });
-
-                this.layer.attach(document.body);
 
                 this._docClicker = this.docClicker.bind(this);
                 $(document).on('click', this._docClicker);

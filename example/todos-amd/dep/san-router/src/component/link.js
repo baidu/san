@@ -2,7 +2,7 @@ import {router} from '../main';
 import resolveURL from '../resolve-url';
 
 export default {
-    template: '<a href="{{href}}" onclick="return false;" on-click="clicker($event)"><slot></slot></a>',
+    template: '<a href="{{href}}" onclick="return false;" on-click="clicker($event)" target="{{target}}" class="{{class}}" style="{{style}}"><slot></slot></a>',
 
     clicker(e) {
         let href = this.data.get('href');

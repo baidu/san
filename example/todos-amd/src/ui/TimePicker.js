@@ -9,7 +9,7 @@ define(function (require) {
         tagName: 'ul',
 
         itemClick: function (item) {
-            this.data.set('value', item.value);
+            this.fire('valueChange', item.value);
         }
     });
 
@@ -76,9 +76,10 @@ define(function (require) {
                 layer.data.set('datasource', this.data.get('datasource'));
 
                 this.layer = layer;
+                this.layer.attach(document.body);
 
                 var timePicker = this;
-                layer.watch('value', function (value) {
+                layer.on('valueChange', function (value) {
                     timePicker.data.set('value', value);
                 });
 
@@ -93,8 +94,6 @@ define(function (require) {
                 this.watch('top', function (top) {
                     layer.data.set('top', top);
                 });
-
-                this.layer.attach(document.body);
 
                 this._docClicker = this.docClicker.bind(this);
                 $(document).on('click', this._docClicker);

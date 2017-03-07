@@ -98,7 +98,7 @@ define(function (require) {
                 done: false
             });
 
-            var id = this.data.get('params[1]');
+            var id = this.data.get('route.query.id');
             if (id) {
                 this.data.set('id', +id);
             }

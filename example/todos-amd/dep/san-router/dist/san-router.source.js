@@ -433,7 +433,7 @@ var _resolveUrl2 = _interopRequireDefault(_resolveUrl);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-    template: '<a href="{{href}}" onclick="return false;" on-click="clicker($event)"><slot></slot></a>',
+    template: '<a href="{{href}}" onclick="return false;" on-click="clicker($event)" class="{{class}}" style="{{style}}" target="{{target}}"><slot></slot></a>',
 
     clicker: function clicker(e) {
         var href = this.data.get('href');

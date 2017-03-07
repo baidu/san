@@ -15,6 +15,6 @@
     </ol>
     <ol>
         <li san-for="item in dates" on-click="select(item)"
-            class="{{ item | isSelected(value) | yesToBe('selected')}}">{{item}}</li>
+            class="{{ item | selectedClass(value)}}">{{item}}</li>
     </ol>
 </template>

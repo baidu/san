@@ -4,18 +4,18 @@
         <li
             san-for="item in categories"
             style="background: {{item.color}}"
-            class="{{item.id == params[1] | yesToBe('checked')}}"
+            class="{{item.id == route.query.category ? 'checked' : ''}}"
         >
             <router-link to="/todos/category/{{ item.id }}">{{ item.title }}</router-link>
         </li>
     </ul>
 
-    <router-link to="/" class="fa fa-close filter-category-clear" style="display: {{route.query.category | yesOrNoToBe('', 'none')}}"></router-link>
+    <router-link to="/" class="fa fa-close filter-category-clear" san-if="route.query.category"></router-link>
 
     <ul class="todo-list">
         <li san-for="item, index in todos"
             style="border-color: {{item.category.color}}"
-            class="{{item.done | yesToBe('todo-done')}}"
+            class="{{item.done ? 'todo-done' : ''}}"cl
         >
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>
