@@ -744,28 +744,29 @@
         }
 
         var prefixIndex = name.indexOf('-');
+        var realName;
         var prefix;
 
         if (prefixIndex > 0) {
             prefix = name.slice(0, prefixIndex);
-            name = name.slice(prefixIndex + 1);
+            realName = name.slice(prefixIndex + 1);
         }
 
         switch (prefix) {
             case 'on':
                 aNode.events.push({
-                    name: name,
+                    name: realName,
                     expr: parseCall(value)
                 });
                 break;
 
             case 'san':
-                var directive = parseDirective(name, value);
+                var directive = parseDirective(realName, value);
                 directive && aNode.directives.push(directive);
                 break;
 
             case 'prop':
-                integrateBindAttr(aNode, name, value);
+                integrateBindAttr(aNode, realName, value);
                 break;
 
             default:
