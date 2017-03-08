@@ -2018,7 +2018,7 @@
             return new ForDirective(options);
         }
 
-        var ComponentType = owner.components && owner.components[aNode.tagName];
+        var ComponentType = owner.components[aNode.tagName];
         if (ComponentType) {
             var component = new ComponentType(options);
             return component;
@@ -3679,6 +3679,7 @@
 
         // pre define components class
         if (!proto._isComponentsPreDefined) {
+            proto.components = proto.components || {};
             var components = proto.components;
 
             for (var key in components) {
