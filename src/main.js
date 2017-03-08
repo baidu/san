@@ -2552,7 +2552,15 @@
                     ? evalExpr(prop.expr, this.data, this)
                     : this.evalExpr(prop.expr);
 
-                getPropHandler(this, prop.name).input.prop(this, prop.name, value);
+                var match = /^\s+([a-z0-9_-]+)="(.*)"$/.exec(
+                    getPropHandler(this, prop.name)
+                        .input
+                        .attr(this, prop.name, value)
+                );
+
+                if (match) {
+                    this.el.setAttribute(match[1], match[2]);
+                }
             }, this);
         }
     };
