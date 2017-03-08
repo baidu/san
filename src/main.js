@@ -3682,15 +3682,21 @@
             var components = proto.components;
 
             for (var key in components) {
-                if (components.hasOwnProperty(key)
-                    && typeof components[key] === 'object'
-                ) {
-                    components[key] = defineComponent(components[key]);
+                if (components.hasOwnProperty(key)) {
+                    var componentClass = components[key];
+
+                    if (typeof componentClass === 'object') {
+                        components[key] = defineComponent(componentClass);
+                    }
+                    else if (componentClass === 'self') {
+                        components[key] = this.constructor;
+                    }
                 }
             }
 
             proto._isComponentsPreDefined = true;
         }
+
 
         // pre compile template
         if (!proto.aNode) {

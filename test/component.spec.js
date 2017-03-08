@@ -524,6 +524,33 @@ describe("Component", function () {
         });
     });
 
+    it("given raw 'self' components config, use itself", function () {
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-self': 'self'
+            },
+
+            initData: function () {
+                return {level: 1}
+            },
+
+            template: '<u><ui-self level="{{level - 1}}" san-if="level > 0"></ui-self></u>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(2);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
     it("given raw object to components config, auto use it to define component", function (done) {
         var MyComponent = san.defineComponent({
             components: {
