@@ -808,6 +808,10 @@
             expr = expr.segs[0];
         }
 
+        if (expr.type === ExprType.INTERP) {
+            expr = expr.expr;
+        }
+
         aNode.props.push(textBindExtra({
             name: name,
             expr: expr,
@@ -3835,20 +3839,63 @@
         }
 
         var needUpdate = false;
+        var changeExpr = change.expr;
 
         this.binds.each(function (bindItem) {
+            var bindExpr = bindItem.expr;
+
             if (!isDataChangeByElement(change, this, bindItem.name)
-                && exprNeedsUpdate(bindItem.expr, change.expr, this.scope)
+                && exprNeedsUpdate(bindExpr, changeExpr, this.scope)
             ) {
-                this.data.set(
-                    bindItem.name,
-                    this.evalExpr(bindItem.expr),
-                    {
-                        target: {
-                            id: this.owner.id
-                        }
+                var propertyGrainedStart = 0;
+                if (changeExpr.type === ExprType.PROP_ACCESSOR) {
+                    switch (bindExpr.type) {
+                        case ExprType.IDENT:
+                            propertyGrainedStart = 1;
+                            break;
+
+                        case ExprType.PROP_ACCESSOR:
+                            if (changeExpr.paths.length > bindExpr.paths.length) {
+                                each(bindExpr.paths, function (path) {
+                                    switch (path.type) {
+                                        case ExprType.IDENT:
+                                        case ExprType.STRING:
+                                        case ExprType.NUMBER:
+                                            propertyGrainedStart++;
+                                            break;
+                                        default:
+                                            propertyGrainedStart = 0;
+                                            return false;
+                                    }
+                                });
+                            }
+                            break;
                     }
-                );
+                }
+
+                var updateExpr = bindItem.name;
+                var updateValue;
+
+                if (propertyGrainedStart) {
+                    updateExpr = {
+                        type: ExprType.PROP_ACCESSOR,
+                        paths: [{
+                            type: ExprType.IDENT,
+                            name: updateExpr
+                        }].concat(changeExpr.paths.slice(propertyGrainedStart))
+                    };
+                    updateValue = this.evalExpr(changeExpr);
+                }
+                else {
+                     updateValue = this.evalExpr(bindExpr);
+                }
+
+                this.data.set(updateExpr, updateValue, {
+                    target: {
+                        id: this.owner.id
+                    }
+                });
+
                 needUpdate = true;
             }
         }, this);

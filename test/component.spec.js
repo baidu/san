@@ -621,6 +621,58 @@ describe("Component", function () {
         });
     });
 
+    it("bind data update property-grained", function (done) {
+        var UserInfo = san.defineComponent({
+            template: '<u class="ui-label" title="{{info.name}}-{{info.email}}">{{info.name}}-{{info.email}}</u>',
+
+            attached: function () {
+                this.watch('info.name', function () {
+                    expect(true).toBeTruthy();
+                });
+                this.watch('info.email', function () {
+                    expect(false).toBeTruthy();
+                });
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-user': UserInfo
+            },
+            template: '<div><ui-user info="{{md.user}}"></ui-user></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                md: {
+                    user: {
+                        name: 'erik',
+                        email: 'errorrik@gmail.com'
+                    }
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.title).toBe('erik-errorrik@gmail.com');
+
+        myComponent.data.set('md.user.name', 'errorrik');
+
+        san.nextTick(function () {
+            var u = wrap.getElementsByTagName('u')[0];
+            expect(u.title).toBe('errorrik-errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("computed", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span></div>',
