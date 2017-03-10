@@ -7,7 +7,7 @@ define(function (require) {
             +    '<li '
             +        'san-for="item in datasource" '
             +        'style="background: {{item}}" '
-            +        'class="{{item == value | yesToBe(\'selected\')}}" '
+            +        'class="{{item == value ? \'selected\' : \'\'}}" '
             +        'on-click="itemClick(item)"'
             +    '></li>'
             + '</ul>',

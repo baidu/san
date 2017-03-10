@@ -46,7 +46,7 @@ define(function (require) {
             this.data.set('left', -1000);
         },
 
-        show: function (pos) {console.log(pos)
+        show: function (pos) {
             this.data.set('left', pos.left);
             this.data.set('top', pos.top);
 
