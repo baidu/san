@@ -12,10 +12,11 @@
 <script>
 
 import service from '../../service'
-
+import ColorPicker from '../ui/ColorPicker.san'
+console.log(ColorPicker)
 export default {
     components: {
-        'ui-colorpicker': require('../ui/ColorPicker')
+        'ui-colorpicker': ColorPicker
     },
 
     initData: function () {

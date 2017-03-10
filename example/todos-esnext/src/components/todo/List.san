@@ -24,7 +24,7 @@
                 <span v-if="item.category">{{ item.category.title }} | </span>
                 <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
             </div>
-            <router-link class="fa fa-pencil" to="#/edit/{{ item.id }}"></router-link>
+            <router-link class="fa fa-pencil" to="/edit/{{ item.id }}"></router-link>
             <i class="fa fa-check" on-click="doneTodo(index)"></i>
             <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
         </li>

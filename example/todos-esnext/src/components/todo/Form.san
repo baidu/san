@@ -18,25 +18,96 @@
 <script>
 
 import service from '../../service'
+import AddCategory from '../category/Add.san'
+import EditCategory from '../category/Edit.san'
+import CategoryPicker from '../ui/CategoryPicker.san'
+import TimePicker from '../ui/TimePicker.san'
+import Calendar from '../ui/Calendar.san'
+
+import san from 'san'
+
+
+let AddCategoryDialog = san.defineComponent({
+    template: '<div class="ui-layer add-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
+        + '<ui-addcategory san-ref="add" on-finished="finish($event)"></ui-addcategory>'
+        + '</div>',
+
+    components: {
+        'ui-addcategory': AddCategory
+    },
+
+    initData: function () {
+        return {
+            width: 200,
+            top: 100,
+            left: -1000
+        };
+    },
+
+    show: function () {
+        this.data.set('left', document.body.clientWidth / 2 - 100);
+    },
+
+    hide: function () {
+        this.data.set('left', -1000);
+    },
+
+    finish: function (e) {
+        this.hide();
+        this.fire('finished');
+        e.returnValue = false;
+    }
+});
+
+let EditCategoryDialog = san.defineComponent({
+    template: '<div class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">'
+        +   '<i class="fa fa-times-circle-o" on-click="hide"></i>'
+        +   '<ui-editcategory on-rm="edited" on-edit="edited"></ui-editcategory>'
+        + '</div>',
+
+    components: {
+        'ui-editcategory': EditCategory
+    },
+
+    initData: function () {
+        return {
+            width: 200,
+            top: 100,
+            left: -1000
+        };
+    },
+
+    show: function () {
+        this.data.set('left', document.body.clientWidth / 2 - 100);
+    },
+
+    hide: function () {
+        this.data.set('left', -1000);
+    },
+
+    edited: function () {
+        this.fire('edited');
+    }
+});
 
 export default {
 
     components: {
-        'ui-categorypicker': require('../ui/CategoryPicker'),
-        'ui-timepicker': require('../ui/TimePicker'),
-        'ui-calendar': require('../ui/Calendar')
+        'ui-categorypicker': CategoryPicker,
+        'ui-timepicker': TimePicker,
+        'ui-calendar': Calendar
     },
 
-    route: function () {
-        var id = this.data.get('route').query.id;
+    attached: function () {
+        var id = this.data.get('id');
         if (id) {
-            this.setTodo(service.todo(+id));
+            this.setTodo(service.todo(id));
         }
 
         this.updateCategories();
     },
 
-    inited: function () {
+    created: function () {
         var now = new Date();
         this.setTodo({
             id: 0,
@@ -46,6 +117,11 @@ export default {
             categoryId: null,
             done: false
         });
+
+        var id = this.data.get('route.query.id');
+        if (id) {
+            this.data.set('id', +id);
+        }
     },
 
     setTodo: function (todo) {
@@ -190,6 +266,19 @@ export default {
 }
 
 
+.add-category-layer .form-title,
+.add-category-layer .form-title:hover,
+.add-category-layer .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
 
+.edit-category-layer .fa-times-circle-o {
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
 
 </style>

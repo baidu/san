@@ -13,11 +13,11 @@ import $ from 'jquery'
 export default {
     filters: {
         valueText: function (value) {
-            var datasource = this.data.get('datasource');
-            var i = datasource.length;
+            let datasource = this.data.get('datasource');
+            let i = datasource.length;
 
             while (i--) {
-                var item = datasource[i];
+                let item = datasource[i];
                 if (item.value == value) {
                     return item.text;
                 }
@@ -62,17 +62,18 @@ export default {
 
 
     attached: function () {
-        if (!this.layer) {
-            var layer = new Layer();
+         if (!this.layer) {
+            let layer = new Layer();
             layer.data.set('left', this.data.get('left'));
             layer.data.set('top', this.data.get('top'));
             layer.data.set('value', this.data.get('value'));
             layer.data.set('datasource', this.data.get('datasource'));
 
             this.layer = layer;
+            this.layer.attach(document.body);
 
-            var timePicker = this;
-            layer.watch('value', function (value) {
+            let timePicker = this;
+            layer.on('valueChange', function (value) {
                 timePicker.data.set('value', value);
             });
 
@@ -88,15 +89,13 @@ export default {
                 layer.data.set('top', top);
             });
 
-            this.layer.attach(document.body);
-
             this._docClicker = this.docClicker.bind(this);
             $(document).on('click', this._docClicker);
         }
     },
 
     docClicker: function (e) {
-        var target = e.target || e.srcElement;
+        let target = e.target || e.srcElement;
         if (target !== this.el && $(target).closest(this.el).length === 0) {
             this.data.set('left', -1000);
         }
@@ -104,12 +103,12 @@ export default {
 
 
     mainClick: function () {
-        var left = this.data.get('left');
+        let left = this.data.get('left');
         if (left > 0) {
             this.data.set('left', -1000);
         }
         else {
-            var pos = $(this.el).offset();
+            let pos = $(this.el).offset();
             this.data.set('left', pos.left);
             this.data.set('top', pos.top + this.el.offsetHeight + 1);
         }

@@ -10,7 +10,7 @@ export default {
     tagName: 'ul',
 
     itemClick: function (item) {
-        this.data.set('value', item.value);
+        this.fire('valueChange', item.value);
     }
 }
 

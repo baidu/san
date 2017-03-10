@@ -29,17 +29,16 @@ export default {
             layer.data.set('value', this.data.get('value'));
 
             this.layer = layer;
+            this.layer.attach(document.body);
 
             var calendar = this;
-            layer.watch('value', function (value) {
+            layer.on('select', function (value) {
                 calendar.data.set('value', value);
             });
 
             this.watch('value', function (value) {
                 layer.data.set('value', value);
             });
-
-            this.layer.attach(document.body);
 
             this._docClicker = this.docClicker.bind(this);
             $(document).on('click', this._docClicker);
