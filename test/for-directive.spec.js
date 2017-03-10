@@ -125,7 +125,7 @@ describe("ForDirective", function () {
 
     it("data push after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -139,6 +139,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
+        expect(lis[2].getAttribute('title')).toBe('varsha 2/2');
 
         myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
@@ -147,7 +148,8 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(5);
-            expect(lis[3].getAttribute('title')).toBe('otakustay');
+            expect(lis[2].getAttribute('title')).toBe('varsha 2/3');
+            expect(lis[3].getAttribute('title')).toBe('otakustay 3/3');
             expect(lis[3].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
             myComponent.dispose();
@@ -158,7 +160,7 @@ describe("ForDirective", function () {
 
     it("data pop after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -172,13 +174,14 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
 
         myComponent.data.pop('persons');
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
-            expect(lis[1].getAttribute('title')).toBe('errorrik');
+            expect(lis[1].getAttribute('title')).toBe('errorrik 1/1');
             expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
             myComponent.dispose();
@@ -189,7 +192,7 @@ describe("ForDirective", function () {
 
     it("data unshift after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{i+1}}{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -203,7 +206,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
-        expect(lis[1].getAttribute('title')).toBe('1one');
+        expect(lis[1].getAttribute('title')).toBe('one 1/2');
         expect(lis[1].innerHTML.indexOf('one - one@gmail.com')).toBe(0);
 
         myComponent.data.unshift('persons',
@@ -214,9 +217,9 @@ describe("ForDirective", function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(5);
 
-            expect(lis[3].getAttribute('title')).toBe('3two');
+            expect(lis[3].getAttribute('title')).toBe('two 3/3');
             expect(lis[3].innerHTML.indexOf('two - two@gmail.com')).toBe(0);
-            expect(lis[1].getAttribute('title')).toBe('1three');
+            expect(lis[1].getAttribute('title')).toBe('three 1/3');
             expect(lis[1].innerHTML.indexOf('three - three@gmail.com')).toBe(0);
 
             myComponent.dispose();
@@ -227,7 +230,7 @@ describe("ForDirective", function () {
 
     it("data shift after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -241,13 +244,15 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
+        expect(lis[2].getAttribute('title')).toBe('varsha 2/2');
 
         myComponent.data.shift('persons');
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
-            expect(lis[1].getAttribute('title')).toBe('varsha');
+            expect(lis[1].getAttribute('title')).toBe('varsha 1/1');
             expect(lis[1].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
 
             myComponent.dispose();
@@ -258,7 +263,7 @@ describe("ForDirective", function () {
 
     it("data remove after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{i+1}}{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -272,7 +277,7 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
-        expect(lis[1].getAttribute('title')).toBe('1one');
+        expect(lis[1].getAttribute('title')).toBe('one 1/2');
         expect(lis[1].innerHTML.indexOf('one - one@gmail.com')).toBe(0);
 
         myComponent.data.removeAt('persons', 0);
@@ -280,7 +285,7 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
-            expect(lis[1].getAttribute('title')).toBe('1two');
+            expect(lis[1].getAttribute('title')).toBe('two 1/1');
             expect(lis[1].innerHTML.indexOf('two - two@gmail.com')).toBe(0);
 
             myComponent.dispose();
@@ -291,7 +296,7 @@ describe("ForDirective", function () {
 
     it("data splice after attach, just remove", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{i+1}}{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -308,8 +313,8 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(7);
-        expect(lis[1].getAttribute('title')).toBe('1one');
-        expect(lis[2].getAttribute('title')).toBe('2two');
+        expect(lis[1].getAttribute('title')).toBe('one 1/5');
+        expect(lis[2].getAttribute('title')).toBe('two 2/5');
 
         myComponent.data.splice('persons', 1, 3);
 
@@ -317,8 +322,8 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(4);
-            expect(lis[1].getAttribute('title')).toBe('1one');
-            expect(lis[2].getAttribute('title')).toBe('2five');
+            expect(lis[1].getAttribute('title')).toBe('one 1/2');
+            expect(lis[2].getAttribute('title')).toBe('five 2/2');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -328,7 +333,7 @@ describe("ForDirective", function () {
 
     it("data splice after attach, remove and insert", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{i+1}}{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -345,8 +350,8 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(7);
-        expect(lis[1].getAttribute('title')).toBe('1one');
-        expect(lis[2].getAttribute('title')).toBe('2two');
+        expect(lis[1].getAttribute('title')).toBe('one 1/5');
+        expect(lis[2].getAttribute('title')).toBe('two 2/5');
 
         myComponent.data.splice('persons', 1, 3, [
             {name: 'six', email: 'six@gmail.com'},
@@ -357,10 +362,10 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(6);
-            expect(lis[1].getAttribute('title')).toBe('1one');
-            expect(lis[2].getAttribute('title')).toBe('2six');
-            expect(lis[3].getAttribute('title')).toBe('3seven');
-            expect(lis[4].getAttribute('title')).toBe('4five');
+            expect(lis[1].getAttribute('title')).toBe('one 1/4');
+            expect(lis[2].getAttribute('title')).toBe('six 2/4');
+            expect(lis[3].getAttribute('title')).toBe('seven 3/4');
+            expect(lis[4].getAttribute('title')).toBe('five 4/4');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -370,7 +375,7 @@ describe("ForDirective", function () {
 
     it("data set after attach", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('persons', [
@@ -384,13 +389,14 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
 
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(4);
-            expect(lis[1].getAttribute('title')).toBe('erik');
+            expect(lis[1].getAttribute('title')).toBe('erik 1/2');
             expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
 
             myComponent.dispose();

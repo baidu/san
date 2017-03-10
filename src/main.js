@@ -2025,8 +2025,7 @@
 
         var ComponentType = owner.components[aNode.tagName];
         if (ComponentType) {
-            var component = new ComponentType(options);
-            return component;
+            return  new ComponentType(options);
         }
 
         if (aNode.tagName === 'slot') {
@@ -2045,34 +2044,28 @@
      */
     var LifeCycles = {
         compiled: {
-            name: 'compiled',
             value: 1
         },
 
         inited: {
-            name: 'inited',
             value: 2
         },
 
         created: {
-            name: 'created',
             value: 3
         },
 
         attached: {
-            name: 'attached',
             value: 4,
             mutex: 'detached'
         },
 
         detached: {
-            name: 'detached',
             value: 5,
             mutex: 'attached'
         },
 
         disposed: {
-            name: 'disposed',
             value: 6,
             mutex: '*'
         }
@@ -2188,11 +2181,10 @@
     Node.prototype._init = function (options) {
         this.owner = options.owner;
         this.parent = options.parent;
-        if (this.parent) {
-            this.parentComponent = this.parent instanceof Component
-                ? this.parent
-                : this.parent.parentComponent;
-        }
+        this.parentComponent = this.parent instanceof Component
+            ? this.parent
+            : this.parent && this.parent.parentComponent;
+
         this.scope = options.scope;
         this.aNode = this.aNode || options.aNode;
         this.el = options.el;
@@ -2292,7 +2284,6 @@
         // from el
         if (this.el) {
             this.aNode.isText = true;
-            this.aNode.tagName = null;
             this.aNode.textExpr = parseText(this.el.innerHTML);
             this.parent._pushChildANode(this.aNode);
         }
@@ -2341,7 +2332,7 @@
             this.el.insertAdjacentHTML('beforebegin', this.evalExpr(this.expr));
         }
 
-        this.hasUpdateOpInNextTick = 0;
+        this.wait4Update = 0;
         this._callHook('updated');
     };
 
@@ -2352,10 +2343,10 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     TextNode.prototype.updateView = function (change) {
-        if (!this.hasUpdateOpInNextTick
+        if (!this.wait4Update
             && exprNeedsUpdate(this.expr, change.expr, this.scope)
         ) {
-            this.hasUpdateOpInNextTick = 1;
+            this.wait4Update = 1;
             nextTick(this.update, this);
 
             return true;
@@ -2390,7 +2381,7 @@
      */
     SlotElement.prototype._init = function (options) {
         var nameBind = options.aNode.props.get('name');
-        this.name = nameBind ? nameBind.raw : '__default__';
+        this.name = nameBind ? nameBind.raw : '____';
 
         var literalOwner = options.owner;
         var givenSlots = literalOwner.aNode.givenSlots;
@@ -2446,7 +2437,7 @@
             return;
         }
 
-        var needUpdate = false;
+        var needUpdate;
         each(this.childs, function (child) {
             needUpdate = child.updateView(change) || needUpdate;
         });
@@ -3198,7 +3189,7 @@
             return;
         }
 
-        var needUpdate = false;
+        var needUpdate;
         this.props.each(function (prop) {
             if (!isDataChangeByElement(change, this, prop.name)
                 && exprNeedsUpdate(prop.expr, change.expr, this.scope)
@@ -3210,7 +3201,7 @@
                     this.setProp(prop.name, this.evalExpr(prop.expr));
                 }, this);
 
-                needUpdate = true;
+                needUpdate = 1;
             }
         }, this);
 
@@ -3344,7 +3335,7 @@
                 // 组件运行时传入的结构，做slot解析
                 var givenSlots = {};
                 each(givenANode.childs, function (child) {
-                    var slotName = '__default__';
+                    var slotName = '____';
                     var slotBind = !child.isText && child.props.get('slot');
                     if (slotBind) {
                         slotName = slotBind.raw;
@@ -3380,17 +3371,9 @@
         this.binds = this.aNode.binds || new IndexedList();
         this.props = this.aNode.props;
 
-
-        if (!this.owner) {
-            this.owner = this;
-        }
-
         // init data
-        var initData = options.data;
-        if (!initData && typeof this.initData === 'function') {
-            initData = this.initData();
-        }
-
+        var initData = options.data
+            || (typeof this.initData === 'function' && this.initData());
         for (var key in initData) {
             if (initData.hasOwnProperty(key)) {
                 this.data.set(key, initData[key]);
@@ -3425,17 +3408,15 @@
      * @param {string} computedExpr computed表达式串
      */
     Component.prototype._calcComputed = function (computedExpr) {
-        var needAnalyse;
         var computedDeps = this.computedDeps[computedExpr];
         if (!computedDeps) {
             computedDeps = this.computedDeps[computedExpr] = {};
-            needAnalyse = 1;
         }
 
         this.data.set(computedExpr, this.computed[computedExpr].call({
             data: {
                 get: bind(function (expr) {
-                    if (needAnalyse && !computedDeps[expr]) {
+                    if (!computedDeps[expr]) {
                         computedDeps[expr] = 1;
 
                         if (this.computed[expr]) {
@@ -3719,20 +3700,18 @@
             if (proto.template) {
                 var aNode = parseTemplate(proto.template);
                 var firstChild = aNode.childs[0];
-
-                if (firstChild && !firstChild.isText) {
-                    proto.aNode = firstChild;
-                    if (firstChild.tagName === 'template') {
-                        firstChild.tagName = null;
-                    }
-
-                    firstChild.events.each(function (item) {
-                        item.isOwn = true;
-                    });
-                }
-                else {
+                if (aNode.childs.length !== 1 || firstChild.isText) {
                     throw new Error('[SAN FATEL] template must have a root element.');
                 }
+
+                proto.aNode = firstChild;
+                if (firstChild.tagName === 'template') {
+                    firstChild.tagName = null;
+                }
+
+                firstChild.events.each(function (item) {
+                    item.isOwn = true;
+                });
 
                 proto.template = null;
             }
@@ -3758,7 +3737,7 @@
      * @param {Object} change 数据变化信息
      */
     Component.prototype._dataChanger = function (change) {
-        var needUpdate = false;
+        var needUpdate;
 
         this.props.each(function (prop) {
             if (exprNeedsUpdate(prop.expr, change.expr, this.data)) {
@@ -3838,7 +3817,7 @@
             return;
         }
 
-        var needUpdate = false;
+        var needUpdate;
         var changeExpr = change.expr;
 
         this.binds.each(function (bindItem) {
@@ -3896,7 +3875,7 @@
                     }
                 });
 
-                needUpdate = true;
+                needUpdate = 1;
             }
         }, this);
 
@@ -4186,20 +4165,25 @@
      *
      * @return {string}
      */
-    ForDirective.prototype.genHTML = function () {
+    ForDirective.prototype.genHTML = function (onlyChilds) {
         var buf = new StringBuffer();
 
-        eachForData(this, function (item, i) {
-            var child = createForDirectiveChild(this, item, i);
-            this.childs.push(child);
-            buf.push(child.genHTML());
+        each(
+            this.evalExpr(this.aNode.directives.get('for').list),
+            function (item, i) {
+                var child = createForDirectiveChild(this, item, i);
+                this.childs.push(child);
+                buf.push(child.genHTML());
+            },
+            this
+        );
 
-        });
-
-        if (isFEFFBeforeStump && !buf.length) {
-            buf.push('\uFEFF');
+        if (!onlyChilds) {
+            if (isFEFFBeforeStump && !buf.length) {
+                buf.push('\uFEFF');
+            }
+            buf.push(genStumpHTML(this));
         }
-        buf.push(genStumpHTML(this));
 
         return buf.toString();
     };
@@ -4268,14 +4252,7 @@
             }
         }
 
-        var buf = new StringBuffer();
-
-        eachForData(this, function (item, i) {
-            var child = createForDirectiveChild(this, item, i);
-            this.childs.push(child);
-            buf.push(child.genHTML());
-        });
-        this.el.insertAdjacentHTML('beforebegin', buf.toString());
+        this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
     };
 
     /**
@@ -4300,18 +4277,6 @@
             this.el.id = this.id;
         }
     };
-
-    /**
-     * 遍历 for 指令表达式的对应数据
-     *
-     * @inner
-     * @param {ForDirective} forElement for 指令元素对象
-     * @param {Function} fn 遍历函数
-     */
-    function eachForData(forElement, fn) {
-        var forDirective = forElement.aNode.directives.get('for');
-        each(forElement.evalExpr(forDirective.list), fn, forElement);
-    }
 
     /**
      * 创建 for 指令元素的子元素
@@ -4448,7 +4413,7 @@
             changeInForExpr = changeLen - forLen === 1 ? 1 : 2;
         }
 
-        var needUpdate = false;
+        var needUpdate;
 
         switch (changeInForExpr) {
             case -1:
@@ -4484,9 +4449,21 @@
 
                             this.childs.splice.apply(this.childs, spliceArgs);
                         }, this);
-                        updateForDirectiveIndex(this, changeStart + deleteCount, function (i) {
-                            return i - deleteCount + change.insertions.length;
+
+                        var insertionsLen = change.insertions.length;
+                        each(this.childs, function (child, index) {
+                            needUpdate = child.updateView(change) || needUpdate;
+
+                            // update child index
+                            if (index >= changeStart + deleteCount) {
+                                Model.prototype.set.call(
+                                    child.scope,
+                                    forDirective.index,
+                                    index - deleteCount + insertionsLen
+                                );
+                            }
                         });
+
                         break;
 
                     case ModelChangeType.SET:
@@ -4497,20 +4474,13 @@
                             }
 
                             this._disposeChilds();
-                            var buf = new StringBuffer();
-                            eachForData(this, function (item, i) {
-                                var child = createForDirectiveChild(this, item, i);
-                                this.childs.push(child);
-                                buf.push(child.genHTML());
-                            });
-
-                            this.el.insertAdjacentHTML('beforebegin', buf.toString());
+                            this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
                             this._noticeAttached();
                         }, this);
                         break;
                 }
 
-                needUpdate = true;
+                needUpdate = 1;
                 break;
 
             case 1:
@@ -4531,7 +4501,7 @@
                         {silence: true}
                     );
                     this.childs[changeIndex].updateView(change);
-                    needUpdate = true;
+                    needUpdate = 1;
                 }
                 break;
         }
@@ -4540,29 +4510,6 @@
         return needUpdate;
     };
 
-    /**
-     * 更新 for 指令元素子组件的索引值
-     *
-     * @inner
-     * @param {ForDirective} forDirective for 指令元素
-     * @param {number} start 开始的索引
-     * @param {function(number):number} fn 计算更新后值的函数
-     */
-    function updateForDirectiveIndex(forDirective, start, fn) {
-        var childs = forDirective.childs;
-        var directiveInfo = forDirective.aNode.directives.get('for');
-
-        for (var len = childs.length; start < len; start++) {
-            var index = childs[start].scope.get(directiveInfo.index);
-            if (index != null) {
-                Model.prototype.set.call(
-                    childs[start].scope,
-                    directiveInfo.index,
-                    fn(index)
-                );
-            }
-        }
-    }
 
     /* eslint-disable */
     if (isFEFFBeforeStump) {
