@@ -566,9 +566,9 @@
                 default:
                     if (code === charCode) {
                         this.index++;
-                        return true;
+                        return 1;
                     }
-                    return false;
+                    return;
             }
         }
     };
@@ -2156,11 +2156,6 @@
         if (typeof this[name] === 'function') {
             this[name].call(this);
         }
-
-        var hookMethod = this.hooks && this.hooks[name];
-        if (hookMethod) {
-            hookMethod.call(this);
-        }
     };
 
     /**
@@ -3742,6 +3737,10 @@
         this.props.each(function (prop) {
             if (exprNeedsUpdate(prop.expr, change.expr, this.data)) {
                 nextTick(function () {
+                    if (this.lifeCycle.is('disposed')) {
+                        return;
+                    }
+
                     this.setProp(
                         prop.name,
                         evalExpr(prop.expr, this.data, this)
