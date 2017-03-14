@@ -316,7 +316,7 @@ describe("ForDirective", function () {
         expect(lis[1].getAttribute('title')).toBe('one 1/5');
         expect(lis[2].getAttribute('title')).toBe('two 2/5');
 
-        myComponent.data.splice('persons', 1, 3);
+        myComponent.data.splice('persons', [1, 3]);
 
 
         san.nextTick(function () {
@@ -353,7 +353,8 @@ describe("ForDirective", function () {
         expect(lis[1].getAttribute('title')).toBe('one 1/5');
         expect(lis[2].getAttribute('title')).toBe('two 2/5');
 
-        myComponent.data.splice('persons', 1, 3, [
+        myComponent.data.splice('persons', [
+            1, 3,
             {name: 'six', email: 'six@gmail.com'},
             {name: 'seven', email: 'seven@gmail.com'}
         ]);

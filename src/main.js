@@ -160,9 +160,8 @@
      * @inner
      * @type {Object}
      */
-    var svgTags = (function () {
-        var map = {};
-        each((''
+    var svgTags = {};
+    each((''
             // structure
             + 'svg,g,defs,desc,metadata,symbol,use,'
             // image & shape
@@ -172,14 +171,12 @@
             // other
             + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
             // font
-            + 'font,font-face,glyph,missing-glyph').split(','),
-            function (key) {
-                map[key] = true;
-            }
-        );
-
-        return map;
-    })();
+            + 'font,font-face,glyph,missing-glyph'
+        ).split(','),
+        function (key) {
+            svgTags[key] = 1;
+        }
+    );
 
     /**
      * 创建 DOM 元素
@@ -275,21 +272,21 @@
     }
 
     /**
+     * 从userAgent中ie版本号的匹配信息
+     *
+     * @inner
+     * @type {Array}
+     */
+    var ieVersionMatch = typeof navigator !== 'undefined'
+        && navigator.userAgent.match(/msie\s*([0-9]+)/i);
+
+    /**
      * ie版本号，非ie时为0
      *
      * @inner
      * @type {number}
      */
-    var ie = (function () {
-        var ieVersionMatch = typeof navigator !== 'undefined'
-            && navigator.userAgent.match(/msie\s*([0-9]+)/i);
-
-        if (ieVersionMatch) {
-            return ieVersionMatch[1] - 0;
-        }
-
-        return 0;
-    })();
+    var ie = ieVersionMatch ? ieVersionMatch[1] - 0 : 0;
 
     /**
      * 字符串连接时是否使用老式的兼容方案
@@ -406,18 +403,6 @@
      */
     IndexedList.prototype.each = function (iterator, thisArg) {
         each(this.raw, bind(iterator, thisArg || this));
-    };
-
-    /**
-     * 根据顺序下标移除 item
-     *
-     * @inner
-     * @param {number} index 顺序
-     */
-    IndexedList.prototype.removeAt = function (index) {
-        var name = this.raw[index].name;
-        this.index[name] = null;
-        this.raw.splice(index, 1);
     };
 
     /**
@@ -786,7 +771,7 @@
      */
     function integrateProp(aNode, name, value) {
         // parse two way binding, e.g. value="{=ident=}"
-        var twoWayMatch = value.match(/^\{=\s*(\S[\s\S]*?)\s*=\}$/);
+        var twoWayMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
 
         if (twoWayMatch) {
             aNode.props.push({
@@ -1052,24 +1037,21 @@
      * @return {Object}
      */
     function readPropertyAccessor(walker) {
-        var result = {
-            type: ExprType.PROP_ACCESSOR,
-            paths: []
-        };
-
         var firstSeg = readIdentifier(walker);
         if (!firstSeg) {
             return null;
         }
 
-        result.paths.push(firstSeg);
+        var result = {
+            type: ExprType.PROP_ACCESSOR,
+            paths: [firstSeg]
+        };
 
         /* eslint-disable no-constant-condition */
         accessorLoop: while (1) {
         /* eslint-enable no-constant-condition */
 
-            var code = walker.currentCode();
-            switch (code) {
+            switch (walker.currentCode()) {
                 case 46: // .
                     walker.go(1);
 
@@ -1091,11 +1073,7 @@
             }
         }
 
-        if (result.paths.length === 1) {
-            return firstSeg;
-        }
-
-        return result;
+        return result.paths.length > 1 ? result : firstSeg;
     }
 
     /**
@@ -1202,8 +1180,8 @@
                 if (walker.nextCode() === 61) {
                     code += 61;
                     if (walker.nextCode() === 61) {
-                        walker.go(1);
                         code += 61;
+                        walker.go(1);
                     }
 
                     return {
@@ -1437,7 +1415,7 @@
      * @return {boolean}
      */
     function exprsNeedsUpdate(exprs, changeExpr, model) {
-        var result = false;
+        var result;
         each(exprs, function (expr) {
             result = exprNeedsUpdate(expr, changeExpr, model);
             return !result;
@@ -1480,7 +1458,7 @@
 
             case ExprType.INTERP:
                 if (!exprNeedsUpdate(expr.expr, changeExpr, model)) {
-                    var result = false;
+                    var result;
                     each(expr.filters, function (filter) {
                         result = exprsNeedsUpdate(filter.args, changeExpr, model);
                         return !result;
@@ -1681,7 +1659,7 @@
         var target = this.get(expr);
 
         if (target instanceof Array) {
-            this.splice(expr, target.length, 0, [item], option);
+            this.splice(expr, [target.length, 0, item], option);
         }
     };
 
@@ -1698,7 +1676,7 @@
         if (target instanceof Array) {
             var len = target.length;
             if (len) {
-                return this.splice(expr, len - 1, 1, null, option)[0];
+                return this.splice(expr, [len - 1, 1], option)[0];
             }
         }
     };
@@ -1711,7 +1689,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.shift = function (expr, option) {
-        return this.splice(expr, 0, 1, null, option)[0];
+        return this.splice(expr, [0, 1], option)[0];
     };
 
     /**
@@ -1723,7 +1701,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.unshift = function (expr, item, option) {
-        this.splice(expr, 0, 0, [item], option);
+        this.splice(expr, [0, 0, item], option);
     };
 
     /**
@@ -1735,7 +1713,7 @@
      * @param {boolean} option.silence 静默设置，不触发变更事件
      */
     Model.prototype.removeAt = function (expr, index, option) {
-        this.splice(expr, index, 1, null, option);
+        this.splice(expr, [index, 1], option);
     };
 
     /**
@@ -1753,14 +1731,14 @@
             var len = target.length;
             while (len--) {
                 if (target[len] === value) {
-                    this.splice(expr, len, 1, null, option);
+                    this.splice(expr, [len, 1], option);
                     break;
                 }
             }
         }
     };
 
-    Model.prototype.splice = function (expr, index, deleteCount, insertions, option) {
+    Model.prototype.splice = function (expr, args, option) {
         option = option || {};
         expr = parseExpr(expr);
 
@@ -1768,14 +1746,11 @@
         var returnValue = [];
 
         if (target instanceof Array) {
+            var index = args[0];
             if (index < 0 || index > target.length) {
                 return;
             }
 
-            var args = [index, deleteCount];
-            each(insertions, function (insertion) {
-                args.push(insertion);
-            });
             returnValue = target.splice.apply(target, args);
 
             !option.silence && this.fireChange({
@@ -1784,7 +1759,7 @@
                 index: index,
                 deleteCount: returnValue.length,
                 value: returnValue,
-                insertions: insertions || [],
+                insertions: args.slice(2),
                 option: option
             });
         }
@@ -2068,13 +2043,11 @@
             return;
         }
 
-        if (lifeCycle.mutex) {
-            if (lifeCycle.mutex === '*') {
-                this.raw = {};
-            }
-            else {
-                this.raw[LifeCycles[lifeCycle.mutex].value] = 0;
-            }
+        if (lifeCycle.mutex === '*') {
+            this.raw = {};
+        }
+        else if (lifeCycle.mutex) {
+            this.raw[LifeCycles[lifeCycle.mutex].value] = 0;
         }
 
         this.raw[lifeCycle.value] = 1;
@@ -2211,6 +2184,7 @@
      * 计算表达式的结果
      *
      * @param {Object} expr 表达式对象
+     * @param {boolean} escapeInterpHtml 是否要对插值结果进行html转义
      * @return {*}
      */
     Node.prototype.evalExpr = function (expr, escapeInterpHtml) {
@@ -2257,8 +2231,6 @@
             this.aNode.textExpr = parseText(this.el.innerHTML);
             this.parent._pushChildANode(this.aNode);
         }
-
-        this.expr = this.aNode.textExpr;
     };
 
     /**
@@ -2281,7 +2253,7 @@
      */
     TextNode.prototype.genHTML = function () {
         var defaultText = isFEFFBeforeStump ? '\uFEFF' : '';
-        return (this.evalExpr(this.expr, 1) || defaultText) + genStumpHTML(this);
+        return (this.evalExpr(this.aNode.textExpr, 1) || defaultText) + genStumpHTML(this);
     };
 
     /**
@@ -2295,15 +2267,19 @@
         var node = this.el.previousSibling;
 
         if (node && node.nodeType === 3) {
-            var textProp = typeof node.textContent === 'string' ? 'textContent' : 'data';
-            node[textProp] = this.evalExpr(this.expr);
+            var textProp = typeof node.textContent === 'string'
+                ? 'textContent'
+                : 'data';
+            node[textProp] = this.evalExpr(this.aNode.textExpr);
         }
         else {
-            this.el.insertAdjacentHTML('beforebegin', this.evalExpr(this.expr, 1));
+            this.el.insertAdjacentHTML(
+                'beforebegin',
+                this.evalExpr(this.aNode.textExpr, 1)
+            );
         }
 
         this.wait4Update = 0;
-        this._callHook('updated');
     };
 
     /**
@@ -2314,7 +2290,7 @@
      */
     TextNode.prototype.updateView = function (change) {
         if (!this.wait4Update
-            && exprNeedsUpdate(this.expr, change.expr, this.scope)
+            && exprNeedsUpdate(this.aNode.textExpr, change.expr, this.scope)
         ) {
             this.wait4Update = 1;
             nextTick(this.update, this);
@@ -2323,13 +2299,6 @@
         }
     };
 
-    /**
-     * 销毁文本节点
-     */
-    TextNode.prototype._dispose = function () {
-        this.expr = null;
-        Node.prototype._dispose.call(this);
-    };
 
     /**
      * slot 元素类
@@ -2592,7 +2561,7 @@
     };
 
     function getPropHandler(element, name) {
-        return element.propHandlers[name] || element.propHandlers['*'];
+        return element.propHandlers[name] || defaultElementPropHandler;
     }
 
     function bindOutputer(bindInfo) {
@@ -2634,42 +2603,6 @@
     };
 
     /**
-     * 元素事件处理函数提供者
-     *
-     * @inner
-     * @type {Object}
-     */
-    var elementEventProvider = {
-        'input': function (element, eventBind) {
-            return {
-                name: ('oninput' in element.el) ? 'input' : 'propertychange',
-                fn: bind(elementInputListener, element, eventBind)
-            };
-        },
-
-        '*': function (element, eventBind) {
-            return {
-                name: eventBind.name,
-                fn: bind(elementEventListener, element, eventBind)
-            };
-        }
-    };
-
-    /**
-     * 表单input事件监听函数
-     *
-     * @inner
-     * @param {Object} eventBind 绑定信息对象
-     * @param {Event} e 事件对象
-     */
-    function elementInputListener(eventBind, e) {
-        if (e.type === 'input' || e.propertyName === 'value') {
-            e.value = (e.target || e.srcElement).value;
-            elementEventListener.call(this, eventBind, e);
-        }
-    }
-
-    /**
      * 普适事件监听函数
      *
      * @inner
@@ -2704,9 +2637,7 @@
      */
     Element.prototype.bindEvents = function () {
         this.aNode.events.each(function (eventBind) {
-            var provideFn = elementEventProvider[eventBind.name] || elementEventProvider['*'];
-            var listener = provideFn(this, eventBind);
-            this.on(listener.name, listener.fn);
+            this.on(eventBind.name, bind(elementEventListener, this, eventBind));
         }, this);
     };
 
@@ -2909,12 +2840,43 @@
             },
 
             choose: function (element) {
-                if (typeof chooseCondition !== 'function' || chooseCondition(element)) {
+                if (chooseCondition(element)) {
                     return attrName;
                 }
             }
         };
     }
+
+    /**
+     * 默认的元素的属性设置的变换方法
+     *
+     * @inner
+     * @type {Object}
+     */
+    var defaultElementPropHandler = {
+        input: {
+            attr: function (element, name, value) {
+                if (value != null) {
+                    return ' ' + name + '="' + value + '"';
+                }
+            },
+
+            prop: function (element, name, value) {
+                name = HTML_ATTR_PROP_MAP[name] || name;
+                element.el[name] = value;
+            }
+        },
+
+        output: function (element, bindInfo) {
+            element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                target: {
+                    id: element.id,
+                    prop: bindInfo.name
+                }
+            });
+        }
+    };
+
 
     /**
      * 元素的属性设置的变换方法集合
@@ -3044,14 +3006,7 @@
                 }
             },
 
-            output: function (element, bindInfo) {
-                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
-                    target: {
-                        id: element.id,
-                        prop: bindInfo.name
-                    }
-                });
-            },
+            output: defaultElementPropHandler.output,
 
             choose: function (element) {
                 return 'select' === element.tagName && 'value';
@@ -3061,22 +3016,14 @@
         // textarea 的 value bind handler
         {
             input: {
-                attr: function (element, name, value) {
-                },
+                attr: function () {},
 
                 prop: function (element, name, value) {
                     element.el[name] = value;
                 }
             },
 
-            output: function (element, bindInfo) {
-                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
-                    target: {
-                        id: element.id,
-                        prop: bindInfo.name
-                    }
-                });
-            },
+            output: defaultElementPropHandler.output,
 
             choose: function (element) {
                 return 'textarea' === element.tagName && 'value';
@@ -3099,35 +3046,6 @@
 
             choose: function () {
                 return 'style';
-            }
-        },
-
-        // normal 的 bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    if (value != null) {
-                        return ' ' + name + '="' + value + '"';
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    name = HTML_ATTR_PROP_MAP[name] || name;
-                    element.el[name] = value;
-                }
-            },
-
-            output: function (element, bindInfo) {
-                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
-                    target: {
-                        id: element.id,
-                        prop: bindInfo.name
-                    }
-                });
-            },
-
-            choose: function () {
-                return '*';
             }
         }
     ];
@@ -3264,16 +3182,13 @@
         this.detach();
         this.unbindEvents();
 
-        if (this.valueSynchronizer) {
-            un(this.el, this.valueSynchronizerEvent, this.valueSynchronizer);
-        }
         this.el = null;
         this.childs = null;
 
         this.propHandlers = null;
         this.props = null;
         this.binds = null;
-        delete elementContainer[this.id];
+        elementContainer[this.id] = null;
         Node.prototype._dispose.call(this);
     };
 
@@ -3487,17 +3402,11 @@
      * @return {Component}
      */
     Component.prototype.ref = function (name) {
-        var refComponent = null;
+        var refComponent;
         var owner = this;
 
         function childsTraversal(element) {
-            for (var i = 0, l = element.childs.length; i < l; i++) {
-                if (refComponent) {
-                    return;
-                }
-
-                var child = element.childs[i];
-
+            each(element.childs, function (child) {
                 if (child instanceof Component) {
                     var refDirective = child.aNode.directives.get('ref');
                     if (refDirective
@@ -3509,7 +3418,9 @@
                 else if (child instanceof Element) {
                     childsTraversal(child);
                 }
-            }
+
+                return !refComponent;
+            });
         }
 
 
@@ -3686,7 +3597,7 @@
         var proto = this.constructor.prototype;
 
         // pre define components class
-        if (!proto._isComponentsPreDefined) {
+        if (!proto._isComponentsReady) {
             proto.components = proto.components || {};
             var components = proto.components;
 
@@ -3703,7 +3614,7 @@
                 }
             }
 
-            proto._isComponentsPreDefined = true;
+            proto._isComponentsReady = true;
         }
 
 
@@ -4008,12 +3919,6 @@
     };
 
     /**
-     * 清空添加子节点的 ANode 的行为
-     * 从 el 初始化时，不接受子节点的 ANode信息
-     */
-    IfDirective.prototype._pushChildANode = function () {};
-
-    /**
      * 创建元素DOM行为
      */
     IfDirective.prototype._create = function () {
@@ -4043,10 +3948,10 @@
      */
     IfDirective.prototype.genHTML = function () {
         var buf = new StringBuffer();
-        var ifDirective = this.aNode.directives.get('if');
-        if (this.evalExpr(ifDirective.value)) {
+
+        if (this.evalExpr(this.aNode.directives.get('if').value)) {
             var child = createIfDirectiveChild(this);
-            this.childs.push(child);
+            this.childs[0] = child;
             buf.push(child.genHTML());
         }
 
@@ -4100,19 +4005,10 @@
     };
 
     /**
-     * 通知自己和子元素完成attached状态
-     *
-     * @protected
+     * 清空添加子节点的 ANode 的行为
+     * 从 el 初始化时，不接受子节点的 ANode信息
      */
-    IfDirective.prototype._noticeAttached = function () {
-        var ifDirective = this.aNode.directives.get('if');
-        if (this.evalExpr(ifDirective.value)) {
-            this.childs[0]._noticeAttached();
-        }
-
-        this._callHook('created');
-        this._callHook('attached');
-    };
+    IfDirective.prototype._pushChildANode = function () {};
 
     /**
      * else 指令处理类
@@ -4277,11 +4173,7 @@
      * 将元素从页面上移除的行为
      */
     ForDirective.prototype._detach = function () {
-        each(this.childs, function (child) {
-            child.dispose();
-        });
-        this.childs.length = 0;
-
+        this._disposeChilds();
         removeEl(this.el);
     };
 
@@ -4632,16 +4524,6 @@
          * @param {Function} fn 要运行的函数
          */
         nextTick: nextTick,
-
-        /**
-         * 根据 DOM id 获取内部元素对象
-         *
-         * @param {string} id DOM元素的id
-         * @return {Element}
-         */
-        getEl: function (id) {
-            return elementContainer[id];
-        },
 
         /**
          * 构建类之间的继承关系
