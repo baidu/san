@@ -2872,6 +2872,10 @@
      * @return {string}
      */
     function elementGenChildsHTML(element) {
+        if (element.tagName === 'textarea') {
+            return '';
+        }
+
         var buf = new StringBuffer();
 
         each(element.aNode.childs, function (aNodeChild) {

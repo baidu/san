@@ -1,7 +1,7 @@
 describe("Form TwoWay Binding", function () {
 
     it("text value", function (done) {
-        var defName = 'input something';
+        var defName = 'text value';
 
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span> <input value="{=name=}"/></div>'
@@ -36,7 +36,7 @@ describe("Form TwoWay Binding", function () {
     });
 
     it("textarea value", function (done) {
-        var defName = 'input something';
+        var defName = 'textarea value';
 
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span> <textarea value="{=name=}"></textarea></div>'
@@ -51,6 +51,49 @@ describe("Form TwoWay Binding", function () {
         var span = wrap.firstChild.firstChild;
         expect(span.title).toBe(defName);
         var textarea = wrap.getElementsByTagName('textarea')[0];
+
+        san.nextTick(function () {
+            expect(textarea.value).toBe(defName);
+
+            WDBridge.send('action', 'addValue:#' + textarea.id + '|added2');
+
+            doneSpec();
+        });
+
+
+        function doneSpec() {
+            var name = myComponent.data.get('name');
+            if (name !== defName) {
+                expect(span.title).toBe(name);
+                expect(textarea.value).toBe(name);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+    });
+
+    it("textarea inner content should be ignore", function (done) {
+        var defName = 'textarea inner content should be ignore';
+
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{name}}</span> <textarea value="{=name=}">啊多少发多少发多少分</textarea></div>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', defName);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe(defName);
+        var textarea = wrap.getElementsByTagName('textarea')[0];
+        expect(textarea.value).toBe('');
 
         san.nextTick(function () {
             expect(textarea.value).toBe(defName);
