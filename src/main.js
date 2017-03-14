@@ -766,12 +766,12 @@
                 break;
 
             case 'prop':
-                integrateBindAttr(aNode, realName, value);
+                integrateProp(aNode, realName, value);
                 break;
 
             default:
                 if (!ignoreNormal) {
-                    integrateBindAttr(aNode, name, value);
+                    integrateProp(aNode, name, value);
                 }
         }
     }
@@ -784,7 +784,7 @@
      * @param {string} name 属性名称
      * @param {string} value 属性值
      */
-    function integrateBindAttr(aNode, name, value) {
+    function integrateProp(aNode, name, value) {
         // parse two way binding, e.g. value="{=ident=}"
         var twoWayMatch = value.match(/^\{=\s*(\S[\s\S]*?)\s*=\}$/);
 
@@ -799,22 +799,9 @@
         }
 
         // parse normal prop
-        var expr = parseText(value);
-
-        // 当 text 解析只有一项时，要么就是 string，要么就是 interp
-        // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
-        // 所以这里做个处理，只有一项时直接抽出来
-        if (expr.segs.length === 1) {
-            expr = expr.segs[0];
-        }
-
-        if (expr.type === ExprType.INTERP) {
-            expr = expr.expr;
-        }
-
         aNode.props.push(textBindExtra({
             name: name,
-            expr: expr,
+            expr: parseText(value),
             raw: value
         }));
     }
@@ -1835,6 +1822,20 @@
         return HTML_ENTITY[c];
     }
 
+/**
+     * HTML转义
+     *
+     * @param {string} source 源串
+     * @return {string} 替换结果串
+     */
+    function escapeHTML(source) {
+        if (source == null) {
+            return '';
+        }
+
+        return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
+    }
+
     /**
      * 默认filter
      *
@@ -1850,13 +1851,7 @@
          * @param {string} source 源串
          * @return {string} 替换结果串
          */
-        html: function (source) {
-            if (source == null) {
-                return '';
-            }
-
-            return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
-        },
+        html: escapeHTML,
 
         /**
          * URL编码filter
@@ -1893,7 +1888,7 @@
      * @param {Component=} owner 所属组件环境
      * @return {*}
      */
-    function evalExpr(expr, model, owner) {
+    function evalExpr(expr, model, owner, escapeInterpHtml) {
         switch (expr.type) {
             case ExprType.UNARY:
                 return !evalExpr(expr.expr, model, owner);
@@ -1954,9 +1949,9 @@
                 each(expr.segs, function (seg) {
                     var segValue = evalExpr(seg, model, owner);
 
-                    // use html filter by default
-                    if (seg.type === ExprType.INTERP && !seg.filters[0]) {
-                        segValue = DEFAULT_FILTERS.html(segValue);
+                    // escape html
+                    if (escapeInterpHtml && seg.type === ExprType.INTERP && !seg.filters[0]) {
+                        segValue = escapeHTML(segValue);
                     }
 
                     buf.push(segValue);
@@ -2218,8 +2213,8 @@
      * @param {Object} expr 表达式对象
      * @return {*}
      */
-    Node.prototype.evalExpr = function (expr) {
-        return evalExpr(expr, this.scope, this.owner);
+    Node.prototype.evalExpr = function (expr, escapeInterpHtml) {
+        return evalExpr(expr, this.scope, this.owner, escapeInterpHtml);
     };
 
     /**
@@ -2286,7 +2281,7 @@
      */
     TextNode.prototype.genHTML = function () {
         var defaultText = isFEFFBeforeStump ? '\uFEFF' : '';
-        return (this.evalExpr(this.expr) || defaultText) + genStumpHTML(this);
+        return (this.evalExpr(this.expr, 1) || defaultText) + genStumpHTML(this);
     };
 
     /**
@@ -2304,7 +2299,7 @@
             node[textProp] = this.evalExpr(this.expr);
         }
         else {
-            this.el.insertAdjacentHTML('beforebegin', this.evalExpr(this.expr));
+            this.el.insertAdjacentHTML('beforebegin', this.evalExpr(this.expr, 1));
         }
 
         this.wait4Update = 0;
@@ -2521,7 +2516,7 @@
             this.props.each(function (prop) {
                 var value = this instanceof Component
                     ? evalExpr(prop.expr, this.data, this)
-                    : this.evalExpr(prop.expr);
+                    : this.evalExpr(prop.expr, 1);
 
                 var match = /^\s+([a-z0-9_-]+)="(.*)"$/.exec(
                     getPropHandler(this, prop.name)
@@ -2814,7 +2809,7 @@
         element.props.each(function (prop) {
             var value = this instanceof Component
                 ? evalExpr(prop.expr, this.data, this)
-                : this.evalExpr(prop.expr);
+                : this.evalExpr(prop.expr, 1);
 
             stringBuffer.push(
                 getPropHandler(this, prop.name)
@@ -2853,7 +2848,8 @@
      */
     function elementGenChildsHTML(element) {
         if (element.tagName === 'textarea') {
-            return '';
+            var valueProp = element.props.get('value');
+            return valueProp ? escapeHTML(element.evalExpr(valueProp.expr)) : '';
         }
 
         var buf = new StringBuffer();
@@ -3058,11 +3054,32 @@
             },
 
             choose: function (element) {
-                switch(element.tagName) {
-                    case 'select':
-                    case 'textarea':
-                        return 'value';
+                return 'select' === element.tagName && 'value';
+            }
+        },
+
+        // textarea 的 value bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                },
+
+                prop: function (element, name, value) {
+                    element.el[name] = value;
                 }
+            },
+
+            output: function (element, bindInfo) {
+                element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                    target: {
+                        id: element.id,
+                        prop: bindInfo.name
+                    }
+                });
+            },
+
+            choose: function (element) {
+                return 'textarea' === element.tagName && 'value';
             }
         },
 
@@ -3352,6 +3369,20 @@
 
         Element.prototype._init.call(this, options);
         this.binds = this.aNode.binds || new IndexedList();
+        this.binds.each(function (bind) {
+            var expr = bind.expr;
+
+            // 当 text 解析只有一项时，要么就是 string，要么就是 interp
+            // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
+            // 所以这里做个处理，只有一项时直接抽出来
+            if (expr.type === ExprType.TEXT && expr.segs.length === 1) {
+                expr = expr.segs[0];
+
+                if (expr.type === ExprType.INTERP) {
+                    bind.expr = expr.expr;
+                }
+            }
+        });
         this.props = this.aNode.props;
 
         // init data
