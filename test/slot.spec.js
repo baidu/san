@@ -6,7 +6,7 @@ describe("Slot", function () {
         var Panel = san.defineComponent({
             template: '<div>'
                 +   '<div class="head" on-click="toggle">{{title}}</div>'
-                +   '<p style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></p>'
+                +   '<p style="{{fold ? \'display:none\' : \'\'}}"><slot></slot></p>'
                 + '</div>',
 
             toggle: function () {
@@ -142,7 +142,7 @@ describe("Slot", function () {
         var Panel = san.defineComponent({
             template: '<div>'
                 +   '<div class="head" title="{{title}}" on-click="toggle">{{title}}</div>'
-                +   '<p style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></p>'
+                +   '<p style="{{fold ? \'display:none\' : \'\'}}"><slot></slot></p>'
                 + '</div>',
 
             initData: function () {
@@ -310,7 +310,7 @@ describe("Slot", function () {
         var Panel = san.defineComponent({
             template: '<div>'
                 +   '<div class="head" title="{{title}}" on-click="toggle">{{title}}</div>'
-                +   '<p style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></p>'
+                +   '<p style="{{fold ? \'display:none\' : \'\'}}"><slot></slot></p>'
                 + '</div>',
 
             toggle: function () {

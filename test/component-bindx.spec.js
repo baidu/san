@@ -8,7 +8,7 @@ describe("Component-TwoWay Binding", function () {
         + '<ul class="ui-colorpicker">'
         +    '<li '
         +        'san-for="item in datasource" '
-        +        'style="cursor:pointer; background: {{item}};{{item == value | yesToBe(\'border:2px solid #ccc;\')}}" '
+        +        'style="cursor:pointer; background: {{item}};{{item == value ? \'border:2px solid #ccc;\' : \'\'}}" '
         +        'on-click="itemClick(item)"'
         +    '>click</li>'
         + '</ul>';

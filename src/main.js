@@ -1876,26 +1876,6 @@
             return source;
         },
 
-        yesToBe: function (condition, value) {
-            if (condition) {
-                return value;
-            }
-
-            return '';
-        },
-
-        nullToBe: function (condition, value) {
-            if (condition == null) {
-                return value;
-            }
-
-            return condition;
-        },
-
-        yesOrNoToBe: function (condition, yesValue, noValue) {
-            return condition ? yesValue : noValue;
-        },
-
         join: function (source, separator) {
             if (source instanceof Array) {
                 return source.join(separator);

@@ -6,7 +6,7 @@ describe("Component", function () {
             +    '<li '
             +        'san-for="item in datasource" '
             +        'style="background: {{item}}" '
-            +        'class="{{item == value | yesToBe(\'selected\')}}" '
+            +        'class="{{item == value ? \'selected\' : \'\'}}" '
             +        'on-click="itemClick(item)"'
             +    '></li>'
             + '</ul></div>',
@@ -371,7 +371,7 @@ describe("Component", function () {
         var selectValue;
         var itemId;
         var SelectItem = san.defineComponent({
-            template: '<li on-click="select" style="{{value === selectValue | yesToBe(\'border: 1px solid red\')}}"><slot></slot></li>',
+            template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
 
             select: function () {
                 var value = this.data.get('value');
