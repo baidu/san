@@ -2963,7 +2963,7 @@
             }
         }),
 
-        // input[type=checkbox] 的 bind handler
+        // input[type=checkbox] 的 checked bind handler
         {
             input: {
                 attr: function (element, name, value) {
@@ -3003,7 +3003,7 @@
             }
         },
 
-        // input[type=radio] 的 bind handler
+        // input[type=radio] 的 checked bind handler
         {
             input: {
                 attr: function (element, name, value) {
@@ -3048,7 +3048,7 @@
             }
         },
 
-        // select 的 value bind handler
+        // select 或 textarea 的 value bind handler
         {
             input: {
                 attr: function (element, name, value) {
@@ -3074,7 +3074,11 @@
             },
 
             choose: function (element) {
-                return element.tagName === 'select' && 'value';
+                switch(element.tagName) {
+                    case 'select':
+                    case 'textarea':
+                        return 'value';
+                }
             }
         },
 
