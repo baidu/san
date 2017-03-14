@@ -54,3 +54,4 @@ CDN:
 ## See Also
 
 - [san-router](https://github.com/ecomfe/san-router) - Official Router for San
+- [san-store](https://github.com/ecomfe/san-store) - Official Application States Management for San
