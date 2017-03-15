@@ -804,10 +804,7 @@
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
-                        name: {
-                            type: ExprType.IDENT,
-                            name: 'join'
-                        },
+                        name: 'join',
                         args: [
                             {
                                 type: ExprType.STRING,
@@ -1400,7 +1397,7 @@
 
         return {
             type: ExprType.CALL,
-            name: identifier,
+            name: identifier.name,
             args: args
         };
     }
@@ -1898,7 +1895,7 @@
                 var value = evalExpr(expr.expr, model, owner);
 
                 owner && each(expr.filters, function (filter) {
-                    var filterName = filter.name.name;
+                    var filterName = filter.name;
                     /* eslint-disable no-use-before-define */
                     var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
                     /* eslint-enable no-use-before-define */
@@ -2626,7 +2623,7 @@
             owner = this;
         }
 
-        var method = owner[expr.name.name];
+        var method = owner[expr.name];
         if (typeof method === 'function') {
             method.apply(owner, args);
         }
@@ -2693,7 +2690,7 @@
      */
     Element.prototype.un = function (name, listener) {
         var nameListeners = this.eventListeners[name];
-        var len = nameListeners instanceof Array && nameListeners.length;
+        var len = nameListeners && nameListeners.length;
 
         while (len--) {
             var fn = nameListeners[len];
@@ -3687,39 +3684,35 @@
         needUpdate && this._noticeUpdatedSoon();
 
         this.binds.each(function (bindItem) {
+            var changeExpr = change.expr;
             if (bindItem.x
                 && !isDataChangeByElement(change, this.owner)
-                && exprNeedsUpdate(parseExpr(bindItem.name), change.expr, this.data)
+                && exprNeedsUpdate(parseExpr(bindItem.name), changeExpr, this.data)
             ) {
                 var updateScopeExpr = bindItem.expr;
-                if (change.expr.type === ExprType.PROP_ACCESSOR) {
-                    updateScopeExpr = {
-                        type: ExprType.PROP_ACCESSOR,
-                        paths: []
-                    };
+                if (changeExpr.type === ExprType.PROP_ACCESSOR) {
+                    var updateScopeExprPaths;
 
                     switch (bindItem.expr.type) {
                         case ExprType.IDENT:
-                            updateScopeExpr.paths.push(bindItem.expr);
+                            updateScopeExprPaths = [bindItem.expr];
                             break;
 
                         case ExprType.PROP_ACCESSOR:
-                            Array.prototype.push.apply(
-                                updateScopeExpr.paths,
-                                bindItem.expr.paths
-                            );
+                            updateScopeExprPaths = bindItem.expr.paths.slice(0);
                             break;
                     }
 
-                    Array.prototype.push.apply(
-                        updateScopeExpr.paths,
-                        change.expr.paths.slice(1)
-                    );
+                    updateScopeExprPaths = updateScopeExprPaths.concat(changeExpr.paths.slice(1));
+                    updateScopeExpr = {
+                        type: ExprType.PROP_ACCESSOR,
+                        paths: updateScopeExprPaths
+                    };
                 }
 
                 this.scope.set(
                     updateScopeExpr,
-                    evalExpr(change.expr, this.data, this),
+                    evalExpr(changeExpr, this.data, this),
                     {
                         target: {
                             id: this.id,
@@ -4253,7 +4246,7 @@
 
         // TODO: itemScope 可能清理的不干净
         itemScope.onChange(function (change) {
-            if (change.expr.type === ExprType.IDENT && change.expr.name === forDirective.index) {
+            if (change.expr.name === forDirective.index) {
                 directiveChild.updateView(change);
             }
         });

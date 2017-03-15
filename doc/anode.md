@@ -215,7 +215,7 @@ exprInfo = {
     filters: [
         {
             type: ExprType.CALL,
-            name: {type: ExprType.IDENT, name: 'comma'},
+            name: 'comma',
             args: [
                 {type: ExprType.NUMBER, literal: '3'}
             ]
@@ -234,7 +234,7 @@ exprInfo = {
 // args - 调用参数列表。数组，其中每一项是一个表达式对象
 exprInfo = {
     type: ExprType.CALL,
-    name: {type: ExprType.IDENT, name: 'comma'},
+    name: 'comma',
     args: [
         {type: ExprType.NUMBER, literal: '3'}
     ]
