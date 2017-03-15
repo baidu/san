@@ -4452,7 +4452,7 @@
          *
          * @type {string}
          */
-        version: '3.0.3-rc.8',
+        version: '3.0.3-rc.9',
 
         /**
          * 组件基类
