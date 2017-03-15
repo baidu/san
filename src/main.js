@@ -4,6 +4,7 @@
  *
  * @file 组件体系，vm引擎
  * @author errorrik(errorrik@gmail.com)
+ *         otakustay(otakustay@gmail.com)
  */
 
 
@@ -3420,7 +3421,11 @@
         }
 
 
-        childsTraversal(owner);
+        childsTraversal(this);
+        each(this.slotChilds, function (slotChild) {
+            childsTraversal(slotChild);
+            return !refComponent;
+        });
         return refComponent;
     };
 
