@@ -131,7 +131,8 @@ var ExprType = {
     CALL: 6,
     TEXT: 7,
     BINARY: 8,
-    UNARY: 9
+    UNARY: 9,
+    TERTIARY: 10
 };
 ```
 
