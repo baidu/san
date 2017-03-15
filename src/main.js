@@ -363,7 +363,7 @@
      */
     IndexedList.prototype.push = function (item) {
         if (!item.name) {
-            throw new Error('Object must have "name" property');
+            throw new Error('Miss "name" property');
         }
 
         if (!this.index[item.name]) {
@@ -667,7 +667,7 @@
                         && walker.charCode(walker.index + 1) === 62
                     ) {
                         walker.go(2);
-                        tagClose = true;
+                        tagClose = 1;
                         break;
                     }
 
@@ -771,13 +771,13 @@
      */
     function integrateProp(aNode, name, value) {
         // parse two way binding, e.g. value="{=ident=}"
-        var twoWayMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
+        var xMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
 
-        if (twoWayMatch) {
+        if (xMatch) {
             aNode.props.push({
                 name: name,
-                expr: parseExpr(twoWayMatch[1]),
-                twoWay: true
+                expr: parseExpr(xMatch[1]),
+                x: true
             });
 
             return;
@@ -2526,7 +2526,7 @@
      */
     Element.prototype._initSelfChanger = function () {
         this.binds && this.binds.each(function (bindInfo) {
-            if (!bindInfo.twoWay) {
+            if (!bindInfo.x) {
                 return;
             }
 
@@ -2939,7 +2939,7 @@
                 if (element.aNode) {
                     var bindType = element.props.get('type');
                     return element.tagName === 'input'
-                        && bindType && element.evalExpr(bindType.expr) === 'checkbox'
+                        && bindType && bindType.raw === 'checkbox'
                         && 'checked';
                 }
             }
@@ -2984,7 +2984,7 @@
                 if (element.aNode) {
                     var bindType = element.props.get('type');
                     return element.tagName === 'input'
-                        && bindType && element.evalExpr(bindType.expr) === 'radio'
+                        && bindType && bindType.raw === 'radio'
                         && 'checked';
                 }
             }
@@ -3322,12 +3322,6 @@
         }
 
         this._callHook('inited');
-
-        // 如果从el编译的，认为已经attach了，触发钩子
-        if (this._isInitFromEl) {
-            this._callHook('created');
-            this._callHook('attached');
-        }
     };
 
     /**
@@ -3368,8 +3362,13 @@
      * 清空Element.prototype._inited的行为
      */
     Component.prototype._inited = function () {
-        // TODO: need?
         this._initPropHandlers();
+
+        // 如果从el编译的，认为已经attach了，触发钩子
+        if (this._isInitFromEl) {
+            this._callHook('created');
+            this._callHook('attached');
+        }
     };
 
     /**
@@ -3602,15 +3601,13 @@
             var components = proto.components;
 
             for (var key in components) {
-                if (components.hasOwnProperty(key)) {
-                    var componentClass = components[key];
+                var componentClass = components[key];
 
-                    if (typeof componentClass === 'object') {
-                        components[key] = defineComponent(componentClass);
-                    }
-                    else if (componentClass === 'self') {
-                        components[key] = this.constructor;
-                    }
+                if (typeof componentClass === 'object') {
+                    components[key] = defineComponent(componentClass);
+                }
+                else if (componentClass === 'self') {
+                    components[key] = this.constructor;
                 }
             }
 
@@ -3690,7 +3687,7 @@
         needUpdate && this._noticeUpdatedSoon();
 
         this.binds.each(function (bindItem) {
-            if (bindItem.twoWay
+            if (bindItem.x
                 && !isDataChangeByElement(change, this.owner)
                 && exprNeedsUpdate(parseExpr(bindItem.name), change.expr, this.data)
             ) {
@@ -3867,19 +3864,12 @@
             childs: aNode.childs,
             props: aNode.props,
             events: aNode.events,
-            tagName: aNode.tagName
+            tagName: aNode.tagName,
+            directives: (new IndexedList).concat(aNode.directives)
         });
 
-        // TODO: else 那边应该可以不负责清理了
-        ifElement.aNode.directives.each(function (directive) {
-            switch (directive.name) {
-                case 'if':
-                case 'else':
-                    break;
-                default:
-                    childANode.directives.push(directive);
-            }
-        });
+        childANode.directives.remove('if');
+        childANode.directives.remove('else');
 
         return createNode(childANode, ifElement);
     }
@@ -3894,9 +3884,7 @@
             if (options.el.getAttribute('san-stump') === 'if') {
                 var aNode = parseTemplate(options.el.innerHTML);
                 aNode = aNode.childs[0];
-                aNode.directives.remove('else');
                 this.aNode = aNode;
-                this.tagName = this.aNode.tagName;
             }
             else {
                 this.el = null;
@@ -3940,6 +3928,8 @@
             }
         }
     };
+
+    IfDirective.prototype._created = Node.prototype._created;
 
     /**
      * 生成html
@@ -4019,12 +4009,10 @@
      */
     function ElseDirective(options) {
         var parentChilds = options.parent.childs;
+
         var len = parentChilds.length;
         while (len--) {
             var child = parentChilds[len];
-            if (child instanceof TextNode) {
-                continue;
-            }
 
             if (child instanceof IfDirective) {
                 var directiveValue = {
@@ -4035,7 +4023,6 @@
                     }
                 };
                 options.aNode.directives.push(directiveValue);
-                options.aNode.directives.remove('else');
 
                 if (options.el) {
                     if (isStump(options.el)) {
@@ -4050,10 +4037,10 @@
                 return new IfDirective(options);
             }
 
-            break;
+            if (!(child instanceof TextNode)) {
+                throw new Error('[SAN FATEL] else not match if.');
+            }
         }
-
-        throw new Error('[SAN FATEL] else not match if.');
     }
 
     /**
@@ -4073,6 +4060,8 @@
      * 从 el 初始化时，不接受子节点的 ANode信息
      */
     ForDirective.prototype._pushChildANode = function () {};
+
+    ForDirective.prototype._created = Node.prototype._created;
 
     /**
      * 生成html
@@ -4115,7 +4104,6 @@
                     var aNode = parseTemplate(current.innerHTML);
                     aNode = aNode.childs[0];
                     this.aNode = aNode;
-                    this.tagName = this.aNode.tagName;
                     break;
                 }
                 else {
@@ -4219,9 +4207,9 @@
             if (firstPath && firstPath.name === forDirective.item) {
                 resolvedExpr = {
                     type: ExprType.PROP_ACCESSOR,
-                    paths: forDirective.list.type === ExprType.PROP_ACCESSOR
+                    paths: (forDirective.list.type === ExprType.PROP_ACCESSOR
                         ? forDirective.list.paths.slice(0)
-                        : [forDirective.list]
+                        : [forDirective.list]).concat()
                 };
                 resolvedExpr.paths.push({
                     type: ExprType.NUMBER,
@@ -4255,14 +4243,11 @@
             childs: aNode.childs,
             props: aNode.props,
             events: aNode.events,
-            tagName: aNode.tagName
+            tagName: aNode.tagName,
+            directives: (new IndexedList()).concat(aNode.directives)
         });
 
-        aNode.directives.each(function (directive) {
-            if (directive.name !== 'for') {
-                directiveANode.directives.push(directive);
-            }
-        });
+        directiveANode.directives.remove('for');
 
         var directiveChild = createNode(directiveANode, forElement, itemScope);
 
@@ -4403,7 +4388,7 @@
                             {name: forDirective.item, type: ExprType.IDENT}
                         ].concat(changeSegs.slice(forLen + 1))
                     };
-                    // TODO: merge option
+
                     Model.prototype.set.call(
                         this.childs[changeIndex].scope,
                         change.expr,
