@@ -562,4 +562,46 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
     });
+
+    it("select render and dispose in one loop", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online}}</b>'
+                + '<div san-for="item in list">'
+                + '<select value="{=online=}">'
+                +   '<option value="errorrik">errorrik</option>'
+                +   '<option value="firede">firede</option>'
+                + '</select>'
+                + '</div>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'firede'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.data.set('list', [1]);
+        myComponent.data.set('list', [2]);
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            san.nextTick(function () {
+                expect(select.selectedIndex).toBe(1);
+                expect(select.value).toBe('firede');
+                expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('firede')).toBe(0);
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+            });
+        });
+    });
 });

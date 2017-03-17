@@ -2994,7 +2994,9 @@
                 attr: function (element, name, value) {
                     if (value) {
                         nextTick(function () {
-                            element.el[name] = value;
+                            if (element.lifeCycle.is('created')) {
+                                element.el[name] = value;
+                            }
                         });
                     }
                 },
