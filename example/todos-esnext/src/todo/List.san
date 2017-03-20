@@ -34,8 +34,8 @@
 
 <script>
 
-import service from '../../service'
-import { formatDate } from '../../filters'
+import service from '../service'
+import { formatDate } from '../filters'
 import { Link } from 'san-router'
 
 
