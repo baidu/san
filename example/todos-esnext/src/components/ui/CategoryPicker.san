@@ -3,7 +3,7 @@
         <li
             san-for="item, index in datasource"
             style="background: {{item.color}}"
-            class="{{item.id == value | yesToBe('selected')}}"
+            class="{{item.id == value ? 'selected' : ''}}"
             on-click="itemClick(index)"
         >{{ item.title }}</li>
     </ul>
