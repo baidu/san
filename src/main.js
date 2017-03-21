@@ -784,7 +784,7 @@
         }
 
         // parse normal prop
-        aNode.props.push(textBindExtra({
+        aNode.props.push(textPropExtra({
             name: name,
             expr: parseText(value),
             raw: value
@@ -795,12 +795,15 @@
      * 为text类型的属性绑定附加额外的行为，用于一些特殊需求，比如class中插值的自动展开
      *
      * @inner
-     * @param {Object} bind 绑定信息
+     * @param {Object} prop 绑定信息
      * @return {Object}
      */
-    function textBindExtra(bind) {
-        if (bind.name === 'class') {
-            each(bind.expr.segs, function (seg) {
+    function textPropExtra(prop) {
+        // 这里不能把只有一个插值的属性抽取
+        // 因为插值里的值可能是html片段，容易被注入
+        // 组件的数据绑定在组件init时做抽取
+        if (prop.name === 'class') {
+            each(prop.expr.segs, function (seg) {
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
@@ -816,7 +819,7 @@
             });
         }
 
-        return bind;
+        return prop;
     }
 
     /**
@@ -2790,14 +2793,17 @@
         return {
             input: {
                 attr: function (element, name, value) {
-                    if (value) {
+                    // 因为元素的attr值必须经过html escape，否则可能有漏洞
+                    // 所以这里直接对假值字符串形式进行处理
+                    // NaN之类非主流的就先不考虑了
+                    if (value && value !== 'false' && value !== '0') {
                         return ' ' + attrName + '="' + attrName + '"';
                     }
                 },
 
                 prop: function (element, name, value) {
                     var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
-                    element.el[propName] = !!value;
+                    element.el[propName] = !!(value && value !== 'false' && value !== '0');
                 }
             },
 
