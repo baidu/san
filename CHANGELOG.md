@@ -21,7 +21,7 @@ ChangeLog
     - text 预解析
     - 删除 text 节点上多余的属性：childs、binds、directives、events等
     - 解析阶段计算 number 与 string 表达式实际值
-    - property accessor 表达式结构优化
+    - property accessor 和 ident 归一为 accessor
     - binary 表达式结构优化，存储类型信息，不存储 operator 函数
 + 【优化】- 对视图更新过程进行了优化
 + 【优化】- 组件嵌套时，外部声明的子组件绑定信息，不渲染到子组件的主元素属性中
