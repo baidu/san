@@ -463,14 +463,13 @@
     var ExprType = {
         STRING: 1,
         NUMBER: 2,
-        IDENT: 3,
-        PROP_ACCESSOR: 4,
-        INTERP: 5,
-        CALL: 6,
-        TEXT: 7,
-        BINARY: 8,
-        UNARY: 9,
-        TERTIARY: 10
+        ACCESSOR: 3,
+        INTERP: 4,
+        CALL: 5,
+        TEXT: 6,
+        BINARY: 7,
+        UNARY: 8,
+        TERTIARY: 9
     };
 
     /**
@@ -1001,14 +1000,11 @@
      *
      * @inner
      * @param {Walker} walker 源码读取对象
-     * @return {Object}
+     * @return {string}
      */
     function readIdentifier(walker) {
         var match = walker.match(/\s*([\$0-9a-z_]+)/ig);
-        return {
-            type: ExprType.IDENT,
-            name: match[1]
-        };
+        return match[1];
     }
 
     /**
@@ -1035,14 +1031,14 @@
      * @return {Object}
      */
     function readPropertyAccessor(walker) {
-        var firstSeg = readIdentifier(walker);
-        if (!firstSeg) {
-            return null;
-        }
-
         var result = {
-            type: ExprType.PROP_ACCESSOR,
-            paths: [firstSeg]
+            type: ExprType.ACCESSOR,
+            paths: [
+                {
+                    type: ExprType.STRING,
+                    value: readIdentifier(walker)
+                }
+            ]
         };
 
         /* eslint-disable no-constant-condition */
@@ -1056,7 +1052,7 @@
                     // ident as string
                     result.paths.push({
                         type: ExprType.STRING,
-                        value: readIdentifier(walker).name
+                        value: readIdentifier(walker)
                     });
                     break;
 
@@ -1071,7 +1067,7 @@
             }
         }
 
-        return result.paths.length > 1 ? result : firstSeg;
+        return result;
     }
 
     /**
@@ -1386,7 +1382,7 @@
      */
     function readCall(walker) {
         walker.goUntil();
-        var identifier = readIdentifier(walker);
+        var ident = readIdentifier(walker);
         var args = [];
 
         if (walker.goUntil(40)) { // (
@@ -1398,7 +1394,7 @@
 
         return {
             type: ExprType.CALL,
-            name: identifier.name,
+            name: ident,
             args: args
         };
     }
@@ -1433,13 +1429,6 @@
      * @return {boolean}
      */
     function exprNeedsUpdate(expr, changeExpr, model) {
-        if (changeExpr.type === ExprType.IDENT) {
-            changeExpr = {
-                type: ExprType.PROP_ACCESSOR,
-                paths: [changeExpr]
-            };
-        }
-
         switch (expr.type) {
             case ExprType.UNARY:
                 return exprNeedsUpdate(expr.expr, changeExpr, model);
@@ -1449,9 +1438,6 @@
             case ExprType.BINARY:
             case ExprType.TERTIARY:
                 return exprsNeedsUpdate(expr.segs, changeExpr, model);
-
-            case ExprType.IDENT:
-                return expr.name === changeExpr.paths[0].name;
 
 
             case ExprType.INTERP:
@@ -1468,19 +1454,18 @@
                 return true;
 
 
-            case ExprType.PROP_ACCESSOR:
+            case ExprType.ACCESSOR:
                 var paths = expr.paths;
                 var changePaths = changeExpr.paths;
 
                 /* eslint-disable no-redeclare */
-                var result = paths[0].name === changePaths[0].name;
+                var result = true;
                 /* eslint-enable no-redeclare */
-                for (var i = 1, len = paths.length, changeLen = changePaths.length; i < len; i++) {
+                for (var i = 0, len = paths.length, changeLen = changePaths.length; i < len; i++) {
                     var pathExpr = paths[i];
 
                     switch (pathExpr.type) {
-                        case ExprType.PROP_ACCESSOR:
-                        case ExprType.IDENT:
+                        case ExprType.ACCESSOR:
                             if (exprNeedsUpdate(pathExpr, changeExpr, model)) {
                                 return true;
                             }
@@ -1567,29 +1552,21 @@
     Model.prototype.get = function (expr) {
         expr = parseExpr(expr);
 
-        var value = null;
+        if (expr.type === ExprType.ACCESSOR) {
+            var value = this.data;
+            var paths = expr.paths;
 
-        switch (expr.type) {
-            case ExprType.IDENT:
-                value = this.data[expr.name];
-                break;
+            for (var i = 0, l = paths.length; value != null && i < l; i++) {
+                var pathValue = evalExpr(paths[i], this);
+                value = value[pathValue];
+            }
 
-            case ExprType.PROP_ACCESSOR:
-                var paths = expr.paths;
-                value = this.data[paths[0].name];
+            if (value == null && this.parent) {
+                return this.parent.get(expr);
+            }
 
-                for (var i = 1, l = paths.length; value != null && i < l; i++) {
-                    var path = paths[i];
-                    var pathValue = evalExpr(path, this);
-                    value = value[pathValue];
-                }
+            return value;
         }
-
-        if (value == null && this.parent) {
-            return this.parent.get(expr);
-        }
-
-        return value;
     };
 
     /**
@@ -1604,44 +1581,31 @@
         option = option || {};
         expr = parseExpr(expr);
 
-        var data = this.data;
-        var prop;
+        if (expr.type === ExprType.ACCESSOR) {
+            var data = this.data;
+            var prop;
 
-        switch (expr.type) {
-            case ExprType.IDENT:
-                prop = expr.name;
-                break;
+            var paths = expr.paths;
+            for (var i = 0, l = paths.length; i < l - 1; i++) {
+                var pathValue = evalExpr(paths[i], this);
 
-            case ExprType.PROP_ACCESSOR:
-                var paths = expr.paths;
-                var len = paths.length;
-
-                if (len === 1) {
-                    prop = paths[0].name;
+                if (data[pathValue] == null) {
+                    data[pathValue] = {};
                 }
-                else {
-                    data = data[paths[0].name];
-                    for (var i = 1; i < len - 1; i++) {
-                        var pathValue = evalExpr(paths[i], this);
+                data = data[pathValue];
+            }
 
-                        if (data[pathValue] == null) {
-                            data[pathValue] = {};
-                        }
-                        data = data[pathValue];
-                    }
+            prop = evalExpr(paths[i], this);
 
-                    prop = evalExpr(paths[i], this);
-                }
-        }
-
-        if (prop != null) {
-            data[prop] = value;
-            !option.silence && this.fireChange({
-                type: ModelChangeType.SET,
-                expr: expr,
-                value: value,
-                option: option
-            });
+            if (prop != null) {
+                data[prop] = value;
+                !option.silence && this.fireChange({
+                    type: ModelChangeType.SET,
+                    expr: expr,
+                    value: value,
+                    option: option
+                });
+            }
         }
     };
 
@@ -1888,8 +1852,7 @@
             case ExprType.NUMBER:
                 return expr.value;
 
-            case ExprType.IDENT:
-            case ExprType.PROP_ACCESSOR:
+            case ExprType.ACCESSOR:
                 return model.get(expr);
 
             case ExprType.INTERP:
@@ -2612,10 +2575,11 @@
         var expr = eventBind.expr;
 
         each(expr.args, function (argExpr) {
-            args.push(
-                argExpr.type === ExprType.IDENT && argExpr.name === '$event'
-                    ? (this instanceof Component ? e : e || window.event)
-                    : this.evalExpr(argExpr)
+            args.push(argExpr.type === ExprType.ACCESSOR
+                    && argExpr.paths.length === 1
+                    && argExpr.paths[0].value === '$event'
+                ? (this instanceof Component ? e : e || window.event)
+                : this.evalExpr(argExpr)
             );
         }, this);
 
@@ -3697,23 +3661,11 @@
                 && exprNeedsUpdate(parseExpr(bindItem.name), changeExpr, this.data)
             ) {
                 var updateScopeExpr = bindItem.expr;
-                if (changeExpr.type === ExprType.PROP_ACCESSOR) {
-                    var updateScopeExprPaths;
-
-                    switch (bindItem.expr.type) {
-                        case ExprType.IDENT:
-                            updateScopeExprPaths = [bindItem.expr];
-                            break;
-
-                        case ExprType.PROP_ACCESSOR:
-                            updateScopeExprPaths = bindItem.expr.paths.slice(0);
-                            break;
-                    }
-
-                    updateScopeExprPaths = updateScopeExprPaths.concat(changeExpr.paths.slice(1));
+                if (changeExpr.paths.length > 1) {
                     updateScopeExpr = {
-                        type: ExprType.PROP_ACCESSOR,
-                        paths: updateScopeExprPaths
+                        type: ExprType.ACCESSOR,
+                        paths: bindItem.expr.paths.slice(0)
+                            .concat(changeExpr.paths.slice(1))
                     };
                 }
 
@@ -3753,40 +3705,32 @@
                 && exprNeedsUpdate(bindExpr, changeExpr, this.scope)
             ) {
                 var propertyGrainedStart = 0;
-                if (changeExpr.type === ExprType.PROP_ACCESSOR) {
-                    switch (bindExpr.type) {
-                        case ExprType.IDENT:
-                            propertyGrainedStart = 1;
-                            break;
-
-                        case ExprType.PROP_ACCESSOR:
-                            if (changeExpr.paths.length > bindExpr.paths.length) {
-                                each(bindExpr.paths, function (path) {
-                                    switch (path.type) {
-                                        case ExprType.IDENT:
-                                        case ExprType.STRING:
-                                        case ExprType.NUMBER:
-                                            propertyGrainedStart++;
-                                            break;
-                                        default:
-                                            propertyGrainedStart = 0;
-                                            return false;
-                                    }
-                                });
-                            }
-                            break;
-                    }
+                if (bindExpr.type === ExprType.ACCESSOR
+                    && changeExpr.paths.length > bindExpr.paths.length
+                ) {
+                    each(bindExpr.paths, function (path) {
+                        switch (path.type) {
+                            case ExprType.STRING:
+                            case ExprType.NUMBER:
+                                propertyGrainedStart++;
+                                break;
+                            default:
+                                propertyGrainedStart = 0;
+                                return false;
+                        }
+                    });
                 }
+
 
                 var updateExpr = bindItem.name;
                 var updateValue;
 
                 if (propertyGrainedStart) {
                     updateExpr = {
-                        type: ExprType.PROP_ACCESSOR,
+                        type: ExprType.ACCESSOR,
                         paths: [{
-                            type: ExprType.IDENT,
-                            name: updateExpr
+                            type: ExprType.STRING,
+                            value: updateExpr
                         }].concat(changeExpr.paths.slice(propertyGrainedStart))
                     };
                     updateValue = this.evalExpr(changeExpr);
@@ -4192,36 +4136,23 @@
         itemScope.set(forDirective.index, index);
 
         function exprResolve(expr) {
-            var resolvedExpr = expr;
-            var firstPath;
-
-            switch (expr.type) {
-                case ExprType.IDENT:
-                    firstPath = expr;
-                    break;
-                case ExprType.PROP_ACCESSOR:
-                    firstPath = expr.paths[0];
-                    break;
-            }
-
-            if (firstPath && firstPath.name === forDirective.item) {
-                resolvedExpr = {
-                    type: ExprType.PROP_ACCESSOR,
-                    paths: (forDirective.list.type === ExprType.PROP_ACCESSOR
-                        ? forDirective.list.paths.slice(0)
-                        : [forDirective.list]).concat()
+            if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === forDirective.item) {
+                var resolvedExpr = {
+                    type: ExprType.ACCESSOR,
+                    paths: forDirective.list.paths.slice(0)
                 };
+
                 resolvedExpr.paths.push({
                     type: ExprType.NUMBER,
                     value: itemScope.get(forDirective.index)
                 });
 
-                if (expr.type === ExprType.PROP_ACCESSOR) {
-                    resolvedExpr.paths = resolvedExpr.paths.concat(expr.paths.slice(1));
-                }
+                resolvedExpr.paths = resolvedExpr.paths.concat(expr.paths.slice(1));
+
+                return resolvedExpr;
             }
 
-            return resolvedExpr;
+            return expr;
         }
 
         each(
@@ -4276,16 +4207,10 @@
 
         var changeExpr = change.expr;
         var changeSegs = changeExpr.paths;
-        if (changeExpr.type === ExprType.IDENT) {
-            changeSegs = [changeExpr];
-        }
         var changeLen = changeSegs.length;
 
         var forExpr = forDirective.list;
         var forSegs = forExpr.paths;
-        if (forExpr.type === ExprType.IDENT) {
-            forSegs = [forExpr];
-        }
         var forLen = forSegs.length;
 
         // changeInForExpr 变量表示变更的数据与 for 指令对应表达式的关系
@@ -4383,9 +4308,9 @@
                 if (change.type === ModelChangeType.SET) {
                     change = extend({}, change);
                     change.expr = {
-                        type: ExprType.PROP_ACCESSOR,
+                        type: ExprType.ACCESSOR,
                         paths: [
-                            {name: forDirective.item, type: ExprType.IDENT}
+                            {value: forDirective.item, type: ExprType.STRING}
                         ].concat(changeSegs.slice(forLen + 1))
                     };
 

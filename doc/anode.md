@@ -14,8 +14,7 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[表达式类型](#user-content-表达式类型)  
 　　[STRING](#user-content-string)  
 　　[NUMBER](#user-content-number)  
-　　[IDENT](#user-content-ident)  
-　　[PROP_ACCESSOR](#user-content-prop_accessor)  
+　　[ACCESSOR](#user-content-accessor)  
 　　[INTERP](#user-content-interp)  
 　　[CALL](#user-content-call)  
 　　[TEXT](#user-content-text)  
@@ -125,14 +124,13 @@ exprInfo = {
 var ExprType = {
     STRING: 1,
     NUMBER: 2,
-    IDENT: 3,
-    PROP_ACCESSOR: 4,
-    INTERP: 5,
-    CALL: 6,
-    TEXT: 7,
-    BINARY: 8,
-    UNARY: 9,
-    TERTIARY: 10
+    ACCESSOR: 3,
+    INTERP: 4,
+    CALL: 5,
+    TEXT: 6,
+    BINARY: 7,
+    UNARY: 8,
+    TERTIARY: 9
 };
 ```
 
@@ -163,34 +161,23 @@ exprInfo = {
 }
 ```
 
-### IDENT
 
-一个数据项名称，代表对一个数据项的引用
+### ACCESSOR
 
-```javascript
-// name - 数据项名称
-exprInfo = {
-    type: ExprType.IDENT,
-    name: 'user'
-}
-```
-
-### PROP_ACCESSOR
-
-属性访问表达式，比如 `a.b.c` 或 `a[index]`，代表对一个深层数据项的引用
+数据访问表达式，比如 `a` ／ `a.b.c` ／ `a[index]`，代表对一个数据项的引用
 
 ```javascript
-// paths - 属性路径。数组，里面每一项是一个表达式对象，第一项必须是一个 IDENT
+// paths - 属性路径。数组，里面每一项是一个表达式对象
 exprInfo = {
-    type: ExprType.PROP_ACCESSOR,
+    type: ExprType.ACCESSOR,
     paths: [
-        {type: ExprType.IDENT, name: 'user'},
+        {type: ExprType.STRING, value: 'user'},
         {type: ExprType.STRING, value: 'phones'},
         {
-            type: ExprType.PROP_ACCESSOR,
+            type: ExprType.ACCESSOR,
             paths: [
-                {type: ExprType.IDENT, name: 'DefaultConfig'},
-                {type: ExprType.STRING, name: 'PHONE-INDEX'}
+                {type: ExprType.STRING, value: 'DefaultConfig'},
+                {type: ExprType.STRING, value: 'PHONE-INDEX'}
             ]
         }
     ]
@@ -207,9 +194,9 @@ exprInfo = {
 exprInfo = {
     type: ExprType.INTERP,
     expr: {
-        type: ExprType.PROP_ACCESSOR,
+        type: ExprType.ACCESSOR,
         paths: [
-            {type: ExprType.IDENT, name: 'user'},
+            {type: ExprType.STRING, value: 'user'},
             {type: ExprType.STRING, value: 'phones'}
         ]
     },
@@ -231,7 +218,7 @@ exprInfo = {
 
 ```javascript
 
-// name - 过滤器或方法信息，必须是一个 IDENT 表达式信息
+// name - 调用方法名。字符串
 // args - 调用参数列表。数组，其中每一项是一个表达式对象
 exprInfo = {
     type: ExprType.CALL,
@@ -258,8 +245,10 @@ exprInfo = {
         {
             type: ExprType.INTERP,
             expr: {
-                type: ExprType.IDENT,
-                name: 'whoAmI'
+                type: ExprType.ACCESSOR,
+                paths: [
+                    {type: ExprType.STRING, value: 'whoAmI'}
+                ]
             },
             filters: []
         },
@@ -279,8 +268,10 @@ exprInfo = {
     type: ExprType.BINARY,
     segs: [
         {
-            type: ExprType.IDENT,
-            name: "commaLength"
+            type: ExprType.ACCESSOR,
+            paths: [
+                {type: ExprType.STRING, value: 'commaLength'}
+            ]
         },
         {
             type: ExprType.NUMBER,
@@ -299,9 +290,9 @@ exprInfo = {
 exprInfo = {
     type: ExprType.UNARY,
     expr: {
-        type: ExprType.PROP_ACCESSOR,
+        type: ExprType.ACCESSOR,
         paths: [
-            {type: ExprType.IDENT, name: 'user'},
+            {type: ExprType.STRING, value: 'user'},
             {type: ExprType.STRING, value: 'isLogin'}
         ]
     }
@@ -318,9 +309,9 @@ exprInfo = {
     type: ExprType.TERTIARY,
     segs: [
         {
-            type: ExprType.PROP_ACCESSOR,
+            type: ExprType.ACCESSOR,
             paths: [
-                {type: ExprType.IDENT, name: 'user'},
+                {type: ExprType.STRING, value: 'user'},
                 {type: ExprType.STRING, value: 'isLogin'}
             ]
         },
