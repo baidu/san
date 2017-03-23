@@ -1069,7 +1069,7 @@
                     break accessorLoop;
             }
         }
-        console.log(result)
+
         return result;
     }
 
