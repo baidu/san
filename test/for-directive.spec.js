@@ -219,6 +219,7 @@ describe("ForDirective", function () {
 
             expect(lis[3].getAttribute('title')).toBe('two 3/3');
             expect(lis[3].innerHTML.indexOf('two - two@gmail.com')).toBe(0);
+            expect(lis[2].getAttribute('title')).toBe('one 2/3');
             expect(lis[1].getAttribute('title')).toBe('three 1/3');
             expect(lis[1].innerHTML.indexOf('three - three@gmail.com')).toBe(0);
 
