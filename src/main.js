@@ -1556,16 +1556,30 @@
         expr = parseExpr(expr);
 
         if (expr.type === ExprType.ACCESSOR) {
-            var value = this.data;
             var paths = expr.paths;
+            var start = 0;
+            var l = paths.length;
 
-            for (var i = 0, l = paths.length; value != null && i < l; i++) {
-                var pathValue = evalExpr(paths[i], this);
-                value = value[pathValue];
+            for (; start < l; start++) {
+                if (paths[start].value == null) {
+                    break;
+                }
+            }
+
+            var value = this.data;
+            for (var i = 0; value != null && i < start; i++) {
+                value = value[paths[i].value];
             }
 
             if (value == null && this.parent) {
-                return this.parent.get(expr);
+                value = this.parent.get({
+                    type: ExprType.ACCESSOR,
+                    paths: paths.slice(0, start)
+                });
+            }
+
+            for (var i = start; value != null && i < l; i++) {
+                value = value[paths[i].value || evalExpr(paths[i], this)];
             }
 
             return value;

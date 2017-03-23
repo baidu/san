@@ -652,4 +652,33 @@ describe("ForDirective", function () {
 
     });
 
+
+    it("use index to refer other object", function () {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{colors[i]}}">{{colors[i]}}</li></ul>',
+            initData: function () {
+                return {
+                    persons: [
+                        {name: 'errorrik', email: 'errorrik@gmail.com'}
+                    ],
+
+                    colors: ['red']
+                }
+            }
+        });
+        var myComponent = new MyComponent();
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis[0].title).toBe('red');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
 });
