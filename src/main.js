@@ -1069,7 +1069,7 @@
                     break accessorLoop;
             }
         }
-
+        console.log(result)
         return result;
     }
 
@@ -3278,11 +3278,7 @@
             // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
             // 所以这里做个处理，只有一项时直接抽出来
             if (expr.type === ExprType.TEXT && expr.segs.length === 1) {
-                expr = expr.segs[0];
-
-                if (expr.type === ExprType.INTERP) {
-                    bind.expr = expr.expr;
-                }
+                bind.expr = expr.segs[0];
             }
         });
         this.props = this.aNode.props;
