@@ -175,6 +175,8 @@ describe("Component", function () {
 
     });
 
+
+
     it("custom event should not pass DOM Event object, when fire with no arg", function (done) {
         var Label = san.defineComponent({
             template: '<a><span on-click="clicker" id="component-custom-event1" style="cursor:pointer">click here to fire change event with no arg</span></a>',
@@ -265,6 +267,47 @@ describe("Component", function () {
 
         WDBridge.send('action', 'click:#component-custom-event2');
         doneSpec();
+    });
+
+    it("data binding can use filter interp", function () {
+        var Label = san.defineComponent({
+            template: '<a><span title="{{text}}">{{text}}</span></a>',
+
+            updated: function () {
+                subTimes++;
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label text="{{name|upper}}"></ui-label></div>',
+
+            initData: function () {
+                return {name: 'erik'};
+            },
+
+            filters: {
+                upper: function (text) {
+                    return text.toUpperCase();
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('ERIK');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
     });
 
     it("life cycle updated, nested component", function (done) {

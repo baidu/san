@@ -3278,7 +3278,10 @@
             // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
             // 所以这里做个处理，只有一项时直接抽出来
             if (expr.type === ExprType.TEXT && expr.segs.length === 1) {
-                bind.expr = expr.segs[0];
+                expr = bind.expr = expr.segs[0];
+                if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
+                    bind.expr = expr.expr;
+                }
             }
         });
         this.props = this.aNode.props;
