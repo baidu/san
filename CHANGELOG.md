@@ -42,6 +42,7 @@ ChangeLog
 + 【bug修复】- textarea 在初始化时，绑定的 value 未正确给予
 + 【bug修复】- textarea 在初始化时，内部内容渲染错乱。在数据驱动的组件系统中，应以绑定数据为准，忽略内部的内容
 + 【bug修复】- select 对已经 dispose 的元素进行 value 更新导致脚本错误
++ 【bug修复】- 组件绑定中，单一插值的 filter 不起作用
 
 
 3.0.2
