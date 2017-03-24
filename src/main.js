@@ -2238,10 +2238,6 @@
      * 刷新文本节点的内容
      */
     TextNode.prototype.update = function () {
-        if (this.lifeCycle.is('disposed')) {
-            return;
-        }
-
         var node = this.el.previousSibling;
 
         if (node && node.nodeType === 3) {
@@ -3057,6 +3053,13 @@
     };
 
     /**
+     * 在下一个时钟周期销毁释放
+     */
+    Element.prototype.disposeSoon = function () {
+        nextTick(this.dispose, this);
+    };
+
+    /**
      * 添加子节点的 ANode
      * 用于从 el 初始化时，需要将解析的元素抽象成 ANode，并向父级注册
      *
@@ -3138,10 +3141,6 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     SlotElement.prototype.slotUpdateView = function (changes) {
-        if (this.lifeCycle.is('disposed')) {
-            return;
-        }
-
         each(this.childs, function (child) {
             child.updateView(changes);
         });
@@ -3583,7 +3582,7 @@
                 }
 
                 firstChild.events.each(function (item) {
-                    item.isOwn = true;
+                    item.isOwn = 1;
                 });
 
                 proto.template = null;
@@ -3764,7 +3763,7 @@
                     updateValue = this.evalExpr(changeExpr);
                 }
                 else {
-                     updateValue = this.evalExpr(bindExpr);
+                    updateValue = this.evalExpr(bindExpr);
                 }
 
                 this.data.set(updateExpr, updateValue, {
@@ -3929,10 +3928,6 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     IfDirective.prototype.updateView = function (changes) {
-        if (this.lifeCycle.is('disposed')) {
-            return;
-        }
-
         var ifExpr = this.aNode.directives.get('if').value;
         var child = this.childs[0];
 
@@ -4008,7 +4003,6 @@
      * @param {Object} options 初始化参数
      */
     function ForDirective(options) {
-        this.disposePool = [];
         Element.call(this, options);
     }
 
@@ -4206,53 +4200,31 @@
 
         var forDirective = this.aNode.directives.get('for');
 
-        var changeSegs = change.expr.paths;
-        var changeLen = changeSegs.length;
-        var forSegs = forDirective.list.paths;
-        var forLen = forSegs.length;
+        var changePaths = change.expr.paths;
+        var changeLen = changePaths.length;
+        var forPaths = forDirective.list.paths;
+        var forLen = forPaths.length;
 
         // changeInForExpr 变量表示变更的数据与 for 指令对应表达式的关系
         // 0 - for 指令对应表达式的“整个数据”发生了变化
-        // 1 - for 指令对应表达式的数据的“子项”发生了变化
-        // 2 - for 指令对应表达式的数据的“子项的属性”
+        // >0 - for 指令对应表达式的数据的“子项”或“子项的属性”发生了变化
         // -1 - 变更的不是 for 指令对应表达式的数据
         var changeInForExpr = 0;
         var changeIndex;
 
         for (var i = 0; i < changeLen && i < forLen; i++) {
-            if (this.evalExpr(changeSegs[i]) !== this.evalExpr(forSegs[i])) {
+            if (this.evalExpr(changePaths[i]) !== this.evalExpr(forPaths[i])) {
                 changeInForExpr = -1;
                 break;
             }
         }
 
-        if (changeInForExpr >= 0 && changeLen > forLen) {
-            changeIndex = +this.evalExpr(changeSegs[forLen]);
-            changeInForExpr = changeLen - forLen === 1 ? 1 : 2;
+        if (!changeInForExpr && changeLen > forLen) {
+            changeIndex = +this.evalExpr(changePaths[forLen]);
+            changeInForExpr = changeLen - forLen;
         }
 
         switch (changeInForExpr) {
-            case 1:
-            case 2:
-                change = extend({}, change);
-                change.expr = {
-                    type: ExprType.ACCESSOR,
-                    paths: [
-                        {value: forDirective.item, type: ExprType.STRING}
-                    ].concat(changeSegs.slice(forLen + 1))
-                };
-                Model.prototype.set.call(
-                    this.childs[changeIndex].scope,
-                    change.expr,
-                    change.value,
-                    {silence: true}
-                );
-                this.childs[changeIndex].updateData(change);
-                this.childsChanges[changeIndex].push(change);
-
-                break;
-
-
             case -1:
                 each(this.childsChanges, function (changes) {
                     changes.push(change);
@@ -4315,12 +4287,16 @@
                             childsChangesSpliceArgs.push([]);
                         }, this);
 
-                        this.disposePool = this.disposePool.concat(this.childs.splice.apply(this.childs, spliceArgs));
+                        each(this.childs.splice.apply(this.childs, spliceArgs), function (child) {
+                            child.disposeSoon();
+                        });
                         this.childsChanges.splice.apply(this.childsChanges, childsChangesSpliceArgs);
                         break;
 
                     case ModelChangeType.SET:
-                        this.disposePool = this.disposePool.concat(this.childs);
+                        each(this.childs, function (child) {
+                            child.disposeSoon();
+                        });
                         this.childs.length = 0;
                         this.allChildsIsNew = 1;
                         this.childsChanges = [];
@@ -4337,6 +4313,24 @@
 
                 break;
 
+            default:
+                change = extend({}, change);
+                change.expr = {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {value: forDirective.item, type: ExprType.STRING}
+                    ].concat(changePaths.slice(forLen + 1))
+                };
+                Model.prototype.set.call(
+                    this.childs[changeIndex].scope,
+                    change.expr,
+                    change.value,
+                    {silence: true}
+                );
+                this.childs[changeIndex].updateData(change);
+                this.childsChanges[changeIndex].push(change);
+
+                break;
         }
     };
 
@@ -4347,40 +4341,34 @@
      * @return {boolean} 数据的变化是否导致视图需要更新
      */
     ForDirective.prototype.updateView = function () {
-        if (this.lifeCycle.is('disposed') || !this.childsChanges) {
-            return;
-        }
-
-        each(this.disposePool, function (node) {
-            node.dispose();
-        });
-        this.disposePool.length = 0;
+        if (this.childsChanges) {
 
 
-        if (this.allChildsIsNew) {
-            this.allChildsIsNew = 0;
+            if (this.allChildsIsNew) {
+                this.allChildsIsNew = 0;
 
-            var buf = new StringBuffer();
-            each(this.childs, function (child) {
-                buf.push(child.genHTML());
-            });
-            this.el.insertAdjacentHTML('beforebegin', buf.toString());
-            this._noticeAttached();
-        }
-        else {
-            var len = this.childs.length;
-            var attachStump = this;
+                var buf = new StringBuffer();
+                each(this.childs, function (child) {
+                    buf.push(child.genHTML());
+                });
+                this.el.insertAdjacentHTML('beforebegin', buf.toString());
+                this._noticeAttached();
+            }
+            else {
+                var len = this.childs.length;
+                var attachStump = this;
 
-            while (len--) {
-                var child = this.childs[len];
-                if (child.lifeCycle.is('attached')) {
-                    child.updateView(this.childsChanges[len]);
+                while (len--) {
+                    var child = this.childs[len];
+                    if (child.lifeCycle.is('attached')) {
+                        child.updateView(this.childsChanges[len]);
+                    }
+                    else {
+                        child.attach(attachStump.el.parentNode, attachStump.el);
+                    }
+
+                    attachStump = child;
                 }
-                else {
-                    child.attach(attachStump.el.parentNode, attachStump.el);
-                }
-
-                attachStump = child;
             }
         }
 
