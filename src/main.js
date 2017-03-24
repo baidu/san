@@ -4342,8 +4342,6 @@
      */
     ForDirective.prototype.updateView = function () {
         if (this.childsChanges) {
-
-
             if (this.allChildsIsNew) {
                 this.allChildsIsNew = 0;
 
@@ -4424,7 +4422,7 @@
          *
          * @type {string}
          */
-        version: '3.0.3-rc.11',
+        version: '3.0.3-rc.12',
 
         /**
          * 组件基类
