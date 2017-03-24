@@ -2483,6 +2483,39 @@
         this.bindEvents();
     };
 
+
+    /**
+     * 输入法准备写入
+     *
+     * @param  {event} e 事件
+     */
+    function onCompositionStart(e) {
+        e.target.composing = true;
+    }
+
+    /**
+     * 输入法完成写入或取消
+     *
+     * @param  {event} e 事件
+     */
+    function onCompositionEnd(e) {
+        e.target.composing = false;
+        triggerEvent(e.target, 'input');
+    }
+
+    /**
+     * 触发事件
+     *
+     * @param  {Element} el   元素
+     * @param  {string} type 事件类型
+     */
+    function triggerEvent(el, type) {
+        var e = document.createEvent('HTMLEvents');
+        e.initEvent(type, true, true);
+        el.dispatchEvent(e);
+    }
+
+
     /**
      * 处理自身变化时双绑的逻辑
      *
@@ -2499,10 +2532,26 @@
                     switch (this.tagName) {
                         case 'input':
                         case 'textarea':
+
+                            var hasCompositionEvent = !!window.CompositionEvent;
+
+                            if (hasCompositionEvent) {
+                                this.on('compositionstart', onCompositionStart);
+                                this.on('compositionend', onCompositionEnd);
+                            }
+
+                            var onInput = bind(bindOutputer, this, bindInfo);
+
                             this.on(
                                 ('oninput' in this.el) ? 'input' : 'propertychange',
-                                bind(bindOutputer, this, bindInfo)
+                                function (e) {
+                                    if (hasCompositionEvent && e.target.composing) {
+                                        return;
+                                    }
+                                    onInput(e);
+                                }
                             );
+
                             break;
 
                         case 'select':
@@ -2521,6 +2570,7 @@
                     }
                     break;
             }
+
         }, this);
     };
 
