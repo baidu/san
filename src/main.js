@@ -899,7 +899,7 @@
             text && segs.push({
                 type: ExprType.STRING,
                 value: text
-            })
+            });
         }
 
         while ((exprMatch = walker.match(exprStartReg)) != null) {
@@ -911,7 +911,7 @@
             beforeIndex = walker.index;
         }
 
-        pushStringToSeg(walker.cut(beforeIndex))
+        pushStringToSeg(walker.cut(beforeIndex));
 
         return {
             type: ExprType.TEXT,
@@ -1406,89 +1406,92 @@
      * 判断多个源表达式路径是否包含目标表达式。任何一个满足条件都为true
      *
      * @inner
-     * @param {Array} exprs 多个源表达式
      * @param {Object} changeExpr 目标表达式
+     * @param {Array} exprs 多个源表达式
      * @param {Model} model 表达式所属数据环境
      * @return {boolean}
      */
-    function exprsNeedsUpdate(exprs, changeExpr, model) {
-        var result;
+    function exprsNeedsUpdate(changeExpr, exprs, model) {
+        var result = -1;
         each(exprs, function (expr) {
-            result = exprNeedsUpdate(expr, changeExpr, model);
-            return !result;
+            result = changeExprCompare(changeExpr, expr, model);
+            return result < 0;
         });
 
-        return result;
+        return result > -1 ? 0 : -1;
     }
 
     /**
-     * 判断源表达式路径是否包含目标表达式
-     * 用于判断源表达式对应对象是否需要更新
+     * 比较变更表达式与目标表达式之间的关系，用于视图更新判断
+     * 视图更新需要根据其关系，做出相应的更新行为
      *
-     * @inner
-     * @param {Object} expr 源表达式
-     * @param {Object} changeExpr 目标表达式
+     * -1: 完全没关系
+     * 0: 变更表达式是目标表达式的母项(如a与a.b) 或 表示需要完全变化
+     * 1: 变更表达式是目标表达式相等
+     * >1: 变更表达式是目标表达式的子项，如a.b.c与a.b
+     *
+     * @param {Object} changeExpr 变更表达式
+     * @param {Object} expr 要比较的目标表达式
      * @param {Model} model 表达式所属数据环境
-     * @return {boolean}
+     * @return {number}
      */
-    function exprNeedsUpdate(expr, changeExpr, model) {
+    function changeExprCompare(changeExpr, expr, model) {
         switch (expr.type) {
+            case ExprType.ACCESSOR:
+                var paths = expr.paths;
+                var len = paths.length;
+                var changePaths = changeExpr.paths;
+                var changeLen = changePaths.length;
+
+                var result = 0;
+                for (var i = 0; i < len; i++) {
+                    var pathExpr = paths[i];
+
+                    if (pathExpr.type === ExprType.ACCESSOR
+                        && changeExprCompare(changeExpr, pathExpr, model) > -1
+                    ) {
+                        return 0;
+                    }
+
+                    if (result > -1 && i < changeLen
+                        /* eslint-disable eqeqeq */
+                        && evalExpr(pathExpr, model) != changePaths[i].value
+                        /* eslint-enable eqeqeq */
+                    ) {
+                        result = -1;
+                    }
+                }
+
+                if (result > -1) {
+                    result = Math.max(0, changeLen - len + 1);
+                }
+                return result;
+
             case ExprType.UNARY:
-                return exprNeedsUpdate(expr.expr, changeExpr, model);
+                return changeExprCompare(changeExpr, expr.expr, model) > -1 ? 0 : -1;
 
 
             case ExprType.TEXT:
             case ExprType.BINARY:
             case ExprType.TERTIARY:
-                return exprsNeedsUpdate(expr.segs, changeExpr, model);
-
+                return exprsNeedsUpdate(changeExpr, expr.segs, model);
 
             case ExprType.INTERP:
-                if (!exprNeedsUpdate(expr.expr, changeExpr, model)) {
-                    var result;
+                if (changeExprCompare(changeExpr, expr.expr, model) < 0) {
+                    var filterResult = -1;
                     each(expr.filters, function (filter) {
-                        result = exprsNeedsUpdate(filter.args, changeExpr, model);
-                        return !result;
+                        filterResult = exprsNeedsUpdate(changeExpr, filter.args, model);
+                        return filterResult < 0;
                     });
 
-                    return result;
+                    return filterResult;
                 }
 
-                return true;
-
-
-            case ExprType.ACCESSOR:
-                var paths = expr.paths;
-                var changePaths = changeExpr.paths;
-
-                /* eslint-disable no-redeclare */
-                var result = true;
-                /* eslint-enable no-redeclare */
-                for (var i = 0, len = paths.length, changeLen = changePaths.length; i < len; i++) {
-                    var pathExpr = paths[i];
-
-                    switch (pathExpr.type) {
-                        case ExprType.ACCESSOR:
-                            if (exprNeedsUpdate(pathExpr, changeExpr, model)) {
-                                return true;
-                            }
-                    }
-
-                    if (result && i < changeLen
-                        /* eslint-disable eqeqeq */
-                        && evalExpr(pathExpr, model) != evalExpr(changePaths[i], model)
-                        /* eslint-enable eqeqeq */
-                    ) {
-                        result = false;
-                    }
-                }
-
-                return result;
+                return 0;
         }
 
-        return false;
+        return -1;
     }
-
 
     // #region Model
 
@@ -1505,6 +1508,13 @@
         this.data = {};
     }
 
+    /**
+     * 数据变更类型枚举
+     *
+     * @inner
+     * @const
+     * @type {Object}
+     */
     var ModelChangeType = {
         SET: 1,
         SPLICE: 2
@@ -1567,7 +1577,8 @@
             }
 
             var value = this.data;
-            for (var i = 0; value != null && i < start; i++) {
+            var i = 0;
+            for (; value != null && i < start; i++) {
                 value = value[paths[i].value];
             }
 
@@ -1578,7 +1589,7 @@
                 });
             }
 
-            for (var i = start; value != null && i < l; i++) {
+            for (i = start; value != null && i < l; i++) {
                 value = value[paths[i].value || evalExpr(paths[i], this)];
             }
 
@@ -1648,6 +1659,7 @@
      * @param {string|Object} expr 数据项路径
      * @param {Object=} option 设置参数
      * @param {boolean} option.silence 静默设置，不触发变更事件
+     * @return {*}
      */
     Model.prototype.pop = function (expr, option) {
         var target = this.get(expr);
@@ -1666,6 +1678,7 @@
      * @param {string|Object} expr 数据项路径
      * @param {Object=} option 设置参数
      * @param {boolean} option.silence 静默设置，不触发变更事件
+     * @return {*}
      */
     Model.prototype.shift = function (expr, option) {
         return this.splice(expr, [0, 1], option)[0];
@@ -1840,6 +1853,7 @@
      * @param {Object} expr 表达式对象
      * @param {Model} model 数据容器对象
      * @param {Component=} owner 所属组件环境
+     * @param {boolean?} escapeInterpHtml 是否对插值进行html转义
      * @return {*}
      */
     function evalExpr(expr, model, owner, escapeInterpHtml) {
@@ -2255,14 +2269,13 @@
     };
 
     /**
-     * 绑定数据变化时的视图更新函数
+     * 视图更新函数
      *
-     * @param {Object} change 数据变化信息
-     * @return {boolean} 数据的变化是否导致视图需要更新
+     * @param {Array} changes 数据变化信息
      */
     TextNode.prototype.updateView = function (changes) {
         each(changes, function (change) {
-            if (exprNeedsUpdate(this.aNode.textExpr, change.expr, this.scope)) {
+            if (changeExprCompare(change.expr, this.aNode.textExpr, this.scope) > -1) {
                 this.update();
                 return false;
             }
@@ -2434,6 +2447,286 @@
                     break;
             }
         }, this);
+    };
+
+
+    /**
+     * HTML 属性和 DOM 操作属性的对照表
+     *
+     * @inner
+     * @const
+     * @type {Object}
+     */
+    var HTML_ATTR_PROP_MAP = {
+        'readonly': 'readOnly',
+        'cellpadding': 'cellPadding',
+        'cellspacing': 'cellSpacing',
+        'colspan': 'colSpan',
+        'rowspan': 'rowSpan',
+        'valign': 'vAlign',
+        'usemap': 'useMap',
+        'frameborder': 'frameBorder',
+        'for': 'htmlFor',
+        'class': 'className'
+    };
+
+    /**
+     * 默认的元素的属性设置的变换方法
+     *
+     * @inner
+     * @type {Object}
+     */
+    var defaultElementPropHandler = {
+        input: {
+            attr: function (element, name, value) {
+                if (value != null) {
+                    return ' ' + name + '="' + value + '"';
+                }
+            },
+
+            prop: function (element, name, value) {
+                name = HTML_ATTR_PROP_MAP[name] || name;
+                element.el[name] = value;
+            }
+        },
+
+        output: function (element, bindInfo) {
+            element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                target: {
+                    id: element.id,
+                    prop: bindInfo.name
+                }
+            });
+        }
+    };
+
+    /**
+     * 生成 bool 类型属性绑定操作的变换方法
+     *
+     * @inner
+     * @param {string} attrName 属性名
+     * @param {function(Element):boolean} chooseCondition 判断元素满足选择条件的函数
+     * @return {Object}
+     */
+    function genBoolPropHandler(attrName, chooseCondition) {
+        attrName = attrName.toLowerCase();
+
+        return {
+            input: {
+                attr: function (element, name, value) {
+                    // 因为元素的attr值必须经过html escape，否则可能有漏洞
+                    // 所以这里直接对假值字符串形式进行处理
+                    // NaN之类非主流的就先不考虑了
+                    if (value && value !== 'false' && value !== '0') {
+                        return ' ' + attrName + '="' + attrName + '"';
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
+                    element.el[propName] = !!(value && value !== 'false' && value !== '0');
+                }
+            },
+
+            choose: function (element) {
+                if (chooseCondition(element)) {
+                    return attrName;
+                }
+            }
+        };
+    }
+
+    /**
+     * 元素的属性设置的变换方法集合
+     *
+     * @inner
+     * @type {Array}
+     */
+    var elementPropHandlers = [
+        // 表单元素(input / button / textarea / select) 的 disabled
+        genBoolPropHandler('disabled', function (element) {
+            switch (element.tagName) {
+                case 'input':
+                case 'textarea':
+                case 'button':
+                case 'select':
+                    return true;
+            }
+        }),
+
+        // 表单元素(input / textarea) 的 readonly
+        genBoolPropHandler('readonly', function (element) {
+            switch (element.tagName) {
+                case 'input':
+                case 'textarea':
+                    return true;
+            }
+        }),
+
+        // input[type=checkbox] 的 checked bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    var bindValue = element.props.get('value');
+                    if (bindValue) {
+                        if (contains(value, element.evalExpr(bindValue.expr))) {
+                            return ' checked="checked"';
+                        }
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    var bindValue = element.props.get('value');
+                    if (bindValue) {
+                        if (contains(value, element.evalExpr(bindValue.expr))) {
+                            element.el.checked = true;
+                            return;
+                        }
+                    }
+
+                    element.el.checked = false;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                var el = element.el;
+                element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+            },
+
+            choose: function (element) {
+                if (element.aNode) {
+                    var bindType = element.props.get('type');
+                    return element.tagName === 'input'
+                        && bindType && bindType.raw === 'checkbox'
+                        && 'checked';
+                }
+            }
+        },
+
+        // input[type=radio] 的 checked bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    var bindValue = element.props.get('value');
+                    if (bindValue) {
+                        if (value === element.evalExpr(bindValue.expr)) {
+                            return ' checked="checked"';
+                        }
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    var bindValue = element.props.get('value');
+                    if (bindValue) {
+                        if (value === element.evalExpr(bindValue.expr)) {
+                            element.el.checked = true;
+                            return;
+                        }
+                    }
+
+                    element.el.checked = false;
+                }
+            },
+
+            output: function (element, bindInfo) {
+                var el = element.el;
+                element.scope.set(bindInfo.expr, el.checked ? el.value : '', {
+                    target: {
+                        id: element.id,
+                        prop: bindInfo.name
+                    }
+                });
+            },
+
+            choose: function (element) {
+                if (element.aNode) {
+                    var bindType = element.props.get('type');
+                    return element.tagName === 'input'
+                        && bindType && bindType.raw === 'radio'
+                        && 'checked';
+                }
+            }
+        },
+
+        // select 或 textarea 的 value bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    if (value) {
+                        nextTick(function () {
+                            if (element.lifeCycle.is('created')) {
+                                element.el[name] = value;
+                            }
+                        });
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    element.el[name] = value;
+                }
+            },
+
+            output: defaultElementPropHandler.output,
+
+            choose: function (element) {
+                return 'select' === element.tagName && 'value';
+            }
+        },
+
+        // textarea 的 value bind handler
+        {
+            input: {
+                attr: function () {},
+
+                prop: function (element, name, value) {
+                    element.el[name] = value;
+                }
+            },
+
+            output: defaultElementPropHandler.output,
+
+            choose: function (element) {
+                return 'textarea' === element.tagName && 'value';
+            }
+        },
+
+        // style 的 bind handler
+        {
+            input: {
+                attr: function (element, name, value) {
+                    if (value) {
+                        return ' style="' + value + '"';
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    element.el.style.cssText = value;
+                }
+            },
+
+            choose: function () {
+                return 'style';
+            }
+        }
+    ];
+
+    /**
+     * 初始化元素属性操作的处理器
+     * 元素属性操作和具体名称可能不同，比如style操作的是style.cssText等等
+     * 所以需要一些 handler 做输入输出的属性名与值变换。这里就是初始化这些 handler
+     */
+    Element.prototype._initPropHandlers = function () {
+        this.propHandlers = {};
+        each(
+            elementPropHandlers,
+            function (propHandler) {
+                var name = propHandler.choose(this);
+                if (name) {
+                    this.propHandlers[name] = propHandler;
+                }
+            },
+            this
+        );
     };
 
     function getPropHandler(element, name) {
@@ -2672,286 +2965,6 @@
     }
 
     /**
-     * HTML 属性和 DOM 操作属性的对照表
-     *
-     * @inner
-     * @const
-     * @type {Object}
-     */
-    var HTML_ATTR_PROP_MAP = {
-        'readonly': 'readOnly',
-        'cellpadding': 'cellPadding',
-        'cellspacing': 'cellSpacing',
-        'colspan': 'colSpan',
-        'rowspan': 'rowSpan',
-        'valign': 'vAlign',
-        'usemap': 'useMap',
-        'frameborder': 'frameBorder',
-        'for': 'htmlFor',
-        'class': 'className'
-    };
-
-    /**
-     * 生成 bool 类型属性绑定操作的变换方法
-     *
-     * @inner
-     * @param {string} attrName 属性名
-     * @param {function(Element):boolean} chooseCondition 判断元素满足选择条件的函数
-     * @return {Object}
-     */
-    function genBoolPropHandler(attrName, chooseCondition) {
-        attrName = attrName.toLowerCase();
-
-        return {
-            input: {
-                attr: function (element, name, value) {
-                    // 因为元素的attr值必须经过html escape，否则可能有漏洞
-                    // 所以这里直接对假值字符串形式进行处理
-                    // NaN之类非主流的就先不考虑了
-                    if (value && value !== 'false' && value !== '0') {
-                        return ' ' + attrName + '="' + attrName + '"';
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
-                    element.el[propName] = !!(value && value !== 'false' && value !== '0');
-                }
-            },
-
-            choose: function (element) {
-                if (chooseCondition(element)) {
-                    return attrName;
-                }
-            }
-        };
-    }
-
-    /**
-     * 默认的元素的属性设置的变换方法
-     *
-     * @inner
-     * @type {Object}
-     */
-    var defaultElementPropHandler = {
-        input: {
-            attr: function (element, name, value) {
-                if (value != null) {
-                    return ' ' + name + '="' + value + '"';
-                }
-            },
-
-            prop: function (element, name, value) {
-                name = HTML_ATTR_PROP_MAP[name] || name;
-                element.el[name] = value;
-            }
-        },
-
-        output: function (element, bindInfo) {
-            element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
-                target: {
-                    id: element.id,
-                    prop: bindInfo.name
-                }
-            });
-        }
-    };
-
-
-    /**
-     * 元素的属性设置的变换方法集合
-     *
-     * @inner
-     * @type {Array}
-     */
-    var elementPropHandlers = [
-        // 表单元素(input / button / textarea / select) 的 disabled
-        genBoolPropHandler('disabled', function (element) {
-            switch (element.tagName) {
-                case 'input':
-                case 'textarea':
-                case 'button':
-                case 'select':
-                    return true;
-            }
-        }),
-
-        // 表单元素(input / textarea) 的 readonly
-        genBoolPropHandler('readonly', function (element) {
-            switch (element.tagName) {
-                case 'input':
-                case 'textarea':
-                    return true;
-            }
-        }),
-
-        // input[type=checkbox] 的 checked bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    var bindValue = element.props.get('value');
-                    if (bindValue) {
-                        if (contains(value, element.evalExpr(bindValue.expr))) {
-                            return ' checked="checked"';
-                        }
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    var bindValue = element.props.get('value');
-                    if (bindValue) {
-                        if (contains(value, element.evalExpr(bindValue.expr))) {
-                            element.el.checked = true;
-                            return;
-                        }
-                    }
-
-                    element.el.checked = false;
-                }
-            },
-
-            output: function (element, bindInfo) {
-                var el = element.el;
-                element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
-            },
-
-            choose: function (element) {
-                if (element.aNode) {
-                    var bindType = element.props.get('type');
-                    return element.tagName === 'input'
-                        && bindType && bindType.raw === 'checkbox'
-                        && 'checked';
-                }
-            }
-        },
-
-        // input[type=radio] 的 checked bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    var bindValue = element.props.get('value');
-                    if (bindValue) {
-                        if (value === element.evalExpr(bindValue.expr)) {
-                            return ' checked="checked"';
-                        }
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    var bindValue = element.props.get('value');
-                    if (bindValue) {
-                        if (value === element.evalExpr(bindValue.expr)) {
-                            element.el.checked = true;
-                            return;
-                        }
-                    }
-
-                    element.el.checked = false;
-                }
-            },
-
-            output: function (element, bindInfo) {
-                var el = element.el;
-                element.scope.set(bindInfo.expr, el.checked ? el.value : '', {
-                    target: {
-                        id: element.id,
-                        prop: bindInfo.name
-                    }
-                });
-            },
-
-            choose: function (element) {
-                if (element.aNode) {
-                    var bindType = element.props.get('type');
-                    return element.tagName === 'input'
-                        && bindType && bindType.raw === 'radio'
-                        && 'checked';
-                }
-            }
-        },
-
-        // select 或 textarea 的 value bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    if (value) {
-                        nextTick(function () {
-                            if (element.lifeCycle.is('created')) {
-                                element.el[name] = value;
-                            }
-                        });
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    element.el[name] = value;
-                }
-            },
-
-            output: defaultElementPropHandler.output,
-
-            choose: function (element) {
-                return 'select' === element.tagName && 'value';
-            }
-        },
-
-        // textarea 的 value bind handler
-        {
-            input: {
-                attr: function () {},
-
-                prop: function (element, name, value) {
-                    element.el[name] = value;
-                }
-            },
-
-            output: defaultElementPropHandler.output,
-
-            choose: function (element) {
-                return 'textarea' === element.tagName && 'value';
-            }
-        },
-
-        // style 的 bind handler
-        {
-            input: {
-                attr: function (element, name, value) {
-                    if (value) {
-                        return ' style="' + value + '"';
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    element.el.style.cssText = value;
-                }
-            },
-
-            choose: function () {
-                return 'style';
-            }
-        }
-    ];
-
-    /**
-     * 初始化元素属性操作的处理器
-     * 元素属性操作和具体名称可能不同，比如style操作的是style.cssText等等
-     * 所以需要一些 handler 做输入输出的属性名与值变换。这里就是初始化这些 handler
-     */
-    Element.prototype._initPropHandlers = function () {
-        this.propHandlers = {};
-        each(
-            elementPropHandlers,
-            function (propHandler) {
-                var name = propHandler.choose(this);
-                if (name) {
-                    this.propHandlers[name] = propHandler;
-                }
-            },
-            this
-        );
-    };
-
-    /**
      * 设置元素属性
      *
      * @param {string} name 属性名称
@@ -2979,7 +2992,7 @@
     }
 
     /**
-     * 绑定数据变化时的视图更新函数
+     * 视图更新函数
      *
      * @param {Array} changes 数据变化信息
      */
@@ -2987,7 +3000,7 @@
         this.props.each(function (prop) {
             each(changes, function (change) {
                 if (!isDataChangeByElement(change, this, prop.name)
-                    && exprNeedsUpdate(prop.expr, change.expr, this.scope)
+                    && changeExprCompare(change.expr, prop.expr, this.scope) > -1
                 ) {
                     this.setProp(prop.name, this.evalExpr(prop.expr));
                     return false;
@@ -3000,6 +3013,11 @@
         });
     };
 
+    /**
+     * owner数据更新的数据变化信息处理函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     Element.prototype.updateData = function (change) {
         each(this.childs, function (child) {
             child.updateData(change);
@@ -3128,17 +3146,14 @@
 
     /**
      * 隔离实际所属组件对其的视图更新调用。更新应由outer组件调用
-     *
-     * @return {boolean} 数据的变化是否导致视图需要更新
      */
     SlotElement.prototype.updateView = function () {
     };
 
     /**
-     * 绑定数据变化时的视图更新函数
+     * 视图更新函数
      *
-     * @param {Object} change 数据变化信息
-     * @return {boolean} 数据的变化是否导致视图需要更新
+     * @param {Array} changes 数据变化信息
      */
     SlotElement.prototype.slotUpdateView = function (changes) {
         each(this.childs, function (child) {
@@ -3146,6 +3161,11 @@
         });
     };
 
+    /**
+     * owner数据更新的数据变化信息处理函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     SlotElement.prototype.updateData = Element.prototype.updateData;
 
     /**
@@ -3602,38 +3622,8 @@
         }
     };
 
-
     /**
-     * 数据变化关系比较
-     * 0: 没重叠
-     * 1: change是targetChange的子项
-     * 2: change和targetChange完全相等
-     * 3: change是targetChange的母项
-     */
-    function compareChange(change, targetChange) {
-        var paths = change.expr.paths;
-        var targetPaths = targetChange.expr.paths;
-        var len = paths.length;
-        var targetLen = targetPaths.length;
-
-        for (var i = 0; i < len && i < targetLen; i++) {
-            if (paths[i].value != targetPaths[i].value) {
-                return 0;
-            }
-        }
-
-        if (len > targetLen) {
-            return 1;
-        }
-        else if (len === targetLen) {
-            return 2;
-        }
-
-        return 3;
-    }
-
-    /**
-     * 绑定数据变化时的视图更新函数
+     * 视图更新函数
      */
     Component.prototype.updateView = function () {
         if (this.lifeCycle.is('disposed') || !this.dataChanges.length) {
@@ -3644,7 +3634,7 @@
         this.dataChanges = [];
         this.props.each(function (prop) {
             each(changes, function (change) {
-                if (exprNeedsUpdate(prop.expr, change.expr, this.data)) {
+                if (changeExprCompare(change.expr, prop.expr, this.data) > -1) {
                     this.setProp(
                         prop.name,
                         evalExpr(prop.expr, this.data, this)
@@ -3682,23 +3672,26 @@
         }
 
         while (len--) {
-            var relation = compareChange(change, this.dataChanges[len]);
-            if (relation > 1 && change.type === ModelChangeType.SET) {
-                this.dataChanges.splice(len, 1);
+            switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
+                case 0:
+                case 1:
+                    if (change.type === ModelChangeType.SET) {
+                        this.dataChanges.splice(len, 1);
+                    }
             }
         }
+
         this.dataChanges.push(change);
         Element.prototype.updateData.call(this, change);
         each(this.slotChilds, function (child) {
             child.updateData(change);
         });
 
-
         this.binds.each(function (bindItem) {
             var changeExpr = change.expr;
             if (bindItem.x
                 && !isDataChangeByElement(change, this.owner)
-                && exprNeedsUpdate(parseExpr(bindItem.name), changeExpr, this.data)
+                && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data) > -1
             ) {
                 var updateScopeExpr = bindItem.expr;
                 if (changeExpr.paths.length > 1) {
@@ -3722,6 +3715,11 @@
         }, this);
     };
 
+    /**
+     * owner数据更新的数据变化信息处理函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     Component.prototype.updateData = function (change) {
         var changeExpr = change.expr;
 
@@ -3729,7 +3727,7 @@
             var bindExpr = bindItem.expr;
 
             if (!isDataChangeByElement(change, this, bindItem.name)
-                && exprNeedsUpdate(bindExpr, changeExpr, this.scope)
+                && changeExprCompare(changeExpr, bindExpr, this.scope) > -1
             ) {
                 var propertyGrainedStart = 0;
                 if (bindExpr.type === ExprType.ACCESSOR
@@ -3786,7 +3784,7 @@
         var dataExpr = parseExpr(dataName);
 
         this.data.onChange(bind(function (change) {
-            if (exprNeedsUpdate(dataExpr, change.expr, this.data)) {
+            if (changeExprCompare(change.expr, dataExpr, this.data) > -1) {
                 listener.call(this, evalExpr(dataExpr, this.data, this), change);
             }
         }, this));
@@ -3833,7 +3831,7 @@
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
-            directives: (new IndexedList).concat(aNode.directives)
+            directives: (new IndexedList()).concat(aNode.directives)
         });
 
         childANode.directives.remove('if');
@@ -3922,10 +3920,9 @@
     };
 
     /**
-     * 绑定数据变化时的视图更新函数
+     * 视图更新函数
      *
-     * @param {Object} change 数据变化信息
-     * @return {boolean} 数据的变化是否导致视图需要更新
+     * @param {Array} changes 数据变化信息
      */
     IfDirective.prototype.updateView = function (changes) {
         var ifExpr = this.aNode.directives.get('if').value;
@@ -4019,6 +4016,7 @@
     /**
      * 生成html
      *
+     * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
      * @return {string}
      */
     ForDirective.prototype.genHTML = function (onlyChilds) {
@@ -4190,6 +4188,11 @@
         return createNode(directiveANode, forElement, itemScope);
     }
 
+    /**
+     * owner数据更新的数据变化信息处理函数
+     *
+     * @param {Object} change 数据变化信息
+     */
     ForDirective.prototype.updateData = function (change) {
         if (!this.childsChanges) {
             this.childsChanges = [];
@@ -4198,152 +4201,130 @@
             }, this);
         }
 
+        // 根据for指令绑定的list数据与变更数据项之间的关系
+        // 执行相应的更新行为
         var forDirective = this.aNode.directives.get('for');
+        var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
-        var changePaths = change.expr.paths;
-        var changeLen = changePaths.length;
-        var forPaths = forDirective.list.paths;
-        var forLen = forPaths.length;
-
-        // changeInForExpr 变量表示变更的数据与 for 指令对应表达式的关系
-        // 0 - for 指令对应表达式的“整个数据”发生了变化
-        // >0 - for 指令对应表达式的数据的“子项”或“子项的属性”发生了变化
-        // -1 - 变更的不是 for 指令对应表达式的数据
-        var changeInForExpr = 0;
-        var changeIndex;
-
-        for (var i = 0; i < changeLen && i < forLen; i++) {
-            if (this.evalExpr(changePaths[i]) !== this.evalExpr(forPaths[i])) {
-                changeInForExpr = -1;
-                break;
-            }
+        if (relation < 0) {
+            // 无关时，直接传递给子元素更新，列表本身不需要动
+            each(this.childsChanges, function (changes) {
+                changes.push(change);
+            });
+            Element.prototype.updateData.call(this, change);
         }
+        else if (relation > 1) {
+            // 变更表达式是list绑定表达式的子项
+            // 只需要对相应的子项进行更新
+            var changePaths = change.expr.paths;
+            var forLen = forDirective.list.paths.length;
 
-        if (!changeInForExpr && changeLen > forLen) {
-            changeIndex = +this.evalExpr(changePaths[forLen]);
-            changeInForExpr = changeLen - forLen;
+            change = extend({}, change);
+            change.expr = {
+                type: ExprType.ACCESSOR,
+                paths: [
+                    {value: forDirective.item, type: ExprType.STRING}
+                ].concat(changePaths.slice(forLen + 1))
+            };
+
+            var changeIndex = +this.evalExpr(changePaths[forLen]);
+            Model.prototype.set.call(
+                this.childs[changeIndex].scope,
+                change.expr,
+                change.value,
+                {silence: true}
+            );
+            this.childs[changeIndex].updateData(change);
+            this.childsChanges[changeIndex].push(change);
         }
+        else if (change.type === ModelChangeType.SET) {
+            // 变更表达式是list绑定表达式本身或母项的重新设值
+            // 此时需要更新整个列表
+            each(this.childs, function (child) {
+                child.disposeSoon();
+            });
+            this.childs.length = 0;
+            this.repaintAll = 1;
+            this.childsChanges = [];
+            each(
+                this.evalExpr(forDirective.list),
+                function (item, i) {
+                    this.childs.push(createForDirectiveChild(this, item, i));
+                    this.childsChanges.push([]);
+                },
+                this
+            );
+        }
+        else if (relation === 1 && change.type === ModelChangeType.SPLICE) {
+            // 变更表达式是list绑定表达式本身数组的SPLICE操作
+            // 此时需要删除部分项，创建部分项
+            var changeStart = change.index;
+            var deleteCount = change.deleteCount;
 
-        switch (changeInForExpr) {
-            case -1:
-                each(this.childsChanges, function (changes) {
-                    changes.push(change);
-                });
-                Element.prototype.updateData.call(this, change);
-                break;
-
-
-            case 0:
-                switch (change.type) {
-                    case ModelChangeType.SPLICE:
-                        var changeStart = change.index;
-                        var deleteCount = change.deleteCount;
-
-                        var lengthChange = {
-                            type: ModelChangeType.SET,
-                            option: change.option,
-                            expr: {
-                                type: ExprType.ACCESSOR,
-                                paths: change.expr.paths.concat({
-                                    type: ExprType.STRING,
-                                    value: 'length'
-                                })
-                            }
-                        };
-                        var indexChange = {
-                            type: ModelChangeType.SET,
-                            option: change.option,
-                            expr: {
-                                type: ExprType.ACCESSOR,
-                                paths: [{
-                                    type: ExprType.STRING,
-                                    value: forDirective.index
-                                }]
-                            }
-                        };
-
-                        var insertionsLen = change.insertions.length;
-                        each(this.childs, function (child, index) {
-                            child.updateData(lengthChange);
-                            this.childsChanges[index].push(lengthChange);
-
-                            // update child index
-                            if (index >= changeStart + deleteCount) {
-                                child.updateData(indexChange);
-                                this.childsChanges[index].push(indexChange);
-                                Model.prototype.set.call(
-                                    child.scope,
-                                    indexChange.expr,
-                                    index - deleteCount + insertionsLen,
-                                    {silence: true}
-                                );
-                            }
-                        }, this);
-
-                        var spliceArgs = [changeStart, deleteCount];
-                        var childsChangesSpliceArgs = [changeStart, deleteCount];
-                        each(change.insertions, function (insertion, index) {
-                            spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
-                            childsChangesSpliceArgs.push([]);
-                        }, this);
-
-                        each(this.childs.splice.apply(this.childs, spliceArgs), function (child) {
-                            child.disposeSoon();
-                        });
-                        this.childsChanges.splice.apply(this.childsChanges, childsChangesSpliceArgs);
-                        break;
-
-                    case ModelChangeType.SET:
-                        each(this.childs, function (child) {
-                            child.disposeSoon();
-                        });
-                        this.childs.length = 0;
-                        this.allChildsIsNew = 1;
-                        this.childsChanges = [];
-                        each(
-                            this.evalExpr(forDirective.list),
-                            function (item, i) {
-                                this.childs.push(createForDirectiveChild(this, item, i));
-                                this.childsChanges.push([]);
-                            },
-                            this
-                        );
-                        break;
-                }
-
-                break;
-
-            default:
-                change = extend({}, change);
-                change.expr = {
+            var lengthChange = {
+                type: ModelChangeType.SET,
+                option: change.option,
+                expr: {
                     type: ExprType.ACCESSOR,
-                    paths: [
-                        {value: forDirective.item, type: ExprType.STRING}
-                    ].concat(changePaths.slice(forLen + 1))
-                };
-                Model.prototype.set.call(
-                    this.childs[changeIndex].scope,
-                    change.expr,
-                    change.value,
-                    {silence: true}
-                );
-                this.childs[changeIndex].updateData(change);
-                this.childsChanges[changeIndex].push(change);
+                    paths: change.expr.paths.concat({
+                        type: ExprType.STRING,
+                        value: 'length'
+                    })
+                }
+            };
+            var indexChange = {
+                type: ModelChangeType.SET,
+                option: change.option,
+                expr: {
+                    type: ExprType.ACCESSOR,
+                    paths: [{
+                        type: ExprType.STRING,
+                        value: forDirective.index
+                    }]
+                }
+            };
 
-                break;
+            var insertionsLen = change.insertions.length;
+            each(this.childs, function (child, index) {
+                child.updateData(lengthChange);
+                this.childsChanges[index].push(lengthChange);
+
+                // update child index
+                if (index >= changeStart + deleteCount) {
+                    child.updateData(indexChange);
+                    this.childsChanges[index].push(indexChange);
+                    Model.prototype.set.call(
+                        child.scope,
+                        indexChange.expr,
+                        index - deleteCount + insertionsLen,
+                        {silence: true}
+                    );
+                }
+            }, this);
+
+            var spliceArgs = [changeStart, deleteCount];
+            var childsChangesSpliceArgs = [changeStart, deleteCount];
+            each(change.insertions, function (insertion, index) {
+                spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
+                childsChangesSpliceArgs.push([]);
+            }, this);
+
+            each(this.childs.splice.apply(this.childs, spliceArgs), function (child) {
+                child.disposeSoon();
+            });
+            this.childsChanges.splice.apply(this.childsChanges, childsChangesSpliceArgs);
+
         }
     };
 
     /**
-     * 绑定数据变化时的视图更新函数
-     *
-     * @param {Object} change 数据变化信息
-     * @return {boolean} 数据的变化是否导致视图需要更新
+     * 视图更新函数
      */
     ForDirective.prototype.updateView = function () {
         if (this.childsChanges) {
-            if (this.allChildsIsNew) {
-                this.allChildsIsNew = 0;
+            if (this.repaintAll) {
+                // 整个列表都需要重新刷新
+                this.repaintAll = 0;
 
                 var buf = new StringBuffer();
                 each(this.childs, function (child) {
@@ -4353,6 +4334,8 @@
                 this._noticeAttached();
             }
             else {
+                // 对相应的项进行更新
+                // 如果不存在则直接创建，如果存在则调用更新函数
                 var len = this.childs.length;
                 var attachStump = this;
 
