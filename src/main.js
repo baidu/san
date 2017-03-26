@@ -1404,15 +1404,15 @@
     }
 
     /**
-     * 判断多个源表达式路径是否包含目标表达式。任何一个满足条件都为true
+     * 判断变更表达式与多个表达式之间的关系，-1为完全没关系，0为有关系
      *
      * @inner
      * @param {Object} changeExpr 目标表达式
      * @param {Array} exprs 多个源表达式
      * @param {Model} model 表达式所属数据环境
-     * @return {boolean}
+     * @return {number}
      */
-    function exprsNeedsUpdate(changeExpr, exprs, model) {
+    function changeExprCompareExprs(changeExpr, exprs, model) {
         var result = -1;
         each(exprs, function (expr) {
             result = changeExprCompare(changeExpr, expr, model);
@@ -1475,13 +1475,13 @@
             case ExprType.TEXT:
             case ExprType.BINARY:
             case ExprType.TERTIARY:
-                return exprsNeedsUpdate(changeExpr, expr.segs, model);
+                return changeExprCompareExprs(changeExpr, expr.segs, model);
 
             case ExprType.INTERP:
                 if (changeExprCompare(changeExpr, expr.expr, model) < 0) {
                     var filterResult = -1;
                     each(expr.filters, function (filter) {
-                        filterResult = exprsNeedsUpdate(changeExpr, filter.args, model);
+                        filterResult = changeExprCompareExprs(changeExpr, filter.args, model);
                         return filterResult < 0;
                     });
 
