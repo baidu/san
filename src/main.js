@@ -3195,7 +3195,6 @@
      */
     SlotElement.prototype._dispose = function () {
         Element.prototype._disposeChilds.call(this);
-        this.childs = null;
         Node.prototype._dispose.call(this);
     };
 
@@ -4223,6 +4222,10 @@
             }, this);
         }
 
+        if (this.repaintAll) {
+            return;
+        }
+
         // 根据for指令绑定的list数据与变更数据项之间的关系
         // 执行相应的更新行为
         var forDirective = this.aNode.directives.get('for');
@@ -4267,15 +4270,15 @@
             });
             this.childs.length = 0;
             this.repaintAll = 1;
-            this.childsChanges = [];
-            each(
-                this.evalExpr(forDirective.list),
-                function (item, i) {
-                    this.childs.push(createForDirectiveChild(this, item, i));
-                    this.childsChanges.push([]);
-                },
-                this
-            );
+            // this.childsChanges = [];
+            // each(
+            //     this.evalExpr(forDirective.list),
+            //     function (item, i) {
+            //         this.childs.push(createForDirectiveChild(this, item, i));
+            //         this.childsChanges.push([]);
+            //     },
+            //     this
+            // );
         }
         else if (relation === 1 && change.type === ModelChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
@@ -4335,7 +4338,6 @@
                 child.disposeSoon();
             });
             this.childsChanges.splice.apply(this.childsChanges, childsChangesSpliceArgs);
-
         }
     };
 
@@ -4348,11 +4350,7 @@
                 // 整个列表都需要重新刷新
                 this.repaintAll = 0;
 
-                var buf = new StringBuffer();
-                each(this.childs, function (child) {
-                    buf.push(child.genHTML());
-                });
-                this.el.insertAdjacentHTML('beforebegin', buf.toString());
+                this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
                 this._noticeAttached();
             }
             else {
