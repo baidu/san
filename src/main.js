@@ -5,6 +5,7 @@
  * @file 组件体系，vm引擎
  * @author errorrik(errorrik@gmail.com)
  *         otakustay(otakustay@gmail.com)
+ *         jummer(junmer@foxmail.com)
  */
 
 
@@ -2408,39 +2409,6 @@
         this.bindEvents();
     };
 
-
-    /**
-     * 输入法准备写入
-     *
-     * @param  {event} e 事件
-     */
-    function onCompositionStart(e) {
-        e.target.composing = true;
-    }
-
-    /**
-     * 输入法完成写入或取消
-     *
-     * @param  {event} e 事件
-     */
-    function onCompositionEnd(e) {
-        e.target.composing = false;
-        triggerEvent(e.target, 'input');
-    }
-
-    /**
-     * 触发事件
-     *
-     * @param  {Element} el   元素
-     * @param  {string} type 事件类型
-     */
-    function triggerEvent(el, type) {
-        var e = document.createEvent('HTMLEvents');
-        e.initEvent(type, true, true);
-        el.dispatchEvent(e);
-    }
-
-
     /**
      * 处理自身变化时双绑的逻辑
      *
@@ -2457,23 +2425,26 @@
                     switch (this.tagName) {
                         case 'input':
                         case 'textarea':
+                            if (root.CompositionEvent) {
+                                this.on('compositionstart', function (e) {
+                                    e.target.composing = 1;
+                                });
+                                this.on('compositionend', function (e) {
+                                    e.target.composing = 0;
 
-                            var hasCompositionEvent = !!window.CompositionEvent;
-
-                            if (hasCompositionEvent) {
-                                this.on('compositionstart', onCompositionStart);
-                                this.on('compositionend', onCompositionEnd);
+                                    var event = document.createEvent('HTMLEvents');
+                                    event.initEvent('input', true, true);
+                                    e.target.dispatchEvent(event);
+                                });
                             }
 
                             var onInput = bind(bindOutputer, this, bindInfo);
-
                             this.on(
                                 ('oninput' in this.el) ? 'input' : 'propertychange',
                                 function (e) {
-                                    if (hasCompositionEvent && e.target.composing) {
-                                        return;
+                                    if (!e.target.composing) {
+                                        onInput(e)
                                     }
-                                    onInput(e);
                                 }
                             );
 
@@ -2486,12 +2457,13 @@
                     break;
 
                 case 'checked':
-                    if (this.tagName === 'input') {
-                        switch (this.el.type) {
-                            case 'checkbox':
-                            case 'radio':
-                                this.on('click', bind(bindOutputer, this, bindInfo));
-                        }
+                    switch (this.tagName) {
+                        case 'input':
+                            switch (this.el.type) {
+                                case 'checkbox':
+                                case 'radio':
+                                    this.on('click', bind(bindOutputer, this, bindInfo));
+                            }
                     }
                     break;
             }
