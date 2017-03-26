@@ -1930,53 +1930,7 @@
 
     // #region node
 
-    /**
-     * 创建节点的工厂方法
-     *
-     * @inner
-     * @param {ANode} aNode 抽象节点
-     * @param {Node} parent 父亲节点
-     * @param {Model=} scope 所属数据环境
-     * @return {Node}
-     */
-    function createNode(aNode, parent, scope) {
-        var owner = parent instanceof Component ? parent : parent.owner;
-        // scope = scope || owner.data;
-        scope = scope || (parent instanceof Component ? parent.data : parent.scope);
-        var options = {
-            aNode: aNode,
-            owner: owner,
-            scope: scope,
-            parent: parent
-        };
 
-        if (aNode.isText) {
-            return new TextNode(options);
-        }
-
-        if (aNode.directives.get('if')) {
-            return new IfDirective(options);
-        }
-
-        if (aNode.directives.get('else')) {
-            return new ElseDirective(options);
-        }
-
-        if (aNode.directives.get('for')) {
-            return new ForDirective(options);
-        }
-
-        var ComponentType = owner.components[aNode.tagName];
-        if (ComponentType) {
-            return  new ComponentType(options);
-        }
-
-        if (aNode.tagName === 'slot') {
-            return new SlotElement(options);
-        }
-
-        return new Element(options);
-    }
 
     /* eslint-disable fecs-valid-var-jsdoc */
     /**
@@ -2306,7 +2260,7 @@
      */
     function Element(options) {
         this.childs = [];
-        this.eventListeners = {};
+        this.listeners = {};
 
         Node.call(this, options);
     }
@@ -2420,30 +2374,30 @@
                 return;
             }
 
+            var outputer = bind(bindOutputer, this, bindInfo);
             switch (bindInfo.name) {
                 case 'value':
                     switch (this.tagName) {
                         case 'input':
                         case 'textarea':
                             if (root.CompositionEvent) {
-                                this.on('compositionstart', function (e) {
-                                    e.target.composing = 1;
+                                this.on('compositionstart', function () {
+                                    this.composing = 1;
                                 });
-                                this.on('compositionend', function (e) {
-                                    e.target.composing = 0;
+                                this.on('compositionend', function () {
+                                    this.composing = 0;
 
                                     var event = document.createEvent('HTMLEvents');
                                     event.initEvent('input', true, true);
-                                    e.target.dispatchEvent(event);
+                                    this.dispatchEvent(event);
                                 });
                             }
 
-                            var onInput = bind(bindOutputer, this, bindInfo);
                             this.on(
                                 ('oninput' in this.el) ? 'input' : 'propertychange',
                                 function (e) {
-                                    if (!e.target.composing) {
-                                        onInput(e)
+                                    if (!this.composing) {
+                                        outputer(e);
                                     }
                                 }
                             );
@@ -2451,7 +2405,7 @@
                             break;
 
                         case 'select':
-                            this.on('change', bind(bindOutputer, this, bindInfo));
+                            this.on('change', outputer);
                             break;
                     }
                     break;
@@ -2462,7 +2416,7 @@
                             switch (this.el.type) {
                                 case 'checkbox':
                                 case 'radio':
-                                    this.on('click', bind(bindOutputer, this, bindInfo));
+                                    this.on('click', outputer);
                             }
                     }
                     break;
@@ -2527,10 +2481,10 @@
      *
      * @inner
      * @param {string} attrName 属性名
-     * @param {function(Element):boolean} chooseCondition 判断元素满足选择条件的函数
+     * @param {Array} tagNames 匹配的元素名
      * @return {Object}
      */
-    function genBoolPropHandler(attrName, chooseCondition) {
+    function genBoolPropHandler(attrName, tagNames) {
         attrName = attrName.toLowerCase();
 
         return {
@@ -2551,7 +2505,7 @@
             },
 
             choose: function (element) {
-                if (chooseCondition(element)) {
+                if (contains(tagNames, element.tagName)) {
                     return attrName;
                 }
             }
@@ -2566,24 +2520,13 @@
      */
     var elementPropHandlers = [
         // 表单元素(input / button / textarea / select) 的 disabled
-        genBoolPropHandler('disabled', function (element) {
-            switch (element.tagName) {
-                case 'input':
-                case 'textarea':
-                case 'button':
-                case 'select':
-                    return true;
-            }
-        }),
+        genBoolPropHandler('disabled', ['input', 'textarea', 'button', 'select']),
 
         // 表单元素(input / textarea) 的 readonly
-        genBoolPropHandler('readonly', function (element) {
-            switch (element.tagName) {
-                case 'input':
-                case 'textarea':
-                    return true;
-            }
-        }),
+        genBoolPropHandler('readonly', ['input', 'textarea']),
+
+        // 表单元素(input) 的 mutiple
+        genBoolPropHandler('mutiple', ['input']),
 
         // input[type=checkbox] 的 checked bind handler
         {
@@ -2837,15 +2780,15 @@
      * 解除绑定事件
      */
     Element.prototype.unbindEvents = function () {
-        var eventListeners = this.eventListeners;
+        var listeners = this.listeners;
 
-        for (var key in eventListeners) {
-            if (eventListeners.hasOwnProperty(key)) {
+        for (var key in listeners) {
+            if (listeners.hasOwnProperty(key)) {
                 this.un(key);
             }
         }
 
-        this.eventListeners = null;
+        this.listeners = null;
     };
 
     /**
@@ -2855,7 +2798,7 @@
      * @param {Object} event 事件对象
      */
     Element.prototype.fire = function (name, event) {
-        each(this.eventListeners[name], function (listener) {
+        each(this.listeners[name], function (listener) {
             listener.call(this, event);
         }, this);
     };
@@ -2868,10 +2811,10 @@
      */
     Element.prototype.on = function (name, listener) {
         if (typeof listener === 'function') {
-            if (!this.eventListeners[name]) {
-                this.eventListeners[name] = [];
+            if (!this.listeners[name]) {
+                this.listeners[name] = [];
             }
-            this.eventListeners[name].push(listener);
+            this.listeners[name].push(listener);
 
             on(this.el, name, listener);
         }
@@ -2884,7 +2827,7 @@
      * @param {Function=} listener 监听器
      */
     Element.prototype.un = function (name, listener) {
-        var nameListeners = this.eventListeners[name];
+        var nameListeners = this.listeners[name];
         var len = nameListeners && nameListeners.length;
 
         while (len--) {
@@ -3451,6 +3394,54 @@
     }
 
     /**
+     * 创建节点的工厂方法
+     *
+     * @inner
+     * @param {ANode} aNode 抽象节点
+     * @param {Node} parent 父亲节点
+     * @param {Model=} scope 所属数据环境
+     * @return {Node}
+     */
+    function createNode(aNode, parent, scope) {
+        var owner = parent instanceof Component ? parent : parent.owner;
+        // scope = scope || owner.data;
+        scope = scope || (parent instanceof Component ? parent.data : parent.scope);
+        var options = {
+            aNode: aNode,
+            owner: owner,
+            scope: scope,
+            parent: parent
+        };
+
+        if (aNode.isText) {
+            return new TextNode(options);
+        }
+
+        if (aNode.directives.get('if')) {
+            return new IfDirective(options);
+        }
+
+        if (aNode.directives.get('else')) {
+            return new ElseDirective(options);
+        }
+
+        if (aNode.directives.get('for')) {
+            return new ForDirective(options);
+        }
+
+        var ComponentType = owner.components[aNode.tagName];
+        if (ComponentType) {
+            return  new ComponentType(options);
+        }
+
+        if (aNode.tagName === 'slot') {
+            return new SlotElement(options);
+        }
+
+        return new Element(options);
+    }
+
+    /**
      * 通过存在的 el 创建节点的工厂方法
      *
      * @inner
@@ -3746,13 +3737,14 @@
 
         this.binds.each(function (bindItem) {
             var bindExpr = bindItem.expr;
+            var updateExpr = changeExpr;
 
             if (!isDataChangeByElement(change, this, bindItem.name)
-                && changeExprCompare(changeExpr, bindExpr, this.scope) > -1
+                && changeExprCompare(updateExpr, bindExpr, this.scope) > -1
             ) {
                 var propertyGrainedStart = 0;
                 if (bindExpr.type === ExprType.ACCESSOR
-                    && changeExpr.paths.length > bindExpr.paths.length
+                    && updateExpr.paths.length > bindExpr.paths.length
                 ) {
                     each(bindExpr.paths, function (path) {
                         switch (path.type) {
@@ -3768,24 +3760,22 @@
                 }
 
 
-                var updateExpr = bindItem.name;
-                var updateValue;
+                var setExpr = bindItem.name;
 
                 if (propertyGrainedStart) {
-                    updateExpr = {
+                    setExpr = {
                         type: ExprType.ACCESSOR,
                         paths: [{
                             type: ExprType.STRING,
-                            value: updateExpr
-                        }].concat(changeExpr.paths.slice(propertyGrainedStart))
+                            value: setExpr
+                        }].concat(updateExpr.paths.slice(propertyGrainedStart))
                     };
-                    updateValue = this.evalExpr(changeExpr);
                 }
                 else {
-                    updateValue = this.evalExpr(bindExpr);
+                    updateExpr = bindExpr;
                 }
 
-                this.data.set(updateExpr, updateValue, {
+                this.data.set(setExpr, this.evalExpr(updateExpr), {
                     target: {
                         id: this.owner.id
                     }
@@ -3959,9 +3949,8 @@
                 this.childs[0] = child;
             }
         }
-        else if (child) {
-            child.dispose();
-            this.childs.length = 0;
+        else {
+            this._disposeChilds();
         }
     };
 
