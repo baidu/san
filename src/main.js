@@ -2462,7 +2462,12 @@
 
             prop: function (element, name, value) {
                 name = HTML_ATTR_PROP_MAP[name] || name;
-                element.el[name] = value;
+                if (svgTags[element.tagName]) {
+                    element.el.setAttribute(name, value);
+                }
+                else {
+                    element.el[name] = value;
+                }
             }
         },
 
