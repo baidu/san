@@ -1413,23 +1413,23 @@
      * @return {number}
      */
     function changeExprCompareExprs(changeExpr, exprs, model) {
-        var result = -1;
+        var result;
         each(exprs, function (expr) {
             result = changeExprCompare(changeExpr, expr, model);
-            return result < 0;
+            return !result;
         });
 
-        return result > -1 ? 0 : -1;
+        return result ? 1 : 0;
     }
 
     /**
      * 比较变更表达式与目标表达式之间的关系，用于视图更新判断
      * 视图更新需要根据其关系，做出相应的更新行为
      *
-     * -1: 完全没关系
-     * 0: 变更表达式是目标表达式的母项(如a与a.b) 或 表示需要完全变化
-     * 1: 变更表达式是目标表达式相等
-     * >1: 变更表达式是目标表达式的子项，如a.b.c与a.b
+     * 0: 完全没关系
+     * 1: 变更表达式是目标表达式的母项(如a与a.b) 或 表示需要完全变化
+     * 2: 变更表达式是目标表达式相等
+     * >2: 变更表达式是目标表达式的子项，如a.b.c与a.b
      *
      * @param {Object} changeExpr 变更表达式
      * @param {Object} expr 要比较的目标表达式
@@ -1444,32 +1444,32 @@
                 var changePaths = changeExpr.paths;
                 var changeLen = changePaths.length;
 
-                var result = 0;
+                var result = 1;
                 for (var i = 0; i < len; i++) {
                     var pathExpr = paths[i];
 
                     if (pathExpr.type === ExprType.ACCESSOR
-                        && changeExprCompare(changeExpr, pathExpr, model) > -1
+                        && changeExprCompare(changeExpr, pathExpr, model)
                     ) {
-                        return 0;
+                        return 1;
                     }
 
-                    if (result > -1 && i < changeLen
+                    if (result && i < changeLen
                         /* eslint-disable eqeqeq */
                         && evalExpr(pathExpr, model) != changePaths[i].value
                         /* eslint-enable eqeqeq */
                     ) {
-                        result = -1;
+                        result = 0;
                     }
                 }
 
-                if (result > -1) {
-                    result = Math.max(0, changeLen - len + 1);
+                if (result) {
+                    result = Math.max(1, changeLen - len + 2);
                 }
                 return result;
 
             case ExprType.UNARY:
-                return changeExprCompare(changeExpr, expr.expr, model) > -1 ? 0 : -1;
+                return changeExprCompare(changeExpr, expr.expr, model) ? 1 : 0;
 
 
             case ExprType.TEXT:
@@ -1478,20 +1478,20 @@
                 return changeExprCompareExprs(changeExpr, expr.segs, model);
 
             case ExprType.INTERP:
-                if (changeExprCompare(changeExpr, expr.expr, model) < 0) {
-                    var filterResult = -1;
+                if (!changeExprCompare(changeExpr, expr.expr, model)) {
+                    var filterResult;
                     each(expr.filters, function (filter) {
                         filterResult = changeExprCompareExprs(changeExpr, filter.args, model);
-                        return filterResult < 0;
+                        return !filterResult;
                     });
 
-                    return filterResult;
+                    return filterResult ? 1 : 0;
                 }
 
-                return 0;
+                return 1;
         }
 
-        return -1;
+        return 0;
     }
 
     // #region Model
@@ -2230,7 +2230,7 @@
      */
     TextNode.prototype.updateView = function (changes) {
         each(changes, function (change) {
-            if (changeExprCompare(change.expr, this.aNode.textExpr, this.scope) > -1) {
+            if (changeExprCompare(change.expr, this.aNode.textExpr, this.scope)) {
                 this.update();
                 return false;
             }
@@ -2965,7 +2965,7 @@
         this.props.each(function (prop) {
             each(changes, function (change) {
                 if (!isDataChangeByElement(change, this, prop.name)
-                    && changeExprCompare(change.expr, prop.expr, this.scope) > -1
+                    && changeExprCompare(change.expr, prop.expr, this.scope)
                 ) {
                     this.setProp(prop.name, this.evalExpr(prop.expr));
                     return false;
@@ -3646,7 +3646,7 @@
         this.dataChanges = [];
         this.props.each(function (prop) {
             each(changes, function (change) {
-                if (changeExprCompare(change.expr, prop.expr, this.data) > -1) {
+                if (changeExprCompare(change.expr, prop.expr, this.data)) {
                     this.setProp(
                         prop.name,
                         evalExpr(prop.expr, this.data, this)
@@ -3685,8 +3685,8 @@
 
         while (len--) {
             switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
-                case 0:
                 case 1:
+                case 2:
                     if (change.type === ModelChangeType.SET) {
                         this.dataChanges.splice(len, 1);
                     }
@@ -3703,7 +3703,7 @@
             var changeExpr = change.expr;
             if (bindItem.x
                 && !isDataChangeByElement(change, this.owner)
-                && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data) > -1
+                && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data)
             ) {
                 var updateScopeExpr = bindItem.expr;
                 if (changeExpr.paths.length > 1) {
@@ -3736,43 +3736,22 @@
         var changeExpr = change.expr;
 
         this.binds.each(function (bindItem) {
-            var bindExpr = bindItem.expr;
-            var updateExpr = changeExpr;
+            var relation;
+            var setExpr = bindItem.name;
+            var updateExpr = bindItem.expr;
 
-            if (!isDataChangeByElement(change, this, bindItem.name)
-                && changeExprCompare(updateExpr, bindExpr, this.scope) > -1
+            if (!isDataChangeByElement(change, this, setExpr)
+                && (relation = changeExprCompare(changeExpr, updateExpr, this.scope))
             ) {
-                var propertyGrainedStart = 0;
-                if (bindExpr.type === ExprType.ACCESSOR
-                    && updateExpr.paths.length > bindExpr.paths.length
-                ) {
-                    each(bindExpr.paths, function (path) {
-                        switch (path.type) {
-                            case ExprType.STRING:
-                            case ExprType.NUMBER:
-                                propertyGrainedStart++;
-                                break;
-                            default:
-                                propertyGrainedStart = 0;
-                                return false;
-                        }
-                    });
-                }
-
-
-                var setExpr = bindItem.name;
-
-                if (propertyGrainedStart) {
+                if (relation > 2) {
                     setExpr = {
                         type: ExprType.ACCESSOR,
                         paths: [{
                             type: ExprType.STRING,
                             value: setExpr
-                        }].concat(updateExpr.paths.slice(propertyGrainedStart))
+                        }].concat(changeExpr.paths.slice(updateExpr.paths.length))
                     };
-                }
-                else {
-                    updateExpr = bindExpr;
+                    updateExpr = changeExpr;
                 }
 
                 this.data.set(setExpr, this.evalExpr(updateExpr), {
@@ -3784,7 +3763,6 @@
         }, this);
     };
 
-
     /**
      * 监听组件的数据变化
      *
@@ -3795,7 +3773,7 @@
         var dataExpr = parseExpr(dataName);
 
         this.data.onChange(bind(function (change) {
-            if (changeExprCompare(change.expr, dataExpr, this.data) > -1) {
+            if (changeExprCompare(change.expr, dataExpr, this.data)) {
                 listener.call(this, evalExpr(dataExpr, this.data, this), change);
             }
         }, this));
@@ -4220,14 +4198,14 @@
         var forDirective = this.aNode.directives.get('for');
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
-        if (relation < 0) {
+        if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
             each(this.childsChanges, function (changes) {
                 changes.push(change);
             });
             Element.prototype.updateData.call(this, change);
         }
-        else if (relation > 1) {
+        else if (relation > 2) {
             // 变更表达式是list绑定表达式的子项
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
@@ -4269,7 +4247,7 @@
             //     this
             // );
         }
-        else if (relation === 1 && change.type === ModelChangeType.SPLICE) {
+        else if (relation === 2 && change.type === ModelChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
