@@ -26,6 +26,7 @@ describe("Element-Event", function () {
         expect(span.getAttribute('title')).toBe('errorrik');
 
         function doneSpec() {
+
             if (clicked) {
                 done();
                 myComponent.dispose();
@@ -37,10 +38,10 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
-        // wd bridge
-        WDBridge.send('action', 'click:#' + myComponent.id);
+        triggerEvent('#' + span.id, 'click');
 
         doneSpec();
+
     });
 
 

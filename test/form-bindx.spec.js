@@ -17,11 +17,10 @@ describe("Form TwoWay Binding", function () {
         var input = wrap.getElementsByTagName('input')[0];
         expect(span.title).toBe(defName);
 
-        WDBridge.send('action', 'addValue:#' + input.id + '|added2');
 
-        doneSpec();
         function doneSpec() {
             var name = myComponent.data.get('name');
+
             if (name !== defName) {
                 expect(span.title).toBe(name);
 
@@ -33,6 +32,10 @@ describe("Form TwoWay Binding", function () {
 
             setTimeout(doneSpec, 500);
         }
+
+        triggerEvent('#' + input.id, 'input', 'test' + (+new Date()));
+        setTimeout(doneSpec, 500);
+
     });
 
     it("textarea value", function (done) {
@@ -54,9 +57,7 @@ describe("Form TwoWay Binding", function () {
         expect(textarea.value).toBe(defName);
 
         doneSpec();
-        WDBridge.send('action', 'addValue:#' + textarea.id + '|added2');
-
-
+        triggerEvent('#' + textarea.id, 'input', 'added2')
 
 
         function doneSpec() {
@@ -98,8 +99,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
 
-        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|added3');
-
+        triggerEvent('#' + inputs[1].id , 'input', 'added3');
 
         doneSpec();
         function doneSpec() {
@@ -140,10 +140,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[2].value).toBe('firede');
 
 
-        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
 
-
-        doneSpec();
         function doneSpec() {
             var list = myComponent.data.get('list');
             if (list[0].name !== 'errorrik' || list[1].name !== 'varsha' || list[2].name !== 'firede') {
@@ -160,6 +157,10 @@ describe("Form TwoWay Binding", function () {
 
             setTimeout(doneSpec, 500);
         }
+
+        triggerEvent('#' + inputs[1].id , 'input', 'test');
+        setTimeout(doneSpec, 500);
+
     });
 
     it("text value in nested for, set op", function (done) {
@@ -202,9 +203,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[0].value).toBe('red');
         expect(inputs[1].value).toBe('green');
 
-        WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
 
-        doneSpec();
         function doneSpec() {
             var colors0 = myComponent.data.get('persons[0].colors');
             var colors1 = myComponent.data.get('persons[1].colors');
@@ -233,6 +232,10 @@ describe("Form TwoWay Binding", function () {
 
             setTimeout(doneSpec, 500);
         }
+
+        triggerEvent('#' + inputs[1].id, 'input', 'test')
+        setTimeout(doneSpec, 500);
+
     });
 
 
@@ -262,9 +265,9 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+            triggerEvent('#'+ inputs[1].id, 'input', 'test');
+            setTimeout(doneSpec, 500);
 
-            doneSpec();
         });
 
         function doneSpec() {
@@ -315,10 +318,10 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[2].value).toBe('varsha');
             expect(inputs[3].value).toBe('firede');
 
-            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
+            triggerEvent('#' + inputs[1].id, 'input', 'test');
 
+            setTimeout(doneSpec, 500);
 
-            doneSpec();
         });
 
         function doneSpec() {
@@ -374,10 +377,8 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            WDBridge.send('action', 'addValue:#' + inputs[1].id + '|test');
-
-
-            doneSpec();
+            triggerEvent('#' + inputs[1].id, 'input', 'test');
+            setTimeout(doneSpec, 500);
         });
 
         function doneSpec() {
@@ -454,9 +455,10 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        WDBridge.send('action', 'click:#' + inputs[0].id);
+        triggerEvent('#' + inputs[0].id, 'click');
 
-        doneSpec();
+        setTimeout(doneSpec, 500);
+
     });
 
     it("radio", function (done) {
@@ -508,8 +510,10 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        WDBridge.send('action', 'click:#' + inputs[0].id);
-        doneSpec();
+        triggerEvent('#' + inputs[0].id, 'click');
+
+        setTimeout(doneSpec, 500);
+
     });
 
     it("select", function (done) {
@@ -541,9 +545,11 @@ describe("Form TwoWay Binding", function () {
             expect(select.selectedIndex).toBe(1);
             expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
 
-            WDBridge.send('action', 'selectByIndex:#' + select.id + '|0');
+            // WDBridge.send('action', 'selectByIndex:#' + select.id + '|0');
+            select.selectedIndex = 0;
+            triggerEvent('#' + select.id, 'change');
+            setTimeout(doneSpec, 500);
 
-            doneSpec();
         });
 
         function doneSpec() {

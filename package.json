@@ -21,10 +21,12 @@
     "url": "https://github.com/ecomfe/san.git"
   },
   "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
+    "test:unit-dev": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
     "wdio": "node test/lib/webdriverio-runner.js",
-    "test": "npm run test:sauce",
-    "test:standalone": "npm run wdio -- standalone",
-    "test:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2",
+    "e2e:standalone": "npm run wdio -- standalone",
+    "e2e:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2",
     "build": "bash tool/dist.sh"
   },
   "main": "dist/san.source.js",
@@ -37,6 +39,10 @@
   "devDependencies": {
     "async": "^2.0.1",
     "http-server": "^0.9.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
     "webdriverio": "^4.2.16"
   }
 }

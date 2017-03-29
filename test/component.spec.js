@@ -219,7 +219,8 @@ describe("Component", function () {
             setTimeout(doneSpec, 500);
         }
 
-        WDBridge.send('action', 'click:#component-custom-event1');
+        triggerEvent('#component-custom-event1', 'click');
+
         doneSpec();
     });
 
@@ -265,7 +266,8 @@ describe("Component", function () {
             setTimeout(doneSpec, 500);
         }
 
-        WDBridge.send('action', 'click:#component-custom-event2');
+        triggerEvent('#component-custom-event2', 'click');
+
         doneSpec();
     });
 
@@ -478,7 +480,8 @@ describe("Component", function () {
         }
 
         detectDone();
-        WDBridge.send('action', 'click:#' + itemId);
+        triggerEvent('#' + itemId, 'click');
+
     });
 
     it("outer bind declaration should not set main element property", function (done) {
@@ -1322,8 +1325,7 @@ describe("Component", function () {
             setTimeout(detect, 500);
         }
 
-        // wd bridge
-        WDBridge.send('action', 'click:#' + myComponent.childs[1].id);
+        triggerEvent('#' + myComponent.childs[1].id, 'click');
 
         detect();
     });
