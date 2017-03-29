@@ -2237,7 +2237,6 @@
         }, this);
     };
 
-    TextNode.prototype.updateData = function () {};
 
     // #region Element
 
@@ -2983,17 +2982,6 @@
         });
     };
 
-    /**
-     * owner数据更新的数据变化信息处理函数
-     *
-     * @param {Object} change 数据变化信息
-     */
-    Element.prototype.updateData = function (change) {
-        each(this.childs, function (child) {
-            child.updateData(change);
-        });
-    };
-
 
     /**
      * 将元素从页面上移除
@@ -3038,13 +3026,6 @@
             child.dispose();
         });
         this.childs.length = 0;
-    };
-
-    /**
-     * 在下一个时钟周期销毁释放
-     */
-    Element.prototype.disposeSoon = function () {
-        nextTick(this.dispose, this);
     };
 
     /**
@@ -3130,13 +3111,6 @@
             child.updateView(changes);
         });
     };
-
-    /**
-     * owner数据更新的数据变化信息处理函数
-     *
-     * @param {Object} change 数据变化信息
-     */
-    SlotElement.prototype.updateData = Element.prototype.updateData;
 
     /**
      * 销毁释放元素行为
@@ -3642,36 +3616,103 @@
     /**
      * 视图更新函数
      */
-    Component.prototype.updateView = function () {
-        if (this.lifeCycle.is('disposed') || !this.dataChanges.length) {
+    Component.prototype.updateView = function (changes) {
+        if (this.lifeCycle.is('disposed')) {
             return;
         }
 
-        var changes = this.dataChanges;
-        this.dataChanges = [];
-        this.props.each(function (prop) {
-            each(changes, function (change) {
-                if (changeExprCompare(change.expr, prop.expr, this.data)) {
-                    this.setProp(
-                        prop.name,
-                        evalExpr(prop.expr, this.data, this)
-                    );
+        each(changes, function (change) {
+            var changeExpr = change.expr;
 
-                    return false;
+            this.binds.each(function (bindItem) {
+                var relation;
+                var setExpr = bindItem.name;
+                var updateExpr = bindItem.expr;
+
+                if (!isDataChangeByElement(change, this, setExpr)
+                    && (relation = changeExprCompare(changeExpr, updateExpr, this.scope))
+                ) {
+                    if (relation > 2) {
+                        setExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: [{
+                                type: ExprType.STRING,
+                                value: setExpr
+                            }].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                        };
+                        updateExpr = changeExpr;
+                    }
+
+                    this.data.set(setExpr, this.evalExpr(updateExpr), {
+                        target: {
+                            id: this.owner.id
+                        }
+                    });
                 }
             }, this);
         }, this);
 
 
-        each(this.childs, function (child) {
-            child.updateView(changes);
-        });
+        var dataChanges = this.dataChanges;
+        if (dataChanges.length) {
+            this.dataChanges = [];
+            this.props.each(function (prop) {
+                each(dataChanges, function (change) {
+                    if (changeExprCompare(change.expr, prop.expr, this.data)) {
+                        this.setProp(
+                            prop.name,
+                            evalExpr(prop.expr, this.data, this)
+                        );
 
-        each(this.slotChilds, function (child) {
-            child.slotUpdateView(changes);
-        });
+                        return false;
+                    }
+                }, this);
+            }, this);
 
-        this._callHook('updated');
+
+            each(this.childs, function (child) {
+                child.updateView(dataChanges);
+            });
+
+            each(this.slotChilds, function (child) {
+                child.slotUpdateView(dataChanges);
+            });
+
+            this._callHook('updated');
+
+            if (this.owner) {
+                each(dataChanges, function (change) {
+                    this.binds.each(function (bindItem) {
+                        var changeExpr = change.expr;
+                        if (bindItem.x
+                            && !isDataChangeByElement(change, this.owner)
+                            && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data)
+                        ) {
+                            var updateScopeExpr = bindItem.expr;
+                            if (changeExpr.paths.length > 1) {
+                                updateScopeExpr = {
+                                    type: ExprType.ACCESSOR,
+                                    paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+                                };
+                            }
+
+                            this.scope.set(
+                                updateScopeExpr,
+                                evalExpr(changeExpr, this.data, this),
+                                {
+                                    target: {
+                                        id: this.id,
+                                        prop: bindItem.name
+                                    }
+                                }
+                            );
+                        }
+                    }, this);
+                }, this);
+                this.owner.updateView();
+            }
+
+        }
     };
 
 
@@ -3699,74 +3740,8 @@
         }
 
         this.dataChanges.push(change);
-        Element.prototype.updateData.call(this, change);
-        each(this.slotChilds, function (child) {
-            child.updateData(change);
-        });
-
-        this.binds.each(function (bindItem) {
-            var changeExpr = change.expr;
-            if (bindItem.x
-                && !isDataChangeByElement(change, this.owner)
-                && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data)
-            ) {
-                var updateScopeExpr = bindItem.expr;
-                if (changeExpr.paths.length > 1) {
-                    updateScopeExpr = {
-                        type: ExprType.ACCESSOR,
-                        paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                    };
-                }
-
-                this.scope.set(
-                    updateScopeExpr,
-                    evalExpr(changeExpr, this.data, this),
-                    {
-                        target: {
-                            id: this.id,
-                            prop: bindItem.name
-                        }
-                    }
-                );
-            }
-        }, this);
     };
 
-    /**
-     * owner数据更新的数据变化信息处理函数
-     *
-     * @param {Object} change 数据变化信息
-     */
-    Component.prototype.updateData = function (change) {
-        var changeExpr = change.expr;
-
-        this.binds.each(function (bindItem) {
-            var relation;
-            var setExpr = bindItem.name;
-            var updateExpr = bindItem.expr;
-
-            if (!isDataChangeByElement(change, this, setExpr)
-                && (relation = changeExprCompare(changeExpr, updateExpr, this.scope))
-            ) {
-                if (relation > 2) {
-                    setExpr = {
-                        type: ExprType.ACCESSOR,
-                        paths: [{
-                            type: ExprType.STRING,
-                            value: setExpr
-                        }].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                    };
-                    updateExpr = changeExpr;
-                }
-
-                this.data.set(setExpr, this.evalExpr(updateExpr), {
-                    target: {
-                        id: this.owner.id
-                    }
-                });
-            }
-        }, this);
-    };
 
     /**
      * 监听组件的数据变化
@@ -4181,171 +4156,141 @@
         return createNode(directiveANode, forElement, itemScope);
     }
 
-    /**
-     * owner数据更新的数据变化信息处理函数
-     *
-     * @param {Object} change 数据变化信息
-     */
-    ForDirective.prototype.updateData = function (change) {
-        if (!this.childsChanges) {
-            this.childsChanges = [];
-            each(this.childs, function () {
-                this.childsChanges.push([]);
-            }, this);
-        }
-
-        if (this.repaintAll) {
-            return;
-        }
-
-        // 根据for指令绑定的list数据与变更数据项之间的关系
-        // 执行相应的更新行为
-        var forDirective = this.aNode.directives.get('for');
-        var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
-
-        if (!relation) {
-            // 无关时，直接传递给子元素更新，列表本身不需要动
-            each(this.childsChanges, function (changes) {
-                changes.push(change);
-            });
-            Element.prototype.updateData.call(this, change);
-        }
-        else if (relation > 2) {
-            // 变更表达式是list绑定表达式的子项
-            // 只需要对相应的子项进行更新
-            var changePaths = change.expr.paths;
-            var forLen = forDirective.list.paths.length;
-
-            change = extend({}, change);
-            change.expr = {
-                type: ExprType.ACCESSOR,
-                paths: [
-                    {value: forDirective.item, type: ExprType.STRING}
-                ].concat(changePaths.slice(forLen + 1))
-            };
-
-            var changeIndex = +this.evalExpr(changePaths[forLen]);
-            Model.prototype.set.call(
-                this.childs[changeIndex].scope,
-                change.expr,
-                change.value,
-                {silence: true}
-            );
-            this.childs[changeIndex].updateData(change);
-            this.childsChanges[changeIndex].push(change);
-        }
-        else if (change.type === ModelChangeType.SET) {
-            // 变更表达式是list绑定表达式本身或母项的重新设值
-            // 此时需要更新整个列表
-            each(this.childs, function (child) {
-                child.disposeSoon();
-            });
-            this.childs.length = 0;
-            this.repaintAll = 1;
-            // this.childsChanges = [];
-            // each(
-            //     this.evalExpr(forDirective.list),
-            //     function (item, i) {
-            //         this.childs.push(createForDirectiveChild(this, item, i));
-            //         this.childsChanges.push([]);
-            //     },
-            //     this
-            // );
-        }
-        else if (relation === 2 && change.type === ModelChangeType.SPLICE) {
-            // 变更表达式是list绑定表达式本身数组的SPLICE操作
-            // 此时需要删除部分项，创建部分项
-            var changeStart = change.index;
-            var deleteCount = change.deleteCount;
-
-            var lengthChange = {
-                type: ModelChangeType.SET,
-                option: change.option,
-                expr: {
-                    type: ExprType.ACCESSOR,
-                    paths: change.expr.paths.concat({
-                        type: ExprType.STRING,
-                        value: 'length'
-                    })
-                }
-            };
-            var indexChange = {
-                type: ModelChangeType.SET,
-                option: change.option,
-                expr: {
-                    type: ExprType.ACCESSOR,
-                    paths: [{
-                        type: ExprType.STRING,
-                        value: forDirective.index
-                    }]
-                }
-            };
-
-            var insertionsLen = change.insertions.length;
-            each(this.childs, function (child, index) {
-                child.updateData(lengthChange);
-                this.childsChanges[index].push(lengthChange);
-
-                // update child index
-                if (index >= changeStart + deleteCount) {
-                    child.updateData(indexChange);
-                    this.childsChanges[index].push(indexChange);
-                    Model.prototype.set.call(
-                        child.scope,
-                        indexChange.expr,
-                        index - deleteCount + insertionsLen,
-                        {silence: true}
-                    );
-                }
-            }, this);
-
-            var spliceArgs = [changeStart, deleteCount];
-            var childsChangesSpliceArgs = [changeStart, deleteCount];
-            each(change.insertions, function (insertion, index) {
-                spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
-                childsChangesSpliceArgs.push([]);
-            }, this);
-
-            each(this.childs.splice.apply(this.childs, spliceArgs), function (child) {
-                child.disposeSoon();
-            });
-            this.childsChanges.splice.apply(this.childsChanges, childsChangesSpliceArgs);
-        }
-    };
 
     /**
      * 视图更新函数
      */
-    ForDirective.prototype.updateView = function () {
-        if (this.childsChanges) {
-            if (this.repaintAll) {
-                // 整个列表都需要重新刷新
-                this.repaintAll = 0;
+    ForDirective.prototype.updateView = function (changes) {
+        var childsChanges = [];
+        each(this.childs, function () {
+            childsChanges.push([]);
+        });
 
-                this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
-                this._noticeAttached();
+        var repaintAll = 0;
+        var forDirective = this.aNode.directives.get('for');
+        each(changes, function (change) {
+            var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
+
+            if (!relation) {
+                // 无关时，直接传递给子元素更新，列表本身不需要动
+                each(childsChanges, function (childChanges) {
+                    childChanges.push(change);
+                });
             }
-            else {
-                // 对相应的项进行更新
-                // 如果不存在则直接创建，如果存在则调用更新函数
-                var len = this.childs.length;
-                var attachStump = this;
+            else if (relation > 2) {
+                // 变更表达式是list绑定表达式的子项
+                // 只需要对相应的子项进行更新
+                var changePaths = change.expr.paths;
+                var forLen = forDirective.list.paths.length;
 
-                while (len--) {
-                    var child = this.childs[len];
-                    if (child.lifeCycle.is('attached')) {
-                        child.updateView(this.childsChanges[len]);
-                    }
-                    else {
-                        child.attach(attachStump.el.parentNode, attachStump.el);
-                    }
+                change = extend({}, change);
+                change.expr = {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {value: forDirective.item, type: ExprType.STRING}
+                    ].concat(changePaths.slice(forLen + 1))
+                };
 
-                    attachStump = child;
+                var changeIndex = +this.evalExpr(changePaths[forLen]);
+                Model.prototype.set.call(
+                    this.childs[changeIndex].scope,
+                    change.expr,
+                    change.value,
+                    {silence: true}
+                );
+                childsChanges[changeIndex].push(change);
+            }
+            else if (change.type === ModelChangeType.SET) {
+                // 变更表达式是list绑定表达式本身或母项的重新设值
+                // 此时需要更新整个列表
+                this._disposeChilds();
+                repaintAll = 1;
+            }
+            else if (relation === 2 && change.type === ModelChangeType.SPLICE) {
+                // 变更表达式是list绑定表达式本身数组的SPLICE操作
+                // 此时需要删除部分项，创建部分项
+                var changeStart = change.index;
+                var deleteCount = change.deleteCount;
+
+                var lengthChange = {
+                    type: ModelChangeType.SET,
+                    option: change.option,
+                    expr: {
+                        type: ExprType.ACCESSOR,
+                        paths: change.expr.paths.concat({
+                            type: ExprType.STRING,
+                            value: 'length'
+                        })
+                    }
+                };
+                var indexChange = {
+                    type: ModelChangeType.SET,
+                    option: change.option,
+                    expr: {
+                        type: ExprType.ACCESSOR,
+                        paths: [{
+                            type: ExprType.STRING,
+                            value: forDirective.index
+                        }]
+                    }
+                };
+
+                var insertionsLen = change.insertions.length;
+                each(this.childs, function (child, index) {
+                    childsChanges[index].push(lengthChange);
+
+                    // update child index
+                    if (index >= changeStart + deleteCount) {
+                        childsChanges[index].push(indexChange);
+                        Model.prototype.set.call(
+                            child.scope,
+                            indexChange.expr,
+                            index - deleteCount + insertionsLen,
+                            {silence: true}
+                        );
+                    }
+                }, this);
+
+                var spliceArgs = [changeStart, deleteCount];
+                var childsChangesSpliceArgs = [changeStart, deleteCount];
+                each(change.insertions, function (insertion, index) {
+                    spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
+                    childsChangesSpliceArgs.push([]);
+                }, this);
+
+                each(this.childs.splice.apply(this.childs, spliceArgs), function (child) {
+                    child.dispose();
+                });
+                childsChanges.splice.apply(childsChanges, childsChangesSpliceArgs);
+            }
+
+            return !repaintAll;
+        }, this);
+
+
+        if (repaintAll) {
+            // 整个列表都需要重新刷新
+            this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
+            this._noticeAttached();
+        }
+        else {
+            // 对相应的项进行更新
+            // 如果不存在则直接创建，如果存在则调用更新函数
+            var len = this.childs.length;
+            var attachStump = this;
+
+            while (len--) {
+                var child = this.childs[len];
+                if (child.lifeCycle.is('attached')) {
+                    child.updateView(childsChanges[len]);
                 }
+                else {
+                    child.attach(attachStump.el.parentNode, attachStump.el);
+                }
+
+                attachStump = child;
             }
         }
-
-        this.childsChanges = null;
     };
 
 
