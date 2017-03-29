@@ -23,7 +23,8 @@
   "scripts": {
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
-    "test:unit-dev": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
+    "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
+    "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
     "wdio": "node test/lib/webdriverio-runner.js",
     "e2e:standalone": "npm run wdio -- standalone",
     "e2e:sauce": "npm run wdio -- 0 && npm run wdio -- 1 && npm run wdio -- 2",
@@ -42,6 +43,7 @@
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
     "webdriverio": "^4.2.16"
   }

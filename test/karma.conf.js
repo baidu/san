@@ -76,6 +76,18 @@ module.exports = function(config) {
     concurrency: Infinity
   };
 
+
+  if (process.argv.indexOf('--coverage') > -1) {
+
+    configuration.reporters.push('coverage');
+    configuration.preprocessors['src/main.js'] = 'coverage';
+    configuration.coverageReporter = {
+        type : 'html',
+        dir : 'coverage/'
+    };
+
+  }
+
   if (process.env.TRAVIS) {
     configuration.browsers = ['Chrome_travis_ci'];
   }
