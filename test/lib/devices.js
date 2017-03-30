@@ -93,7 +93,13 @@ var standalone = {
         desiredCapabilities: {
             browserName: 'chrome'
         }
-    }
+    },
+    // firefox: {
+    //     desiredCapabilities: {
+    //         browserName: 'firefox'
+    //     }
+    // },
+
 };
 
 module.exports.get = function (group) {
