@@ -5,7 +5,7 @@
  * @file 组件体系，vm引擎
  * @author errorrik(errorrik@gmail.com)
  *         otakustay(otakustay@gmail.com)
- *         jummer(junmer@foxmail.com)
+ *         junmer(junmer@foxmail.com)
  */
 
 
