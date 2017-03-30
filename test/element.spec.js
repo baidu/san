@@ -1,6 +1,6 @@
 describe("Element", function () {
 
-    it("empty string prop, ", function () {
+    it("empty string prop", function () {
         var MyComponent = san.defineComponent({
             template: '<a><span class="">test</span><span class="test2">test2</span></a>'
         });
@@ -13,6 +13,27 @@ describe("Element", function () {
         var spans = wrap.getElementsByTagName('span');
         expect(spans[0].className).toBe('');
         expect(spans[1].className).toBe('test2');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("line-break attribute", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a title="line1\r\nline2"><span title="line1\r\nline2">test</span><span class="test2">test2</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(a.title.indexOf('line1') >= 0).toBeTruthy();
+        expect(a.title.indexOf('line2') >= 0).toBeTruthy();
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title.indexOf('line1') >= 0).toBeTruthy();
+        expect(span.title.indexOf('line2') >= 0).toBeTruthy();
 
         myComponent.dispose();
         document.body.removeChild(wrap);

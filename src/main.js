@@ -2330,14 +2330,14 @@
                     ? evalExpr(prop.expr, this.data, this)
                     : this.evalExpr(prop.expr, 1);
 
-                var match = /^\s+([a-z0-9_-]+)="(.*)"$/.exec(
+                var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/.exec(
                     getPropHandler(this, prop.name)
                         .input
                         .attr(this, prop.name, value)
                 );
 
                 if (match) {
-                    this.el.setAttribute(match[1], match[2]);
+                    this.el.setAttribute(match[1], match[3]);
                 }
             }, this);
         }
