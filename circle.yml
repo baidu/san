@@ -17,6 +17,6 @@ test:
         background: true
     # Wait for tunnel to be ready
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - npm run e2e:sauce
+    - npm run wdio -- 0
   post:
     - killall --wait sc  # wait for Sauce Connect to close the tunnel
