@@ -110,7 +110,7 @@ module.exports.get = function (group) {
 
     var config = {};
     Object.keys(sauce[group]).map(function (name) {
-        config[name] = getDesiredCapabilities(sauce[name]);
+        config[name] = getDesiredCapabilities(sauce[group][name]);
     });
 
     return config;
