@@ -12,5 +12,7 @@ then
     mkdir "${DIST_DIR}"
 fi
 
-sed 's/define(\[\], san)/define("san", [], san)/' "${SRC_DIR}/main.js" > "${DIST_DIR}/san.source.js"
-uglifyjs "${DIST_DIR}/san.source.js" -mco "${DIST_DIR}/san.js"
+VERSION=$(grep "version" "${ROOT_DIR}/package.json" | cut -d '"' -f 4)
+
+sed -e "s/define(\[\], san)/define('san', [], san)/; s/version: '##version##'/version: '${VERSION}'/" "${SRC_DIR}/main.js" > "${DIST_DIR}/san.source.js"
+# uglifyjs "${DIST_DIR}/san.source.js" -mco "${DIST_DIR}/san.js"
