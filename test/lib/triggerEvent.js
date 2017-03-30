@@ -29,9 +29,12 @@ window.triggerEvent = function() {
             return false;
         }
 
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent(type, true, true);
-        elem.dispatchEvent(event);
+        try {
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent(type, true, true);
+            elem.dispatchEvent(event);
+        }
+        catch (ex) {}
 
 
     };
