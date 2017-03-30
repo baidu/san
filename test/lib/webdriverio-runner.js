@@ -174,8 +174,8 @@ function startWorker (device, done) {
 
     client
         .init()
-        .url('http://127.0.0.1:8800/test/')
-        .bridgeLoop(1000 * 30); // 30 秒超时
+        .url('http://127.0.0.1:8800/test/?trigger=wd')
+        .bridgeLoop(1000 * 20); // 20 秒超时
 
     function workerEnd (code) {
         console.log('===========================');

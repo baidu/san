@@ -545,9 +545,8 @@ describe("Form TwoWay Binding", function () {
             expect(select.selectedIndex).toBe(1);
             expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
 
-            // WDBridge.send('action', 'selectByIndex:#' + select.id + '|0');
-            select.selectedIndex = 0;
-            triggerEvent('#' + select.id, 'change');
+            triggerEvent('#' + select.id, 'select', 0);
+
             setTimeout(doneSpec, 500);
 
         });
