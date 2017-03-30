@@ -76,6 +76,7 @@ function getDesiredCapabilities (options) {
         tags: ['san'],
         name: 'sanjs test',
         build: 'build-' + pkg.version,
+        passed: true,
         'public': true
     }, options);
 
