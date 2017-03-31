@@ -13,14 +13,13 @@
  */
 
 var path = require('path');
-var async = require('async');
 var httpServer = require('http-server');
 var webdriverio = require('webdriverio');
 
 // start server
 var server = httpServer.createServer({
     root: path.resolve(__dirname, '../../')
-}).listen(8001);
+}).listen(8800);
 
 process.on('exit', function() {
     server && server.close();
@@ -32,45 +31,65 @@ process.on('uncaughtException', function (err) {
 });
 
 // config webdriverio
-
 var devices = require('./devices').get(process.argv[2]);
 
-// config task
-var tasks = {};
+// prmisefy tasks
+var promiseTasks = Object.keys(devices).map(function(key) {
 
-Object.keys(devices).forEach(function (key) {
-    tasks[key] = function (done) {
-        process.stdout.write('# ' + key + ' ');
-        startWorker(devices[key], done);
+    return function (results) {
+
+        return Promise.resolve({
+            then: function(resolve) {
+                process.stdout.write('# ' + key + ' ');
+                startWorker(devices[key], function (res) {
+                    resolve(results.concat(res));
+                });
+            }
+        });
+
     };
+
 });
 
+// reduce promises
+function runSeries(list) {
+    var p = Promise.resolve([]);
+    return list.reduce(function(pacc, fn) {
+        return pacc = pacc.then(fn);
+    }, p);
+}
+
 // run tasks
-async.series(
-    tasks,
-    function(err, results) {
+runSeries(promiseTasks).then(function(results) {
 
-        console.log(results);
+    var code = 0;
 
-        var hasErr = Object.keys(results)
-            .map(function (key) {
-                return results[key];
-            })
-            .some(function (value) {
-                return value > 0;
-            });
+    // print reslut
+    console.log('# Summary');
+    Object.keys(devices).forEach(function(key, i) {
 
-        processExit(hasErr ? 1 : 0);
+        var res = results[i];
+        console.log([key, res]);
 
-    }
-);
+        if (res > 0) {
+            code = res;
+        }
 
-function processExit (code) {
+    });
+
+    // wait client.end()
     setTimeout(function () {
         process.exit(code);
     }, 200);
-}
 
+});
+
+/**
+ * 开启一个测试
+ *
+ * @param  {Object}   device 设备配置
+ * @param  {Function} done   回调
+ */
 function startWorker (device, done) {
 
     var client = webdriverio.remote(device);
@@ -78,6 +97,7 @@ function startWorker (device, done) {
     // report result
     var reportResultRegEx = /^\d+ specs, (\d+) failure/;
     var reportResult;
+    var ignoreMsgRegEx = /ConsoleReporter/;
 
     /**
      * 桥循环
@@ -125,7 +145,7 @@ function startWorker (device, done) {
                 }
 
                 // 正常 log
-                if (msg) {
+                if (msg && !ignoreMsgRegEx.test(msg)) {
                     process.stdout.write(msg);
                 }
 
@@ -154,12 +174,12 @@ function startWorker (device, done) {
 
     client
         .init()
-        .url('http://127.0.0.1:8001/test/')
-        .bridgeLoop(1000 * 30); // 30 秒超时
+        .url('http://127.0.0.1:8800/test/?trigger=wd')
+        .bridgeLoop(1000 * 20); // 20 秒超时
 
     function workerEnd (code) {
         console.log('===========================');
-        done(null, code);
+        done(code);
     }
 
 }

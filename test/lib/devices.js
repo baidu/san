@@ -3,6 +3,8 @@
  *
  */
 
+var pkg = require('../../package.json');
+
 // sauce
 var sauce = [
 
@@ -16,10 +18,10 @@ var sauce = [
         firefox: {
             browserName: 'firefox'
         },
-        mac_safari: {
-            browserName: 'safari',
-            platform: 'OS X 10.10'
-        }
+        // mac_safari: {
+        //     browserName: 'safari',
+        //     platform: 'OS X 10.10'
+        // }
 
     },
 
@@ -72,7 +74,9 @@ function getDesiredCapabilities (options) {
 
     var desiredCapabilities = Object.assign({
         tags: ['san'],
-        name: 'This is an san test',
+        name: 'sanjs test',
+        build: 'build-' + pkg.version,
+        passed: true,
         'public': true
     }, options);
 
@@ -93,7 +97,13 @@ var standalone = {
         desiredCapabilities: {
             browserName: 'chrome'
         }
-    }
+    },
+    // firefox: {
+    //     desiredCapabilities: {
+    //         browserName: 'firefox'
+    //     }
+    // },
+
 };
 
 module.exports.get = function (group) {
@@ -104,8 +114,9 @@ module.exports.get = function (group) {
 
     var config = {};
     Object.keys(sauce[group]).map(function (name) {
-        config[name] = getDesiredCapabilities(sauce[name]);
+        config[name] = getDesiredCapabilities(sauce[group][name]);
     });
+
 
     return config;
 };

@@ -4,7 +4,7 @@ window.triggerEvent = function() {
         return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
     }
 
-    return function(elem, type, data, onlyHandlers) {
+    function byBrowser(elem, type, value) {
 
         if (typeof elem === 'string') {
             elem = document.querySelector(elem);
@@ -19,7 +19,7 @@ window.triggerEvent = function() {
 
         // hack input
         if (type === 'input') {
-            elem.value = data;
+            elem.value = elem.value + value;
             type = ontype in elem ? type : 'change';
         }
 
@@ -29,14 +29,64 @@ window.triggerEvent = function() {
             return false;
         }
 
+        // hack select
+        if (type === 'select') {
+            type = 'change';
+            if (value !== undefined) {
+                elem.selectedIndex = value;
+            }
+        }
+
         try {
-            var event = document.createEvent('HTMLEvents');
+
+            var event;
+
+            if (document.createEventObject) {
+                event = document.createEventObject();
+                return elem.fireEvent(ontype, event);
+            }
+
+            event = document.createEvent('HTMLEvents');
             event.initEvent(type, true, true);
-            elem.dispatchEvent(event);
+            return !elem.dispatchEvent(event);
         }
         catch (ex) {}
 
 
+    }
+
+    var acts = {
+        click: 'click',
+        input: 'addValue',
+        select: 'selectByIndex'
     };
+
+    function byWebDriver(elem, type, value) {
+
+        var act = acts[type];
+
+        if (act) {
+
+            var action = [
+                act,
+                ':',
+                elem,
+                value !== undefined ? ('|' + value) : ''
+            ].join('');
+
+            window.WDBridge.send('action', action);
+
+        }
+    }
+
+    if (location.search.indexOf('trigger=no') > -1) {
+        return function() {};
+    }
+
+    if (location.search.indexOf('trigger=wd') > -1) {
+        return byWebDriver;
+    }
+
+    return byBrowser;
 
 }();
