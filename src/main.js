@@ -3281,6 +3281,30 @@
     };
 
     /**
+     * attach 完成后的行为
+     * 通知devtool
+     */
+    Component.prototype._attached = function () {
+        emitDevTool('comp-attached', this);
+    };
+
+    /**
+     * detach 完成后的行为
+     * 通知devtool
+     */
+    Component.prototype._detached = function () {
+        emitDevTool('comp-detached', this);
+    };
+
+    /**
+     * update 完成后的行为
+     * 通知devtool
+     */
+    Component.prototype._updated = function () {
+        emitDevTool('comp-updated', this);
+    };
+
+    /**
      * 派发消息
      * 组件可以派发消息，消息将沿着组件树向上传递，直到遇上第一个处理消息的组件
      *
@@ -4404,7 +4428,14 @@
          * @param {Function} subClass 子类函数
          * @param {Function} superClass 父类函数
          */
-        inherits: inherits
+        inherits: inherits,
+
+        /**
+         * 是否开启调试。开启调试时 devtool 会工作
+         *
+         * @type {boolean}
+         */
+        debug: true
     };
 
 
@@ -4421,5 +4452,20 @@
         // For <script src="..."
         root.san = san;
     }
+
+    /**
+     * 给 devtool 发通知消息
+     *
+     * @inner
+     * @param {string} name 消息名称
+     * @param {*} arg 消息参数
+     */
+    function emitDevTool(name, arg) {
+        if (san.debug && root.__san_devtool__) {
+            root.__san_devtool__.emit(name, arg);
+        }
+    }
+
+    emitDevTool('san', san);
 
 })(this);
