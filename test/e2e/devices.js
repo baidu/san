@@ -23,40 +23,32 @@ var devices = {
 
 
     ie_family: {
+        // ie_8: {
+        //     browserName: 'internet explorer',
+        //     platform: 'Windows XP',
+        //     version: '8'
+        // },
         ie_9: {
             browserName: 'internet explorer',
             platform: 'Windows 7',
             version: '9'
         },
-        ie_10: {
-            browserName: 'internet explorer',
-            platform: 'Windows 8',
-            version: '10'
-        },
-        ie_11: {
-            browserName: 'internet explorer',
-            platform: 'Windows 8.1',
-            version: '11'
-        },
-        edge: {
-            browserName: 'MicrosoftEdge',
-            platform: 'Windows 10'
-        }
+        // ie_11: {
+        //     browserName: 'internet explorer',
+        //     platform: 'Windows 8.1',
+        //     version: '11'
+        // },
+        // edge: {
+        //     browserName: 'MicrosoftEdge',
+        //     platform: 'Windows 10'
+        // }
     },
 
 
     mobile: {
-        ios_safari_8: {
+        ios_safari_10: {
             browserName: 'iphone',
-            version: '8.4'
-        },
-        ios_safari_9: {
-            browserName: 'iphone',
-            version: '9.3'
-        },
-        android_4_2: {
-            browserName: 'android',
-            version: '4.2'
+            version: '10.0'
         },
         android_5_1: {
             browserName: 'android',

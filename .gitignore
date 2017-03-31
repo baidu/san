@@ -8,3 +8,4 @@ Thumbs.db
 *.swp
 *.gz
 coverage/
+errorShots/

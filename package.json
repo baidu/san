@@ -26,7 +26,7 @@
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
-    "test:sauce": "npm run test:e2e -- modern",
+    "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
     "build": "bash tool/dist.sh"
   },
   "main": "dist/san.source.js",

@@ -1,10 +1,13 @@
 describe('San spec runner in browser', function() {
 
-    it('should have not failures', function() {
+    it('should passed', function() {
 
 
         // open url
         browser.url('http://127.0.0.1:8009/test/?trigger=wd');
+
+        // ready
+        browser.waitForExist('body');
 
         // wait result
         browser.waitUntil(() => {
@@ -37,10 +40,6 @@ describe('San spec runner in browser', function() {
 
         // check result
         var failures = browser.getText('.jasmine-failures');
-
-        // log error
-        failures && console.log(failures);
-
         expect(failures).toBe('');
 
 
