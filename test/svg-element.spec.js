@@ -1,53 +1,57 @@
-describe("SVG", function () {
+if (!/MSIE|Trident/.test(navigator.userAgent)) {
 
-    var myComponent;
-    var wrap;
+    describe("SVG", function () {
 
-    beforeEach(function(done) {
+        var myComponent;
+        var wrap;
 
-        var MyComponent = san.defineComponent({
-            template: '<svg><rect width="{{size}}" height="{{size}}" /></svg>',
-            initData: function() {
-                return {
-                    size: 50
-                };
-            }
-        });
+        beforeEach(function(done) {
 
-        myComponent = new MyComponent();
+            var MyComponent = san.defineComponent({
+                template: '<svg><rect width="{{size}}" height="{{size}}" /></svg>',
+                initData: function() {
+                    return {
+                        size: 50
+                    };
+                }
+            });
 
-        wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        done();
+            myComponent = new MyComponent();
 
-    });
-
-    afterEach(function() {
-        myComponent.dispose();
-        document.body.removeChild(wrap);
-    });
-
-    it("create element", function () {
-
-        myComponent.attach(wrap);
-
-        var rect = wrap.getElementsByTagName('rect')[0];
-        expect(+rect.getAttribute('width')).toBe(50);
-
-    });
-
-    it("setAttrbute", function (done) {
-
-        myComponent.attach(wrap);
-        var rect = wrap.getElementsByTagName('rect')[0];
-        var size = 100;
-        myComponent.data.set('size', size);
-
-        san.nextTick(function() {
-            expect(+rect.getAttribute('width')).toBe(size);
+            wrap = document.createElement('div');
+            document.body.appendChild(wrap);
             done();
+
+        });
+
+        afterEach(function() {
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        });
+
+        it("create element", function () {
+
+            myComponent.attach(wrap);
+
+            var rect = wrap.getElementsByTagName('rect')[0];
+            expect(+rect.getAttribute('width')).toBe(50);
+
+        });
+
+        it("setAttrbute", function (done) {
+
+            myComponent.attach(wrap);
+            var rect = wrap.getElementsByTagName('rect')[0];
+            var size = 100;
+            myComponent.data.set('size', size);
+
+            san.nextTick(function() {
+                expect(+rect.getAttribute('width')).toBe(size);
+                done();
+            });
+
         });
 
     });
 
-});
+}
