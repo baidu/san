@@ -158,15 +158,3 @@
 
 })(window);
 
-// 把 ConsoleReporter 发送给 WDBridge
-jasmineRequire.console(jasmineRequire, jasmine);
-
-jasmine.getEnv().addReporter(new jasmine.ConsoleReporter({
-    timer: new jasmine.Timer(),
-    showColors: true,
-    print: function(message) {
-
-        WDBridge.send('message', message);
-    }
-}));
-

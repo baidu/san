@@ -23,6 +23,7 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
+        'test/e2e/*spec.js',
     ],
 
 

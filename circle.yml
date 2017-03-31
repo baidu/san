@@ -2,21 +2,6 @@ machine:
   node:
     version: 6
 
-dependencies:
-  post:
-    # - npm install selenium-standalone@latest -g
-    # - selenium-standalone install
-    # - selenium-standalone start:
-    #       background: true
-    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
-    - tar -xzf sc-latest-linux.tar.gz
-
 test:
   override:
-    - cd sc-*-linux && ./bin/sc --user $SAUCE_USERNAME --api-key $SAUCE_ACCESS_KEY --readyfile ~/sauce_is_ready:
-        background: true
-    # Wait for tunnel to be ready
-    - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - npm run wdio -- 0
-  post:
-    - killall --wait sc  # wait for Sauce Connect to close the tunnel
+    - npm run wdio -- modern
