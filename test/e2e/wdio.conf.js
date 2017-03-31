@@ -223,7 +223,13 @@ var group = devices[process.argv[2]];
 if (group) {
 
     config.capabilities = Object.keys(group).map(function (key) {
-        return group[key];
+        var capabilities = group[key];
+
+        if (process.env.CIRCLE_BUILD_NUM) {
+            capabilities.build = process.env.CIRCLE_BUILD_NUM;
+        }
+
+        return capabilities;
     });
 
     // run tests on sauce instead locally
@@ -232,7 +238,7 @@ if (group) {
     config.services = ['sauce'];
     config.sauceConnect = true;
 
-    config.jasmineNodeOpts.defaultTimeoutInterval = 2 * 60 * 1000;
+    config.jasmineNodeOpts.defaultTimeoutInterval = 5 * 60 * 1000;
 
 }
 

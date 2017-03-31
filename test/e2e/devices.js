@@ -46,10 +46,10 @@ var devices = {
 
 
     mobile: {
-        ios_safari_10: {
-            browserName: 'iphone',
-            version: '10.0'
-        },
+        // ios_safari_10: {
+        //     browserName: 'iphone',
+        //     version: '10.0'
+        // },
         android_5_1: {
             browserName: 'android',
             version: '5.1'

@@ -4,7 +4,7 @@ describe('San spec runner in browser', function() {
 
 
         // open url
-        browser.url('http://127.0.0.1:8009/test/?trigger=wd');
+        browser.url('/test/?trigger=wd');
 
         // ready
         browser.waitForExist('body');
