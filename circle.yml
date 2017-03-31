@@ -4,4 +4,4 @@ machine:
 
 test:
   override:
-    - npm run wdio -- modern
+    - npm run test:sauce

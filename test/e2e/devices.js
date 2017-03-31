@@ -7,10 +7,10 @@ var devices = {
 
     modern: {
 
-        // chrome: {
-        //     browserName: 'chrome',
-        //     platform: 'Windows 7'
-        // },
+        chrome: {
+            browserName: 'chrome',
+            platform: 'Windows 7'
+        },
         firefox: {
             browserName: 'firefox'
         },

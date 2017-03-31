@@ -21,12 +21,12 @@
     "url": "https://github.com/ecomfe/san.git"
   },
   "scripts": {
+    "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
-    "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
-    "e2e": "node ./test/e2e/wdio-launcher.js",
-    "e2e:sauce": "npm run e2e -- modern",
+    "test:e2e": "node ./test/e2e/wdio-launcher.js",
+    "test:sauce": "npm run test:e2e -- modern",
     "build": "bash tool/dist.sh"
   },
   "main": "dist/san.source.js",
