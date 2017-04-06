@@ -3603,9 +3603,13 @@
         // pre compile template
         if (!proto.aNode) {
             proto.aNode = new ANode();
+            var tpl = proto.template;
+            if (typeof tpl === 'function') {
+                tpl = tpl();
+            }
 
-            if (proto.template) {
-                var aNode = parseTemplate(proto.template);
+            if (tpl) {
+                var aNode = parseTemplate(tpl);
                 var firstChild = aNode.childs[0];
                 if (aNode.childs.length !== 1 || firstChild.isText) {
                     throw new Error('[SAN FATEL] template must have a root element.');

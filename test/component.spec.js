@@ -138,6 +138,25 @@ describe("Component", function () {
 
     });
 
+    it("template can be a function which return template string", function () {
+
+
+        var MyComponent = san.defineComponent({
+            template: function () {return '<span title="{{color}}">{{color}}</span>'}
+        });
+        var myComponent = new MyComponent({data: {color: 'red'}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('red');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("initData", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{email}}">{{name}}</span></a>',
