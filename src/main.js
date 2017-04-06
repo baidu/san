@@ -582,7 +582,7 @@
      * @class
      * @inner
      * @param {Object=} options 节点参数
-     * @param {stirng=} options.tagName 标签名
+     * @param {string=} options.tagName 标签名
      * @param {ANode=} options.parent 父节点
      * @param {boolean=} options.isText 是否文本节点
      */
@@ -2289,8 +2289,6 @@
 
     /**
      * 从已有的el进行初始化
-     *
-     * @param {Object} options 初始化参数
      */
     Element.prototype._initFromEl = function () {
         this.aNode = parseANodeFromEl(this.el);
