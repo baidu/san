@@ -17,7 +17,7 @@ ChangeLog
 + 【新特性】- 增加计算属性的支持
 + 【新特性】- 增加对常用 SVG 标签的创建支持
 + 【新特性】- 支持 components 属性通过字符串 'self' 引用自身作为子组件
-+ 【新特性】- template 允许是一个返回模板字符串的方法，this 无关
++ 【新特性】- 组件属性 template / filters / components 支持 static property
 + 【优化】- 对模板解析结果的结构进行了优化：
     - text 预解析
     - 删除 text 节点上多余的属性：childs、binds、directives、events等
@@ -42,7 +42,7 @@ ChangeLog
 + 【bug修复】- ref 方法无法获取到位于 for 内的组件
 + 【bug修复】- ref 方法无法获取到位于 slot 内的组件
 + 【bug修复】- textarea 在初始化时，绑定的 value 未正确给予
-+ 【bug修复】- textarea 在初始化时，内部内容渲染错乱。在数据驱动的组件系统中，应以绑定数据为准，忽略内部的内容
++ 【bug修复】- textarea 在初始化时，内部内容渲染错乱。在数据驱动的组件系统中，应以绑定数据为准，忽略内部内容
 + 【bug修复】- select 对已经 dispose 的元素进行 value 更新导致脚本错误
 + 【bug修复】- 组件绑定中，单一插值的 filter 不起作用
 + 【bug修复】- 对带有 parent 的 Model 进行带有动态属性的数据访问，可能会取不到值

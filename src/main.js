@@ -3143,7 +3143,7 @@
      * @param {Object} options 初始化参数
      */
     Component.prototype.init = function (options) {
-        this.filters = options.filters || this.filters || {};
+        this.filters = this.filters || this.constructor.filters || {};
         this.messages = options.messages || this.messages || {};
 
         // compile
@@ -3576,11 +3576,12 @@
      * @private
      */
     Component.prototype._compile = function () {
-        var proto = this.constructor.prototype;
+        var ComponentClass = this.constructor;
+        var proto = ComponentClass.prototype;
 
         // pre define components class
         if (!proto._isComponentsReady) {
-            proto.components = proto.components || {};
+            proto.components = proto.components || ComponentClass.components || {};
             var components = proto.components;
 
             for (var key in components) {
@@ -3590,21 +3591,18 @@
                     components[key] = defineComponent(componentClass);
                 }
                 else if (componentClass === 'self') {
-                    components[key] = this.constructor;
+                    components[key] = ComponentClass;
                 }
             }
 
-            proto._isComponentsReady = true;
+            proto._isComponentsReady = 1;
         }
 
 
         // pre compile template
         if (!proto.aNode) {
             proto.aNode = new ANode();
-            var tpl = proto.template;
-            if (typeof tpl === 'function') {
-                tpl = tpl();
-            }
+            var tpl = proto.template || ComponentClass.template;
 
             if (tpl) {
                 var aNode = parseTemplate(tpl);

@@ -138,12 +138,9 @@ describe("Component", function () {
 
     });
 
-    it("template can be a function which return template string", function () {
-
-
-        var MyComponent = san.defineComponent({
-            template: function () {return '<span title="{{color}}">{{color}}</span>'}
-        });
+    it("template as static property", function () {
+        var MyComponent = san.defineComponent({});
+        MyComponent.template = '<span title="{{color}}">{{color}}</span>';
         var myComponent = new MyComponent({data: {color: 'red'}});
 
         var wrap = document.createElement('div');
@@ -152,6 +149,50 @@ describe("Component", function () {
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.title).toBe('red');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("filters as static property", function () {
+        var MyComponent = san.defineComponent({});
+
+        MyComponent.template = '<span title="{{color|up}}">{{color|up}}</span>';
+        MyComponent.filters = {
+            up: function (source) {
+                return source.toUpperCase();
+            }
+        };
+        var myComponent = new MyComponent({data: {color: 'red'}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('RED');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("components as static property", function () {
+        var MyComponent = san.defineComponent({});
+
+        MyComponent.template = '<div><ui-label text="erik"></ui-label>';
+        MyComponent.components = {
+            'ui-label': {
+                template: '<span title="{{text}}">{{text}}</span>'
+            }
+        };
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
 
         myComponent.dispose();
         document.body.removeChild(wrap);
