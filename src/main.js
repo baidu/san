@@ -3619,8 +3619,6 @@
                 firstChild.events.each(function (item) {
                     item.isOwn = 1;
                 });
-
-                proto.template = null;
             }
         }
     };
