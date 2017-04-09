@@ -24,7 +24,9 @@ window.triggerEvent = function() {
         }
 
         // hack checkbox
-        if (elem.type === 'checkbox' && elem.click && nodeName(elem, 'input')) {
+        if ((elem.type === 'checkbox' || elem.type === 'radio')
+            && elem.click && nodeName(elem, 'input')
+        ) {
             elem.click();
             return false;
         }
