@@ -2178,6 +2178,9 @@
             this.aNode.textExpr = parseText(this.el.innerHTML);
             this.parent._pushChildANode(this.aNode);
         }
+
+        var segs = this.aNode.textExpr.segs;
+        this._static = segs.length === 1 && segs[0].type === ExprType.STRING;
     };
 
     /**
@@ -2200,7 +2203,8 @@
      */
     TextNode.prototype.genHTML = function () {
         var defaultText = isFEFFBeforeStump ? '\uFEFF' : '';
-        return (this.evalExpr(this.aNode.textExpr, 1) || defaultText) + genStumpHTML(this);
+        return (this.evalExpr(this.aNode.textExpr, 1) || defaultText)
+            + (this._static ? '' : genStumpHTML(this));
     };
 
     /**
@@ -2924,7 +2928,9 @@
 
         each(element.aNode.childs, function (aNodeChild) {
             var child = createNode(aNodeChild, element);
-            element.childs.push(child);
+            if (!this._static) {
+                element.childs.push(child);
+            }
             buf.push(child.genHTML());
         });
 
