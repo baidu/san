@@ -3432,7 +3432,7 @@
 
         var ComponentType = owner.components[aNode.tagName];
         if (ComponentType) {
-            return  new ComponentType(options);
+            return new ComponentType(options);
         }
 
         if (aNode.tagName === 'slot') {
