@@ -364,9 +364,11 @@
      * @param {Object} item 要添加的对象
      */
     IndexedList.prototype.push = function (item) {
+        // #begin-ignore
         if (!item.name) {
             throw new Error('Miss "name" property');
         }
+        // #end-ignore
 
         if (!this.index[item.name]) {
             this.raw.push(item);
@@ -842,7 +844,9 @@
                 };
             }
 
+            // #begin-ignore
             throw new Error('for syntax error: ' + value);
+            // #end-ignore
         },
 
         'ref': function (value) {
@@ -3284,6 +3288,7 @@
         }
     };
 
+    // #begin-ignore
     /**
      * attach 完成后的行为
      * 通知devtool
@@ -3307,6 +3312,7 @@
     Component.prototype._updated = function () {
         emitDevTool('comp-updated', this);
     };
+    // #end-ignore
 
     /**
      * 派发消息
@@ -3613,9 +3619,12 @@
             if (tpl) {
                 var aNode = parseTemplate(tpl);
                 var firstChild = aNode.childs[0];
+
+                // #begin-ignore
                 if (aNode.childs.length !== 1 || firstChild.isText) {
                     throw new Error('[SAN FATEL] template must have a root element.');
                 }
+                // #end-ignore
 
                 proto.aNode = firstChild;
                 if (firstChild.tagName === 'template') {
@@ -3983,9 +3992,11 @@
                 return new IfDirective(options);
             }
 
+            // #begin-ignore
             if (!(child instanceof TextNode)) {
                 throw new Error('[SAN FATEL] else not match if.');
             }
+            // #end-ignore
         }
     }
 
@@ -4457,6 +4468,7 @@
         root.san = san;
     }
 
+    // #begin-ignore
     /**
      * 给 devtool 发通知消息
      *
@@ -4471,5 +4483,5 @@
     }
 
     emitDevTool('san', san);
-
+    // #end-ignore
 })(this);
