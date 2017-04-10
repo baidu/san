@@ -34,6 +34,7 @@ window.triggerEvent = function() {
         // hack select
         if (type === 'select') {
             type = 'change';
+            ontype = 'onchange';
             if (value !== undefined) {
                 elem.selectedIndex = value;
             }
