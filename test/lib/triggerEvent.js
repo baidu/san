@@ -44,14 +44,16 @@ window.triggerEvent = function() {
 
             var event;
 
+            if (document.createEvent) {
+                event = document.createEvent('HTMLEvents');
+                event.initEvent(type, true, true);
+                return !elem.dispatchEvent(event);
+            }
+
             if (document.createEventObject) {
                 event = document.createEventObject();
                 return elem.fireEvent(ontype, event);
             }
-
-            event = document.createEvent('HTMLEvents');
-            event.initEvent(type, true, true);
-            return !elem.dispatchEvent(event);
         }
         catch (ex) {}
 
