@@ -592,7 +592,7 @@
         if (!options || !options.isText) {
             this.directives = new IndexedList();
             this.props = new IndexedList();
-            this.events = new IndexedList();
+            this.events = [];
             this.childs = [];
         }
 
@@ -2781,7 +2781,7 @@
      * 绑定事件
      */
     Element.prototype.bindEvents = function () {
-        this.aNode.events.each(function (eventBind) {
+        each(this.aNode.events, function (eventBind) {
             this.on(eventBind.name, bind(elementEventListener, this, eventBind));
         }, this);
     };
@@ -3631,7 +3631,7 @@
                     firstChild.tagName = null;
                 }
 
-                firstChild.events.each(function (item) {
+                each(firstChild.events, function (item) {
                     item.isOwn = 1;
                 });
             }

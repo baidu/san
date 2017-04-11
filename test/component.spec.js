@@ -1489,5 +1489,56 @@ describe("Component", function () {
         })
 
     });
+
+
+    it("outer event and inner event should not confilct", function (done) {
+        var innerClick;
+        var outerClick;
+        var btnId;
+        var Button = san.defineComponent({
+            template: '<button on-click="clicker">test</button>',
+
+            clicker: function () {
+                innerClick = 1;
+            },
+
+            attached: function () {
+                btnId = this.id;
+            }
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button on-click="clicker"></ui-button></div>',
+
+            clicker: function (event) {
+                outerClick = 1;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+            expect(innerClick).toBe(1);
+            expect(outerClick).toBe(1);
+
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }
+
+        triggerEvent('#' + btnId, 'click');
+
+        setTimeout(doneSpec, 500);
+    });
 });
 
