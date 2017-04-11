@@ -2308,6 +2308,18 @@
      * 初始化完成后的行为
      */
     Element.prototype._inited = function () {
+        // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
+        // 所以没有设置 value 时，默认把 option 的内容作为 value
+        if (this.tagName === 'option'
+            && !this.aNode.props.get('value')
+            && this.aNode.childs[0]
+        ) {
+            this.aNode.props.push({
+                name: 'value',
+                expr: this.aNode.childs[0].textExpr
+            });
+        }
+
         this.props = this.binds = this.aNode.props;
         this._initPropHandlers();
 
@@ -2623,28 +2635,29 @@
             }
         },
 
-        // select 或 textarea 的 value bind handler
+        // option value bind handler，附加 selected
         {
             input: {
                 attr: function (element, name, value) {
-                    if (value) {
-                        nextTick(function () {
-                            if (element.lifeCycle.is('created')) {
-                                element.el[name] = value;
-                            }
-                        });
+                    var attrStr = defaultElementPropHandler.input.attr(element, name, value);
+                    var parent = element.parent;
+                    var parentValueProp;
+
+                    if (parent.tagName === 'select'
+                        && (parentValueProp = parent.props.get('value'))
+                        && parent.evalExpr(parentValueProp.expr) === value
+                    ) {
+                        attrStr += ' selected';
                     }
+
+                    return attrStr;
                 },
 
-                prop: function (element, name, value) {
-                    element.el[name] = value;
-                }
+                prop: defaultElementPropHandler.input.prop
             },
 
-            output: defaultElementPropHandler.output,
-
             choose: function (element) {
-                return 'select' === element.tagName && 'value';
+                return 'option' === element.tagName && 'value';
             }
         },
 

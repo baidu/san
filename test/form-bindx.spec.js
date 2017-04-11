@@ -519,17 +519,63 @@ describe("Form TwoWay Binding", function () {
     it("select", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
-                + '<b>{{online}}</b>'
+                + '<b title="{{online}}">{{online}}</b>'
                 + '<select value="{=online=}">'
                 +   '<option value="errorrik">errorrik</option>'
-                +   '<option value="varsha">varsha</option>'
                 +   '<option value="firede">firede</option>'
                 + '</select>'
                 + '</div>',
 
             initData: function () {
                 return {
-                    online: 'varsha'
+                    online: 'firede'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var select = wrap.getElementsByTagName('select')[0];
+        expect(wrap.getElementsByTagName('b')[0].title).toBe('firede');
+
+
+        triggerEvent('#' + select.id, 'select', 0);
+        setTimeout(doneSpec, 500);
+
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+            if (online !== 'firede') {
+                var select = wrap.getElementsByTagName('select')[0];
+                expect(select.value).toBe(online);
+                expect(wrap.getElementsByTagName('b')[0].title).toBe(online);
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+    });
+
+    it("select, option not has value prop", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b title="{{online}}">{{online}}</b>'
+                + '<select value="{=online=}">'
+                +   '<option>errorrik</option>'
+                +   '<option>firede</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'firede'
                 };
             }
         });
@@ -541,22 +587,18 @@ describe("Form TwoWay Binding", function () {
 
         var select = wrap.getElementsByTagName('select')[0];
 
-        san.nextTick(function () {
-            expect(select.selectedIndex).toBe(1);
-            expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+        expect(select.selectedIndex).toBe(1);
+        expect(wrap.getElementsByTagName('b')[0].title).toBe('firede');
 
-            triggerEvent('#' + select.id, 'select', 0);
-
-            setTimeout(doneSpec, 500);
-
-        });
+        triggerEvent('#' + select.id, 'select', 0);
+        setTimeout(doneSpec, 500);
 
         function doneSpec() {
             var online = myComponent.data.get('online');
-            if (online !== 'varsha') {
+            if (online !== 'firede') {
                 var select = wrap.getElementsByTagName('select')[0];
                 expect(select.value).toBe(online);
-                expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf(online)).toBe(0);
+                expect(wrap.getElementsByTagName('b')[0].title).toBe(online);
 
                 done();
                 myComponent.dispose();
@@ -571,7 +613,7 @@ describe("Form TwoWay Binding", function () {
     it("select render and dispose in one loop", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
-                + '<b>{{online}}</b>'
+                + '<b title="{{online}}">{{online}}</b>'
                 + '<div san-for="item in list">'
                 + '<select value="{=online=}">'
                 +   '<option value="errorrik">errorrik</option>'
@@ -598,15 +640,13 @@ describe("Form TwoWay Binding", function () {
         san.nextTick(function () {
             var select = wrap.getElementsByTagName('select')[0];
 
-            san.nextTick(function () {
-                expect(select.selectedIndex).toBe(1);
-                expect(select.value).toBe('firede');
-                expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('firede')).toBe(0);
+            expect(select.selectedIndex).toBe(1);
+            expect(select.value).toBe('firede');
+            expect(wrap.getElementsByTagName('b')[0].title).toBe('firede');
 
-                done();
-                myComponent.dispose();
-                document.body.removeChild(wrap);
-            });
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
         });
     });
 });
