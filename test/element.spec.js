@@ -141,7 +141,7 @@ describe("Element", function () {
         });
     });
 
-    it("bind class, auto expand", function (done) {
+    it("bind class, auto expand array", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span class="msg {{extra}}"></span></a>'
         });
@@ -189,6 +189,44 @@ describe("Element", function () {
         san.nextTick(function () {
             expect(span.style.position).toBe('absolute');
             expect(span.style.display).toBe('none');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind style, auto expand object", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span style="position: absolute; display: {{display}}; {{extra}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('display', 'block');
+        myComponent.data.set('extra', {
+            height: '20px',
+            width: '100px'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.style.position).toBe('absolute');
+        expect(span.style.display).toBe('block');
+        expect(span.style.width).toBe('100px');
+        expect(span.style.height).toBe('20px');
+
+        myComponent.data.set('display', 'none');
+        myComponent.data.set('extra.height', '50px');
+
+
+        san.nextTick(function () {
+            expect(span.style.position).toBe('absolute');
+            expect(span.style.display).toBe('none');
+            expect(span.style.width).toBe('100px');
+            expect(span.style.height).toBe('50px');
 
             myComponent.dispose();
             document.body.removeChild(wrap);

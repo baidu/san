@@ -805,21 +805,30 @@
         // 这里不能把只有一个插值的属性抽取
         // 因为插值里的值可能是html片段，容易被注入
         // 组件的数据绑定在组件init时做抽取
-        if (prop.name === 'class') {
-            each(prop.expr.segs, function (seg) {
-                if (seg.type === ExprType.INTERP) {
-                    seg.filters.push({
-                        type: ExprType.CALL,
-                        name: 'join',
-                        args: [
-                            {
-                                type: ExprType.STRING,
-                                value: ' '
-                            }
-                        ]
-                    });
-                }
-            });
+        switch (prop.name) {
+            case 'class':
+                each(prop.expr.segs, function (seg) {
+                    if (seg.type === ExprType.INTERP) {
+                        seg.filters.push({
+                            type: ExprType.CALL,
+                            name: 'clazz',
+                            args: []
+                        });
+                    }
+                });
+                break;
+
+            case 'style':
+                each(prop.expr.segs, function (seg) {
+                    if (seg.type === ExprType.INTERP) {
+                        seg.filters.push({
+                            type: ExprType.CALL,
+                            name: 'style',
+                            args: []
+                        });
+                    }
+                });
+                break;
         }
 
         return prop;
@@ -845,7 +854,7 @@
             }
 
             // #begin-ignore
-            throw new Error('for syntax error: ' + value);
+            throw new Error('[SAN FATAL] for syntax error: ' + value);
             // #end-ignore
         },
 
@@ -1564,10 +1573,15 @@
     /**
      * 获取数据项
      *
-     * @param {string|Object} expr 数据项路径
+     * @param {string|Object?} expr 数据项路径
      * @return {*}
      */
     Model.prototype.get = function (expr) {
+        var value = this.data;
+        if (!expr) {
+            return value;
+        }
+
         expr = parseExpr(expr);
 
         if (expr.type === ExprType.ACCESSOR) {
@@ -1581,7 +1595,6 @@
                 }
             }
 
-            var value = this.data;
             var i = 0;
             for (; value != null && i < start; i++) {
                 value = value[paths[i].value];
@@ -1843,10 +1856,24 @@
             return source;
         },
 
-        join: function (source, separator) {
+        clazz: function (source) {
             if (source instanceof Array) {
-                return source.join(separator);
+                return source.join(' ');
             }
+
+            return source;
+        },
+
+        style: function (source) {
+            if (typeof source === 'object') {
+                var result = '';
+                for (var key in source) {
+                    result += key + ':' + source[key] + ';';
+                }
+
+                return result;
+            }
+
             return source;
         }
     };
@@ -3269,19 +3296,25 @@
         this.data.set(computedExpr, this.computed[computedExpr].call({
             data: {
                 get: bind(function (expr) {
-                    if (!computedDeps[expr]) {
-                        computedDeps[expr] = 1;
+                    if (expr) {
+                        if (!computedDeps[expr]) {
+                            computedDeps[expr] = 1;
 
-                        if (this.computed[expr]) {
-                            this._calcComputed(expr);
+                            if (this.computed[expr]) {
+                                this._calcComputed(expr);
+                            }
+
+                            this.watch(expr, function () {
+                                this._calcComputed(computedExpr);
+                            });
                         }
 
-                        this.watch(expr, function () {
-                            this._calcComputed(computedExpr);
-                        });
+                        return this.data.get(expr);
                     }
 
-                    return this.data.get(expr);
+                    // #begin-ignore
+                    throw new Error('[SAN ERROR] call get method in computed need argument');
+                    // #end-ignore
                 }, this)
             }
         }));
@@ -3595,6 +3628,12 @@
         this.next = this.raw[this.index + 1];
     };
 
+    var componentPropExtra = [
+        {name: 'class', expr: parseText("{{class ? ' ' + class : ''}}")},
+        {name: 'style', expr: parseText("{{style ? ';' + style : ''}}")}
+    ];
+
+
     /**
      * 模板编译行为
      *
@@ -3646,6 +3685,19 @@
 
                 each(firstChild.events, function (item) {
                     item.isOwn = 1;
+                });
+
+                each(componentPropExtra, function (extra) {
+                    var prop = firstChild.props.get(extra.name);
+                    if (prop) {
+                        prop.expr.segs.push(extra.expr.segs[0]);
+                    }
+                    else {
+                        firstChild.props.push({
+                            name: extra.name,
+                            expr: extra.expr
+                        });
+                    }
                 });
             }
         }

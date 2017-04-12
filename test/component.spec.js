@@ -1540,5 +1540,180 @@ describe("Component", function () {
 
         setTimeout(doneSpec, 500);
     });
+
+    it("merge class property to component root element", function () {
+        var Button = san.defineComponent({
+            template: '<button class="button">test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button class="large"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(/(^| )button/.test(btn.className)).toBeTruthy();
+        expect(/(^| )large/.test(btn.className)).toBeTruthy();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("merge class property to component root element", function () {
+        var Button = san.defineComponent({
+            template: '<button>test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button class="large"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(/(^| )large/.test(btn.className)).toBeTruthy();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("merge class property to component root element and auto expand", function () {
+        var Button = san.defineComponent({
+            initData: function () {
+                return {classes: ['button', 'normal']}
+            },
+            template: '<button class="ui {{classes}}">test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {classes: ['large', 'huge']}
+            },
+
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button class="{{classes}} strong"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(/(^| )button/.test(btn.className)).toBeTruthy();
+        expect(/(^| )large/.test(btn.className)).toBeTruthy();
+        expect(/(^| )normal/.test(btn.className)).toBeTruthy();
+        expect(/(^| )strong/.test(btn.className)).toBeTruthy();
+        expect(/(^| )huge/.test(btn.className)).toBeTruthy();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("merge style property to component root element", function (done) {
+        var Button = san.defineComponent({
+            template: '<button style="color: blue">test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button style="height: {{height}}"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                height: '10px'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(/color:\s*blue($|;)/i.test(btn.style.cssText)).toBeTruthy();
+        expect(/height:\s*10px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('height', '5px');
+
+        san.nextTick(function () {
+            expect(/color:\s*blue($|;)/i.test(btn.style.cssText)).toBeTruthy();
+            expect(/height:\s*5px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
+
+    it("merge style property to component root element, root element has no style", function (done) {
+        var Button = san.defineComponent({
+            template: '<button>test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            template: '<div><ui-button style="height: {{height}}"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                height: '10px'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(/height:\s*10px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('height', '5px');
+
+        san.nextTick(function () {
+            expect(/height:\s*5px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
 });
 

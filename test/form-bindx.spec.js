@@ -402,6 +402,16 @@ describe("Form TwoWay Binding", function () {
 
     it("checkbox", function (done) {
         var MyComponent = san.defineComponent({
+            filters: {
+                join: function (source, sep) {
+                    if (source instanceof Array) {
+                        return source.join(sep);
+                    }
+
+                    return source;
+                }
+            },
+
             template: '<div>'
                 + '<b>{{online | join("|")}}</b>'
                 + '<label><input type="checkbox" value="errorrik" checked="{=online=}">errorrik</label>'
