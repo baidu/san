@@ -3674,7 +3674,7 @@
 
                 // #begin-ignore
                 if (aNode.childs.length !== 1 || firstChild.isText) {
-                    throw new Error('[SAN FATEL] template must have a root element.');
+                    throw new Error('[SAN FATAL] template must have a root element.');
                 }
                 // #end-ignore
 
