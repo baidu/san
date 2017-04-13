@@ -4229,7 +4229,22 @@
                 };
             }
 
-            return expr;
+            var resolvedExpr = {
+                type: ExprType.ACCESSOR,
+                paths: []
+            };
+            each(expr.paths, function (item) {
+                resolvedExpr.paths.push(
+                    item.type === ExprType.ACCESSOR
+                        && item.paths[0].value === forDirective.index
+                    ? {
+                        type: ExprType.NUMBER,
+                        value: itemScope.get(forDirective.index)
+                    }
+                    : item
+                );
+            });
+            return resolvedExpr;
         }
 
         each(
@@ -4238,6 +4253,7 @@
                 var rawFn = forElement.scope[method];
                 itemScope[method] = function (expr) {
                     expr = exprResolve(parseExpr(expr));
+
                     rawFn.apply(
                         forElement.scope,
                         [expr].concat(Array.prototype.slice.call(arguments, 1))

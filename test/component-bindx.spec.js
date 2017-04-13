@@ -530,4 +530,49 @@ describe("Component-TwoWay Binding", function () {
             done();
         }, 1500);
     });
+
+    it("binding expr use index variable", function (done) {
+        var Color = san.defineComponent({
+            template: '<div><input type="text" value="{=color=}"></div>',
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-color': Color
+            },
+            template: '<div>'
+                + '<a san-for="item, index in list">'
+                    + '<ui-color color="{=colors[index]=}"></ui-color>'
+                + '</a>'
+                + '<b title="{{colors[0]}}"></b>'
+                + '<b title="{{colors[1]}}"></b>'
+            + '</div>'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        var myComponent = new MyComponent({
+            data: {
+                colors: ['red', 'blue'],
+                list: [1,2]
+            }
+        });
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('red');
+        expect(bs[1].title).toBe('blue');
+
+        var inputs = wrap.getElementsByTagName('input');
+        triggerEvent('#' + inputs[0].id, 'input', 'yellow');
+
+        setTimeout(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].title).toBe('redyellow');
+            expect(bs[1].title).toBe('blue');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 500);
+    });
 });

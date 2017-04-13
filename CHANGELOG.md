@@ -51,6 +51,7 @@ ChangeLog
 + 【bug修复】- select 对已经 dispose 的元素进行 value 更新导致脚本错误
 + 【bug修复】- 组件绑定中，单一插值的 filter 不起作用
 + 【bug修复】- 对带有 parent 的 Model 进行带有动态属性的数据访问，可能会取不到值
++ 【bug修复】- 双向绑定表达式包含对 index 项的引用时，绑定失效
 
 
 3.0.2
