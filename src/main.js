@@ -3194,6 +3194,7 @@
      */
     Component.prototype.init = function (options) {
         this.filters = this.filters || this.constructor.filters || {};
+        this.computed = this.computed || this.constructor.computed || {};
         this.messages = options.messages || this.messages || {};
 
         // compile
@@ -3269,7 +3270,6 @@
         this.scope && this.binds.each(function (bind) {
             this.data.set(bind.name, this.evalExpr(bind.expr));
         }, this);
-
 
         this.computedDeps = {};
         for (var expr in this.computed) {
