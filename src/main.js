@@ -3195,7 +3195,7 @@
     Component.prototype.init = function (options) {
         this.filters = this.filters || this.constructor.filters || {};
         this.computed = this.computed || this.constructor.computed || {};
-        this.messages = options.messages || this.messages || {};
+        this.messages = this.messages || this.constructor.messages || {};
 
         // compile
         this._compile();

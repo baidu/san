@@ -544,6 +544,112 @@ describe("Component", function () {
 
     });
 
+    it("messages static property", function (done) {
+        var Select = san.defineComponent({
+            template: '<ul><slot></slot></ul>',
+
+            inited: function () {
+                this.items = [];
+            }
+        });
+
+        Select.messages = {
+            'UI:select-item-selected': function (arg) {
+                var value = arg.value;
+                this.data.set('value', value);
+
+                var len = this.items.length;
+                while (len--) {
+                    this.items[len].data.set('selectValue', value);
+                }
+            },
+
+            'UI:select-item-attached': function (arg) {
+                this.items.push(arg.target);
+                arg.target.data.set('selectValue', this.data.get('value'));
+            },
+
+            'UI:select-item-detached': function (arg) {
+                var len = this.items.length;
+                while (len--) {
+                    if (this.items[len] === arg.target) {
+                        this.items.splice(len, 1);
+                    }
+                }
+            }
+        };
+
+        var selectValue;
+        var itemId;
+        var SelectItem = san.defineComponent({
+            template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
+
+            select: function () {
+                var value = this.data.get('value');
+                this.dispatch('UI:select-item-selected', value);
+                selectValue = value;
+            },
+
+            attached: function () {
+                itemId = this.id;
+                this.dispatch('UI:select-item-attached');
+            },
+
+            detached: function () {
+                this.dispatch('UI:select-item-detached');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-select': Select,
+                'ui-selectitem': SelectItem
+            },
+
+            template: '<div><ui-select value="{=v=}">'
+                + '<ui-selectitem value="1">one</ui-selectitem>'
+                + '<ui-selectitem value="2">two</ui-selectitem>'
+                + '<ui-selectitem value="3">three</ui-selectitem>'
+                + '</ui-select>please click to select a item<b title="{{v}}">{{v}}</b></div>'
+        });
+
+        MyComponent.messages = {
+            'UI:select-item-selected': function () {
+                expect(false).toBeTruthy();
+            },
+
+            'UI:select-item-attached': function () {
+                expect(false).toBeTruthy();
+            },
+
+            'UI:select-item-detached': function () {
+                expect(false).toBeTruthy();
+            }
+        };
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function detectDone() {
+            if (selectValue) {
+                expect(wrap.getElementsByTagName('b')[0].title).toBe(selectValue);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(detectDone, 500);
+        }
+
+        detectDone();
+        triggerEvent('#' + itemId, 'click');
+
+    });
+
     it("outer bind declaration should not set main element property", function (done) {
         var times = 0;
         var subTimes = 0;
@@ -796,6 +902,47 @@ describe("Component", function () {
                 }
             }
         });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+
+        myComponent.data.set('last', 'xxx')
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("static computed property", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{name}}</span></div>',
+
+            initData: function () {
+                return {
+                    'first': 'first',
+                    'last': 'last'
+                }
+            }
+        });
+
+        MyComponent.computed = {
+            name: function () {
+                return this.data.get('first') + ' ' + this.data.get('last');
+            }
+        };
 
 
         var myComponent = new MyComponent();
