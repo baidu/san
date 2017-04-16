@@ -3644,8 +3644,9 @@
         var proto = ComponentClass.prototype;
 
         // pre define components class
-        if (!ComponentClass._isComponentsReady) {
-            proto.components = proto.components || ComponentClass.components || {};
+
+        if (!proto.hasOwnProperty('_isComponentsReady')) {
+            proto.components =  ComponentClass.components || proto.components || {};
             var components = proto.components;
 
             for (var key in components) {
@@ -3659,15 +3660,15 @@
                 }
             }
 
-            ComponentClass._isComponentsReady = 1;
+            proto._isComponentsReady = 1;
         }
 
 
         // pre compile template
-        if (!ComponentClass._isCompiled) {
+        if (!proto.hasOwnProperty('_isCompiled')) {
             proto.aNode = new ANode();
-            var tpl = proto.template || ComponentClass.template;
 
+            var tpl = ComponentClass.template || proto.template;
             if (tpl) {
                 var aNode = parseTemplate(tpl);
                 var firstChild = aNode.childs[0];
@@ -3701,7 +3702,7 @@
                 });
             }
 
-            ComponentClass._isCompiled = 1;
+            proto._isCompiled = 1;
         }
     };
 
