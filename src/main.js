@@ -3644,7 +3644,7 @@
         var proto = ComponentClass.prototype;
 
         // pre define components class
-        if (!proto._isComponentsReady) {
+        if (!ComponentClass._isComponentsReady) {
             proto.components = proto.components || ComponentClass.components || {};
             var components = proto.components;
 
@@ -3659,12 +3659,12 @@
                 }
             }
 
-            proto._isComponentsReady = 1;
+            ComponentClass._isComponentsReady = 1;
         }
 
 
         // pre compile template
-        if (!proto.aNode) {
+        if (!ComponentClass._isCompiled) {
             proto.aNode = new ANode();
             var tpl = proto.template || ComponentClass.template;
 
@@ -3700,6 +3700,8 @@
                     }
                 });
             }
+
+            ComponentClass._isCompiled = 1;
         }
     };
 
