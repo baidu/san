@@ -224,6 +224,45 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("components in inherits structure", function () {
+        var Span = san.defineComponent({});
+        Span.template = '<span title="span">span</span>';
+
+        var P = san.defineComponent({});
+        P.template = '<p title="p">p</p>';
+
+        var B = san.defineComponent({});
+        B.template = '<b title="b">b</b>';
+        B.components = {
+            'ui-span': Span
+        };
+
+        var MyComponent = function (option) {
+            B.call(this, option);
+        };
+        san.inherits(MyComponent, B);
+        MyComponent.template = '<u title="u">u<ui-p></ui-p></u>';
+        MyComponent.components = {
+            'ui-p': P
+        };
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        var b = new B();
+        b.attach(wrap);
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+        var myComponent = new MyComponent();
+        myComponent.attach(wrap);
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('u').length).toBe(1);
+        expect(wrap.getElementsByTagName('p').length).toBe(1);
+
+        b.dispose();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("initData", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{email}}">{{name}}</span></a>',

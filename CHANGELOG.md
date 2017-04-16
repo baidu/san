@@ -52,7 +52,7 @@ ChangeLog
 + 【bug修复】- 组件绑定中，单一插值的 filter 不起作用
 + 【bug修复】- 对带有 parent 的 Model 进行带有动态属性的数据访问，可能会取不到值
 + 【bug修复】- 双向绑定表达式包含对 index 项的引用时，绑定失效
-+ 【bug修复】- 组件继承时，子类 template 可能不会编译，而使用父类的编译结果渲染
++ 【bug修复】- 组件继承时，子类 template 和 components 可能不会编译，而使用父类的编译结果
 
 
 3.0.2
