@@ -745,7 +745,9 @@ aNode = {
                 {
                     "value": {
                         "type": 3,
-                        "name": "isOnline"
+                        "paths": [
+                            {type: 1, value: "isOnline"}
+                        ]
                     },
                     "name": "if"
                 }
@@ -798,8 +800,8 @@ aNode = {
 
 循环指令对象的信息包括：
 
-- item - 字符串，表示循环过程中数据项对应的变量名
-- index - 字符串，表示循环过程中数据索引对应的变量名
+- item - 表达式对象，表示循环过程中数据项对应的变量
+- index - 表达式对象，表示循环过程中数据索引对应的变量
 - list - 表达式对象，表示要循环的数据
 - name - 恒为 for
 
@@ -822,11 +824,23 @@ aNode = {
         {
             "directives": [
                 {
-                    "item": "p",
-                    "index": "index",
+                    "item": {
+                        type: 3,
+                        paths: [
+                            {"type": 1, "value": "p"}
+                        ]
+                    },
+                    "index": {
+                        type: 3,
+                        paths: [
+                            {"type": 1, "value": "index"}
+                        ]
+                    }
                     "list": {
-                        "type": 3,
-                        "name": "persons"
+                        type: 3,
+                        paths: [
+                            {"type": 1, "value": "persons"}
+                        ]
                     },
                     "name": "for"
                 }
@@ -843,9 +857,9 @@ aNode = {
                             {
                                 "type": 5,
                                 "expr": {
-                                    "type": 4,
+                                    "type": 3,
                                     "paths": [
-                                        {"type": 3, "name": "p"},
+                                        {"type": 1, "value": "p"},
                                         {"type": 1, "value": "name"}
                                     ]
                                 },
@@ -858,9 +872,9 @@ aNode = {
                             {
                                 "type": 5,
                                 "expr": {
-                                    "type": 4,
+                                    "type": 3,
                                     "paths": [
-                                        {"type": 3, "name": "p"},
+                                        {"type": 1, "value": "p"},
                                         {"type": 1, "value": "email"}
                                     ]
                                 },
