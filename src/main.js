@@ -2247,12 +2247,14 @@
     /**
      * 生成文本节点的HTML
      *
-     * @return {string}
+     * @param {StringBuffer} buf html串存储对象
      */
-    TextNode.prototype.genHTML = function () {
+    TextNode.prototype.genHTML = function (buf) {
         var defaultText = isFEFFBeforeStump ? '\uFEFF' : '';
-        return (this.evalExpr(this.aNode.textExpr, 1) || defaultText)
-            + (this._static ? '' : genStumpHTML(this));
+        buf.push(this.evalExpr(this.aNode.textExpr, 1) || defaultText);
+        if (!this._static) {
+            buf.push(genStumpHTML(this));
+        }
     };
 
     /**
@@ -2789,9 +2791,12 @@
      * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
      */
     Element.prototype._attach = function (parentEl, beforeEl) {
+        var now = new Date;
         this.create();
 
-        this.el.innerHTML = elementGenChildsHTML(this);
+        var buf = new StringBuffer();
+        elementGenChildsHTML(this, buf);
+        this.el.innerHTML = buf.toString();
 
         if (parentEl) {
             if (beforeEl) {
@@ -2909,16 +2914,12 @@
     /**
      * 生成元素的html
      *
-     * @return {string}
+     * @param {StringBuffer} buf html串存储对象
      */
-    Element.prototype.genHTML = function () {
-        var buf = new StringBuffer();
-
+    Element.prototype.genHTML = function (buf) {
         elementGenStartHTML(this, buf);
-        buf.push(elementGenChildsHTML(this));
+        elementGenChildsHTML(this, buf);
         elementGenCloseHTML(this, buf);
-
-        return buf.toString();
     };
 
     /**
@@ -2926,25 +2927,25 @@
      *
      * @inner
      * @param {Element} element 元素
-     * @param {StringBuffer} stringBuffer html串存储对象
+     * @param {StringBuffer} buf html串存储对象
      */
-    function elementGenStartHTML(element, stringBuffer) {
+    function elementGenStartHTML(element, buf) {
         if (!element.tagName) {
             return;
         }
 
-        stringBuffer.push('<');
-        stringBuffer.push(element.tagName);
-        stringBuffer.push(' id="');
-        stringBuffer.push(element.id);
-        stringBuffer.push('"');
+        buf.push('<');
+        buf.push(element.tagName);
+        buf.push(' id="');
+        buf.push(element.id);
+        buf.push('"');
 
         element.props.each(function (prop) {
             var value = this instanceof Component
                 ? evalExpr(prop.expr, this.data, this)
                 : this.evalExpr(prop.expr, 1);
 
-            stringBuffer.push(
+            buf.push(
                 getPropHandler(this, prop.name)
                     .input
                     .attr(this, prop.name, value)
@@ -2952,7 +2953,7 @@
             );
         }, element);
 
-        stringBuffer.push('>');
+        buf.push('>');
     }
 
     /**
@@ -2962,13 +2963,13 @@
      * @param {Element} element 元素
      * @param {StringBuffer} stringBuffer html串存储对象
      */
-    function elementGenCloseHTML(element, stringBuffer) {
+    function elementGenCloseHTML(element, buf) {
         var tagName = element.tagName;
 
         if (!tagIsAutoClose(tagName)) {
-            stringBuffer.push('</');
-            stringBuffer.push(tagName);
-            stringBuffer.push('>');
+            buf.push('</');
+            buf.push(tagName);
+            buf.push('>');
         }
     }
 
@@ -2977,25 +2978,26 @@
      *
      * @inner
      * @param {Element} element 元素
+     * @param {StringBuffer} stringBuffer html串存储对象
      * @return {string}
      */
-    function elementGenChildsHTML(element) {
+    function elementGenChildsHTML(element, buf) {
         if (element.tagName === 'textarea') {
             var valueProp = element.props.get('value');
-            return valueProp ? escapeHTML(element.evalExpr(valueProp.expr)) : '';
-        }
+            if (valueProp) {
+                buf.push(escapeHTML(element.evalExpr(valueProp.expr)));
+            }
 
-        var buf = new StringBuffer();
+            return;
+        }
 
         each(element.aNode.childs, function (aNodeChild) {
             var child = createNode(aNodeChild, element);
             if (!this._static) {
                 element.childs.push(child);
             }
-            buf.push(child.genHTML());
+            child.genHTML(buf);
         });
-
-        return buf.toString();
     }
 
     /**
@@ -3156,8 +3158,8 @@
      *
      * @return {string}
      */
-    SlotElement.prototype.genHTML = function () {
-        return elementGenChildsHTML(this);
+    SlotElement.prototype.genHTML = function (buf) {
+        elementGenChildsHTML(this, buf);
     };
 
     /**
@@ -3992,23 +3994,20 @@
     /**
      * 生成html
      *
-     * @return {string}
+     *
+     * @param {StringBuffer} buf html串存储对象
      */
-    IfDirective.prototype.genHTML = function () {
-        var buf = new StringBuffer();
-
+    IfDirective.prototype.genHTML = function (buf) {
         if (this.evalExpr(this.aNode.directives.get('if').value)) {
             var child = createIfDirectiveChild(this);
             this.childs[0] = child;
-            buf.push(child.genHTML());
+            child.genHTML(buf);
         }
 
         if (isFEFFBeforeStump && !buf.length) {
             buf.push('\uFEFF');
         }
         buf.push(genStumpHTML(this));
-
-        return buf.toString();
     };
 
     /**
@@ -4109,18 +4108,17 @@
     /**
      * 生成html
      *
+     * @param {StringBuffer} buf html串存储对象
      * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
      * @return {string}
      */
-    ForDirective.prototype.genHTML = function (onlyChilds) {
-        var buf = new StringBuffer();
-
+    ForDirective.prototype.genHTML = function (buf, onlyChilds) {
         each(
             this.evalExpr(this.aNode.directives.get('for').list),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.childs.push(child);
-                buf.push(child.genHTML());
+                child.genHTML(buf);
             },
             this
         );
@@ -4131,8 +4129,6 @@
             }
             buf.push(genStumpHTML(this));
         }
-
-        return buf.toString();
     };
 
     /**
@@ -4173,6 +4169,16 @@
      * 初始化完成后的行为
      */
     ForDirective.prototype._inited = function () {
+        var aNode = this.aNode;
+        this.itemANode = new ANode({
+            childs: aNode.childs,
+            props: aNode.props,
+            events: aNode.events,
+            tagName: aNode.tagName,
+            directives: (new IndexedList()).concat(aNode.directives)
+        });
+        this.itemANode.directives.remove('for');
+
         if (this.el) {
             this._callHook('created');
             if (this.el.parentNode) {
@@ -4198,7 +4204,9 @@
             }
         }
 
-        this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
+        var buf = new StringBuffer();
+        this.genHTML(buf, 1);
+        this.el.insertAdjacentHTML('beforebegin', buf.toString());
     };
 
     /**
@@ -4305,26 +4313,14 @@
      * @return {Element}
      */
     function createForDirectiveChild(forElement, item, index) {
-        var aNode = forElement.aNode;
-
         var itemScope = new ForItemModel(
             forElement.scope,
-            aNode.directives.get('for'),
+            forElement.aNode.directives.get('for'),
             item,
             index
         );
 
-        var directiveANode = new ANode({
-            childs: aNode.childs,
-            props: aNode.props,
-            events: aNode.events,
-            tagName: aNode.tagName,
-            directives: (new IndexedList()).concat(aNode.directives)
-        });
-
-        directiveANode.directives.remove('for');
-
-        return createNode(directiveANode, forElement, itemScope);
+        return createNode(forElement.itemANode, forElement, itemScope);
     }
 
 
@@ -4433,7 +4429,9 @@
 
         if (repaintAll) {
             // 整个列表都需要重新刷新
-            this.el.insertAdjacentHTML('beforebegin', this.genHTML(1));
+            var buf = new StringBuffer();
+            this.genHTML(buf, 1);
+            this.el.insertAdjacentHTML('beforebegin', buf.toString());
             this._noticeAttached();
         }
         else {
