@@ -589,14 +589,24 @@
      * @param {boolean=} options.isText 是否文本节点
      */
     function ANode(options) {
-        if (!options || !options.isText) {
-            this.directives = new IndexedList();
-            this.props = new IndexedList();
-            this.events = [];
-            this.childs = [];
+        options = options || {};
+
+        if (options.isText) {
+            this.isText = 1;
+            this.text = options.text;
+            this.textExpr = parseText(options.text);
+        }
+        else {
+            this.directives = options.directives || new IndexedList();
+            this.props = options.props || new IndexedList();
+            this.events = options.events || [];
+            this.childs = options.childs || [];
+            this.tagName = options.tagName;
+            this.givenSlots = options.givenSlots;
+            this.binds = options.binds;
         }
 
-        extend(this, options);
+        this.parent = options.parent;
     }
 
     /**
@@ -709,7 +719,6 @@
                 currentNode.childs.push(new ANode({
                     isText: true,
                     text: text,
-                    textExpr: parseText(text),
                     parent: currentNode
                 }));
             }
@@ -847,8 +856,8 @@
 
             if (match) {
                 return {
-                    item: match[1],
-                    index: match[3] || '$index',
+                    item: parseExpr(match[1]),
+                    index: parseExpr(match[3] || '$index'),
                     list: readPropertyAccessor(walker)
                 };
             }
@@ -927,10 +936,16 @@
 
         pushStringToSeg(walker.cut(beforeIndex));
 
-        return {
+        var expr = {
             type: ExprType.TEXT,
             segs: segs
         };
+
+        if (segs.length === 1 && segs[0].type === ExprType.STRING) {
+            expr.value = segs[0].value
+        }
+
+        return expr;
     }
 
     /**
@@ -1889,6 +1904,10 @@
      * @return {*}
      */
     function evalExpr(expr, model, owner, escapeInterpHtml) {
+        if (expr.value != null) {
+            return expr.value;
+        }
+
         switch (expr.type) {
             case ExprType.UNARY:
                 return !evalExpr(expr.expr, model, owner);
@@ -1910,10 +1929,6 @@
                     model,
                     owner
                 );
-
-            case ExprType.STRING:
-            case ExprType.NUMBER:
-                return expr.value;
 
             case ExprType.ACCESSOR:
                 return model.get(expr);
@@ -2205,13 +2220,15 @@
 
         // from el
         if (this.el) {
-            this.aNode.isText = true;
-            this.aNode.textExpr = parseText(this.el.innerHTML);
+            this.aNode = new ANode({
+                isText: true,
+                text: this.el.innerHTML
+            });
+
             this.parent._pushChildANode(this.aNode);
         }
 
-        var segs = this.aNode.textExpr.segs;
-        this._static = segs.length === 1 && segs[0].type === ExprType.STRING;
+        this._static = this.aNode.textExpr.value;
     };
 
     /**
@@ -3692,6 +3709,7 @@
                     var prop = firstChild.props.get(extra.name);
                     if (prop) {
                         prop.expr.segs.push(extra.expr.segs[0]);
+                        prop.expr.value = null;
                     }
                     else {
                         firstChild.props.push({
@@ -4203,6 +4221,81 @@
     };
 
     /**
+     * 循环项的数据容器类
+     *
+     * @inner
+     * @class
+     * @param {Model} parent 父级数据容器
+     * @param {Object} forDirective 循环指令信息
+     * @param {*} item 当前项的数据
+     * @param {number} index 当前项的索引
+     */
+    function ForItemModel(parent, forDirective, item, index) {
+        Model.call(this, parent);
+        this.directive = forDirective;
+        Model.prototype.set.call(this, forDirective.item, item);
+        Model.prototype.set.call(this, forDirective.index, index);
+    }
+
+    /**
+     * 将数据操作的表达式，转换成为对parent数据操作的表达式
+     * 主要是对item和index进行处理
+     *
+     * @param {Object} expr 表达式
+     * @return {Object}
+     */
+    ForItemModel.prototype.exprResolve = function (expr) {
+        var directive = this.directive;
+
+        // 这里是各种操作方法用的，只能是ExprType.ACCESSOR
+        if (expr.paths[0].value === directive.item.paths[0].value) {
+            return {
+                type: ExprType.ACCESSOR,
+                paths: directive.list.paths.concat(
+                    {
+                        type: ExprType.NUMBER,
+                        value: this.get(directive.index)
+                    },
+                    expr.paths.slice(1)
+                )
+            };
+        }
+
+        var resolvedExpr = {
+            type: ExprType.ACCESSOR,
+            paths: []
+        };
+        each(expr.paths, function (item) {
+            resolvedExpr.paths.push(
+                item.type === ExprType.ACCESSOR
+                    && item.paths[0].value === directive.index.paths[0].value
+                ? {
+                    type: ExprType.NUMBER,
+                    value: this.get(directive.index)
+                }
+                : item
+            );
+        }, this);
+        return resolvedExpr;
+    };
+
+    // 代理数据操作方法
+    inherits(ForItemModel, Model);
+    each(
+        ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
+        function (method) {
+            ForItemModel.prototype[method] = function (expr) {
+                expr = this.exprResolve(parseExpr(expr));
+
+                this.parent[method].apply(
+                    this.parent,
+                    [expr].concat(Array.prototype.slice.call(arguments, 1))
+                );
+            };
+        }
+    );
+
+    /**
      * 创建 for 指令元素的子元素
      *
      * @inner
@@ -4212,60 +4305,15 @@
      * @return {Element}
      */
     function createForDirectiveChild(forElement, item, index) {
-        var forDirective = forElement.aNode.directives.get('for');
-        var itemScope = new Model(forElement.scope);
-        itemScope.set(forDirective.item, item);
-        itemScope.set(forDirective.index, index);
+        var aNode = forElement.aNode;
 
-        function exprResolve(expr) {
-            // 这里是各种操作方法用的，只能是ExprType.ACCESSOR
-            if (expr.paths[0].value === forDirective.item) {
-                return {
-                    type: ExprType.ACCESSOR,
-                    paths: forDirective.list.paths.concat(
-                        {
-                            type: ExprType.NUMBER,
-                            value: itemScope.get(forDirective.index)
-                        },
-                        expr.paths.slice(1)
-                    )
-                };
-            }
-
-            var resolvedExpr = {
-                type: ExprType.ACCESSOR,
-                paths: []
-            };
-            each(expr.paths, function (item) {
-                resolvedExpr.paths.push(
-                    item.type === ExprType.ACCESSOR
-                        && item.paths[0].value === forDirective.index
-                    ? {
-                        type: ExprType.NUMBER,
-                        value: itemScope.get(forDirective.index)
-                    }
-                    : item
-                );
-            });
-            return resolvedExpr;
-        }
-
-        each(
-            ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
-            function (method) {
-                var rawFn = forElement.scope[method];
-                itemScope[method] = function (expr) {
-                    expr = exprResolve(parseExpr(expr));
-
-                    rawFn.apply(
-                        forElement.scope,
-                        [expr].concat(Array.prototype.slice.call(arguments, 1))
-                    );
-                };
-            }
+        var itemScope = new ForItemModel(
+            forElement.scope,
+            aNode.directives.get('for'),
+            item,
+            index
         );
 
-        var aNode = forElement.aNode;
         var directiveANode = new ANode({
             childs: aNode.childs,
             props: aNode.props,
@@ -4309,9 +4357,7 @@
                 change = extend({}, change);
                 change.expr = {
                     type: ExprType.ACCESSOR,
-                    paths: [
-                        {value: forDirective.item, type: ExprType.STRING}
-                    ].concat(changePaths.slice(forLen + 1))
+                    paths: forDirective.item.paths.concat(changePaths.slice(forLen + 1))
                 };
 
                 var changeIndex = +this.evalExpr(changePaths[forLen]);
@@ -4349,13 +4395,7 @@
                 var indexChange = {
                     type: ModelChangeType.SET,
                     option: change.option,
-                    expr: {
-                        type: ExprType.ACCESSOR,
-                        paths: [{
-                            type: ExprType.STRING,
-                            value: forDirective.index
-                        }]
-                    }
+                    expr: forDirective.index
                 };
 
                 var insertionsLen = change.insertions.length;
@@ -4423,7 +4463,7 @@
         TextNode.prototype.attached =
         ForDirective.prototype.attached = function () {
             // 移除节点桩元素前面的空白 FEFF 字符
-            if (this.el) {
+            if (isFEFFBeforeStump && this.el) {
                 var headingBlank = this.el.previousSibling;
 
                 if (headingBlank && headingBlank.nodeType === 3) {
