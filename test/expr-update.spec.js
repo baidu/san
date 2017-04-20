@@ -25,9 +25,11 @@ describe("Expression Update Detect", function () {
 
         var span = wrap.firstChild.firstChild;
         expect(span.title).toBe('er');
+        expect(span.innerHTML.indexOf('er')).toBe(0);
         myComponent.data.set('name', 'san');
         san.nextTick(function () {
             expect(span.title).toBe('san');
+            expect(span.innerHTML.indexOf('san')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
