@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - hello</title>
+</head>
+
+<body>
+    <script src="../../../src/main.js"></script>
+    <script>
+    var MyApp = san.defineComponent({
+        template: `
+        <ul>
+    <li
+        san-for="item, index in datasource"
+        style="{{item.color ? 'background:' + item.color : ''}}"
+        class="{{item.id == value ? 'selected' : ''}}"
+        on-click="itemClick(index)"
+    >{{ item.title }}</li>
+</ul>
+        `,
+        toggle: function () {
+        var isHidden = this.data.get('isHidden');
+        this.data.set('isHidden', !isHidden);
+    },
+        initData: function () {
+            return {
+                value:1,
+                datasource: [
+                {color: 'blue', title: 'blue',id:1},
+                {color: 'yellow', title: 'yellow',id:2}
+                ]
+            };
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+

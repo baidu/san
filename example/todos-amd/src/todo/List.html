@@ -20,7 +20,7 @@
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>
             <div class="todo-meta">
-                <span v-if="item.category">{{ item.category.title }} | </span>
+                <span san-if="item.category">{{ item.category.title }} | </span>
                 <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
             </div>
             <router-link class="fa fa-pencil" to="/edit/{{ item.id }}"></router-link>
