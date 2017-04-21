@@ -1604,35 +1604,33 @@
 
         expr = parseExpr(expr);
 
-        if (expr.type === ExprType.ACCESSOR) {
-            var paths = expr.paths;
-            var start = 0;
-            var l = paths.length;
+        var paths = expr.paths;
+        var start = 0;
+        var l = paths.length;
 
-            for (; start < l; start++) {
-                if (paths[start].value == null) {
-                    break;
-                }
+        for (; start < l; start++) {
+            if (paths[start].value == null) {
+                break;
             }
-
-            var i = 0;
-            for (; value != null && i < start; i++) {
-                value = value[paths[i].value];
-            }
-
-            if (value == null && this.parent) {
-                value = this.parent.get({
-                    type: ExprType.ACCESSOR,
-                    paths: paths.slice(0, start)
-                });
-            }
-
-            for (i = start; value != null && i < l; i++) {
-                value = value[paths[i].value || evalExpr(paths[i], this)];
-            }
-
-            return value;
         }
+
+        var i = 0;
+        for (; value != null && i < start; i++) {
+            value = value[paths[i].value];
+        }
+
+        if (value == null && this.parent) {
+            value = this.parent.get({
+                type: ExprType.ACCESSOR,
+                paths: paths.slice(0, start)
+            });
+        }
+
+        for (i = start; value != null && i < l; i++) {
+            value = value[paths[i].value || evalExpr(paths[i], this)];
+        }
+
+        return value;
     };
 
     /**
@@ -1647,31 +1645,29 @@
         option = option || {};
         expr = parseExpr(expr);
 
-        if (expr.type === ExprType.ACCESSOR) {
-            var data = this.data;
-            var prop;
+        var data = this.data;
+        var prop;
 
-            var paths = expr.paths;
-            for (var i = 0, l = paths.length; i < l - 1; i++) {
-                var pathValue = evalExpr(paths[i], this);
+        var paths = expr.paths;
+        for (var i = 0, l = paths.length; i < l - 1; i++) {
+            var pathValue = evalExpr(paths[i], this);
 
-                if (data[pathValue] == null) {
-                    data[pathValue] = {};
-                }
-                data = data[pathValue];
+            if (data[pathValue] == null) {
+                data[pathValue] = {};
             }
+            data = data[pathValue];
+        }
 
-            prop = evalExpr(paths[i], this);
+        prop = evalExpr(paths[i], this);
 
-            if (prop != null) {
-                data[prop] = value;
-                !option.silence && this.fireChange({
-                    type: ModelChangeType.SET,
-                    expr: expr,
-                    value: value,
-                    option: option
-                });
-            }
+        if (prop != null) {
+            data[prop] = value;
+            !option.silence && this.fireChange({
+                type: ModelChangeType.SET,
+                expr: expr,
+                value: value,
+                option: option
+            });
         }
     };
 
@@ -2888,7 +2884,6 @@
      */
     Element.prototype.setProp = function (name, value) {
         if (this.lifeCycle.is('created')) {
-            this._getEl();
             getPropHandler(this, name).input.prop(this, name, value);
         }
     };
@@ -2914,6 +2909,7 @@
      * @param {Array} changes 数据变化信息
      */
     Element.prototype.updateView = function (changes) {
+        this._getEl();
         var me = this;
 
         this.props.each(function (prop) {
@@ -3105,6 +3101,10 @@
     };
     /* eslint-enable operator-linebreak */
 
+    Component.prototype._attached = function () {
+        Element.prototype._attached.call(this);
+        this._getEl();
+    };
 
     /**
      * 初始化
@@ -4059,7 +4059,7 @@
 
         var buf = new StringBuffer();
         this.genHTML(buf, 1);
-        this.el.insertAdjacentHTML('beforebegin', buf.toString());
+        this._getEl().insertAdjacentHTML('beforebegin', buf.toString());
     };
 
     /**
