@@ -8,10 +8,18 @@
  *         junmer(junmer@foxmail.com)
  */
 
+/* eslint-disable guard-for-in */
 
 /* eslint-disable fecs-max-statements */
 (function (root) {
 /* eslint-enable fecs-max-statements */
+
+    /**
+     * 空函数，啥都不干
+     *
+     * @inner
+     */
+    function empty() {}
 
     // #region utils
     /**
@@ -60,8 +68,12 @@
      */
     function each(array, iterator, thisArg) {
         if (array && array.length > 0) {
+            if (thisArg) {
+                iterator = bind(iterator, thisArg);
+            }
+
             for (var i = 0, l = array.length; i < l; i++) {
-                if (iterator.call(thisArg || array, array[i], i) === false) {
+                if (iterator(array[i], i) === false) {
                     break;
                 }
             }
@@ -300,6 +312,7 @@
 
     // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
     //       为了保证script的stump存在，前面加个零宽特殊字符
+    //       IE8下，innerHTML还不支持custom element，所以需要用div替代，不用createElement
     /**
      * 是否在桩元素前面插入空白字符
      *
@@ -444,15 +457,18 @@
     };
 
     /**
-     * 判断标签是否应自关闭
+     * 自闭合标签列表
      *
      * @inner
-     * @param {string} tagName 标签名
-     * @return {boolean}
+     * @type {Object}
      */
-    function tagIsAutoClose(tagName) {
-        return /^(area|base|br|col|embed|hr|img|input|keygen|param|source|track|wbr)$/i.test(tagName);
-    }
+    var autoCloseTags = {};
+    each(
+        'area,base,br,col,embed,hr,img,input,keygen,param,source,track,wbr'.split(','),
+        function (key) {
+            autoCloseTags[key] = 1;
+        }
+    );
 
 
     // #region parse
@@ -660,7 +676,7 @@
                     tagName: tagName,
                     parent: currentNode
                 });
-                var tagClose = tagIsAutoClose(tagName);
+                var tagClose = autoCloseTags[tagName];
 
                 // 解析 attributes
 
@@ -942,7 +958,7 @@
         };
 
         if (segs.length === 1 && segs[0].type === ExprType.STRING) {
-            expr.value = segs[0].value
+            expr.value = segs[0].value;
         }
 
         return expr;
@@ -1923,9 +1939,8 @@
                 return;
 
             case ExprType.TERTIARY:
-                var cond = evalExpr(expr.segs[0], model, owner);
                 return evalExpr(
-                    cond ? expr.segs[1] : expr.segs[2],
+                    evalExpr(expr.segs[0], model, owner) ? expr.segs[1] : expr.segs[2],
                     model,
                     owner
                 );
@@ -2082,10 +2097,6 @@
      * @param {string} name 生命周期名称
      */
     Node.prototype._toPhase = function (name) {
-        if (this.lifeCycle.is(name)) {
-            return;
-        }
-
         this.lifeCycle.set(name);
     };
 
@@ -2187,10 +2198,10 @@
      *
      * @inner
      * @param {Node} node 节点对象
-     * @return {string}
+     * @param {StringBuffer} buf html串存储对象
      */
-    function genStumpHTML(node) {
-        return '<script type="text/san" id="' + node.id + '"></script>';
+    function genStumpHTML(node, buf) {
+        buf.push('<script type="text/san" id="' + node.id + '"></script>');
     }
 
     /**
@@ -2224,11 +2235,6 @@
             });
 
             this.parent._pushChildANode(this.aNode);
-
-            this._toPhase('created');
-            if (this.el.parentNode) {
-                this._toPhase('attached');
-            }
         }
 
         this._static = this.aNode.textExpr.value;
@@ -2240,10 +2246,10 @@
      * @param {StringBuffer} buf html串存储对象
      */
     TextNode.prototype.genHTML = function (buf) {
-        var defaultText = isCompatFEFFAndCustomTag ? '\uFEFF' : '';
-        buf.push(this.evalExpr(this.aNode.textExpr, 1) || defaultText);
+        buf.push(this.evalExpr(this.aNode.textExpr, 1) || (isCompatFEFFAndCustomTag ? '\uFEFF' : ''));
+
         if (!this._static) {
-            buf.push(genStumpHTML(this));
+            genStumpHTML(this, buf);
         }
     };
 
@@ -2286,6 +2292,218 @@
     // #region Element
 
     /**
+     * HTML 属性和 DOM 操作属性的对照表
+     *
+     * @inner
+     * @const
+     * @type {Object}
+     */
+    var HTML_ATTR_PROP_MAP = {
+        'readonly': 'readOnly',
+        'cellpadding': 'cellPadding',
+        'cellspacing': 'cellSpacing',
+        'colspan': 'colSpan',
+        'rowspan': 'rowSpan',
+        'valign': 'vAlign',
+        'usemap': 'useMap',
+        'frameborder': 'frameBorder',
+        'for': 'htmlFor',
+        'class': 'className'
+    };
+
+    /**
+     * 默认的元素的属性设置的变换方法
+     *
+     * @inner
+     * @type {Object}
+     */
+    var defaultElementPropHandler = {
+        input: {
+            attr: function (element, name, value) {
+                if (value != null) {
+                    return ' ' + name + '="' + value + '"';
+                }
+            },
+
+            prop: function (element, name, value) {
+                name = HTML_ATTR_PROP_MAP[name] || name;
+                if (svgTags[element.tagName]) {
+                    element.el.setAttribute(name, value);
+                }
+                else {
+                    element.el[name] = value;
+                }
+            }
+        },
+
+        output: function (element, bindInfo) {
+            element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+                target: {
+                    id: element.id,
+                    prop: bindInfo.name
+                }
+            });
+        }
+    };
+
+    var defaultElementPropHandlers = {
+        style: {
+            input: {
+                attr: function (element, name, value) {
+                    if (value) {
+                        return ' style="' + value + '"';
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    element.el.style.cssText = value;
+                }
+            }
+        },
+
+        readonly: genBoolPropHandler('readonly'),
+        disabled: genBoolPropHandler('disabled')
+    };
+
+    var elementPropHandlers = {
+        input: {
+            mutiple: genBoolPropHandler('mutiple'),
+            checked: {
+                input: {
+                    attr: function (element, name, value) {
+                        var bindValue = element.props.get('value');
+                        var bindType = element.props.get('type');
+                        var checked;
+
+                        if (bindValue && bindType) {
+                            switch (bindType.raw) {
+                                case 'checkbox':
+                                    checked = contains(value, element.evalExpr(bindValue.expr));
+                                    break;
+
+                                case 'radio':
+                                    checked = value === element.evalExpr(bindValue.expr);
+                                    break;
+                            }
+                        }
+
+                        if (checked) {
+                            return ' checked="checked"';
+                        }
+                    },
+
+                    prop: function (element, name, value) {
+                        var bindValue = element.props.get('value');
+                        var bindType = element.props.get('type');
+
+                        if (bindValue && bindType) {
+                            switch (bindType.raw) {
+                                case 'checkbox':
+                                    element.el.checked = contains(value, element.evalExpr(bindValue.expr));
+                                    break;
+
+                                case 'radio':
+                                    element.el.checked = value === element.evalExpr(bindValue.expr);
+                                    break;
+                            }
+                        }
+                    }
+                },
+
+                output: function (element, bindInfo) {
+                    var el = element.el;
+                    var bindType = element.props.get('type') || {};
+
+                    switch (bindType.raw) {
+                        case 'checkbox':
+                            element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                            break;
+
+                        case 'radio':
+                            el.checked && element.scope.set(bindInfo.expr, el.value, {
+                                target: {
+                                    id: element.id,
+                                    prop: bindInfo.name
+                                }
+                            });
+                            break;
+                    }
+                }
+            }
+        },
+
+        textarea: {
+            value: {
+                input: {
+                    attr: empty,
+                    prop: defaultElementPropHandler.input.prop
+                },
+
+                output: defaultElementPropHandler.output
+            }
+        },
+
+        option: {
+            value: {
+                input: {
+                    attr: function (element, name, value) {
+                        var attrStr = defaultElementPropHandler.input.attr(element, name, value);
+                        var parent = element.parent;
+                        var parentValueProp;
+
+                        if (parent.tagName === 'select'
+                            && (parentValueProp = parent.props.get('value'))
+                            && parent.evalExpr(parentValueProp.expr) === value
+                        ) {
+                            attrStr += ' selected';
+                        }
+
+                        return attrStr;
+                    },
+
+                    prop: defaultElementPropHandler.input.prop
+                }
+            }
+        }
+    };
+
+    /**
+     * 生成 bool 类型属性绑定操作的变换方法
+     *
+     * @inner
+     * @param {string} attrName 属性名
+     * @return {Object}
+     */
+    function genBoolPropHandler(attrName) {
+        return {
+            input: {
+                attr: function (element, name, value) {
+                    // 因为元素的attr值必须经过html escape，否则可能有漏洞
+                    // 所以这里直接对假值字符串形式进行处理
+                    // NaN之类非主流的就先不考虑了
+                    if (value && value !== 'false' && value !== '0') {
+                        return ' ' + attrName + '="' + attrName + '"';
+                    }
+                },
+
+                prop: function (element, name, value) {
+                    var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
+                    element.el[propName] = !!(value && value !== 'false' && value !== '0');
+                }
+            }
+        };
+    }
+
+
+    function getPropHandler(element, name) {
+        return element.propHandlers[name] || defaultElementPropHandlers[name] || defaultElementPropHandler;
+    }
+
+    function bindOutputer(bindInfo) {
+        getPropHandler(this, bindInfo.name).output(this, bindInfo);
+    }
+
+    /**
      * 元素类
      *
      * @inner
@@ -2321,24 +2539,6 @@
             this.tagName = 'div';
         }
 
-        this._inited();
-    };
-
-    /**
-     * 从已有的el进行初始化
-     */
-    Element.prototype._initFromEl = function () {
-        this.aNode = parseANodeFromEl(this.el);
-        this.parent._pushChildANode(this.aNode);
-        this.tagName = this.aNode.tagName;
-
-        compileChildsFromEl(this);
-    };
-
-    /**
-     * 初始化完成后的行为
-     */
-    Element.prototype._inited = function () {
         // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
         // 所以没有设置 value 时，默认把 option 的内容作为 value
         if (this.tagName === 'option'
@@ -2352,19 +2552,20 @@
         }
 
         this.props = this.binds = this.aNode.props;
-        this._initPropHandlers();
-
-        // if (this.el) {
-        //     this.tagName = this.el.tagName.toLowerCase();
-
-        //     compileChildsFromEl(this);
-        //     // this._toPhase('created');
-
-        //     // if (this.el.parentNode) {
-        //     //     this._toPhase('attached');
-        //     // }
-        // }
+        this.propHandlers = elementPropHandlers[this.tagName] || {};
     };
+
+    /**
+     * 从已有的el进行初始化
+     */
+    Element.prototype._initFromEl = function () {
+        this.aNode = parseANodeFromEl(this.el);
+        this.parent && this.parent._pushChildANode(this.aNode);
+        this.tagName = this.aNode.tagName;
+
+        compileChildsFromEl(this);
+    };
+
 
     /**
      * 创建元素DOM行为
@@ -2474,239 +2675,7 @@
     };
 
 
-    /**
-     * HTML 属性和 DOM 操作属性的对照表
-     *
-     * @inner
-     * @const
-     * @type {Object}
-     */
-    var HTML_ATTR_PROP_MAP = {
-        'readonly': 'readOnly',
-        'cellpadding': 'cellPadding',
-        'cellspacing': 'cellSpacing',
-        'colspan': 'colSpan',
-        'rowspan': 'rowSpan',
-        'valign': 'vAlign',
-        'usemap': 'useMap',
-        'frameborder': 'frameBorder',
-        'for': 'htmlFor',
-        'class': 'className'
-    };
 
-    /**
-     * 默认的元素的属性设置的变换方法
-     *
-     * @inner
-     * @type {Object}
-     */
-    var defaultElementPropHandler = {
-        input: {
-            attr: function (element, name, value) {
-                if (value != null) {
-                    return ' ' + name + '="' + value + '"';
-                }
-            },
-
-            prop: function (element, name, value) {
-                name = HTML_ATTR_PROP_MAP[name] || name;
-                if (svgTags[element.tagName]) {
-                    element.el.setAttribute(name, value);
-                }
-                else {
-                    element.el[name] = value;
-                }
-            }
-        },
-
-        output: function (element, bindInfo) {
-            element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
-                target: {
-                    id: element.id,
-                    prop: bindInfo.name
-                }
-            });
-        }
-    };
-
-    var defaultElementPropHandlers = {
-        style: {
-            input: {
-                attr: function (element, name, value) {
-                    if (value) {
-                        return ' style="' + value + '"';
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    element.el.style.cssText = value;
-                }
-            }
-        }
-    };
-
-    var elementPropHandlers = {
-        input: {
-            disabled: genBoolPropHandler('disabled'),
-            readonly: genBoolPropHandler('readonly'),
-            mutiple: genBoolPropHandler('mutiple'),
-            checked: {
-                input: {
-                    attr: function (element, name, value) {
-                        var bindValue = element.props.get('value');
-                        var bindType = element.props.get('type');
-                        var result = '';
-
-                        if (bindValue && bindType) {
-                            switch (bindType.raw) {
-                                case 'checkbox':
-                                    if (contains(value, element.evalExpr(bindValue.expr))) {
-                                        result = ' checked="checked"';
-                                    }
-                                    break;
-
-                                case 'radio':
-                                    if (value === element.evalExpr(bindValue.expr)) {
-                                        result = ' checked="checked"';
-                                    }
-                                    break;
-                            }
-                        }
-
-                        return result;
-                    },
-
-                    prop: function (element, name, value) {
-                        var bindValue = element.props.get('value');
-                        var bindType = element.props.get('type');
-
-                        if (bindValue && bindType) {
-                            switch (bindType.raw) {
-                                case 'checkbox':
-                                    element.el.checked = contains(value, element.evalExpr(bindValue.expr));
-                                    break;
-
-                                case 'radio':
-                                    element.el.checked = value === element.evalExpr(bindValue.expr);
-                                    break;
-                            }
-                        }
-                    }
-                },
-
-                output: function (element, bindInfo) {
-                    var el = element.el;
-                    var bindType = element.props.get('type') || {};
-
-                    switch (bindType.raw) {
-                        case 'checkbox':
-                            element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
-                            break;
-
-                        case 'radio':
-                            element.scope.set(bindInfo.expr, el.checked ? el.value : '', {
-                                target: {
-                                    id: element.id,
-                                    prop: bindInfo.name
-                                }
-                            });
-                            break;
-                    }
-                }
-            }
-        },
-
-        textarea: {
-            disabled: genBoolPropHandler('disabled'),
-            readonly: genBoolPropHandler('readonly'),
-            value: {
-                input: {
-                    attr: function () {},
-
-                    prop: function (element, name, value) {
-                        element.el[name] = value;
-                    }
-                },
-
-                output: defaultElementPropHandler.output
-            }
-        },
-
-        button: {
-            disabled: genBoolPropHandler('disabled')
-        },
-
-        select: {
-            disabled: genBoolPropHandler('disabled')
-        },
-
-        option: {
-            value: {
-                input: {
-                    attr: function (element, name, value) {
-                        var attrStr = defaultElementPropHandler.input.attr(element, name, value);
-                        var parent = element.parent;
-                        var parentValueProp;
-
-                        if (parent.tagName === 'select'
-                            && (parentValueProp = parent.props.get('value'))
-                            && parent.evalExpr(parentValueProp.expr) === value
-                        ) {
-                            attrStr += ' selected';
-                        }
-
-                        return attrStr;
-                    },
-
-                    prop: defaultElementPropHandler.input.prop
-                }
-            }
-        }
-    };
-
-    /**
-     * 生成 bool 类型属性绑定操作的变换方法
-     *
-     * @inner
-     * @param {string} attrName 属性名
-     * @return {Object}
-     */
-    function genBoolPropHandler(attrName) {
-        return {
-            input: {
-                attr: function (element, name, value) {
-                    // 因为元素的attr值必须经过html escape，否则可能有漏洞
-                    // 所以这里直接对假值字符串形式进行处理
-                    // NaN之类非主流的就先不考虑了
-                    if (value && value !== 'false' && value !== '0') {
-                        return ' ' + attrName + '="' + attrName + '"';
-                    }
-                },
-
-                prop: function (element, name, value) {
-                    var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
-                    element.el[propName] = !!(value && value !== 'false' && value !== '0');
-                }
-            }
-        };
-    }
-
-    /**
-     * 初始化元素属性操作的处理器
-     * 元素属性操作和具体名称可能不同，比如style操作的是style.cssText等等
-     * 所以需要一些 handler 做输入输出的属性名与值变换。这里就是初始化这些 handler
-     */
-    Element.prototype._initPropHandlers = function () {
-        this.propHandlers = elementPropHandlers[this.tagName] || defaultElementPropHandlers;
-    };
-
-    function getPropHandler(element, name) {
-        return element.propHandlers[name] || defaultElementPropHandler;
-    }
-
-    function bindOutputer(bindInfo) {
-        getPropHandler(this, bindInfo.name).output(this, bindInfo);
-    }
 
     /**
      * 将元素attach到页面
@@ -2728,12 +2697,7 @@
      * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
      */
     Element.prototype._attach = function (parentEl, beforeEl) {
-
         this.create();
-        var buf = new StringBuffer();
-        elementGenChildsHTML(this, buf);
-        this.el.innerHTML = buf.toString();
-
         if (parentEl) {
             if (beforeEl) {
                 parentEl.insertBefore(this.el, beforeEl);
@@ -2742,6 +2706,10 @@
                 parentEl.appendChild(this.el);
             }
         }
+
+        var buf = new StringBuffer();
+        elementGenChildsHTML(this, buf);
+        this.el.innerHTML = buf.toString();
     };
 
     /**
@@ -2791,9 +2759,7 @@
         var listeners = this.listeners;
 
         for (var key in listeners) {
-            if (listeners.hasOwnProperty(key)) {
-                this.un(key);
-            }
+            this.un(key);
         }
 
         this.listeners = null;
@@ -2893,12 +2859,12 @@
      *
      * @inner
      * @param {Element} element 元素
-     * @param {StringBuffer} stringBuffer html串存储对象
+     * @param {StringBuffer} buf html串存储对象
      */
     function elementGenCloseHTML(element, buf) {
         var tagName = element.tagName;
 
-        if (!tagIsAutoClose(tagName)) {
+        if (!autoCloseTags[tagName]) {
             buf.push('</');
             buf.push(tagName);
             buf.push('>');
@@ -2910,8 +2876,7 @@
      *
      * @inner
      * @param {Element} element 元素
-     * @param {StringBuffer} stringBuffer html串存储对象
-     * @return {string}
+     * @param {StringBuffer} buf html串存储对象
      */
     function elementGenChildsHTML(element, buf) {
         if (element.tagName === 'textarea') {
@@ -3084,7 +3049,7 @@
     /**
      * 生成元素的html
      *
-     * @return {string}
+     * @param {StringBuffer} buf html串存储对象
      */
     SlotElement.prototype.genHTML = function (buf) {
         elementGenChildsHTML(this, buf);
@@ -3093,8 +3058,7 @@
     /**
      * 隔离实际所属组件对其的视图更新调用。更新应由outer组件调用
      */
-    SlotElement.prototype.updateView = function () {
-    };
+    SlotElement.prototype.updateView = empty;
 
     /**
      * 视图更新函数
@@ -3134,6 +3098,7 @@
 
     inherits(Component, Element);
 
+    /* eslint-disable operator-linebreak */
     /**
      * 使节点到达相应的生命周期
      *
@@ -3153,6 +3118,7 @@
         emitDevTool('comp-' + name, this);
         // #end-ignore
     };
+    /* eslint-enable operator-linebreak */
 
 
     /**
@@ -3210,6 +3176,8 @@
 
 
         Element.prototype._init.call(this, options);
+
+        this.props = this.aNode.props;
         this.binds = this.aNode.binds || new IndexedList();
         this.binds.each(function (bind) {
             var expr = bind.expr;
@@ -3224,15 +3192,12 @@
                 }
             }
         });
-        this.props = this.aNode.props;
 
         // init data
         var initData = options.data
             || (typeof this.initData === 'function' && this.initData());
         for (var key in initData) {
-            if (initData.hasOwnProperty(key)) {
-                this.data.set(key, initData[key]);
-            }
+            this.data.set(key, initData[key]);
         }
 
         this.scope && this.binds.each(function (bind) {
@@ -3248,12 +3213,22 @@
 
 
         this._toPhase('inited');
-        this._initPropHandlers();
 
         // 如果从el编译的，认为已经attach了，触发钩子
         if (this._isInitFromEl) {
             this._toAttached();
         }
+    };
+
+
+    /**
+     * 从存在的 el 中编译抽象节点
+     */
+    Component.prototype._initFromEl = function () {
+        this._isInitFromEl = 1;
+        Element.prototype._initFromEl.call(this);
+        this.aNode.binds = this.aNode.props;
+        this.aNode.props = new IndexedList();
     };
 
     /**
@@ -3356,18 +3331,6 @@
         return refComponent;
     };
 
-    /**
-     * 从存在的 el 中编译抽象节点
-     */
-    Component.prototype._initFromEl = function () {
-        this._isInitFromEl = true;
-        this.aNode = parseANodeFromEl(this.el);
-        this.aNode.binds = this.aNode.props;
-        this.aNode.props = new IndexedList();
-
-        this.parent && this.parent._pushChildANode(this.aNode);
-        compileChildsFromEl(this);
-    };
 
     /**
      * 遍历和编译已有元素的孩子
@@ -3564,10 +3527,12 @@
         this.next = this.raw[this.index + 1];
     };
 
+    /* eslint-disable quotes */
     var componentPropExtra = [
         {name: 'class', expr: parseText("{{class ? ' ' + class : ''}}")},
         {name: 'style', expr: parseText("{{style ? ';' + style : ''}}")}
     ];
+    /* eslint-enable quotes */
 
 
     /**
@@ -3657,6 +3622,8 @@
 
     /**
      * 视图更新函数
+     *
+     * @param {Array?} changes 数据变化信息
      */
     Component.prototype.updateView = function (changes) {
         if (this.lifeCycle.is('disposed')) {
@@ -3852,11 +3819,24 @@
     }
 
     /**
-     * 从已有的el进行初始化的
+     * 创建元素DOM行为
+     */
+    IfDirective.prototype._create = function () {
+        if (!this.el) {
+            this.el = document.createElement('script');
+            this.el.type = 'text/san';
+            this.el.id = this.id;
+        }
+    };
+
+    /**
+     * 初始化行为
      *
      * @param {Object} options 初始化参数
      */
-    IfDirective.prototype._initFromEl = function (options) {
+    IfDirective.prototype._init = function (options) {
+        Node.prototype._init.call(this, options);
+
         if (options.el) {
             if (options.el.getAttribute('san-stump') === 'if') {
                 var aNode = parseTemplate(options.el.innerHTML);
@@ -3884,29 +3864,6 @@
     };
 
     /**
-     * 创建元素DOM行为
-     */
-    IfDirective.prototype._create = function () {
-        if (!this.el) {
-            this.el = document.createElement('script');
-            this.el.type = 'text/san';
-            this.el.id = this.id;
-        }
-    };
-
-    /**
-     * 初始化完成后的行为
-     */
-    IfDirective.prototype._inited = function () {
-        // if (this.el) {
-        //     this._toPhase('created');
-        //     if (this.el.parentNode) {
-        //         this._toPhase('attached');
-        //     }
-        // }
-    };
-
-    /**
      * 生成html
      *
      *
@@ -3918,11 +3875,11 @@
             this.childs[0] = child;
             child.genHTML(buf);
         }
-
-        if (isCompatFEFFAndCustomTag && !buf.length) {
+        else if (isCompatFEFFAndCustomTag) {
             buf.push('\uFEFF');
         }
-        buf.push(genStumpHTML(this));
+
+        genStumpHTML(this, buf);
     };
 
     /**
@@ -3954,7 +3911,7 @@
      * 清空添加子节点的 ANode 的行为
      * 从 el 初始化时，不接受子节点的 ANode信息
      */
-    IfDirective.prototype._pushChildANode = function () {};
+    IfDirective.prototype._pushChildANode = empty;
 
     /**
      * else 指令处理类
@@ -4017,7 +3974,7 @@
      * 清空添加子节点的 ANode 的行为
      * 从 el 初始化时，不接受子节点的 ANode信息
      */
-    ForDirective.prototype._pushChildANode = function () {};
+    ForDirective.prototype._pushChildANode = empty;
 
 
     /**
@@ -4025,7 +3982,6 @@
      *
      * @param {StringBuffer} buf html串存储对象
      * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
-     * @return {string}
      */
     ForDirective.prototype.genHTML = function (buf, onlyChilds) {
         each(
@@ -4039,24 +3995,29 @@
         );
 
         if (!onlyChilds) {
-            if (isCompatFEFFAndCustomTag && !buf.length) {
+            if (isCompatFEFFAndCustomTag && !this.childs.length) {
                 buf.push('\uFEFF');
             }
-            buf.push(genStumpHTML(this));
+            genStumpHTML(this, buf);
         }
     };
 
     /**
-     * 从已有的el进行初始化
+     * 初始化行为
      *
      * @param {Object} options 初始化参数
      */
-    ForDirective.prototype._initFromEl = function (options) {
+    ForDirective.prototype._init = function (options) {
+        Node.prototype._init.call(this, options);
+
+        var aNode = this.aNode;
         if (options.el) {
+            /* eslint-disable no-constant-condition */
             while (1) {
+            /* eslint-enable no-constant-condition */
                 var current = options.elWalker.current;
                 if (current.getAttribute('san-stump') === 'for') {
-                    var aNode = parseTemplate(current.innerHTML);
+                    aNode = parseTemplate(current.innerHTML);
                     aNode = aNode.childs[0];
                     this.aNode = aNode;
                     break;
@@ -4078,13 +4039,8 @@
 
             this.parent._pushChildANode(this.aNode);
         }
-    };
 
-    /**
-     * 初始化完成后的行为
-     */
-    ForDirective.prototype._inited = function () {
-        var aNode = this.aNode;
+
         this.itemANode = new ANode({
             childs: aNode.childs,
             props: aNode.props,
@@ -4093,14 +4049,8 @@
             directives: (new IndexedList()).concat(aNode.directives)
         });
         this.itemANode.directives.remove('for');
-
-        // if (this.el) {
-        //     this._toPhase('created');
-        //     if (this.el.parentNode) {
-        //         this._toPhase('attached');
-        //     }
-        // }
     };
+
 
     /**
      * 将元素attach到页面的行为
@@ -4241,6 +4191,8 @@
 
     /**
      * 视图更新函数
+     *
+     * @param {Array} changes 数据变化信息
      */
     ForDirective.prototype.updateView = function (changes) {
         var childsChanges = [];
@@ -4371,7 +4323,7 @@
     };
 
 
-    /* eslint-disable */
+    /* eslint-disable operator-linebreak */
     IfDirective.prototype._attached =
     TextNode.prototype._attached =
     ForDirective.prototype._attached = function () {
@@ -4391,7 +4343,7 @@
             }
         }
     };
-    /* eslint-enable */
+    /* eslint-enable operator-linebreak */
 
     /**
      * 创建组件类
@@ -4418,6 +4370,15 @@
          * @type {string}
          */
         version: '##version##',
+
+        // #begin-ignore
+        /**
+         * 是否开启调试。开启调试时 devtool 会工作
+         *
+         * @type {boolean}
+         */
+        debug: true,
+        // #end-ignore
 
         /**
          * 组件基类
@@ -4479,14 +4440,7 @@
          * @param {Function} subClass 子类函数
          * @param {Function} superClass 父类函数
          */
-        inherits: inherits,
-
-        /**
-         * 是否开启调试。开启调试时 devtool 会工作
-         *
-         * @type {boolean}
-         */
-        debug: true
+        inherits: inherits
     };
 
 
