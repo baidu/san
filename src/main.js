@@ -390,17 +390,6 @@
     };
 
     /**
-     * 根据顺序下标获取 item
-     *
-     * @inner
-     * @param {number} index 顺序下标
-     * @return {Object}
-     */
-    IndexedList.prototype.getAt = function (index) {
-        return this.raw[index];
-    };
-
-    /**
      * 根据 name 获取 item
      *
      * @inner
@@ -419,7 +408,7 @@
      * @param {Object} thisArg 遍历函数运行的this环境
      */
     IndexedList.prototype.each = function (iterator, thisArg) {
-        each(this.raw, bind(iterator, thisArg || this));
+        each(this.raw, iterator, thisArg);
     };
 
     /**
@@ -733,7 +722,7 @@
         function pushTextNode(text) {
             if (text) {
                 currentNode.childs.push(new ANode({
-                    isText: true,
+                    isText: 1,
                     text: text,
                     parent: currentNode
                 }));
@@ -805,7 +794,7 @@
             aNode.props.push({
                 name: name,
                 expr: parseExpr(xMatch[1]),
-                x: true
+                x: 1
             });
 
             return;
@@ -897,7 +886,7 @@
 
         'else': function () {
             return {
-                value: true
+                value: 1
             };
         }
     };
@@ -2280,12 +2269,14 @@
      * @param {Array} changes 数据变化信息
      */
     TextNode.prototype.updateView = function (changes) {
+        var me = this;
+
         each(changes, function (change) {
-            if (changeExprCompare(change.expr, this.aNode.textExpr, this.scope)) {
-                this.update();
+            if (changeExprCompare(change.expr, me.aNode.textExpr, me.scope)) {
+                me.update();
                 return false;
             }
-        }, this);
+        });
     };
 
 
@@ -2365,47 +2356,36 @@
         disabled: genBoolPropHandler('disabled')
     };
 
+    function analInputCheckedState(element, value) {
+        var bindValue = element.props.get('value');
+        var bindType = element.props.get('type');
+
+        if (bindValue && bindType) {
+            switch (bindType.raw) {
+                case 'checkbox':
+                    return contains(value, element.evalExpr(bindValue.expr));
+
+                case 'radio':
+                    return value === element.evalExpr(bindValue.expr);
+            }
+        }
+    }
+
     var elementPropHandlers = {
         input: {
             mutiple: genBoolPropHandler('mutiple'),
             checked: {
                 input: {
                     attr: function (element, name, value) {
-                        var bindValue = element.props.get('value');
-                        var bindType = element.props.get('type');
-                        var checked;
-
-                        if (bindValue && bindType) {
-                            switch (bindType.raw) {
-                                case 'checkbox':
-                                    checked = contains(value, element.evalExpr(bindValue.expr));
-                                    break;
-
-                                case 'radio':
-                                    checked = value === element.evalExpr(bindValue.expr);
-                                    break;
-                            }
-                        }
-
-                        if (checked) {
+                        if (analInputCheckedState(element, value)) {
                             return ' checked="checked"';
                         }
                     },
 
                     prop: function (element, name, value) {
-                        var bindValue = element.props.get('value');
-                        var bindType = element.props.get('type');
-
-                        if (bindValue && bindType) {
-                            switch (bindType.raw) {
-                                case 'checkbox':
-                                    element.el.checked = contains(value, element.evalExpr(bindValue.expr));
-                                    break;
-
-                                case 'radio':
-                                    element.el.checked = value === element.evalExpr(bindValue.expr);
-                                    break;
-                            }
+                        var checked = analInputCheckedState(element, value);
+                        if (checked != null) {
+                            element.el.checked = checked;
                         }
                     }
                 },
@@ -2571,25 +2551,27 @@
      * 创建元素DOM行为
      */
     Element.prototype._create = function () {
-        if (!this.el) {
-            this.el = createEl(this.tagName);
-            this.el.id = this.id;
+        var me = this;
 
-            this.props.each(function (prop) {
-                var value = this instanceof Component
-                    ? evalExpr(prop.expr, this.data, this)
-                    : this.evalExpr(prop.expr, 1);
+        if (!this.el) {
+            me.el = createEl(me.tagName);
+            me.el.id = me.id;
+
+            me.props.each(function (prop) {
+                var value = me instanceof Component
+                    ? evalExpr(prop.expr, me.data, me)
+                    : me.evalExpr(prop.expr, 1);
 
                 var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/.exec(
-                    getPropHandler(this, prop.name)
+                    getPropHandler(me, prop.name)
                         .input
-                        .attr(this, prop.name, value)
+                        .attr(me, prop.name, value)
                 );
 
                 if (match) {
-                    this.el.setAttribute(match[1], match[3]);
+                    me.el.setAttribute(match[1], match[3]);
                 }
-            }, this);
+            });
         }
     };
 
@@ -2617,23 +2599,25 @@
      * @private
      */
     Element.prototype._initSelfChanger = function () {
+        var me = this;
+
         this.binds && this.binds.each(function (bindInfo) {
             if (!bindInfo.x) {
                 return;
             }
 
-            var el = this._getEl();
-            var outputer = bind(bindOutputer, this, bindInfo);
+            var el = me._getEl();
+            var outputer = bind(bindOutputer, me, bindInfo);
             switch (bindInfo.name) {
                 case 'value':
-                    switch (this.tagName) {
+                    switch (me.tagName) {
                         case 'input':
                         case 'textarea':
                             if (root.CompositionEvent) {
-                                this.on('compositionstart', function () {
+                                me.on('compositionstart', function () {
                                     this.composing = 1;
                                 });
-                                this.on('compositionend', function () {
+                                me.on('compositionend', function () {
                                     this.composing = 0;
 
                                     var event = document.createEvent('HTMLEvents');
@@ -2642,7 +2626,7 @@
                                 });
                             }
 
-                            this.on(
+                            me.on(
                                 ('oninput' in el) ? 'input' : 'propertychange',
                                 function (e) {
                                     if (!this.composing) {
@@ -2654,28 +2638,25 @@
                             break;
 
                         case 'select':
-                            this.on('change', outputer);
+                            me.on('change', outputer);
                             break;
                     }
                     break;
 
                 case 'checked':
-                    switch (this.tagName) {
+                    switch (me.tagName) {
                         case 'input':
                             switch (el.type) {
                                 case 'checkbox':
                                 case 'radio':
-                                    this.on('click', outputer);
+                                    me.on('click', outputer);
                             }
                     }
                     break;
             }
 
-        }, this);
+        });
     };
-
-
-
 
     /**
      * 将元素attach到页面
@@ -2747,9 +2728,11 @@
      * 绑定事件
      */
     Element.prototype.bindEvents = function () {
+        var me = this;
+
         each(this.aNode.events, function (eventBind) {
-            this.on(eventBind.name, bind(elementEventListener, this, eventBind));
-        }, this);
+            me.on(eventBind.name, bind(elementEventListener, me, eventBind));
+        });
     };
 
     /**
@@ -2839,17 +2822,17 @@
         buf.push('<' + element.tagName + ' id="' + element.id + '"');
 
         element.props.each(function (prop) {
-            var value = this instanceof Component
-                ? evalExpr(prop.expr, this.data, this)
-                : this.evalExpr(prop.expr, 1);
+            var value = element instanceof Component
+                ? evalExpr(prop.expr, element.data, element)
+                : element.evalExpr(prop.expr, 1);
 
             buf.push(
-                getPropHandler(this, prop.name)
+                getPropHandler(element, prop.name)
                     .input
-                    .attr(this, prop.name, value)
+                    .attr(element, prop.name, value)
                 || ''
             );
-        }, element);
+        });
 
         buf.push('>');
     }
@@ -2931,16 +2914,18 @@
      * @param {Array} changes 数据变化信息
      */
     Element.prototype.updateView = function (changes) {
+        var me = this;
+
         this.props.each(function (prop) {
             each(changes, function (change) {
-                if (!isDataChangeByElement(change, this, prop.name)
-                    && changeExprCompare(change.expr, prop.expr, this.scope)
+                if (!isDataChangeByElement(change, me, prop.name)
+                    && changeExprCompare(change.expr, prop.expr, me.scope)
                 ) {
-                    this.setProp(prop.name, this.evalExpr(prop.expr));
+                    me.setProp(prop.name, me.evalExpr(prop.expr));
                     return false;
                 }
-            }, this);
-        }, this);
+            });
+        });
 
         each(this.childs, function (child) {
             child.updateView(changes);
@@ -3154,7 +3139,7 @@
                     }
 
                     givenSlots[slotName].push(child);
-                }, this);
+                });
 
                 this.aNode = new ANode({
                     tagName: protoANode.tagName || givenANode.tagName,
@@ -3194,15 +3179,17 @@
         });
 
         // init data
+        var me = this;
         var initData = options.data
             || (typeof this.initData === 'function' && this.initData());
         for (var key in initData) {
-            this.data.set(key, initData[key]);
+            me.data.set(key, initData[key]);
         }
 
+
         this.scope && this.binds.each(function (bind) {
-            this.data.set(bind.name, this.evalExpr(bind.expr));
-        }, this);
+            me.data.set(bind.name, me.evalExpr(bind.expr));
+        });
 
         this.computedDeps = {};
         for (var expr in this.computed) {
@@ -3210,7 +3197,6 @@
                 this._calcComputed(expr);
             }
         }
-
 
         this._toPhase('inited');
 
@@ -3477,7 +3463,7 @@
         each(
             el.attributes,
             function (attr) {
-                integrateAttr(aNode, attr.name, attr.value, true);
+                integrateAttr(aNode, attr.name, attr.value, 1);
             }
         );
 
@@ -3545,7 +3531,6 @@
         var proto = ComponentClass.prototype;
 
         // pre define components class
-
         if (!proto.hasOwnProperty('_isComponentsReady')) {
             proto.components =  ComponentClass.components || proto.components || {};
             var components = proto.components;
@@ -3630,16 +3615,18 @@
             return;
         }
 
+        var me = this;
+
         each(changes, function (change) {
             var changeExpr = change.expr;
 
-            this.binds.each(function (bindItem) {
+            me.binds.each(function (bindItem) {
                 var relation;
                 var setExpr = bindItem.name;
                 var updateExpr = bindItem.expr;
 
-                if (!isDataChangeByElement(change, this, setExpr)
-                    && (relation = changeExprCompare(changeExpr, updateExpr, this.scope))
+                if (!isDataChangeByElement(change, me, setExpr)
+                    && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
                 ) {
                     if (relation > 2) {
                         setExpr = {
@@ -3652,31 +3639,31 @@
                         updateExpr = changeExpr;
                     }
 
-                    this.data.set(setExpr, this.evalExpr(updateExpr), {
+                    me.data.set(setExpr, me.evalExpr(updateExpr), {
                         target: {
-                            id: this.owner.id
+                            id: me.owner.id
                         }
                     });
                 }
-            }, this);
-        }, this);
+            });
+        });
 
 
-        var dataChanges = this.dataChanges;
+        var dataChanges = me.dataChanges;
         if (dataChanges.length) {
-            this.dataChanges = [];
-            this.props.each(function (prop) {
+            me.dataChanges = [];
+            me.props.each(function (prop) {
                 each(dataChanges, function (change) {
-                    if (changeExprCompare(change.expr, prop.expr, this.data)) {
-                        this.setProp(
+                    if (changeExprCompare(change.expr, prop.expr, me.data)) {
+                        me.setProp(
                             prop.name,
-                            evalExpr(prop.expr, this.data, this)
+                            evalExpr(prop.expr, me.data, me)
                         );
 
                         return false;
                     }
-                }, this);
-            }, this);
+                });
+            });
 
 
             each(this.childs, function (child) {
@@ -3689,13 +3676,13 @@
 
             this._toPhase('updated');
 
-            if (this.owner) {
+            if (me.owner) {
                 each(dataChanges, function (change) {
-                    this.binds.each(function (bindItem) {
+                    me.binds.each(function (bindItem) {
                         var changeExpr = change.expr;
                         if (bindItem.x
-                            && !isDataChangeByElement(change, this.owner)
-                            && changeExprCompare(changeExpr, parseExpr(bindItem.name), this.data)
+                            && !isDataChangeByElement(change, me.owner)
+                            && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
                         ) {
                             var updateScopeExpr = bindItem.expr;
                             if (changeExpr.paths.length > 1) {
@@ -3705,20 +3692,21 @@
                                 };
                             }
 
-                            this.scope.set(
+                            me.scope.set(
                                 updateScopeExpr,
-                                evalExpr(changeExpr, this.data, this),
+                                evalExpr(changeExpr, me.data, me),
                                 {
                                     target: {
-                                        id: this.id,
+                                        id: me.id,
                                         prop: bindItem.name
                                     }
                                 }
                             );
                         }
-                    }, this);
-                }, this);
-                this.owner.updateView();
+                    });
+                });
+
+                me.owner.updateView();
             }
 
         }
@@ -4134,12 +4122,10 @@
             };
         }
 
-        var resolvedExpr = {
-            type: ExprType.ACCESSOR,
-            paths: []
-        };
+        var resolvedPaths = [];
+
         each(expr.paths, function (item) {
-            resolvedExpr.paths.push(
+            resolvedPaths.push(
                 item.type === ExprType.ACCESSOR
                     && item.paths[0].value === directive.index.paths[0].value
                 ? {
@@ -4149,7 +4135,11 @@
                 : item
             );
         }, this);
-        return resolvedExpr;
+
+        return {
+            type: ExprType.ACCESSOR,
+            paths: resolvedPaths
+        };
     };
 
     // 代理数据操作方法
@@ -4228,7 +4218,7 @@
                     this.childs[changeIndex].scope,
                     change.expr,
                     change.value,
-                    {silence: true}
+                    {silence: 1}
                 );
                 childsChanges[changeIndex].push(change);
             }
@@ -4272,7 +4262,7 @@
                             child.scope,
                             indexChange.expr,
                             index - deleteCount + insertionsLen,
-                            {silence: true}
+                            {silence: 1}
                         );
                     }
                 }, this);
@@ -4310,7 +4300,7 @@
             while (len--) {
                 var child = this.childs[len];
                 if (child.lifeCycle.is('attached')) {
-                    child.updateView(childsChanges[len]);
+                    childsChanges[len].length && child.updateView(childsChanges[len]);
                 }
                 else {
                     var el = attachStump._getEl();
