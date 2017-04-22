@@ -138,6 +138,134 @@ describe("Component", function () {
 
     });
 
+    it("owner and child component life cycle, and el is ready when attached", function () {
+        var uState = {};
+        var U = san.defineComponent({
+            template: '<u><slot></slot></u>',
+
+            compiled: function () {
+                uState.compiled = 1;
+            },
+
+            inited: function () {
+                uState.inited = 1;
+            },
+
+            created: function () {
+                uState.created = 1;
+            },
+
+            attached: function () {
+                uState.attached = 1;
+            },
+
+            detached: function () {
+                uState.detached = 1;
+            },
+
+            disposed: function () {
+                uState.disposed = 1;
+            }
+        });
+
+        var mainState = {};
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-u': U
+            },
+            template: '<b>hello <ui-u san-ref="u">erik</ui-u></b>',
+
+            compiled: function () {
+                mainState.compiled = 1;
+            },
+
+            inited: function () {
+                mainState.inited = 1;
+            },
+
+            created: function () {
+                mainState.created = 1;
+            },
+
+            attached: function () {
+                mainState.attached = 1;
+            },
+
+            detached: function () {
+                mainState.detached = 1;
+            },
+
+            disposed: function () {
+                mainState.disposed = 1;
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = myComponent.ref('u');
+        expect(myComponent.el.tagName).toBe('B');
+        expect(u.el.tagName).toBe('U');
+
+        expect(uState.inited).toBe(1);
+        expect(uState.compiled).toBe(1);
+        expect(uState.created).toBe(1);
+        expect(uState.attached).toBe(1);
+        expect(uState.detached).not.toBe(1);
+        expect(uState.disposed).not.toBe(1);
+
+        expect(!!u.lifeCycle.is('inited')).toBeTruthy();
+        expect(!!u.lifeCycle.is('compiled')).toBeTruthy();
+        expect(!!u.lifeCycle.is('created')).toBeTruthy();
+        expect(!!u.lifeCycle.is('attached')).toBeTruthy();
+        expect(!!u.lifeCycle.is('detached')).toBeFalsy();
+        expect(!!u.lifeCycle.is('disposed')).toBeFalsy();
+
+
+        expect(mainState.inited).toBe(1);
+        expect(mainState.compiled).toBe(1);
+        expect(mainState.created).toBe(1);
+        expect(mainState.attached).toBe(1);
+        expect(mainState.detached).not.toBe(1);
+        expect(mainState.disposed).not.toBe(1);
+
+        expect(!!myComponent.lifeCycle.is('inited')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('compiled')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('attached')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('detached')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('disposed')).toBeFalsy();
+
+        myComponent.dispose();
+
+
+        expect(uState.detached).toBe(1);
+        expect(uState.disposed).toBe(1);
+        expect(mainState.detached).toBe(1);
+        expect(mainState.disposed).toBe(1);
+
+
+        expect(!!u.lifeCycle.is('inited')).toBeFalsy();
+        expect(!!u.lifeCycle.is('compiled')).toBeFalsy();
+        expect(!!u.lifeCycle.is('created')).toBeFalsy();
+        expect(!!u.lifeCycle.is('attached')).toBeFalsy();
+        expect(!!u.lifeCycle.is('detached')).toBeFalsy();
+        expect(!!u.lifeCycle.is('disposed')).toBeTruthy();
+
+
+        expect(!!myComponent.lifeCycle.is('inited')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('compiled')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('created')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('attached')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('detached')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('disposed')).toBeTruthy();
+
+        document.body.removeChild(wrap);
+    });
+
     it("template as static property", function () {
         var MyComponent = san.defineComponent({});
         MyComponent.template = '<span title="{{color}}">{{color}}</span>';
