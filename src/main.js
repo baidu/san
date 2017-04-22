@@ -2307,7 +2307,7 @@
     var defaultElementPropHandler = {
         input: {
             attr: function (element, name, value) {
-                if (value != null) {
+                if (value) {
                     return ' ' + name + '="' + value + '"';
                 }
             },
