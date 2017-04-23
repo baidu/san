@@ -821,23 +821,12 @@
         // 组件的数据绑定在组件init时做抽取
         switch (prop.name) {
             case 'class':
-                each(prop.expr.segs, function (seg) {
-                    if (seg.type === ExprType.INTERP) {
-                        seg.filters.push({
-                            type: ExprType.CALL,
-                            name: 'clazz',
-                            args: []
-                        });
-                    }
-                });
-                break;
-
             case 'style':
                 each(prop.expr.segs, function (seg) {
                     if (seg.type === ExprType.INTERP) {
                         seg.filters.push({
                             type: ExprType.CALL,
-                            name: 'style',
+                            name: '_' + prop.name,
                             args: []
                         });
                     }
@@ -1872,7 +1861,7 @@
             return source;
         },
 
-        clazz: function (source) {
+        _class: function (source) {
             if (source instanceof Array) {
                 return source.join(' ');
             }
@@ -1880,7 +1869,7 @@
             return source;
         },
 
-        style: function (source) {
+        _style: function (source) {
             if (typeof source === 'object') {
                 var result = '';
                 for (var key in source) {
@@ -1891,6 +1880,10 @@
             }
 
             return source;
+        },
+
+        _sep: function (source, sep) {
+            return source ? sep + source : source;
         }
     };
 
@@ -3515,8 +3508,8 @@
 
     /* eslint-disable quotes */
     var componentPropExtra = [
-        {name: 'class', expr: parseText("{{class ? ' ' + class : ''}}")},
-        {name: 'style', expr: parseText("{{style ? ';' + style : ''}}")}
+        {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
+        {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
     ];
     /* eslint-enable quotes */
 

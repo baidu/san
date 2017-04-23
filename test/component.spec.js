@@ -2055,5 +2055,172 @@ describe("Component", function () {
             done();
         })
     });
+
+    it("merge style property to component root element, auto expand", function (done) {
+        var Button = san.defineComponent({
+            template: '<button style="{{myStyle}}">test</button>',
+
+            initData: function () {
+                return {
+                    display: 'block'
+                }
+            },
+
+            computed: {
+                myStyle: function () {
+                    return {
+                        display: this.data.get('display')
+                    };
+                }
+            }
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            computed: {
+                btnStyle: function () {
+                    return {
+                        position: this.data.get('position')
+                    };
+                }
+            },
+
+            template: '<div><ui-button style="height: {{height}}; {{btnStyle}}"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                height: '10px',
+                position: 'absolute'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+
+        expect(/height:\s*10px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+        expect(/position:\s*absolute($|;)/i.test(btn.style.cssText)).toBeTruthy();
+        expect(/display:\s*block($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('height', '5px');
+        myComponent.data.set('position', 'relative');
+
+        san.nextTick(function () {
+            expect(/height:\s*5px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+            expect(/position:\s*relative($|;)/i.test(btn.style.cssText)).toBeTruthy();
+            expect(/display:\s*block($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
+
+    it("merge style property to component root element, auto expand, root element has no style", function (done) {
+        var Button = san.defineComponent({
+            template: '<button>test</button>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-button': Button
+            },
+
+            computed: {
+                btnStyle: function () {
+                    return {
+                        position: this.data.get('position'),
+                        height: this.data.get('height')
+                    };
+                }
+            },
+
+            template: '<div><ui-button style="{{btnStyle}}"></ui-button></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                height: '10px',
+                position: 'absolute'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+
+        expect(/height:\s*10px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+        expect(/position:\s*absolute($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('height', '5px');
+        myComponent.data.set('position', 'relative');
+
+        san.nextTick(function () {
+            expect(/height:\s*5px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+            expect(/position:\s*relative($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
+
+    it("main element default style prop", function (done) {
+        var MyComponent = san.defineComponent({
+            computed: {
+                style: function () {
+                    return {
+                        position: this.data.get('position'),
+                        height: this.data.get('height')
+                    };
+                }
+            },
+
+            template: '<button>test</button>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                height: '10px',
+                position: 'absolute'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+
+        expect(/height:\s*10px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+        expect(/position:\s*absolute($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('height', '5px');
+        myComponent.data.set('position', 'relative');
+
+        san.nextTick(function () {
+            expect(/height:\s*5px($|;)/i.test(btn.style.cssText)).toBeTruthy();
+            expect(/position:\s*relative($|;)/i.test(btn.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
 });
 
