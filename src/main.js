@@ -1548,7 +1548,7 @@
      *
      * @param {Function} listener 监听函数
      */
-    Model.prototype.onChange = function (listener) {
+    Model.prototype.listen = function (listener) {
         if (typeof listener === 'function') {
             this.listeners.push(listener);
         }
@@ -1559,7 +1559,7 @@
      *
      * @param {Function} listener 监听函数
      */
-    Model.prototype.unChange = function (listener) {
+    Model.prototype.unlisten = function (listener) {
         var len = this.listeners.length;
         while (len--) {
             if (!listener || this.listeners[len] === listener) {
@@ -1573,7 +1573,7 @@
      *
      * @param {Object} change 变更信息对象
      */
-    Model.prototype.fireChange = function (change) {
+    Model.prototype.fire = function (change) {
         each(this.listeners, function (listener) {
             listener.call(this, change);
         }, this);
@@ -1651,7 +1651,7 @@
 
         if (prop != null) {
             data[prop] = value;
-            !option.silence && this.fireChange({
+            !option.silence && this.fire({
                 type: ModelChangeType.SET,
                 expr: expr,
                 value: value,
@@ -1768,7 +1768,7 @@
 
             returnValue = target.splice.apply(target, args);
 
-            !option.silence && this.fireChange({
+            !option.silence && this.fire({
                 expr: expr,
                 type: ModelChangeType.SPLICE,
                 index: index,
@@ -2047,11 +2047,7 @@
      */
     LifeCycle.prototype.is = function (name) {
         var lifeCycle = LifeCycles[name];
-        if (lifeCycle) {
-            return !!this.raw[lifeCycle.value];
-        }
-
-        return false;
+        return lifeCycle && !!this.raw[lifeCycle.value];
     };
 
     /**
@@ -2483,7 +2479,7 @@
      */
     function Element(options) {
         this.childs = [];
-        this.listeners = {};
+        this._elFns = {};
 
         Node.call(this, options);
     }
@@ -2579,7 +2575,11 @@
      */
     Element.prototype._attached = function () {
         this._initSelfChanger();
-        this.bindEvents();
+
+        var me = this;
+        each(this.aNode.events, function (eventBind) {
+            me._onEl(eventBind.name, bind(elementEventListener, me, eventBind));
+        });
     };
 
     /**
@@ -2603,10 +2603,10 @@
                         case 'input':
                         case 'textarea':
                             if (root.CompositionEvent) {
-                                me.on('compositionstart', function () {
+                                me._onEl('compositionstart', function () {
                                     this.composing = 1;
                                 });
-                                me.on('compositionend', function () {
+                                me._onEl('compositionend', function () {
                                     this.composing = 0;
 
                                     var event = document.createEvent('HTMLEvents');
@@ -2615,7 +2615,7 @@
                                 });
                             }
 
-                            me.on(
+                            me._onEl(
                                 ('oninput' in el) ? 'input' : 'propertychange',
                                 function (e) {
                                     if (!this.composing) {
@@ -2627,7 +2627,7 @@
                             break;
 
                         case 'select':
-                            me.on('change', outputer);
+                            me._onEl('change', outputer);
                             break;
                     }
                     break;
@@ -2638,7 +2638,7 @@
                             switch (el.type) {
                                 case 'checkbox':
                                 case 'radio':
-                                    me.on('click', outputer);
+                                    me._onEl('click', outputer);
                             }
                     }
                     break;
@@ -2702,10 +2702,7 @@
             );
         }, this);
 
-        var owner = this.owner;
-        if (this instanceof Component && eventBind.isOwn) {
-            owner = this;
-        }
+        var owner = this instanceof Component ? this : this.owner;
 
         var method = owner[expr.name];
         if (typeof method === 'function') {
@@ -2714,76 +2711,22 @@
     }
 
     /**
-     * 绑定事件
-     */
-    Element.prototype.bindEvents = function () {
-        var me = this;
-
-        each(this.aNode.events, function (eventBind) {
-            me.on(eventBind.name, bind(elementEventListener, me, eventBind));
-        });
-    };
-
-    /**
-     * 解除绑定事件
-     */
-    Element.prototype.unbindEvents = function () {
-        var listeners = this.listeners;
-
-        for (var key in listeners) {
-            this.un(key);
-        }
-
-        this.listeners = null;
-    };
-
-    /**
-     * 派发事件
-     *
-     * @param {string} name 事件名
-     * @param {Object} event 事件对象
-     */
-    Element.prototype.fire = function (name, event) {
-        each(this.listeners[name], function (listener) {
-            listener.call(this, event);
-        }, this);
-    };
-
-    /**
-     * 添加事件监听器
+     * 为组件的 el 绑定事件
      *
      * @param {string} name 事件名
      * @param {Function} listener 监听器
      */
-    Element.prototype.on = function (name, listener) {
+    Element.prototype._onEl = function (name, listener) {
         if (typeof listener === 'function') {
-            if (!this.listeners[name]) {
-                this.listeners[name] = [];
+            if (!this._elFns[name]) {
+                this._elFns[name] = [];
             }
-            this.listeners[name].push(listener);
+            this._elFns[name].push(listener);
 
             on(this._getEl(), name, listener);
         }
     };
 
-    /**
-     * 移除事件监听器
-     *
-     * @param {string} name 事件名
-     * @param {Function=} listener 监听器
-     */
-    Element.prototype.un = function (name, listener) {
-        var nameListeners = this.listeners[name];
-        var len = nameListeners && nameListeners.length;
-
-        while (len--) {
-            var fn = nameListeners[len];
-            if (!listener || listener === fn) {
-                nameListeners.splice(len, 1);
-                un(this._getEl(), name, fn);
-            }
-        }
-    };
 
     /**
      * 生成元素的html
@@ -2856,17 +2799,16 @@
             if (valueProp) {
                 buf.push(escapeHTML(element.evalExpr(valueProp.expr)));
             }
-
-            return;
         }
-
-        each(element.aNode.childs, function (aNodeChild) {
-            var child = createNode(aNodeChild, element);
-            if (!this._static) {
-                element.childs.push(child);
-            }
-            child.genHTML(buf);
-        });
+        else {
+            each(element.aNode.childs, function (aNodeChild) {
+                var child = createNode(aNodeChild, element);
+                if (!this._static) {
+                    element.childs.push(child);
+                }
+                child.genHTML(buf);
+            });
+        }
     }
 
     /**
@@ -2945,7 +2887,17 @@
     Element.prototype._dispose = function () {
         this._disposeChilds();
         this.detach();
-        this.unbindEvents();
+
+        // el 事件解绑
+        for (var key in this._elFns) {
+            var nameListeners = this._elFns[name];
+            var len = nameListeners && nameListeners.length;
+
+            while (len--) {
+                un(this._getEl(), name, nameListeners[len]);
+            }
+        }
+        this._elFns = null;
 
         this.el = null;
         this.childs = null;
@@ -3066,6 +3018,7 @@
         this.slotChilds = [];
         this.data = new Model();
         this.dataChanges = [];
+        this.listeners = {};
 
         Element.call(this, options);
     }
@@ -3100,6 +3053,50 @@
     };
 
     /**
+     * 添加事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function} listener 监听器
+     */
+    Component.prototype.on = function (name, listener) {
+        if (typeof listener === 'function') {
+            if (!this.listeners[name]) {
+                this.listeners[name] = [];
+            }
+            this.listeners[name].push(listener);
+        }
+    };
+
+    /**
+     * 移除事件监听器
+     *
+     * @param {string} name 事件名
+     * @param {Function=} listener 监听器
+     */
+    Component.prototype.un = function (name, listener) {
+        var nameListeners = this.listeners[name];
+        var len = nameListeners && nameListeners.length;
+
+        while (len--) {
+            if (!listener || listener === nameListeners[len]) {
+                nameListeners.splice(len, 1);
+            }
+        }
+    };
+
+    /**
+     * 派发事件
+     *
+     * @param {string} name 事件名
+     * @param {Object} event 事件对象
+     */
+    Component.prototype.fire = function (name, event) {
+        each(this.listeners[name], function (listener) {
+            listener.call(this, event);
+        }, this);
+    };
+
+    /**
      * 初始化
      *
      * @param {Object} options 初始化参数
@@ -3112,11 +3109,12 @@
         // compile
         this._compile();
 
+        var me = this;
+        var givenANode = options.aNode;
         if (!options.el) {
             var protoANode = this.constructor.prototype.aNode;
 
-            if (options.aNode) {
-                var givenANode = options.aNode;
+            if (givenANode) {
 
                 // 组件运行时传入的结构，做slot解析
                 var givenSlots = {};
@@ -3144,8 +3142,12 @@
                     // 合并运行时的一些绑定和事件声明
                     props: protoANode.props,
                     binds: givenANode.props,
-                    events: givenANode.events.concat(protoANode.events),
-                    directives: givenANode.directives.concat(protoANode.directives)
+                    events: protoANode.events,
+                    directives: givenANode.directives
+                });
+
+                each(givenANode.events, function (eventBind) {
+                    me.on(eventBind.name, bind(elementEventListener, options.owner, eventBind));
                 });
             }
         }
@@ -3172,7 +3174,6 @@
         });
 
         // init data
-        var me = this;
         var initData = options.data
             || (typeof this.initData === 'function' && this.initData());
         for (var key in initData) {
@@ -3524,7 +3525,7 @@
         var proto = ComponentClass.prototype;
 
         // pre define components class
-        if (!proto.hasOwnProperty('_isComponentsReady')) {
+        if (!proto.hasOwnProperty('_cmptReady')) {
             proto.components =  ComponentClass.components || proto.components || {};
             var components = proto.components;
 
@@ -3539,12 +3540,12 @@
                 }
             }
 
-            proto._isComponentsReady = 1;
+            proto._cmptReady = 1;
         }
 
 
         // pre compile template
-        if (!proto.hasOwnProperty('_isCompiled')) {
+        if (!proto.hasOwnProperty('_compiled')) {
             proto.aNode = new ANode();
 
             var tpl = ComponentClass.template || proto.template;
@@ -3563,10 +3564,6 @@
                     firstChild.tagName = null;
                 }
 
-                each(firstChild.events, function (item) {
-                    item.isOwn = 1;
-                });
-
                 each(componentPropExtra, function (extra) {
                     var prop = firstChild.props.get(extra.name);
                     if (prop) {
@@ -3582,7 +3579,7 @@
                 });
             }
 
-            proto._isCompiled = 1;
+            proto._compiled = 1;
         }
     };
 
@@ -3594,7 +3591,7 @@
     Component.prototype._initSelfChanger = function () {
         if (!this.dataChanger) {
             this.dataChanger = bind(this._dataChanger, this);
-            this.data.onChange(this.dataChanger);
+            this.data.listen(this.dataChanger);
         }
     };
 
@@ -3742,7 +3739,7 @@
     Component.prototype.watch = function (dataName, listener) {
         var dataExpr = parseExpr(dataName);
 
-        this.data.onChange(bind(function (change) {
+        this.data.listen(bind(function (change) {
             if (changeExprCompare(change.expr, dataExpr, this.data)) {
                 listener.call(this, evalExpr(dataExpr, this.data, this), change);
             }
@@ -3756,11 +3753,12 @@
         // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
         this.slotChilds = null;
 
-        this.data.unChange();
+        this.data.unlisten();
         this.dataChanger = null;
-        this.dataChanges.length = 0;
+        this.dataChanges = null;
 
         this.data = null;
+        this.listeners = null;
         Element.prototype._dispose.call(this);
     };
 

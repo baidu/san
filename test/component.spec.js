@@ -1840,6 +1840,7 @@ describe("Component", function () {
 
             clicker: function () {
                 innerClick = 1;
+                this.fire('click')
             },
 
             attached: function () {
