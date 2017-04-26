@@ -2578,7 +2578,16 @@
 
         var me = this;
         each(this.aNode.events, function (eventBind) {
-            me._onEl(eventBind.name, bind(elementEventListener, me, eventBind));
+            me._onEl(
+                eventBind.name,
+                bind(
+                    eventDeclarationListener,
+                    me instanceof Component ? me : me.owner,
+                    eventBind,
+                    0,
+                    me.data || me.scope
+                )
+            );
         });
     };
 
@@ -2683,13 +2692,15 @@
     };
 
     /**
-     * 普适事件监听函数
+     * 声明式事件的监听函数
      *
      * @inner
      * @param {Object} eventBind 绑定信息对象
+     * @param {boolean} isComponentEvent 是否组件自定义事件
+     * @param {Model} model 数据环境
      * @param {Event} e 事件对象
      */
-    function elementEventListener(eventBind, e) {
+    function eventDeclarationListener(eventBind, isComponentEvent, model, e) {
         var args = [];
         var expr = eventBind.expr;
 
@@ -2697,16 +2708,14 @@
             args.push(argExpr.type === ExprType.ACCESSOR
                     && argExpr.paths.length === 1
                     && argExpr.paths[0].value === '$event'
-                ? (this instanceof Component ? e : e || window.event)
-                : this.evalExpr(argExpr)
+                ? (isComponentEvent ? e : e || window.event)
+                : evalExpr(argExpr, model)
             );
-        }, this);
+        });
 
-        var owner = this instanceof Component ? this : this.owner;
-
-        var method = owner[expr.name];
+        var method = this[expr.name];
         if (typeof method === 'function') {
-            method.apply(owner, args);
+            method.apply(this, args);
         }
     }
 
@@ -3145,9 +3154,8 @@
                     events: protoANode.events,
                     directives: givenANode.directives
                 });
-
                 each(givenANode.events, function (eventBind) {
-                    me.on(eventBind.name, bind(elementEventListener, options.owner, eventBind));
+                    me.on(eventBind.name, bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope));
                 });
             }
         }

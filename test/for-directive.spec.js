@@ -681,4 +681,87 @@ describe("ForDirective", function () {
 
     });
 
+    it("dom event in for", function (done) {
+        var clickValue = 0;
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in list" on-click="clicker(p)">{{p}}</li></ul>',
+            initData: function () {
+                return {
+                    list: [1, 2, 3]
+                };
+            },
+
+            clicker: function (p) {
+                clickValue = p;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(clickValue).toBe(0);
+
+        var lis = wrap.getElementsByTagName('li');
+        triggerEvent('#' + lis[0].id, 'click');
+
+        san.nextTick(function () {
+            expect(clickValue > 0).toBeTruthy();
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("component custom event in for", function (done) {
+        var clickValue = [];
+        var Button = san.defineComponent({
+            template: '<button><slot></slot></button>',
+
+            attached() {
+                this.fire('click');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<p><ui-button san-for="p in list" on-click="clicker(p)">{{p}}</ui-button></p>',
+            initData: function () {
+                return {
+                    list: [1, 2, 3]
+                };
+            },
+
+            components: {
+                'ui-button': Button
+            },
+
+            clicker: function (p) {
+                clickValue.push(p);
+            }
+        });
+
+
+        expect(clickValue.length).toBe(0);
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(clickValue.length).toBe(3);
+        expect(clickValue[0]).toBe(1);
+        expect(clickValue[1]).toBe(2);
+        expect(clickValue[2]).toBe(3);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+        done();
+
+    });
+
 });
