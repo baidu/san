@@ -3757,6 +3757,8 @@
      * 组件销毁的行为
      */
     Component.prototype._dispose = function () {
+        Element.prototype._dispose.call(this);
+
         // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
         this.slotChilds = null;
 
@@ -3766,7 +3768,6 @@
 
         this.data = null;
         this.listeners = null;
-        Element.prototype._dispose.call(this);
     };
 
 

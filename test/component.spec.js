@@ -102,6 +102,56 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("life cycle and event", function () {
+        var phases = {};
+
+        var Label = san.defineComponent({
+            template: '<span>test</span>',
+
+            inited: function () {
+                this.fire('phase', 'inited');
+            },
+
+            created: function () {
+                this.fire('phase', 'created');
+            },
+
+            attached: function () {
+                this.fire('phase', 'attached');
+            },
+
+            detached: function () {
+                this.fire('phase', 'detached');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+            template: '<b><ui-label on-phase="phaser($event)"/></b>',
+
+            phaser: function (e) {
+                phases[e] = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        expect(phases.inited).toBeTruthy();
+        expect(phases.created).toBeTruthy();
+        expect(phases.attached).toBeTruthy();
+        expect(phases.detached).toBeFalsy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+        expect(phases.detached).toBeTruthy();
+    });
+
     it("life cycle updated", function (done) {
         var times = 0;
 
