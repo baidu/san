@@ -722,7 +722,7 @@ describe("ForDirective", function () {
         var Button = san.defineComponent({
             template: '<button><slot></slot></button>',
 
-            attached() {
+            attached: function () {
                 this.fire('click');
             }
         });
