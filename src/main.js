@@ -1523,12 +1523,13 @@
      *
      * @inner
      * @class
-     * @param {Model} parent 父级数据容器
+     * @param {Object?} data 初始数据
+     * @param {Model?} parent 父级数据容器
      */
-    function Model(parent) {
+    function Model(data, parent) {
         this.parent = parent;
+        this.data = data || {};
         this.listeners = [];
-        this.data = {};
     }
 
     /**
@@ -3025,7 +3026,6 @@
      */
     function Component(options) {
         this.slotChilds = [];
-        this.data = new Model();
         this.dataChanges = [];
         this.listeners = {};
 
@@ -3162,6 +3162,13 @@
 
         this._toPhase('compiled');
 
+        // init data
+        this.data = new Model(
+            extend(
+                typeof this.initData === 'function' && this.initData() || {},
+                options.data
+            )
+        );
 
         Element.prototype._init.call(this, options);
 
@@ -3180,14 +3187,6 @@
                 }
             }
         });
-
-        // init data
-        var initData = options.data
-            || (typeof this.initData === 'function' && this.initData());
-        for (var key in initData) {
-            me.data.set(key, initData[key]);
-        }
-
 
         this.scope && this.binds.each(function (bind) {
             me.data.set(bind.name, me.evalExpr(bind.expr));
@@ -4091,7 +4090,7 @@
      * @param {number} index 当前项的索引
      */
     function ForItemModel(parent, forDirective, item, index) {
-        Model.call(this, parent);
+        Model.call(this, {}, parent);
         this.directive = forDirective;
         Model.prototype.set.call(this, forDirective.item, item);
         Model.prototype.set.call(this, forDirective.index, index);

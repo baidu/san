@@ -428,7 +428,45 @@ describe("Component", function () {
 
     });
 
+    it("initData merge with option data property", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{email}}">{{name}}</span></a>',
 
+            initData: function () {
+                return {
+                    email: 'errorrik@gmail.com',
+                    name: 'errorrik'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'erik'
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        myComponent.data.set('email', 'erik168@163.com');
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('erik')).toBe(0);
+        expect(span.title.indexOf('errorrik@gmail.com')).toBe(0);
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('erik')).toBe(0);
+            expect(span.title.indexOf('erik168@163.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+
+    });
 
     it("custom event should not pass DOM Event object, when fire with no arg", function (done) {
         var Label = san.defineComponent({

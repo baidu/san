@@ -7,6 +7,7 @@ ChangeLog
 
 + 【删除】- 删除 3 个自带的 filter：yesToBe / yesOrNoToBe / nullToBe
 + 【变更】- 组件 compile 过程明确属于 init，compiled 生命周期在 inited 前到达
++ 【变更】- 组件初始化传入的 data 与 initData 返回值进行合并，作为组件初始化数据值
 + 【新特性】- 针对希望自建组件渲染体系的需求，暴露新的 API：
     - {Object} ExprType
     - {Class} LifeCycle
