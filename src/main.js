@@ -1633,7 +1633,18 @@
      */
     Model.prototype.set = function (expr, value, option) {
         option = option || {};
+
+        // #begin-ignore
+        var exprRaw = expr;
+        // #end-ignore
+
         expr = parseExpr(expr);
+
+        // #begin-ignore
+        if (expr.type !== ExprType.ACCESSOR) {
+            throw new Error('[SAN ERROR] Invalid Expression in Model set: ' + exprRaw);
+        }
+        // #end-ignore
 
         var data = this.data;
         var prop;
@@ -1756,7 +1767,17 @@
 
     Model.prototype.splice = function (expr, args, option) {
         option = option || {};
+        // #begin-ignore
+        var exprRaw = expr;
+        // #end-ignore
+
         expr = parseExpr(expr);
+
+        // #begin-ignore
+        if (expr.type !== ExprType.ACCESSOR) {
+            throw new Error('[SAN ERROR] Invalid Expression in Model set: ' + exprRaw);
+        }
+        // #end-ignore
 
         var target = this.get(expr);
         var returnValue = [];
@@ -1827,6 +1848,7 @@
         return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
     }
 
+    /* eslint-disable fecs-camelcase */
     /**
      * 默认filter
      *
@@ -1887,6 +1909,8 @@
             return source ? sep + source : source;
         }
     };
+
+    /* eslint-enable fecs-camelcase */
 
     /**
      * 计算表达式的值
@@ -2900,11 +2924,11 @@
 
         // el 事件解绑
         for (var key in this._elFns) {
-            var nameListeners = this._elFns[name];
+            var nameListeners = this._elFns[key];
             var len = nameListeners && nameListeners.length;
 
             while (len--) {
-                un(this._getEl(), name, nameListeners[len]);
+                un(this._getEl(), key, nameListeners[len]);
             }
         }
         this._elFns = null;
