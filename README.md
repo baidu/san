@@ -33,13 +33,13 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 
 <!-- compressed -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-2/san.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-3/san.js"></script>
 
 <!-- compressed(https) -->
-<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-2/san.js"></script>
+<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-3/san.js"></script>
 
 <!-- source -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-2/san.source.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-3/san.source.js"></script>
 ```
 
 ## Document
