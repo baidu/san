@@ -21,6 +21,7 @@
     "url": "https://github.com/ecomfe/san.git"
   },
   "scripts": {
+    "dev": "node ./tool/dev.js",
     "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
@@ -37,6 +38,9 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "opener": "~1.4.0",
+    "colors": "^1.0.3",
+    "watch": "^1.0.2",
     "http-server": "^0.9.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
@@ -46,6 +50,7 @@
     "wdio-jasmine-framework": "^0.3.0",
     "wdio-sauce-service": "^0.3.1",
     "wdio-spec-reporter": "^0.1.0",
-    "webdriverio": "^4.2.16"
+    "webdriverio": "^4.2.16",
+    "http-server": "^0.9.0"
   }
 }

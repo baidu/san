@@ -1,0 +1,58 @@
+/**
+ * @file 遍历和编译已有元素的孩子
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+var createNodeByEl = require('./create-node-by-el');
+
+/**
+ * 元素子节点遍历操作对象
+ *
+ * @inner
+ * @class
+ * @param {HTMLElement} el 要遍历的元素
+ */
+function DOMChildsWalker(el) {
+    this.raw = [];
+    this.index = 0;
+
+    var child = el.firstChild;
+    while (child) {
+        if (child.nodeType === 1) {
+            this.raw.push(child);
+        }
+
+        child = child.nextSibling;
+    }
+
+    this.current = this.raw[this.index];
+    this.next = this.raw[this.index + 1];
+}
+
+/**
+ * 往下走一个元素
+ */
+DOMChildsWalker.prototype.goNext = function () {
+    this.current = this.raw[++this.index];
+    this.next = this.raw[this.index + 1];
+};
+
+/**
+ * 遍历和编译已有元素的孩子
+ *
+ * @param {HTMLElement} element 已有元素
+ */
+function compileChildsFromEl(element) {
+    var walker = new DOMChildsWalker(element.el);
+    var current;
+    while ((current = walker.current)) {
+        var child = createNodeByEl(current, element, walker);
+        if (child) {
+            element.childs.push(child);
+        }
+
+        walker.goNext();
+    }
+}
+
+exports = module.exports = compileChildsFromEl;
