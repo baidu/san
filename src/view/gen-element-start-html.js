@@ -4,8 +4,8 @@
  */
 
 var evalExpr = require('../runtime/eval-expr');
-var Component = require('../component');
-var getPropHandler = require('get-prop-handler');
+var isComponent = require('./is-component');
+var getPropHandler = require('./get-prop-handler');
 
 /**
  * 生成元素标签起始的html
@@ -21,7 +21,7 @@ function genElementStartHTML(element, buf) {
     buf.push('<' + element.tagName + ' id="' + element.id + '"');
 
     element.props.each(function (prop) {
-        var value = element instanceof Component
+        var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
             : element.evalExpr(prop.expr, 1);
 

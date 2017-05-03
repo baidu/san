@@ -7,7 +7,7 @@ var each = require('../util/each');
 var guid = require('../util/guid');
 var LifeCycle = require('./life-cycle');
 var evalExpr = require('../runtime/eval-expr');
-var Component = require('./component');
+var isComponent = require('./is-component');
 
 /**
  * 节点基类
@@ -50,7 +50,7 @@ Node.prototype.init = function (options) {
 Node.prototype._init = function (options) {
     this.owner = options.owner;
     this.parent = options.parent;
-    this.parentComponent = this.parent instanceof Component
+    this.parentComponent = isComponent(this.parent)
         ? this.parent
         : this.parent && this.parent.parentComponent;
 

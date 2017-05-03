@@ -42,6 +42,14 @@ function Component(options) {
 
 inherits(Component, Element);
 
+/**
+ * 类型标识
+ *
+ * @protected
+ * @type {string}
+ */
+Component.prototype._type = 'component';
+
 /* eslint-disable operator-linebreak */
 /**
  * 使节点到达相应的生命周期

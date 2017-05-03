@@ -5,7 +5,7 @@
 
 var each = require('../util/each');
 var evalExpr = require('../runtime/eval-expr');
-var ExprType = require('../runtime/expr-type');
+var ExprType = require('../parser/expr-type');
 
 /**
  * 声明式事件的监听函数

@@ -4,12 +4,13 @@
  */
 
 var TextNode = require('./text-node');
-var IfDirective = require('./if-directive');
-var ElseDirective = require('./else-directive');
-var ForDirective = require('./for-directive');
 var Element = require('./element');
 var Component = require('./component');
 var SlotElement = require('./slot-element');
+var IfDirective = require('./if-directive');
+var ElseDirective = require('./else-directive');
+var ForDirective = require('./for-directive');
+
 
 /**
  * 创建节点

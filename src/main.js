@@ -10,14 +10,21 @@
 
 (function (root) {
     // #[main-dependencies]
-    var Component = require('./view/component');
-    var defineComponent = require('./view/define-component');
+    /* eslint-disable no-unused-vars */
+    var nextTick = require('./util/next-tick');
+    var inherits = require('./util/inherits');
     var parseTemplate = require('./parser/parse-template');
     var parseExpr = require('./parser/parse-expr');
     var ExprType = require('./parser/expr-type');
     var LifeCycle = require('./view/life-cycle');
-    var nextTick = require('./util/next-tice');
-    var inherits = require('./util/inherits');
+    var TextNode = require('./view/text-node');
+    var Element = require('./view/element');
+    var Component = require('./view/component');
+    var SlotElement = require('./view/slot-element');
+    var IfDirective = require('./view/if-directive');
+    var ElseDirective = require('./view/else-directive');
+    var ForDirective = require('./view/for-directive');
+    var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
 
 

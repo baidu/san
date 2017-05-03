@@ -12,11 +12,11 @@ var san = require('../main');
  * @param {string} name 消息名称
  * @param {*} arg 消息参数
  */
-function emitDevTool(name, arg) {
+function emitDevtool(name, arg) {
     if (san.debug && root.__san_devtool__) {
         root.__san_devtool__.emit(name, arg);
     }
 }
 // #[end]
 
-exports = module.exports = emitDevTool;
+exports = module.exports = emitDevtool;

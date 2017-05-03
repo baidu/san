@@ -6,7 +6,6 @@
 /**
  * 将 DOM 从页面中移除
  *
- * @inner
  * @param {HTMLElement} el DOM元素
  */
 function removeEl(el) {

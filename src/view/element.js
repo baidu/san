@@ -15,6 +15,7 @@ var genElementChildsHTML = require('./gen-element-childs-html');
 var eventDeclarationListener = require('./event-declaration-listener');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var compileChildsFromEl = require('./compile-childs-from-el');
+var isComponent = require('./is-component');
 var on = require('../browser/on');
 var un = require('../browser/un');
 var removeEl = require('../browser/remove-el');
@@ -23,7 +24,6 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
-var Component = require('./component');
 
 /* eslint-disable guard-for-in */
 
@@ -100,7 +100,7 @@ Element.prototype._create = function () {
         me.el.id = me.id;
 
         me.props.each(function (prop) {
-            var value = me instanceof Component
+            var value = isComponent(me)
                 ? evalExpr(prop.expr, me.data, me)
                 : me.evalExpr(prop.expr, 1);
 
@@ -139,7 +139,7 @@ Element.prototype._attached = function () {
             eventBind.name,
             bind(
                 eventDeclarationListener,
-                me instanceof Component ? me : me.owner,
+                isComponent(me) ? me : me.owner,
                 eventBind,
                 0,
                 me.data || me.scope

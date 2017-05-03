@@ -8,7 +8,6 @@ var each = require('../util/each');
 var empty = require('../util/empty');
 var Node = require('./node');
 var Element = require('./element');
-var TextNode = require('./text-node');
 var ANode = require('../parser/a-node');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
@@ -89,4 +88,4 @@ SlotElement.prototype._dispose = function () {
     Node.prototype._dispose.call(this);
 };
 
-exports = module.exports = TextNode;
+exports = module.exports = SlotElement;
