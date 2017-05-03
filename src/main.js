@@ -9,6 +9,51 @@
  */
 
 (function (root) {
+    // 人工调整打包代码顺序，通过注释手工写一些依赖
+    // require('./util/empty');
+    // require('./util/extend');
+    // require('./util/inherits');
+    // require('./util/each');
+    // require('./util/contains');
+    // require('./util/bind');
+    // require('./browser/on');
+    // require('./browser/un');
+    // require('./browser/svg-tags');
+    // require('./browser/create-el');
+    // require('./browser/remove-el');
+    // require('./util/guid');
+    // require('./util/next-tick');
+    // require('./browser/ie');
+    // require('./browser/ie-old-than-9');
+    // require('./util/string-buffer');
+    // require('./util/indexed-list');
+    // require('./browser/auto-close-tags');
+    // require('./parser/walker');
+    // require('./parser/a-node');
+    // require('./parser/parse-template');
+    // require('./runtime/change-expr-compare');
+    // require('./runtime/data-change-type');
+    // require('./runtime/data');
+    // require('./runtime/escape-html');
+    // require('./runtime/default-filters');
+    // require('./runtime/binary-op');
+    // require('./runtime/eval-expr');
+    // require('./view/life-cycle');
+    // require('./view/node');
+    // require('./view/gen-stump-html');
+    // require('./view/text-node');
+    // require('./view/get-prop-handler');
+    // require('./view/is-data-change-by-element');
+    // require('./view/event-declaration-listener');
+    // require('./view/gen-element-start-html');
+    // require('./view/gen-element-end-html');
+    // require('./view/gen-element-childs-html');
+    // require('./view/create-node');
+    // require('./parser/parse-anode-from-el');
+    // require('./view/compile-childs-from-el');
+
+
+
     // #[main-dependencies]
     /* eslint-disable no-unused-vars */
     var nextTick = require('./util/next-tick');
@@ -17,13 +62,7 @@
     var parseExpr = require('./parser/parse-expr');
     var ExprType = require('./parser/expr-type');
     var LifeCycle = require('./view/life-cycle');
-    var TextNode = require('./view/text-node');
-    var Element = require('./view/element');
     var Component = require('./view/component');
-    var SlotElement = require('./view/slot-element');
-    var IfDirective = require('./view/if-directive');
-    var ElseDirective = require('./view/else-directive');
-    var ForDirective = require('./view/for-directive');
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
 
