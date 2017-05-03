@@ -14,11 +14,11 @@ let editions = {
     source: {},
 
     release: {
-        ignoreFeatures: ['ssr', 'devtool']
+        ignoreFeatures: ['ssr', 'devtool', 'error']
     },
 
     spa: {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse']
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
     }
 
 };

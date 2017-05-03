@@ -219,13 +219,15 @@ Component.prototype.init = function (options) {
 
     this._toPhase('inited');
 
+    // #[begin] reverse
     // 如果从el编译的，认为已经attach了，触发钩子
     if (this._isInitFromEl) {
         this._toAttached();
     }
+    // #[end]
 };
 
-
+// #[begin] reverse
 /**
  * 从存在的 el 中编译抽象节点
  */
@@ -235,6 +237,7 @@ Component.prototype._initFromEl = function () {
     this.aNode.binds = this.aNode.props;
     this.aNode.props = new IndexedList();
 };
+// #[end]
 
 /**
  * 计算 computed 属性的值

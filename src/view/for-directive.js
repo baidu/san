@@ -132,12 +132,13 @@ function ForDirective(options) {
 
 inherits(ForDirective, Element);
 
+// #[begin] reverse
 /**
  * 清空添加子节点的 ANode 的行为
  * 从 el 初始化时，不接受子节点的 ANode信息
  */
 ForDirective.prototype._pushChildANode = empty;
-
+// #[end]
 
 /**
  * 生成html
@@ -173,6 +174,8 @@ ForDirective.prototype._init = function (options) {
     Node.prototype._init.call(this, options);
 
     var aNode = this.aNode;
+
+    // #[begin] reverse
     if (options.el) {
         /* eslint-disable no-constant-condition */
         while (1) {
@@ -201,7 +204,7 @@ ForDirective.prototype._init = function (options) {
 
         this.parent._pushChildANode(this.aNode);
     }
-
+    // #[end]
 
     this.itemANode = new ANode({
         childs: aNode.childs,

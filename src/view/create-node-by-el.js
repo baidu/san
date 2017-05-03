@@ -13,6 +13,7 @@ var Component = require('./component');
 var isStump = require('./is-stump');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
+// #[begin] reverse
 /**
  * 通过存在的 el 创建节点
  *
@@ -75,5 +76,6 @@ function createNodeByEl(el, parent, elWalker) {
     // as Element
     return new Element(option);
 }
+// #[end]
 
 exports = module.exports = createNodeByEl;

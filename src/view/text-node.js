@@ -35,6 +35,7 @@ inherits(TextNode, Node);
 TextNode.prototype._init = function (options) {
     Node.prototype._init.call(this, options);
 
+    // #[begin] reverse
     // from el
     if (this.el) {
         this.aNode = new ANode({
@@ -44,6 +45,7 @@ TextNode.prototype._init = function (options) {
 
         this.parent._pushChildANode(this.aNode);
     }
+    // #[end]
 
     this._static = this.aNode.textExpr.value;
 };

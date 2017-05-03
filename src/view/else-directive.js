@@ -32,6 +32,7 @@ function ElseDirective(options) {
             };
             options.aNode.directives.push(directiveValue);
 
+            // #[begin] reverse
             if (options.el) {
                 if (isStump(options.el)) {
                     options.el.setAttribute('san-stump', 'if');
@@ -40,6 +41,7 @@ function ElseDirective(options) {
                     options.el.removeAttribute('san-else');
                 }
             }
+            // #[end]
 
             options.ifDirective = directiveValue;
             return new IfDirective(options);

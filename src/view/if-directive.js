@@ -69,6 +69,7 @@ IfDirective.prototype._create = function () {
 IfDirective.prototype._init = function (options) {
     Node.prototype._init.call(this, options);
 
+    // #[begin] reverse
     if (options.el) {
         if (options.el.getAttribute('san-stump') === 'if') {
             var aNode = parseTemplate(options.el.innerHTML);
@@ -93,6 +94,7 @@ IfDirective.prototype._init = function (options) {
 
         this.parent._pushChildANode(this.aNode);
     }
+    // #[end]
 };
 
 /**
@@ -139,11 +141,13 @@ IfDirective.prototype.updateView = function (changes) {
     }
 };
 
+// #[begin] reverse
 /**
  * 清空添加子节点的 ANode 的行为
  * 从 el 初始化时，不接受子节点的 ANode信息
  */
 IfDirective.prototype._pushChildANode = empty;
+// #[end]
 
 IfDirective.prototype._attached = function () {
     // 移除节点桩元素前面的空白 FEFF 字符

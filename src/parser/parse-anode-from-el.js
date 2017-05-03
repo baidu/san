@@ -7,6 +7,7 @@ var each = require('../util/each');
 var ANode = require('./a-node');
 var integrateAttr = require('./integrate-attr');
 
+// #[begin] reverse
 /**
  * 解析元素自身的 ANode
  *
@@ -26,5 +27,6 @@ function parseANodeFromEl(el) {
 
     return aNode;
 }
+// #[end]
 
 exports = module.exports = parseANodeFromEl;

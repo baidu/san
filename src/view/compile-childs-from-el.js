@@ -5,6 +5,7 @@
 
 var createNodeByEl = require('./create-node-by-el');
 
+// #[begin] reverse
 /**
  * 元素子节点遍历操作对象
  *
@@ -54,5 +55,5 @@ function compileChildsFromEl(element) {
         walker.goNext();
     }
 }
-
+// #[end]
 exports = module.exports = compileChildsFromEl;

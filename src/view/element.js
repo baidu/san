@@ -52,9 +52,11 @@ inherits(Element, Node);
 Element.prototype._init = function (options) {
     Node.prototype._init.call(this, options);
 
+    // #[begin] reverse
     if (this.el) {
         this._initFromEl(options);
     }
+    // #[end]
 
     this.tagName = this.tagName || this.aNode.tagName || 'div';
     // ie8- 不支持innerHTML输出自定义标签
@@ -77,6 +79,7 @@ Element.prototype._init = function (options) {
     this.props = this.binds = this.aNode.props;
 };
 
+// #[begin] reverse
 /**
  * 从已有的el进行初始化
  */
@@ -87,6 +90,7 @@ Element.prototype._initFromEl = function () {
 
     compileChildsFromEl(this);
 };
+// #[end]
 
 
 /**
@@ -373,6 +377,7 @@ Element.prototype._disposeChilds = function () {
     this.childs.length = 0;
 };
 
+// #[begin] reverse
 /**
  * 添加子节点的 ANode
  * 用于从 el 初始化时，需要将解析的元素抽象成 ANode，并向父级注册
@@ -382,5 +387,6 @@ Element.prototype._disposeChilds = function () {
 Element.prototype._pushChildANode = function (aNode) {
     this.aNode.childs.push(aNode);
 };
+// #[end]
 
 exports = module.exports = Element;
