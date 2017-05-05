@@ -119,6 +119,58 @@ describe("Component Compile From Element", function () {
 
     });
 
+    it("update component, main element has attribute", function (done) {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><h5><ui-label text="{{jokeName}}"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<div><h5>'
+            + '<span san-component="ui-label" prop-text="{{jokeName}}" title="airike">airike<script type="text/san">{{text}}</script></span>'
+            + '</h5>'
+            + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
+        document.body.appendChild(wrap);
+
+
+        var myComponent = new MyComponent({
+            data: {
+                jokeName: 'airike',
+                name: 'errorrik',
+                school: 'none',
+                company: 'bidu'
+            },
+            el: wrap.firstChild
+        });
+
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('airike')).toBe(0);
+        expect(span.title).toBe('airike');
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2b')).toBe(0);
+            expect(span.title).toBe('2b');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("update for, init with empty data", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>',

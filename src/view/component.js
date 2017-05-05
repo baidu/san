@@ -190,8 +190,6 @@ Component.prototype.init = function (options) {
 
     Element.prototype._init.call(this, options);
 
-    this.props = this.aNode.props;
-    this.binds = this.aNode.binds || new IndexedList();
     this.binds.each(function (bind) {
         var expr = bind.expr;
 
@@ -235,7 +233,7 @@ Component.prototype._initFromEl = function () {
     this._isInitFromEl = 1;
     Element.prototype._initFromEl.call(this);
     this.aNode.binds = this.aNode.props;
-    this.aNode.props = new IndexedList();
+    this.aNode.props = this.constructor.prototype.aNode.props;
 };
 // #[end]
 
