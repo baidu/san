@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var isComponent = require('./is-component');
 var TextNode = require('./text-node');
 var IfDirective = require('./if-directive');
 var ElseDirective = require('./else-directive');
@@ -24,7 +25,7 @@ var parseANodeFromEl = require('../parser/parse-anode-from-el');
  * @return {Node}
  */
 function createNodeByEl(el, parent, elWalker) {
-    var owner = parent instanceof Component ? parent : parent.owner;
+    var owner = isComponent(parent) ? parent : parent.owner;
 
     // find component class
     var tagName = el.tagName.toLowerCase();
@@ -71,6 +72,11 @@ function createNodeByEl(el, parent, elWalker) {
 
     if (stumpName === 'slot-start') {
         return new SlotElement(option);
+    }
+
+    if (stumpName === 'data') {
+        Component._fillData(option);
+        return;
     }
 
     if (isStump(el)) {

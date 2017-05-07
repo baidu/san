@@ -3,6 +3,8 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+
+var isComponent = require('./is-component');
 var TextNode = require('./text-node');
 var Element = require('./element');
 var SlotElement = require('./slot-element');
@@ -21,8 +23,8 @@ var ForDirective = require('./for-directive');
  * @return {Node}
  */
 function createNode(aNode, parent, scope) {
-    var owner = parent instanceof Component ? parent : parent.owner;
-    scope = scope || (parent instanceof Component ? parent.data : parent.scope);
+    var owner = isComponent(parent) ? parent : parent.owner;
+    scope = scope || (isComponent(parent) ? parent.data : parent.scope);
     var options = {
         aNode: aNode,
         owner: owner,

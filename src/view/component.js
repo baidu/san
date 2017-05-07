@@ -21,6 +21,7 @@ var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var defineComponent = require('./define-component');
+var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 
@@ -317,7 +318,7 @@ Component.prototype.ref = function (name) {
 
     function childsTraversal(element) {
         each(element.childs, function (child) {
-            if (child instanceof Component) {
+            if (isComponent(child)) {
                 var refDirective = child.aNode.directives.get('ref');
                 if (refDirective
                     && evalExpr(refDirective.value, child.scope || owner.data, owner) === name
@@ -597,5 +598,26 @@ Component.prototype._dispose = function () {
     this.data = null;
     this.listeners = null;
 };
+
+
+// #[begin] reverse
+/**
+ * 填充组件数据
+ * create-node-by-el调用，用于组件反解时组件恢复数据
+ *
+ * @paran {Object} options 参数选项
+ * @param {HTMLElement} options.el 数据承载的script标签元素
+ * @param {Component} options.owner 所属组件
+ */
+Component._fillData = function (options) {
+    var data = (new Function(
+        'return ' + options.el.innerHTML.replace(/^[\s\n]*/ ,'')
+    ))();
+
+    for (var key in data) {
+        options.owner.data.set(key, data[key]);
+    }
+};
+// #[end]
 
 exports = module.exports = Component;

@@ -171,6 +171,61 @@ describe("Component Compile From Element", function () {
 
     });
 
+    it("component init data", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span title="{{title}}">{{text}}</span></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
+                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<div>\n    '
+            + '<script type="text/san" san-stump="data">'
+            + '{jokeName: "airike",name: "errorrik",school: "none",company: "bidu"}'
+            + '</script>'
+            + '<h5>'
+            + '<a san-component="ui-label" prop-title="{{name}}" prop-text="{{jokeName}}"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
+            + '</h5>'
+            + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(myComponent.data.get('jokeName')).toBe('airike');
+        expect(myComponent.data.get('name')).toBe('errorrik');
+        expect(myComponent.data.get('school')).toBe('none');
+        expect(myComponent.data.get('company')).toBe('bidu');
+
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('airike')).toBe(0);
+        expect(span.title).toBe('errorrik');
+
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2b')).toBe(0);
+            expect(span.title).toBe('erik');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("update for, init with empty data", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>',
