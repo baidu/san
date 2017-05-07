@@ -31,28 +31,62 @@ inherits(SlotElement, Node);
  * @param {Object} options 初始化参数
  */
 SlotElement.prototype._init = function (options) {
+    var literalOwner = options.owner;
     var nameBind = options.aNode.props.get('name');
     this.name = nameBind ? nameBind.raw : '____';
-
-    var literalOwner = options.owner;
-    var givenSlots = literalOwner.aNode.givenSlots;
-    var givenChilds = givenSlots && givenSlots[this.name];
-
-
     var aNode = new ANode();
-    if (givenChilds) {
-        aNode.childs = givenChilds;
-        options.owner = literalOwner.owner;
-        options.scope = literalOwner.scope;
+
+    // #[begin] reverse
+    if (options.el) {
+        this.name = options.el.getAttribute('name') || '____';
+        if (!options.el.getAttribute('by-default')) {
+            options.owner = literalOwner.owner;
+            options.scope = literalOwner.scope;
+        }
     }
     else {
-        aNode.childs = options.aNode.childs.slice(0);
+    // #[end]
+        var givenSlots = literalOwner.aNode.givenSlots;
+        var givenChilds = givenSlots && givenSlots[this.name];
+
+        if (givenChilds) {
+            aNode.childs = givenChilds;
+            options.owner = literalOwner.owner;
+            options.scope = literalOwner.scope;
+        }
+        else {
+            aNode.childs = options.aNode.childs.slice(0);
+        }
+    // #[begin] reverse
     }
+    // #[end]
+
 
     options.aNode = aNode;
     Node.prototype._init.call(this, options);
-
     this.owner.slotChilds.push(this);
+
+    // #[begin] reverse
+    if (options.el) {
+        /* eslint-disable no-constant-condition */
+        while (1) {
+        /* eslint-enable no-constant-condition */
+            var next = options.elWalker.next;
+            if (!next || next.getAttribute('san-stump') === 'slot-stop') {
+                next && options.elWalker.goNext();
+                break;
+            }
+
+            var child = createNodeByEl(next, this, options.elWalker);
+            this.childs.push(child);
+            options.elWalker.goNext();
+        }
+
+        if (!literalOwner !== this.owner) {
+            literalOwner.aNode.givenSlots[this.name] = this.aNode;
+        }
+    }
+    // #[end]
 };
 
 /**
@@ -87,5 +121,15 @@ SlotElement.prototype._dispose = function () {
     Element.prototype._disposeChilds.call(this);
     Node.prototype._dispose.call(this);
 };
+
+// #[begin] reverse
+/**
+ * 添加子节点的 ANode
+ * 用于从 el 初始化时，需要将解析的元素抽象成 ANode，并向父级注册
+ *
+ * @param {ANode} aNode 抽象节点对象
+ */
+SlotElement.prototype._pushChildANode = Element.prototype._pushChildANode;
+// #[end]
 
 exports = module.exports = SlotElement;

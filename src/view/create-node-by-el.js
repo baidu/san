@@ -8,6 +8,7 @@ var IfDirective = require('./if-directive');
 var ElseDirective = require('./else-directive');
 var ForDirective = require('./for-directive');
 var Element = require('./element');
+var SlotElement = require('./slot-element');
 var Component = require('./component');
 
 var isStump = require('./is-stump');
@@ -66,6 +67,10 @@ function createNodeByEl(el, parent, elWalker) {
 
     if (childANode.directives.get('for') || stumpName === 'for') {
         return new ForDirective(option);
+    }
+
+    if (stumpName === 'slot-start') {
+        return new SlotElement(option);
     }
 
     if (isStump(el)) {

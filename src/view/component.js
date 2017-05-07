@@ -231,9 +231,15 @@ Component.prototype.init = function (options) {
  */
 Component.prototype._initFromEl = function () {
     this._isInitFromEl = 1;
-    Element.prototype._initFromEl.call(this);
+    this.aNode = parseANodeFromEl(this.el);
+    this.aNode.givenSlots = {};
     this.aNode.binds = this.aNode.props;
     this.aNode.props = this.constructor.prototype.aNode.props;
+
+    this.parent && this.parent._pushChildANode(this.aNode);
+    this.tagName = this.aNode.tagName;
+
+    compileChildsFromEl(this);
 };
 // #[end]
 

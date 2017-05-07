@@ -510,4 +510,133 @@ describe("Component Compile From Element", function () {
         });
     });
 
+    it('default and named slot', function (done) {
+        var Tab = san.defineComponent({
+            template: '<div>'
+                +   '<div class="head"><slot name="title"></slot></div>'
+                +   '<div><slot></slot></div>'
+                + '</div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-tab': Tab
+            },
+
+            template: '<div><ui-tab>'
+                + '<h3 slot="title" title="1">1</h3>'
+                + '<p title="1">one</p>'
+                + '</ui-tab></div>'
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<div><div san-component="ui-tab" prop-text="{{tabText}}">'
+            + '<div class="head"><script type="text/san" san-stump="slot-start" name="title"></script>'
+            + '<h3 title="1" prop-title="{{title}}">1<script type="text/san">{{title}}</script></h3>'
+            + '<script type="text/san" san-stump="slot-stop"></script></div>'
+            + '<div>'
+            + '<script type="text/san" san-stump="slot-start"></script>'
+            + '<p title="one" prop-title="{{text}}">one<script type="text/san">{{text}}</script></p>'
+            + '<script type="text/san" san-stump="slot-stop"></script></div>'
+            + '<u title="tab" prop-title="{{text}}"></u></div></div>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                tabText: 'tab',
+                text: 'one',
+                title: '1'
+            }
+        });
+
+        var u = wrap.getElementsByTagName('u')[0];
+        var p = wrap.getElementsByTagName('p')[0];
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        expect(u.title).toBe('tab');
+        expect(p.title).toBe('one');
+        expect(h3.title).toBe('1');
+
+        myComponent.data.set('tabText', 'ctab');
+        myComponent.data.set('text', 'two');
+        myComponent.data.set('title', '2');
+
+        san.nextTick(function () {
+            expect(u.title).toBe('ctab');
+            expect(p.title).toBe('two');
+            expect(h3.title).toBe('2');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it('default and named slot, content by default', function (done) {
+        var Tab = san.defineComponent({
+            template: '<div>'
+                +   '<div class="head"><slot name="title"><h3 title="{{defTitle}}">{{defTitle}}</h3></slot></div>'
+                +   '<div><slot><p title="{{defText}}">{{defText}}</p></slot></div>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    defTitle: '5',
+                    defText: 'five'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-tab': Tab
+            },
+
+            template: '<div><ui-tab>'
+                + '<h3 slot="title" title="1">1</h3>'
+                + '<p title="1">one</p>'
+                + '</ui-tab></div>'
+        });
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = '<div><div san-component="ui-tab" prop-title="{{tTitle}}" prop-text="{{tText}}">'
+            + '<div class="head"><script type="text/san" san-stump="slot-start" name="title" by-default="1"></script>'
+            + '<h3 title="5" prop-title="{{title}}">5<script type="text/san">{{title}}</script></h3>'
+            + '<script type="text/san" san-stump="slot-stop"></script></div>'
+            + '<div>'
+            + '<script type="text/san" san-stump="slot-start" by-default="1"></script>'
+            + '<p title="five" prop-title="{{text}}">five<script type="text/san">{{text}}</script></p>'
+            + '<script type="text/san" san-stump="slot-stop"></script></div>'
+            + '</div></div>';
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild,
+            data: {
+                text: 'one',
+                title: '1',
+                tText: 'five',
+                tTitle: '5'
+            }
+        });
+
+        var p = wrap.getElementsByTagName('p')[0];
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        expect(p.title).toBe('five');
+        expect(h3.title).toBe('5');
+
+        myComponent.data.set('text', 'two');
+        myComponent.data.set('title', '2');
+        myComponent.data.set('tText', 'six');
+        myComponent.data.set('tTitle', '6');
+
+        san.nextTick(function () {
+            expect(p.title).toBe('six');
+            expect(h3.title).toBe('6');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
