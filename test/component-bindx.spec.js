@@ -274,8 +274,8 @@ describe("Component-TwoWay Binding", function () {
             var bs = wrap.getElementsByTagName('b');
             expect(bs[1].title).toBe(person.color);
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         }, 500);
     });
