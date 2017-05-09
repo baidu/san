@@ -235,7 +235,11 @@ describe("Component-TwoWay Binding", function () {
         PersonView.prototype.components = {
             'ui-color': ColorPicker
         };
-        PersonView.prototype.template = '<div><b title="{{value.name}}">{{value.name}}</b><b title="{{value.color}}">{{value.color}}</b><ui-color value="{=value.color=}"></ui-color></div>';
+        PersonView.prototype.template = '<div>'
+            + '<b title="{{value.name}}">{{value.name}}</b>'
+            + '<b title="{{value.color}}">{{value.color}}</b>'
+            + '<ui-color value="{=value.color=}"></ui-color>'
+            + '</div>';
 
         function MyComponent(options) {
             san.Component.call(this, options);
@@ -246,7 +250,7 @@ describe("Component-TwoWay Binding", function () {
             'ui-person': PersonView
         };
 
-        MyComponent.prototype.template = '<div><ui-person value="{{person}}"></ui-person></div>';
+        MyComponent.prototype.template = '<div><ui-person value="{=person=}"></ui-person></div>';
 
 
         var myComponent = new MyComponent();
@@ -270,8 +274,8 @@ describe("Component-TwoWay Binding", function () {
             var bs = wrap.getElementsByTagName('b');
             expect(bs[1].title).toBe(person.color);
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
             done();
         }, 500);
     });
