@@ -647,8 +647,8 @@ describe("Component Compile From Element", function () {
     it('default and named slot, content by default', function (done) {
         var Tab = san.defineComponent({
             template: '<div>'
-                +   '<div class="head"><slot name="title"><h3 title="{{defTitle}}">{{defTitle}}</h3></slot></div>'
-                +   '<div><slot><p title="{{defText}}">{{defText}}</p></slot></div>'
+                +   '<div class="head"><slot name="title"><h3 title="{{title}}">{{title}}</h3></slot></div>'
+                +   '<div><slot><p title="{{text}}">{{text}}</p></slot></div>'
                 + '</div>',
 
             initData: function () {

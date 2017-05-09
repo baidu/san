@@ -595,14 +595,14 @@ describe("Component serialize and reverse", function () {
     it('default and named slot, content by default', function (done) {
         var Tab = san.defineComponent({
             template: '<div>'
-                +   '<div class="head"><slot name="title"><h3 title="{{defTitle}}">{{defTitle}}</h3></slot></div>'
-                +   '<div><slot><p title="{{defText}}">{{defText}}</p></slot></div>'
+                +   '<div class="head"><slot name="title"><h3 title="{{title}}">{{title}}</h3></slot></div>'
+                +   '<div><slot><p title="{{text}}">{{text}}</p></slot></div>'
                 + '</div>',
 
             initData: function () {
                 return {
-                    defTitle: '5',
-                    defText: 'five'
+                    title: '5',
+                    text: 'five'
                 }
             }
         });
@@ -621,29 +621,16 @@ describe("Component serialize and reverse", function () {
             data: {
                 tabText: 'tab',
                 text: 'one',
-                title: '1'
+                title: '1',
+                tTitle: '5',
+                tText: 'five'
             }
         });
         wrap.innerHTML = inserverComponent.serialize();
-        wrap.innerHTML = '<div><div san-component="ui-tab" prop-title="{{tTitle}}" prop-text="{{tText}}">'
-            + '<div class="head"><script type="text/san" san-stump="slot-start" name="title" by-default="1"></script>'
-            + '<h3 title="5" prop-title="{{title}}">5<script type="text/san">{{title}}</script></h3>'
-            + '<script type="text/san" san-stump="slot-stop"></script></div>'
-            + '<div>'
-            + '<script type="text/san" san-stump="slot-start" by-default="1"></script>'
-            + '<p title="five" prop-title="{{text}}">five<script type="text/san">{{text}}</script></p>'
-            + '<script type="text/san" san-stump="slot-stop"></script></div>'
-            + '</div></div>';
         document.body.appendChild(wrap);
 
         var myComponent = new MyComponent({
-            el: wrap.firstChild,
-            data: {
-                text: 'one',
-                title: '1',
-                tText: 'five',
-                tTitle: '5'
-            }
+            el: wrap.firstChild
         });
 
         var p = wrap.getElementsByTagName('p')[0];
