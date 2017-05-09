@@ -41,7 +41,8 @@ function parseText(source) {
 
     var expr = {
         type: ExprType.TEXT,
-        segs: segs
+        segs: segs,
+        raw: source
     };
 
     if (segs.length === 1 && segs[0].type === ExprType.STRING) {

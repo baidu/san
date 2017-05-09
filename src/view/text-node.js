@@ -12,6 +12,7 @@ var ANode = require('../parser/a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
+var serializeStump = require('./serialize-stump');
 
 /**
  * 文本节点类
@@ -117,5 +118,22 @@ TextNode.prototype._attached = function () {
         }
     }
 };
+
+// #[begin] ssr
+/**
+ * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
+ *
+ * @return {string}
+ */
+TextNode.prototype.serialize = function () {
+    var str = this.evalExpr(this.aNode.textExpr, 1);
+
+    if (!this._static) {
+        str += serializeStump('text', this.aNode.text);
+    }
+
+    return str;
+};
+// #[end]
 
 exports = module.exports = TextNode;

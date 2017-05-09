@@ -24,6 +24,7 @@ var defineComponent = require('./define-component');
 var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
+var serializeStump = require('./serialize-stump');
 
 /* eslint-disable guard-for-in */
 
@@ -133,6 +134,7 @@ Component.prototype.init = function (options) {
     this.filters = this.filters || this.constructor.filters || {};
     this.computed = this.computed || this.constructor.computed || {};
     this.messages = this.messages || this.constructor.messages || {};
+    this.subTag = options.subTag;
 
     // compile
     this._compile();
@@ -617,6 +619,59 @@ Component._fillData = function (options) {
     for (var key in data) {
         options.owner.data.set(key, data[key]);
     }
+};
+// #[end]
+
+// #[begin] ssr
+/**
+ * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
+ *
+ * @return {string}
+ */
+Component.prototype.serialize = function () {
+    var element = this;
+    var tagName = element.tagName;
+
+    // start tag
+    var str = '<' + tagName;
+    element.props.each(function (prop) {
+        var value = isComponent(element)
+            ? evalExpr(prop.expr, element.data, element)
+            : element.evalExpr(prop.expr, 1);
+
+        str +=
+            getPropHandler(element, prop.name)
+                .input
+                .attr(element, prop.name, value)
+            || '';
+    });
+
+    element.binds.each(function (bindInfo) {
+        str += ' prop-' + bindInfo.name + '="' + bindInfo.raw + '"';
+    });
+
+    if (element.subTag) {
+        str += ' san-component="' + element.subTag + '"';
+    }
+
+    str += '>';
+
+    // component data
+    str += serializeStump('data', JSON.stringify(element.data.get()));
+
+    // inner content
+    each(element.aNode.childs, function (aNodeChild) {
+        var child = createNode(aNodeChild, element);
+        element.childs.push(child);
+        str += child.serialize();
+    });
+
+    // close tag
+    if (!autoCloseTags[tagName]) {
+        str += '</' + tagName + '>';
+    }
+
+    return str;
 };
 // #[end]
 

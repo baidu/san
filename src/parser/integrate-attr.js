@@ -73,7 +73,8 @@ function integrateProp(aNode, name, value) {
         aNode.props.push({
             name: name,
             expr: parseExpr(xMatch[1]),
-            x: 1
+            x: 1,
+            raw: value
         });
 
         return;

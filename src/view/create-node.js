@@ -50,6 +50,7 @@ function createNode(aNode, parent, scope) {
 
     var ComponentType = owner.components[aNode.tagName];
     if (ComponentType) {
+        options.subTag = aNode.tagName;
         return new ComponentType(options);
     }
 

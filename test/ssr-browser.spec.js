@@ -1,4 +1,4 @@
-describe("Component Compile From Element", function () {
+describe("Component serialize and reverse", function () {
 
     it("update attribute", function (done) {
         var MyComponent = san.defineComponent({
@@ -7,17 +7,21 @@ describe("Component Compile From Element", function () {
 
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<a><span title="errorrik@gmail.com" prop-title="{{email}}">errorrik<script type="text/san">{{name}}</script></span></a>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 email: 'errorrik@gmail.com',
                 name: 'errorrik'
             }
         });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
 
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(myComponent.data.get('email')).toBe('errorrik@gmail.com');
+        expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('email', 'erik168@163.com');
         myComponent.data.set('name', 'erik');
 
@@ -39,17 +43,22 @@ describe("Component Compile From Element", function () {
 
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<a><span title="errorrik@gmail.com" prop-title="{{email}}">errorrik<script type="text/san">{{name}}</script></span></a>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 email: 'errorrik@gmail.com',
                 name: 'errorrik'
             }
         });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
 
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+
+        expect(myComponent.data.get('email')).toBe('errorrik@gmail.com');
+        expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('email', 'erik168@163.com');
         myComponent.data.set('name', 'erik');
 
@@ -80,23 +89,24 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<div><h5>'
-            + '<a san-component="ui-label" prop-title="{{name}}" prop-text="{{jokeName}}"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
-            + '</h5>'
-            + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
-        document.body.appendChild(wrap);
-
-
-        var myComponent = new MyComponent({
+        var inserverComponent = new MyComponent({
             data: {
                 jokeName: 'airike',
                 name: 'errorrik',
                 school: 'none',
                 company: 'bidu'
-            },
+            }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+
+        var myComponent = new MyComponent({
             el: wrap.firstChild
         });
 
+        expect(myComponent.data.get('jokeName')).toBe('airike');
+        expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('name', 'erik');
         myComponent.data.set('jokeName', '2b');
 
@@ -108,6 +118,8 @@ describe("Component Compile From Element", function () {
             var span = wrap.getElementsByTagName('span')[0];
             expect(span.innerHTML.indexOf('2b')).toBe(0);
             expect(span.title).toBe('erik');
+            expect(myComponent.data.get('jokeName')).toBe('2b');
+            expect(myComponent.data.get('name')).toBe('erik');
 
 
             myComponent.dispose();
@@ -132,89 +144,33 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<div><h5>'
-            + '<span san-component="ui-label" prop-text="{{jokeName}}" title="airike">airike<script type="text/san">{{text}}</script></span>'
-            + '</h5>'
-            + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
-        document.body.appendChild(wrap);
-
-
-        var myComponent = new MyComponent({
+        var inserverComponent = new MyComponent({
             data: {
                 jokeName: 'airike',
                 name: 'errorrik',
                 school: 'none',
                 company: 'bidu'
-            },
-            el: wrap.firstChild
+            }
         });
-
-        myComponent.data.set('name', 'erik');
-        myComponent.data.set('jokeName', '2b');
-
-        var span = wrap.getElementsByTagName('span')[0];
-        expect(span.innerHTML.indexOf('airike')).toBe(0);
-        expect(span.title).toBe('airike');
-
-        san.nextTick(function () {
-            var span = wrap.getElementsByTagName('span')[0];
-            expect(span.innerHTML.indexOf('2b')).toBe(0);
-            expect(span.title).toBe('2b');
-
-
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
-
-    });
-
-    it("component init data", function (done) {
-        var Label = san.defineComponent({
-            template: '<a><span title="{{title}}">{{text}}</span></a>'
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-label': Label
-            },
-
-            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
-                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
-        });
-
-        var wrap = document.createElement('div');
-        wrap.innerHTML = '<div>\n    '
-            + '<script type="text/san" san-stump="data">'
-            + '{jokeName: "airike",name: "errorrik",school: "none",company: "bidu"}'
-            + '</script>'
-            + '<h5>'
-            + '<a san-component="ui-label" prop-title="{{name}}" prop-text="{{jokeName}}"><span prop-title="{{title}}" title="errorrik">airike<script type="text/san">{{text}}</script></span></a>'
-            + '</h5>'
-            + '<p><a>none<script type="text/san">{{school}}</script></a><u>bidu<script type="text/san">{{company}}</script></u></p></div>';
+        wrap.innerHTML = inserverComponent.serialize();
         document.body.appendChild(wrap);
+
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
         });
 
-        expect(myComponent.data.get('jokeName')).toBe('airike');
-        expect(myComponent.data.get('name')).toBe('errorrik');
-        expect(myComponent.data.get('school')).toBe('none');
-        expect(myComponent.data.get('company')).toBe('bidu');
-
         myComponent.data.set('name', 'erik');
-        myComponent.data.set('jokeName', '2b');
+        myComponent.data.set('jokeName', '2bbbbbbb');
 
         var span = wrap.getElementsByTagName('span')[0];
-        expect(span.innerHTML.indexOf('airike')).toBe(0);
-        expect(span.title).toBe('errorrik');
-
+        expect(span.innerHTML.indexOf('airike') >= 0).toBeTruthy();
+        expect(span.title).toBe('airike');
 
         san.nextTick(function () {
             var span = wrap.getElementsByTagName('span')[0];
-            expect(span.innerHTML.indexOf('2b')).toBe(0);
-            expect(span.title).toBe('erik');
+            expect(span.innerHTML.indexOf('2bbbbbbb') >= 0).toBeTruthy();
+            expect(span.title).toBe('2bbbbbbb');
 
 
             myComponent.dispose();
@@ -223,6 +179,7 @@ describe("Component Compile From Element", function () {
         });
 
     });
+
 
     it("update for, init with empty data", function (done) {
         var MyComponent = san.defineComponent({
@@ -235,16 +192,16 @@ describe("Component Compile From Element", function () {
 
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<ul><li>name - email</li>'
-            + '<script type="text/san" san-stump="for"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></script>'
-            + '<li>name - email</li></ul>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 persons: []
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
         myComponent.attach(wrap);
 
@@ -278,21 +235,19 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<ul><li>name - email</li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="errorrik">errorrik - errorrik@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="otakustay">otakustay - otakustay@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<script type="text/san" san-stump="for"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></script>'
-            + '<li>name - email</li></ul>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'persons': [
                     {name: 'errorrik', email: 'errorrik@gmail.com'},
                     {name: 'otakustay', email: 'otakustay@gmail.com'}
                 ]
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         var lis = wrap.getElementsByTagName('li');
@@ -328,21 +283,19 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<ul><li>name - email</li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="errorrik">errorrik - errorrik@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="otakustay">otakustay - otakustay@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<script type="text/san" san-stump="for"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></script>'
-            + '<li>name - email</li></ul>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'persons': [
                     {name: 'errorrik', email: 'errorrik@gmail.com'},
                     {name: 'otakustay', email: 'otakustay@gmail.com'}
                 ]
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         myComponent.data.removeAt('persons', 0);
@@ -377,21 +330,19 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<ul><li>name - email</li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="errorrik">errorrik - errorrik@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<li san-for="p,i in persons" prop-title="{{p.name}}" title="otakustay">otakustay - otakustay@gmail.com<script type="text/san">{{p.name}} - {{p.email}}</script></li>'
-            + '<script type="text/san" san-stump="for"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></script>'
-            + '<li>name - email</li></ul>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'persons': [
                     {name: 'errorrik', email: 'errorrik@gmail.com'},
                     {name: 'otakustay', email: 'otakustay@gmail.com'}
                 ]
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
@@ -423,19 +374,22 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u><span san-if="cond" title="errorrik" prop-title="{{name}}">errorrik<script type="text/san">{{name}}</script></span></u>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'cond': true,
                 'name': 'errorrik'
             }
         });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
 
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('cond', false);
-        var span = wrap.firstChild.firstChild;
+        var span = wrap.getElementsByTagName('span')[0];
         expect(span.title).toBe('errorrik');
 
 
@@ -446,9 +400,9 @@ describe("Component Compile From Element", function () {
             myComponent.data.set('cond', true);
 
             san.nextTick(function () {
-                var span = wrap.firstChild.firstChild;
+                var span = wrap.getElementsByTagName('span')[0];
                 expect(span.title).toBe('errorrik');
-                expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+                expect(span.innerHTML.indexOf('errorrik') >= 0).toBeTruthy();
 
 
                 myComponent.dispose();
@@ -467,15 +421,17 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u><a>nimei</a><script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script></u>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'cond': false,
                 'name': 'errorrik'
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         myComponent.data.set('cond', true);
@@ -484,7 +440,7 @@ describe("Component Compile From Element", function () {
 
 
         san.nextTick(function () {
-            var span = wrap.firstChild.firstChild.nextSibling;
+            var span = wrap.getElementsByTagName('span')[0];
             expect(span.title).toBe('errorrik');
             expect(span.innerHTML.indexOf('errorrik')).toBe(0);
 
@@ -504,19 +460,18 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u><a>nimei</a>'
-            + '<script type="text/san" san-stump="if"><span san-if="cond" title="{{name}}">{{name}}</span></script>'
-            + '<span san-else title="otakustay" prop-title="{{name2}}">otakustay<script type="text/san">{{name2}}</script></span>'
-            + '</u>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'cond': false,
                 'name': 'errorrik',
                 'name2': 'otakustay'
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         myComponent.data.set('cond', true);
@@ -547,19 +502,18 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<u>'
-            + '<span san-if="cond" title="errorrik" prop-title="{{name}}">errorrik<script type="text/san">{{name}}</script></span>'
-            + '<script type="text/san" san-stump="else"><span san-else title="{{name2}}">{{name2}}</span></script>'
-            + '</u>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 'cond': true,
                 'name': 'errorrik',
                 'name2': 'otakustay'
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         myComponent.data.set('cond', false);
@@ -602,24 +556,18 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
-        wrap.innerHTML = '<div><div san-component="ui-tab" prop-text="{{tabText}}">'
-            + '<div class="head"><script type="text/san" san-stump="slot-start" name="title"></script>'
-            + '<h3 title="1" prop-title="{{title}}">1<script type="text/san">{{title}}</script></h3>'
-            + '<script type="text/san" san-stump="slot-stop"></script></div>'
-            + '<div>'
-            + '<script type="text/san" san-stump="slot-start"></script>'
-            + '<p title="one" prop-title="{{text}}">one<script type="text/san">{{text}}</script></p>'
-            + '<script type="text/san" san-stump="slot-stop"></script></div>'
-            + '<u title="tab" prop-title="{{text}}"></u></div></div>';
-        document.body.appendChild(wrap);
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild,
+        var inserverComponent = new MyComponent({
             data: {
                 tabText: 'tab',
                 text: 'one',
                 title: '1'
             }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
         });
 
         var u = wrap.getElementsByTagName('u')[0];
@@ -669,6 +617,14 @@ describe("Component Compile From Element", function () {
         });
 
         var wrap = document.createElement('div');
+        var inserverComponent = new MyComponent({
+            data: {
+                tabText: 'tab',
+                text: 'one',
+                title: '1'
+            }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
         wrap.innerHTML = '<div><div san-component="ui-tab" prop-title="{{tTitle}}" prop-text="{{tText}}">'
             + '<div class="head"><script type="text/san" san-stump="slot-start" name="title" by-default="1"></script>'
             + '<h3 title="5" prop-title="{{title}}">5<script type="text/san">{{title}}</script></h3>'

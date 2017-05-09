@@ -64,6 +64,7 @@ function parseDirective(name, value) {
     if (parser) {
         var result = parser(value);
         result.name = name;
+        result.raw = value;
         return result;
     }
 }

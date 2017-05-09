@@ -14,7 +14,9 @@ var readCall = require('./read-call');
  * @return {Object}
  */
 function parseCall(source) {
-    return readCall(new Walker(source));
+    var expr = readCall(new Walker(source));
+    expr.raw = source;
+    return expr;
 }
 
 exports = module.exports = parseCall;

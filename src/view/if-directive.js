@@ -14,6 +14,9 @@ var parseTemplate = require('../parser/parse-template');
 var ANode = require('../parser/a-node');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 var removeEl = require('../browser/remove-el');
+var serializeStump = require('./serialize-stump');
+var escapeHTML = require('../runtime/escape-html');
+var serializeANode = require('./serialize-a-node');
 
 /**
  * if 指令处理类
@@ -166,5 +169,28 @@ IfDirective.prototype._attached = function () {
         }
     }
 };
+
+// #[begin] ssr
+/**
+ * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
+ *
+ * @return {string}
+ */
+IfDirective.prototype.serialize = function () {
+    var directive = this.aNode.directives.get('if');
+
+    if (this.evalExpr(directive.value)) {
+        var child = createIfDirectiveChild(this);
+        this.childs[0] = child;
+        return child.serialize(
+            directive.isElse
+                ? ' san-else'
+                : ' san-if="' + escapeHTML(directive.value.raw) + '"'
+        );
+    }
+
+    return serializeStump(directive.isElse ? 'else' : 'if', serializeANode(this.aNode));
+};
+// #[end]
 
 exports = module.exports = IfDirective;

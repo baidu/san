@@ -28,7 +28,8 @@ function ElseDirective(options) {
                 value: {
                     type: ExprType.UNARY,
                     expr: child.aNode.directives.get('if').value
-                }
+                },
+                isElse: 1
             };
             options.aNode.directives.push(directiveValue);
 
