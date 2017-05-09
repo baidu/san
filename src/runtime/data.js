@@ -103,6 +103,50 @@ Data.prototype.get = function (expr) {
     return value;
 };
 
+
+/**
+ * 数据对象变更操作
+ *
+ * @inner
+ * @param {Object|Array} 要变更的源数据
+ * @param {Array} 属性路径
+ * @param {*} 变更属性值
+ * @return {*} 变更后的新数据对象
+ */
+function immutableSet(source, exprPaths, value) {
+    if (exprPaths.length === 0) {
+        return value;
+    }
+
+    var prop = exprPaths[0].value;
+
+    if (source instanceof Array) {
+        var index = +prop;
+
+        if (!isNaN(index)) {
+            var result = source.slice(0);
+            result[index] = immutableSet(result[index], exprPaths.slice(1), value);
+
+            return result;
+        }
+    }
+    else if (typeof source === 'object') {
+        var result = {};
+
+        for (var key in source) {
+            if (key !== prop) {
+                result[key] = source[key];
+            }
+        }
+
+        result[prop] = immutableSet(source[prop] || {}, exprPaths.slice(1), value);
+
+        return result;
+    }
+
+    return source;
+}
+
 /**
  * 设置数据项
  *
@@ -126,30 +170,58 @@ Data.prototype.set = function (expr, value, option) {
     }
     // #[end]
 
-    var data = this.raw;
-    var prop;
-
-    var paths = expr.paths;
-    for (var i = 0, l = paths.length; i < l - 1; i++) {
-        var pathValue = evalExpr(paths[i], this);
-
-        if (data[pathValue] == null) {
-            data[pathValue] = {};
-        }
-        data = data[pathValue];
+    if (this.get(expr) === value) {
+        return;
     }
 
-    prop = evalExpr(paths[i], this);
+    this.raw = immutableSet(this.raw, expr.paths, value);
+    !option.silence && this.fire({
+        type: DataChangeType.SET,
+        expr: expr,
+        value: value,
+        option: option
+    });
+};
 
-    if (prop != null) {
-        data[prop] = value;
+Data.prototype.splice = function (expr, args, option) {
+    option = option || {};
+    // #[begin] error
+    var exprRaw = expr;
+    // #[end]
+
+    expr = parseExpr(expr);
+
+    // #[begin] error
+    if (expr.type !== ExprType.ACCESSOR) {
+        throw new Error('[SAN ERROR] Invalid Expression in Data set: ' + exprRaw);
+    }
+    // #[end]
+
+    var target = this.get(expr);
+    var returnValue = [];
+
+    if (target instanceof Array) {
+        var index = args[0];
+        if (index < 0 || index > target.length) {
+            return;
+        }
+
+        var newArray = target.slice(0);
+        returnValue = newArray.splice.apply(newArray, args);
+        this.raw = immutableSet(this.raw, expr.paths, newArray);
+
         !option.silence && this.fire({
-            type: DataChangeType.SET,
             expr: expr,
-            value: value,
+            type: DataChangeType.SPLICE,
+            index: index,
+            deleteCount: returnValue.length,
+            value: returnValue,
+            insertions: args.slice(2),
             option: option
         });
     }
+
+    return returnValue;
 };
 
 /**
@@ -245,43 +317,43 @@ Data.prototype.remove = function (expr, value, option) {
     }
 };
 
-Data.prototype.splice = function (expr, args, option) {
-    option = option || {};
-    // #[begin] error
-    var exprRaw = expr;
-    // #[end]
+// Data.prototype.splice = function (expr, args, option) {
+//     option = option || {};
+//     // #[begin] error
+//     var exprRaw = expr;
+//     // #[end]
 
-    expr = parseExpr(expr);
+//     expr = parseExpr(expr);
 
-    // #[begin] error
-    if (expr.type !== ExprType.ACCESSOR) {
-        throw new Error('[SAN ERROR] Invalid Expression in Data set: ' + exprRaw);
-    }
-    // #[end]
+//     // #[begin] error
+//     if (expr.type !== ExprType.ACCESSOR) {
+//         throw new Error('[SAN ERROR] Invalid Expression in Data set: ' + exprRaw);
+//     }
+//     // #[end]
 
-    var target = this.get(expr);
-    var returnValue = [];
+//     var target = this.get(expr);
+//     var returnValue = [];
 
-    if (target instanceof Array) {
-        var index = args[0];
-        if (index < 0 || index > target.length) {
-            return;
-        }
+//     if (target instanceof Array) {
+//         var index = args[0];
+//         if (index < 0 || index > target.length) {
+//             return;
+//         }
 
-        returnValue = target.splice.apply(target, args);
+//         returnValue = target.splice.apply(target, args);
 
-        !option.silence && this.fire({
-            expr: expr,
-            type: DataChangeType.SPLICE,
-            index: index,
-            deleteCount: returnValue.length,
-            value: returnValue,
-            insertions: args.slice(2),
-            option: option
-        });
-    }
+//         !option.silence && this.fire({
+//             expr: expr,
+//             type: DataChangeType.SPLICE,
+//             index: index,
+//             deleteCount: returnValue.length,
+//             value: returnValue,
+//             insertions: args.slice(2),
+//             option: option
+//         });
+//     }
 
-    return returnValue;
-};
+//     return returnValue;
+// };
 
 exports = module.exports = Data;
