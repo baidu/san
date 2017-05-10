@@ -664,7 +664,9 @@ Component.prototype.serialize = function () {
     str += '>';
 
     // component data
-    str += serializeStump('data', JSON.stringify(element.data.get()));
+    if (!element.owner) {
+        str += serializeStump('data', JSON.stringify(element.data.get()));
+    }
 
     // inner content
     each(element.aNode.childs, function (aNodeChild) {

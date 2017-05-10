@@ -180,6 +180,72 @@ describe("Component serialize and reverse", function () {
 
     });
 
+    it("update component, merge init data and given data", function (done) {
+        var Label = san.defineComponent({
+            template: '<span class="label" title="{{title}}">{{text}}</span>',
+
+            initData: function () {
+                return {
+                    title: 'title',
+                    text: 'text'
+                };
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><h5><ui-label text="{{jokeName}}" class="{{labelClass}} my-label"></ui-label></h5>'
+                + '<p><a title="{{school}}">{{school}}</a><u title="{{company}}">{{company}}</u></p></div>',
+
+            initData: function () {
+                return {
+                    jokeName: 'airike',
+                    school: 'none',
+                };
+            }
+        });
+
+        var wrap = document.createElement('div');
+        var inserverComponent = new MyComponent({
+            data: {
+                company: 'bidu'
+            }
+        });
+        wrap.innerHTML = inserverComponent.serialize();
+        document.body.appendChild(wrap);
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('airike') >= 0).toBeTruthy();
+        expect(span.title).toBe('title');
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(a.title).toBe('none');
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.title).toBe('bidu');
+
+        myComponent.data.set('school', 'hainan-mid');
+        myComponent.data.set('jokeName', '2bbbbbbb');
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2bbbbbbb') >= 0).toBeTruthy();
+            expect(span.title).toBe('title');
+            var a = wrap.getElementsByTagName('a')[0];
+            expect(a.title).toBe('hainan-mid');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 
     it("update for, init with empty data", function (done) {
         var MyComponent = san.defineComponent({
