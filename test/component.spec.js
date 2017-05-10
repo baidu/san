@@ -202,10 +202,12 @@ describe("Component", function () {
             },
 
             created: function () {
+                expect(this.el.tagName).toBe('U');
                 uState.created = 1;
             },
 
             attached: function () {
+                expect(this.el.tagName).toBe('U');
                 uState.attached = 1;
             },
 
@@ -234,10 +236,12 @@ describe("Component", function () {
             },
 
             created: function () {
+                expect(this.el.tagName).toBe('B');
                 mainState.created = 1;
             },
 
             attached: function () {
+                expect(this.el.tagName).toBe('B');
                 mainState.attached = 1;
             },
 

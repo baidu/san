@@ -74,9 +74,14 @@ Component.prototype._toPhase = function (name) {
 };
 /* eslint-enable operator-linebreak */
 
-Component.prototype._attached = function () {
-    Element.prototype._attached.call(this);
+/**
+ * 通知自己和childs完成attached状态
+ *
+ * @protected
+ */
+Component.prototype._toAttached = function () {
     this._getEl();
+    Node.prototype._toAttached.call(this);
 };
 
 
