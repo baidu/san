@@ -158,6 +158,45 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data push after attach", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><ul san-for="col in cols">'
+                + '<li san-for="item in col.list" title="{{item.title}}">{{item.title}}</li>'
+                + '</ul></div>',
+
+            initData: function () {
+                return {
+                    cols: [
+                        {list: []}
+                    ]
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(0);
+
+        myComponent.data.push('cols[0].list', {title: 'title'});
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].title).toBe('title');
+            expect(myComponent.data.get('cols[0].list[0].title')).toBe('title');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("data pop after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
