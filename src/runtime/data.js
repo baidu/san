@@ -317,43 +317,4 @@ Data.prototype.remove = function (expr, value, option) {
     }
 };
 
-// Data.prototype.splice = function (expr, args, option) {
-//     option = option || {};
-//     // #[begin] error
-//     var exprRaw = expr;
-//     // #[end]
-
-//     expr = parseExpr(expr);
-
-//     // #[begin] error
-//     if (expr.type !== ExprType.ACCESSOR) {
-//         throw new Error('[SAN ERROR] Invalid Expression in Data set: ' + exprRaw);
-//     }
-//     // #[end]
-
-//     var target = this.get(expr);
-//     var returnValue = [];
-
-//     if (target instanceof Array) {
-//         var index = args[0];
-//         if (index < 0 || index > target.length) {
-//             return;
-//         }
-
-//         returnValue = target.splice.apply(target, args);
-
-//         !option.silence && this.fire({
-//             expr: expr,
-//             type: DataChangeType.SPLICE,
-//             index: index,
-//             deleteCount: returnValue.length,
-//             value: returnValue,
-//             insertions: args.slice(2),
-//             option: option
-//         });
-//     }
-
-//     return returnValue;
-// };
-
 exports = module.exports = Data;
