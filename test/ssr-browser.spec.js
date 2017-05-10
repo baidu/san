@@ -131,7 +131,7 @@ describe("Component serialize and reverse", function () {
 
     it("update component, main element has attribute", function (done) {
         var Label = san.defineComponent({
-            template: '<span title="{{text}}">{{text}}</span>'
+            template: '<span class="label" title="{{text}}">{{text}}</span>'
         });
 
         var MyComponent = san.defineComponent({
@@ -139,7 +139,7 @@ describe("Component serialize and reverse", function () {
                 'ui-label': Label
             },
 
-            template: '<div><h5><ui-label text="{{jokeName}}"></ui-label></h5>'
+            template: '<div><h5><ui-label text="{{jokeName}}" class="{{labelClass}} my-label"></ui-label></h5>'
                 + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
         });
 

@@ -407,6 +407,8 @@ Component.prototype._compile = function () {
                 firstChild.tagName = null;
             }
 
+            firstChild.binds = new IndexedList();
+
             each(componentPropExtra, function (extra) {
                 var prop = firstChild.props.get(extra.name);
                 if (prop) {

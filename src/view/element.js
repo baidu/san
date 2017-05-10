@@ -76,7 +76,7 @@ Element.prototype._init = function (options) {
         });
     }
 
-    this.props = this.binds = this.aNode.props;
+    this.props = this.aNode.props;
     this.binds = this.aNode.binds || this.aNode.props;
 };
 
