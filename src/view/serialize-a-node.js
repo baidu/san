@@ -26,12 +26,18 @@ function serializeANode(aNode) {
     var str = '<' + tagName;
 
     // for directives
+    var hasElse;
     aNode.directives.each(function (directive) {
-        if (directive.name !== 'else') {
-            str += directive.isElse
-                ? ' san-else'
-                : ' san-' + directive.name + '="' + escapeHTML(directive.raw) + '"';
+        if (directive.name === 'else' || directive.name === 'if' && directive.isElse) {
+            if (!hasElse) {
+                str += ' san-else';
+            }
+            hasElse = 1;
+
+            return;
         }
+
+        str += ' san-' + directive.name + '="' + escapeHTML(directive.raw) + '"';
     });
 
     // for events

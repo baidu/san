@@ -51,6 +51,7 @@
     // require('./view/create-node');
     // require('./parser/parse-anode-from-el');
     // require('./view/compile-childs-from-el');
+    // require('./view/compile-js-source');
 
 
 
@@ -83,6 +84,11 @@
          */
         debug: true,
         // #[end]
+
+        compile: function (ComponentClass) {
+            var code = compileComponentToCode(ComponentClass);
+            return (new Function('return ' + code))();
+        },
 
         /**
          * 组件基类
