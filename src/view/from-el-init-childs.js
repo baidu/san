@@ -43,7 +43,7 @@ DOMChildsWalker.prototype.goNext = function () {
  *
  * @param {HTMLElement} element 已有元素
  */
-function compileChildsFromEl(element) {
+function fromElInitChilds(element) {
     var walker = new DOMChildsWalker(element.el);
     var current;
     while ((current = walker.current)) {
@@ -56,4 +56,4 @@ function compileChildsFromEl(element) {
     }
 }
 // #[end]
-exports = module.exports = compileChildsFromEl;
+exports = module.exports = fromElInitChilds;

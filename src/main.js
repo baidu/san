@@ -50,8 +50,7 @@
     // require('./view/gen-element-childs-html');
     // require('./view/create-node');
     // require('./parser/parse-anode-from-el');
-    // require('./view/compile-childs-from-el');
-    // require('./view/compile-js-source');
+    // require('./view/from-el-init-childs');
 
 
 
@@ -66,6 +65,7 @@
     var Component = require('./view/component');
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
+    var compileJSSource = require('./view/compile-js-source');
 
 
     var san = {
@@ -85,10 +85,27 @@
         debug: true,
         // #[end]
 
-        compile: function (ComponentClass) {
-            var code = compileComponentToCode(ComponentClass);
+        // #[begin] ssr
+        /**
+         * 将组件类编译成 renderer 方法
+         *
+         * @param {Function} ComponentClass 组件类
+         * @return {function(Object):string}
+         */
+        compileToRenderer: function (ComponentClass) {
+            var code = compileJSSource(ComponentClass);
+            console.log(code)
             return (new Function('return ' + code))();
         },
+
+        /**
+         * 将组件类编译成 renderer 方法的源文件
+         *
+         * @param {Function} ComponentClass 组件类
+         * @return {string}
+         */
+        compileToSource: compileJSSource,
+        // #[end]
 
         /**
          * 组件基类

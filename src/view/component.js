@@ -25,6 +25,7 @@ var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
+var fromElInitChilds = require('./from-el-init-childs');
 
 /* eslint-disable guard-for-in */
 
@@ -247,7 +248,7 @@ Component.prototype._initFromEl = function () {
     this.parent && this.parent._pushChildANode(this.aNode);
     this.tagName = this.aNode.tagName;
 
-    compileChildsFromEl(this);
+    fromElInitChilds(this);
 };
 // #[end]
 

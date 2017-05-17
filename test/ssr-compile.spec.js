@@ -5,7 +5,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             template: '<a><span title="{{email}}">{{name}}</span></a>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             email: 'errorrik@gmail.com',
@@ -38,7 +38,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             template: '<a><span title="{{email}}">{{name}}</span></a>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             email: 'errorrik@gmail.com',
@@ -82,7 +82,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             jokeName: 'airike',
@@ -136,7 +136,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             jokeName: 'airike',
@@ -199,7 +199,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             }
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({
@@ -246,7 +246,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ul>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             persons: []
@@ -287,7 +287,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ul>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
 
@@ -335,7 +335,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ul>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             'persons': [
@@ -380,7 +380,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ul>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({
@@ -423,7 +423,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</u>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             'cond': true,
@@ -468,7 +468,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</u>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({
@@ -506,7 +506,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</u>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({
@@ -548,7 +548,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</u>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({
@@ -601,7 +601,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ui-tab></div>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
         wrap.innerHTML = renderer({
             tabText: 'tab',
@@ -660,7 +660,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 + '</ui-tab></div>'
         });
 
-        var renderer = san.compile(MyComponent);
+        var renderer = san.compileToRenderer(MyComponent);
         var wrap = document.createElement('div');
 
         wrap.innerHTML = renderer({

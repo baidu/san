@@ -14,7 +14,7 @@ var genElementEndHTML = require('./gen-element-end-html');
 var genElementChildsHTML = require('./gen-element-childs-html');
 var eventDeclarationListener = require('./event-declaration-listener');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var compileChildsFromEl = require('./compile-childs-from-el');
+var fromElInitChilds = require('./from-el-init-childs');
 var isComponent = require('./is-component');
 var on = require('../browser/on');
 var un = require('../browser/un');
@@ -89,7 +89,7 @@ Element.prototype._initFromEl = function () {
     this.parent && this.parent._pushChildANode(this.aNode);
     this.tagName = this.aNode.tagName;
 
-    compileChildsFromEl(this);
+    fromElInitChilds(this);
 };
 // #[end]
 
