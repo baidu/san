@@ -87,7 +87,7 @@ var aNodeCompiler = {
         ifElementANode.directives.remove('if');
 
         var ifDirective = aNode.directives.get('if');
-        var elseANode = aNode.elseANode;
+        var elseANode = aNode['else'];
 
         // for condition true content
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
@@ -238,8 +238,6 @@ var aNodeCompiler = {
             extra.prop
         );
 
-
-        mergeIfAndElse(aNode.childs);
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
         elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
     },
@@ -365,29 +363,6 @@ var elementSourceCompiler = {
     }
 };
 
-// TODO: 重新处理if和else的编译
-function mergeIfAndElse(childs) {
-    var ifANode;
-    each(childs, function (child) {
-        if (child.isText) {
-            return;
-        }
-
-        if (child.directives.get('if')) {
-            ifANode = child;
-            return;
-        }
-
-        if (child.directives.get('else')) {
-            if (ifANode) {
-                ifANode.elseANode = child;
-            }
-        }
-
-        ifANode = null;
-    });
-}
-
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
  *
@@ -422,7 +397,6 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer.joinString('</script>');
     }
 
-    mergeIfAndElse(component.aNode.childs);
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
 }

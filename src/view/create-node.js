@@ -10,7 +10,6 @@ var Element = require('./element');
 var SlotElement = require('./slot-element');
 var Component = require('./component');
 var IfDirective = require('./if-directive');
-var ElseDirective = require('./else-directive');
 var ForDirective = require('./for-directive');
 
 
@@ -36,12 +35,8 @@ function createNode(aNode, parent, scope) {
         return new TextNode(options);
     }
 
-    if (aNode.directives.get('if')) {
+    if (aNode.directives.get('if') || aNode.directives.get('else')) {
         return new IfDirective(options);
-    }
-
-    if (aNode.directives.get('else')) {
-        return new ElseDirective(options);
     }
 
     if (aNode.directives.get('for')) {

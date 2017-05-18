@@ -17,6 +17,9 @@ var removeEl = require('../browser/remove-el');
 var serializeStump = require('./serialize-stump');
 var escapeHTML = require('../runtime/escape-html');
 var serializeANode = require('./serialize-a-node');
+var isStump = require('./is-stump');
+var ExprType = require('../parser/expr-type');
+var TextNode = require('./text-node');
 
 /**
  * if 指令处理类
@@ -74,7 +77,7 @@ IfDirective.prototype._init = function (options) {
 
     // #[begin] reverse
     if (options.el) {
-        if (options.el.getAttribute('san-stump') === 'if') {
+        if (isStump(options.el)) {
             var aNode = parseTemplate(options.el.innerHTML);
             aNode = aNode.childs[0];
             this.aNode = aNode;
@@ -85,19 +88,44 @@ IfDirective.prototype._init = function (options) {
             options.el.parentNode.insertBefore(this.el, options.el.nextSibling);
 
             options.el.removeAttribute('san-if');
-            var child = createNodeByEl(options.el, this, options.elWalker);
+            options.el.removeAttribute('san-else');
 
-            this.childs.push(child);
+            var child = createNodeByEl(options.el, this, options.elWalker);
+            this.childs[0] = child;
             this.aNode.childs = child.aNode.childs.slice(0);
         }
 
-        if (options.ifDirective) {
-            this.aNode.directives.push(options.ifDirective);
+        // match if directive for else directive
+        var elseDirective = this.aNode.directives.get('else');
+        if (elseDirective) {
+            var parentChilds = this.parent.childs;
+            var len = parentChilds.length;
+
+            while (len--) {
+                var child = parentChilds[len];
+
+                if (child instanceof TextNode) {
+                    continue;
+                }
+
+                if (child instanceof IfDirective) {
+                    elseDirective.value = {
+                        type: ExprType.UNARY,
+                        expr: child.aNode.directives.get('if').value
+                    };
+
+                    break;
+                }
+
+                throw new Error('[SAN FATEL] else not match if.');
+            }
         }
 
         this.parent._pushChildANode(this.aNode);
     }
     // #[end]
+
+    this.cond = (this.aNode.directives.get('else') || this.aNode.directives.get('if')).value;
 };
 
 /**
@@ -107,7 +135,7 @@ IfDirective.prototype._init = function (options) {
  * @param {StringBuffer} buf html串存储对象
  */
 IfDirective.prototype.genHTML = function (buf) {
-    if (this.evalExpr(this.aNode.directives.get('if').value)) {
+    if (this.evalExpr(this.cond)) {
         var child = createIfDirectiveChild(this);
         this.childs[0] = child;
         child.genHTML(buf);
@@ -125,11 +153,10 @@ IfDirective.prototype.genHTML = function (buf) {
  * @param {Array} changes 数据变化信息
  */
 IfDirective.prototype.updateView = function (changes) {
-    var ifExpr = this.aNode.directives.get('if').value;
     var child = this.childs[0];
     var el = this._getEl();
 
-    if (this.evalExpr(ifExpr)) {
+    if (this.evalExpr(this.cond)) {
         if (child) {
             child.updateView(changes);
         }
@@ -177,19 +204,19 @@ IfDirective.prototype._attached = function () {
  * @return {string}
  */
 IfDirective.prototype.serialize = function () {
-    var directive = this.aNode.directives.get('if');
+    var isElse = this.aNode.directives.get('else');
 
-    if (this.evalExpr(directive.value)) {
+    if (this.evalExpr(this.cond)) {
         var child = createIfDirectiveChild(this);
         this.childs[0] = child;
         return child.serialize(
-            directive.isElse
+            isElse
                 ? ' san-else'
-                : ' san-if="' + escapeHTML(directive.value.raw) + '"'
+                : ' san-if="' + escapeHTML(this.cond.raw) + '"'
         );
     }
 
-    return serializeStump(directive.isElse ? 'else' : 'if', serializeANode(this.aNode));
+    return serializeStump(isElse ? 'else' : 'if', serializeANode(this.aNode));
 };
 // #[end]
 

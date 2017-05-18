@@ -94,7 +94,6 @@
          */
         compileToRenderer: function (ComponentClass) {
             var code = compileJSSource(ComponentClass);
-            console.log(code)
             return (new Function('return ' + code))();
         },
 

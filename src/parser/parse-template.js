@@ -5,6 +5,7 @@
 
 var ANode = require('./a-node');
 var Walker = require('./walker');
+var ExprType = require('./expr-type');
 var integrateAttr = require('./integrate-attr');
 var autoCloseTags = require('../browser/auto-close-tags');
 
@@ -90,6 +91,35 @@ function parseTemplate(source) {
                         attrMatch[1],
                         attrMatch[2] ? attrMatch[4] : attrMatch[1]
                     );
+                }
+            }
+
+            // match if directive for else directive
+            var elseDirective = aElement.directives.get('else');
+            if (elseDirective) {
+                var parentChildsLen = currentNode.childs.length;
+
+                while (parentChildsLen--) {
+                    var parentChild = currentNode.childs[parentChildsLen];
+                    if (parentChild.isText) {
+                        continue
+                    }
+
+                    var childIfDirective = parentChild.directives.get('if');
+
+                    // #[begin] error
+                    if (!childIfDirective) {
+                        throw new Error('[SAN FATEL] else not match if.');
+                    }
+                    // #[end]
+
+                    parentChild['else'] = aElement;
+                    elseDirective.value = {
+                        type: ExprType.UNARY,
+                        expr: childIfDirective.value
+                    };
+
+                    break;
                 }
             }
 

@@ -6,7 +6,6 @@
 var isComponent = require('./is-component');
 var TextNode = require('./text-node');
 var IfDirective = require('./if-directive');
-var ElseDirective = require('./else-directive');
 var ForDirective = require('./for-directive');
 var Element = require('./element');
 var SlotElement = require('./slot-element');
@@ -58,12 +57,10 @@ function createNodeByEl(el, parent, elWalker) {
     var stumpName = el.getAttribute('san-stump');
     option.aNode = childANode;
 
-    if (childANode.directives.get('if') || stumpName === 'if') {
+    if (childANode.directives.get('if') || stumpName === 'if'
+        || childANode.directives.get('else') || stumpName === 'else'
+    ) {
         return new IfDirective(option);
-    }
-
-    if (childANode.directives.get('else') || stumpName === 'else') {
-        return new ElseDirective(option);
     }
 
     if (childANode.directives.get('for') || stumpName === 'for') {
