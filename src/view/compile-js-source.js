@@ -7,6 +7,7 @@ var serializeStump = require('./serialize-stump');
 var ExprType = require('../parser/expr-type');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
+var flatComponentBinds = require('./flat-component-binds');
 
 
 // #[begin] ssr
@@ -228,16 +229,80 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileElement: function (aNode, sourceBuffer, owner, extra) {
-
-        // TODO: element和component的过程需要抽取下
         extra = extra || {};
-        var tagName = aNode.tagName;
+        elementSourceCompiler.tagStart(
+            sourceBuffer,
+            aNode.tagName,
+            aNode.props,
+            aNode.props,
+            extra.prop
+        );
+
+
+        mergeIfAndElse(aNode.childs);
+        elementSourceCompiler.inner(sourceBuffer, aNode, owner);
+        elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
+    },
+
+    /**
+     * 编译组件节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     * @param {Function} extra.ComponentClass 对应组件类
+     */
+    compileComponent: function (aNode, sourceBuffer, owner, extra) {
+        var ComponentClass = extra.ComponentClass;
+        var component = new ComponentClass({
+            aNode: aNode,
+            owner: owner,
+            subTag: aNode.tagName
+        });
+
+        var givenData = [];
+
+        flatComponentBinds(aNode.props);
+        aNode.props.each(function (prop) {
+            givenData.push(
+                compileExprSource.stringLiteralize(prop.name)
+                + ':'
+                + compileExprSource.expr(prop.expr)
+            );
+        });
+
+        sourceBuffer.addRaw('html += (');
+        sourceBuffer.addRendererStart();
+        compileComponentSource(sourceBuffer, component, extra && extra.prop);
+        sourceBuffer.addRendererEnd();
+        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
+    }
+};
+
+/**
+ * element 的编译方法集合对象
+ *
+ * @inner
+ */
+var elementSourceCompiler = {
+    /**
+     * 编译元素标签头
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {string} tagName 标签名
+     * @param {IndexedList} props 属性列表
+     * @param {IndexedList} binds 绑定信息列表
+     * @param {string?} extraProp 额外的属性串
+     */
+    tagStart: function (sourceBuffer, tagName, props, binds, extraProp) {
         sourceBuffer.joinString('<' + tagName);
-        aNode.props.each(function (bindInfo) {
+        sourceBuffer.joinString(extraProp || '');
+
+        binds.each(function (bindInfo) {
             sourceBuffer.joinString(' prop-' + bindInfo.name + '="' + bindInfo.raw + '"');
         });
 
-        aNode.props.each(function (prop) {
+        props.each(function (prop) {
             if (tagName === 'textarea' && prop.name === 'value') {
                 return;
             }
@@ -260,9 +325,30 @@ var aNodeCompiler = {
                     break;
             }
         });
-        sourceBuffer.joinString(extra.prop || '');
-        sourceBuffer.joinString('>');
 
+        sourceBuffer.joinString('>');
+    },
+
+    /**
+     * 编译元素闭合
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {string} tagName 标签名
+     */
+    tagEnd: function (sourceBuffer, tagName) {
+        if (!autoCloseTags[tagName]) {
+            sourceBuffer.joinString('</' + tagName + '>');
+        }
+    },
+
+    /**
+     * 编译元素内容
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {ANode} aNode 元素的抽象节点信息
+     * @param {Component} owner 所属组件实例环境
+     */
+    inner: function (sourceBuffer, aNode, owner) {
         // inner content
         // var valueProp = component.props.get('value');
         // if (tagName === 'textarea' && valueProp) {
@@ -273,60 +359,9 @@ var aNodeCompiler = {
         // else {
 
         // }
-        mergeIfAndElse(aNode.childs);
         each(aNode.childs, function (aNodeChild) {
             sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
         });
-
-        if (!autoCloseTags[tagName]) {
-            sourceBuffer.joinString('</' + tagName + '>');
-        }
-    },
-
-    /**
-     * 编译组件节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     * @param {Function} extra.ComponentClass 对应组件类
-     */
-    compileComponent: function (aNode, sourceBuffer, owner, extra) {
-        var ComponentClass = extra.ComponentClass;
-        var component = new ComponentClass({
-            aNode: aNode,
-            owner: owner,
-            subTag: aNode.tagName
-        });
-
-        var givenData = [];
-
-        // TODO: 和component一起做个抽取
-        aNode.props.each(function (prop) {
-            var expr = prop.expr;
-
-            // 当 text 解析只有一项时，要么就是 string，要么就是 interp
-            // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
-            // 所以这里做个处理，只有一项时直接抽出来
-            if (expr.type === ExprType.TEXT && expr.segs.length === 1) {
-                expr = expr.segs[0];
-                if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
-                    expr = expr.expr;
-                }
-            }
-
-            givenData.push(
-                compileExprSource.stringLiteralize(prop.name)
-                + ':'
-                + compileExprSource.expr(expr)
-            );
-        });
-
-        sourceBuffer.addRaw('html += (');
-        sourceBuffer.addRendererStart();
-        compileComponentSource(sourceBuffer, component);
-        sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
     }
 };
 
@@ -353,83 +388,33 @@ function mergeIfAndElse(childs) {
     });
 }
 
-
 /**
- * 将组件编译成 render 方法的 js 源码
+ * 生成组件 renderer 时 ctx 对象构建的代码
  *
- * @param {Function} ComponentClass 组件类
- * @return {string}
+ * @inner
+ * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+ * @param {Object} component 组件实例
+ * @param {string?} extraProp 额外的属性串
  */
-function compileJSSource(ComponentClass) {
-    var sourceBuffer = new CompileSourceBuffer();
-
-    sourceBuffer.addRendererStart();
-    sourceBuffer.addRaw(
-        componentCompilePreCode.toString()
-            .split('\n')
-            .slice(1)
-            .join('\n')
-            .replace(/\}\s*$/, '')
-    );
-
-    // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
-    var component = new ComponentClass();
-
-    compileComponentSource(sourceBuffer, component);
-    sourceBuffer.addRendererEnd();
-    return sourceBuffer.toCode();
-}
-
-function compileComponentSource(sourceBuffer, component) {
+function compileComponentSource(sourceBuffer, component, extraProp) {
     var tagName = component.tagName;
 
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
 
-    sourceBuffer.joinString('<' + tagName);
-    component.binds.each(function (bindInfo) {
-        sourceBuffer.joinString(' prop-' + bindInfo.name + '="' + bindInfo.raw + '"');
-    });
-
+    extraProp = extraProp || '';
     if (component.subTag) {
-        sourceBuffer.joinString(' san-component="' + component.subTag + '"');
+        extraProp += ' san-component="' + component.subTag + '"';
     }
 
-    component.props.each(function (prop) {
-        if (tagName === 'textarea' && prop.name === 'value') {
-            return;
-        }
-
-        switch (prop.name) {
-            case 'readonly':
-            case 'disabled':
-            case 'mutiple':
-                break;
-
-            default:
-                if (prop.expr.value) {
-                    sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
-                }
-                else {
-                    sourceBuffer.joinString(' ' + prop.name + '="');
-                    sourceBuffer.joinExpr(prop.expr);
-                    sourceBuffer.joinString('"');
-                }
-                break;
-        }
-
-        // var value = isComponent(element)
-        //     ? evalExpr(prop.expr, element.data, element)
-        //     : element.evalExpr(prop.expr, 1);
-
-        // str +=
-        //     getPropHandler(element, prop.name)
-        //         .input
-        //         .attr(element, prop.name, value)
-        //     || '';
-    });
-    sourceBuffer.joinString('>');
+    elementSourceCompiler.tagStart(
+        sourceBuffer,
+        component.tagName,
+        component.props,
+        component.binds,
+        extraProp
+    );
 
     if (!component.owner) {
         sourceBuffer.joinString('<script type="text/san" san-stump="data">');
@@ -437,25 +422,10 @@ function compileComponentSource(sourceBuffer, component) {
         sourceBuffer.joinString('</script>');
     }
 
-    // inner content
-    // var valueProp = component.props.get('value');
-    // if (tagName === 'textarea' && valueProp) {
-    //     if (valueProp) {
-    //         sourceBuffer.joinString(valueProp.value);
-    //     }
-    // }
-    // else {
-
-    // }
     mergeIfAndElse(component.aNode.childs);
-    each(component.aNode.childs, function (aNodeChild) {
-        aNodeCompiler.compile(aNodeChild, sourceBuffer, component);
-    });
-
-    if (!autoCloseTags[tagName]) {
-        sourceBuffer.joinString('</' + tagName + '>');
-    }
-};
+    elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
+    elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
+}
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
@@ -527,6 +497,7 @@ function componentCompilePreCode() {
 
         return target;
     }
+
     var HTML_ENTITY = {
         /* jshint ignore:start */
         '&': '&amp;',
@@ -539,23 +510,10 @@ function componentCompilePreCode() {
         /* jshint ignore:end */
     };
 
-    /**
-     * HTML Filter的替换函数
-     *
-     * @inner
-     * @param {string} c 替换字符
-     * @return {string} 替换后的HTML字符实体
-     */
     function htmlFilterReplacer(c) {
         return HTML_ENTITY[c];
     }
 
-    /**
-     * HTML转义
-     *
-     * @param {string} source 源串
-     * @return {string} 替换结果串
-     */
     function escapeHTML(source) {
         if (source == null) {
             return '';
@@ -563,6 +521,7 @@ function componentCompilePreCode() {
 
         return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
     }
+
     var DEFAULT_FILTERS = {
         html: escapeHTML,
         url: encodeURIComponent,
@@ -594,6 +553,31 @@ function componentCompilePreCode() {
     };
 }
 
+/**
+ * 将组件编译成 render 方法的 js 源码
+ *
+ * @param {Function} ComponentClass 组件类
+ * @return {string}
+ */
+function compileJSSource(ComponentClass) {
+    var sourceBuffer = new CompileSourceBuffer();
+
+    sourceBuffer.addRendererStart();
+    sourceBuffer.addRaw(
+        componentCompilePreCode.toString()
+            .split('\n')
+            .slice(1)
+            .join('\n')
+            .replace(/\}\s*$/, '')
+    );
+
+    // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
+    var component = new ComponentClass();
+
+    compileComponentSource(sourceBuffer, component);
+    sourceBuffer.addRendererEnd();
+    return sourceBuffer.toCode();
+}
 // #[end]
 
 exports = module.exports = compileJSSource;

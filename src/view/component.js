@@ -26,6 +26,7 @@ var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
+var flatComponentBinds = require('./flat-component-binds');
 
 /* eslint-disable guard-for-in */
 
@@ -199,20 +200,7 @@ Component.prototype.init = function (options) {
 
     Element.prototype._init.call(this, options);
 
-    this.binds.each(function (bind) {
-        var expr = bind.expr;
-
-        // 当 text 解析只有一项时，要么就是 string，要么就是 interp
-        // interp 有可能是绑定到组件属性的表达式，不希望被 eval text 成 string
-        // 所以这里做个处理，只有一项时直接抽出来
-        if (expr.type === ExprType.TEXT && expr.segs.length === 1) {
-            expr = bind.expr = expr.segs[0];
-            if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
-                bind.expr = expr.expr;
-            }
-        }
-    });
-
+    flatComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
         me.data.set(bind.name, me.evalExpr(bind.expr));
     });
