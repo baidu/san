@@ -184,6 +184,6 @@
     }
 
     // #[begin] devtool
-    emitDevtool('san', san);
+    emitDevtool.start(san);
     // #[end]
 })(this);

@@ -3,9 +3,9 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var san = require('../main');
-
 // #[begin] devtool
+var san4devtool;
+
 /**
  * 给 devtool 发通知消息
  *
@@ -13,10 +13,15 @@ var san = require('../main');
  * @param {*} arg 消息参数
  */
 function emitDevtool(name, arg) {
-    if (san.debug && root.__san_devtool__) {
+    if (san4devtool && san4devtool.debug && root.__san_devtool__) {
         root.__san_devtool__.emit(name, arg);
     }
 }
+
+emitDevtool.start = function (main) {
+    san4devtool = main;
+    emitDevtool('san', main);
+};
 // #[end]
 
 exports = module.exports = emitDevtool;
