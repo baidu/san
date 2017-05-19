@@ -1,20 +1,7 @@
-describe("Component serialize and reverse", function () {
+describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update attribute", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<a><span title="{{email}}">{{name}}</span></a>'
-        });
-
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                email: 'errorrik@gmail.com',
-                name: 'errorrik'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt1##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -37,20 +24,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update text", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<a><span title="{{email}}">{{name}}</span></a>'
-        });
-
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                email: 'errorrik@gmail.com',
-                name: 'errorrik'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt2##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -75,31 +49,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update component", function (done) {
-        var Label = san.defineComponent({
-            template: '<a><span title="{{title}}">{{text}}</span></a>'
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-label': Label
-            },
-
-            template: '<div><h5><ui-label title="{{name}}" text="{{jokeName}}"></ui-label></h5>'
-                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                jokeName: 'airike',
-                name: 'errorrik',
-                school: 'none',
-                company: 'bidu'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
-
+        ##cmpt3##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -130,31 +80,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update component, main element has attribute", function (done) {
-        var Label = san.defineComponent({
-            template: '<span class="label" title="{{text}}">{{text}}</span>'
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-label': Label
-            },
-
-            template: '<div><h5><ui-label text="{{jokeName}}" class="{{labelClass}} my-label"></ui-label></h5>'
-                + '<p><a>{{school}}</a><u>{{company}}</u></p></div>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                jokeName: 'airike',
-                name: 'errorrik',
-                school: 'none',
-                company: 'bidu'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
-
+        ##cmpt4##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -181,46 +107,11 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update component, merge init data and given data", function (done) {
-        var Label = san.defineComponent({
-            template: '<span class="label" title="{{title}}">{{text}}</span>',
-
-            initData: function () {
-                return {
-                    title: 'title',
-                    text: 'text'
-                };
-            }
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-label': Label
-            },
-
-            template: '<div><h5><ui-label text="{{jokeName}}" class="{{labelClass}} my-label"></ui-label></h5>'
-                + '<p><a title="{{school}}">{{school}}</a><u title="{{company}}">{{company}}</u></p></div>',
-
-            initData: function () {
-                return {
-                    jokeName: 'airike',
-                    school: 'none',
-                };
-            }
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                company: 'bidu'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt5##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
         });
-
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML.indexOf('airike') >= 0).toBeTruthy();
@@ -248,23 +139,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update for, init with empty data", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<ul>'
-                + '<li>name - email</li>'
-                + '<li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li>'
-                + '<li>name - email</li>'
-                + '</ul>'
-        });
-
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                persons: []
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt6##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -292,25 +167,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("push update for, init with many data", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<ul>'
-                + '<li>name - email</li>'
-                + '<li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li>'
-                + '<li>name - email</li>'
-                + '</ul>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'persons': [
-                    {name: 'errorrik', email: 'errorrik@gmail.com'},
-                    {name: 'otakustay', email: 'otakustay@gmail.com'}
-                ]
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt7##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -340,25 +197,7 @@ describe("Component serialize and reverse", function () {
 
 
     it("remove update for, init with many data", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<ul>'
-                + '<li>name - email</li>'
-                + '<li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li>'
-                + '<li>name - email</li>'
-                + '</ul>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'persons': [
-                    {name: 'errorrik', email: 'errorrik@gmail.com'},
-                    {name: 'otakustay', email: 'otakustay@gmail.com'}
-                ]
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt8##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -387,25 +226,7 @@ describe("Component serialize and reverse", function () {
 
 
     it("set update for, init with many data", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<ul>'
-                + '<li>name - email</li>'
-                + '<li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li>'
-                + '<li>name - email</li>'
-                + '</ul>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'persons': [
-                    {name: 'errorrik', email: 'errorrik@gmail.com'},
-                    {name: 'otakustay', email: 'otakustay@gmail.com'}
-                ]
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt9##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -433,21 +254,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update if, init with true", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<u>'
-                + '<span san-if="cond" title="{{name}}">{{name}}</span>'
-                + '</u>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'cond': true,
-                'name': 'errorrik'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt10##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -479,22 +286,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update if, init with false", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<u>'
-                + '<a>nimei</a>'
-                + '<span san-if="cond" title="{{name}}">{{name}}</span>'
-                + '</u>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'cond': false,
-                'name': 'errorrik'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt11##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -517,24 +309,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update else, init with false", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<u>'
-                + '<a>nimei</a>'
-                + '<span san-if="cond" title="{{name}}">{{name}}</span>'
-                + '<span san-else title="{{name2}}">{{name2}}</span>'
-                + '</u>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'cond': false,
-                'name': 'errorrik',
-                'name2': 'otakustay'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt12##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -560,23 +335,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it("update else, init with true", function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<u>'
-                + '<span san-if="cond" title="{{name}}">{{name}}</span>'
-                + '<span san-else title="{{name2}}">{{name2}}</span>'
-                + '</u>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                'cond': true,
-                'name': 'errorrik',
-                'name2': 'otakustay'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt13##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -602,35 +361,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it('default and named slot', function (done) {
-        var Tab = san.defineComponent({
-            template: '<div>'
-                +   '<div class="head"><slot name="title"></slot></div>'
-                +   '<div><slot></slot></div>'
-                +   '<u title="{{text}}"></u>'
-                + '</div>'
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-tab': Tab
-            },
-
-            template: '<div><ui-tab text="{{tabText}}">'
-                + '<h3 slot="title" title="{{title}}">{{title}}</h3>'
-                + '<p title="{{text}}">{{text}}</p>'
-                + '</ui-tab></div>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                tabText: 'tab',
-                text: 'one',
-                title: '1'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt14##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -659,41 +390,7 @@ describe("Component serialize and reverse", function () {
     });
 
     it('default and named slot, content by default', function (done) {
-        var Tab = san.defineComponent({
-            template: '<div>'
-                +   '<div class="head"><slot name="title"><h3 title="{{title}}">{{title}}</h3></slot></div>'
-                +   '<div><slot><p title="{{text}}">{{text}}</p></slot></div>'
-                + '</div>',
-
-            initData: function () {
-                return {
-                    title: '5',
-                    text: 'five'
-                }
-            }
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-tab': Tab
-            },
-
-            template: '<div><ui-tab title="{{tTitle}}" text="{{tText}}">'
-                + '</ui-tab></div>'
-        });
-
-        var wrap = document.createElement('div');
-        var inserverComponent = new MyComponent({
-            data: {
-                tabText: 'tab',
-                text: 'one',
-                title: '1',
-                tTitle: '5',
-                tText: 'five'
-            }
-        });
-        wrap.innerHTML = inserverComponent.serialize();
-        document.body.appendChild(wrap);
+        ##cmpt15##
 
         var myComponent = new MyComponent({
             el: wrap.firstChild
@@ -718,4 +415,278 @@ describe("Component serialize and reverse", function () {
             done();
         });
     });
+
+    it("two way binding text value", function (done) {
+        ##cmpt16##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(span.title).toBe('errorrik');
+        expect(input.value).toBe('errorrik');
+
+
+        function doneSpec() {
+            var name = myComponent.data.get('name');
+
+            if (name !== 'errorrik') {
+                expect(span.title).toBe(name);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + input.id, 'input', 'test' + (+new Date()));
+        setTimeout(doneSpec, 500);
+
+    });
+
+    it("two way binding textarea value", function (done) {
+        ##cmpt17##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var input = wrap.getElementsByTagName('textarea')[0];
+        expect(span.title).toBe('errorrik');
+        expect(input.value).toBe('errorrik');
+
+
+        function doneSpec() {
+            var name = myComponent.data.get('name');
+
+            if (name !== 'errorrik') {
+                expect(span.title).toBe(name);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + input.id, 'input', 'test' + (+new Date()));
+        setTimeout(doneSpec, 500);
+
+    });
+
+    it("component with san-if, init with true", function (done) {
+        ##cmpt18##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(myComponent.data.get('jokeName')).toBe('airike');
+        expect(myComponent.data.get('name')).toBe('errorrik');
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('airike')).toBe(0);
+        expect(span.title).toBe('errorrik');
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2b')).toBe(0);
+            expect(span.title).toBe('erik');
+            expect(myComponent.data.get('jokeName')).toBe('2b');
+            expect(myComponent.data.get('name')).toBe('erik');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("component with san-if, init with false", function (done) {
+        ##cmpt19##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        // expect(myComponent.data.get('jokeName')).toBe('airike');
+        // expect(myComponent.data.get('name')).toBe('errorrik');
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+        myComponent.data.set('cond', true);
+
+        // var span = wrap.getElementsByTagName('span')[0];
+        // expect(span.innerHTML.indexOf('airike')).toBe(0);
+        // expect(span.title).toBe('errorrik');
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML.indexOf('2b')).toBe(0);
+            expect(span.title).toBe('erik');
+            expect(myComponent.data.get('jokeName')).toBe('2b');
+            expect(myComponent.data.get('name')).toBe('erik');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("component with san-if, init with true, change much times", function (done) {
+        ##cmpt20##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(myComponent.data.get('jokeName')).toBe('airike');
+        expect(myComponent.data.get('name')).toBe('errorrik');
+        myComponent.data.set('name', 'erik');
+        myComponent.data.set('jokeName', '2b');
+
+        myComponent.data.set('cond', false);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('airike')).toBe(0);
+        expect(span.title).toBe('errorrik');
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('span').length).toBe(0);
+            myComponent.data.set('cond', true);
+
+            san.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.innerHTML.indexOf('2b')).toBe(0);
+                expect(span.title).toBe('erik');
+                expect(myComponent.data.get('jokeName')).toBe('2b');
+                expect(myComponent.data.get('name')).toBe('erik');
+
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
+    it("component with san-for, then push", function (done) {
+        ##cmpt21##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        myComponent.data.push('list', {title: '3', text: 'three'});
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(2);
+        expect(spans[0].title).toBe('1');
+        expect(spans[1].title).toBe('2');
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(3);
+            expect(spans[0].title).toBe('1');
+            expect(spans[1].title).toBe('2');
+            expect(spans[2].title).toBe('3');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("component with san-for, then set item", function (done) {
+        ##cmpt22##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        myComponent.data.set('list[0].title', '111');
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(2);
+        expect(spans[0].title).toBe('1');
+        expect(spans[1].title).toBe('2');
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(2);
+            expect(spans[0].title).toBe('111');
+            expect(spans[1].title).toBe('2');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+
+
+    it("render component with san-if, init true, update soon", function (done) {
+        ##cmpt23##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var dts = wrap.getElementsByTagName('dt');
+        expect(dts[0].title).toBe('erik');
+        expect(dts[1].title).toBe('firede');
+
+        var dds = wrap.getElementsByTagName('dd');
+        var p1lis = dds[1].getElementsByTagName('li');
+        expect(p1lis[0].title).toBe('2345678');
+        expect(p1lis[1].title).toBe('23456789');
+
+        myComponent.data.set('cond', false);
+        myComponent.data.set('persons[1].name', 'leeight');
+        myComponent.data.set('persons[1].tels', ['12121212', '16161616', '18181818']);
+
+        san.nextTick(function () {
+            var dts = wrap.getElementsByTagName('dt');
+            var dds = wrap.getElementsByTagName('dd');
+            expect(dts.length).toBe(0);
+            expect(dds.length).toBe(0);
+
+
+            myComponent.data.set('cond', true);
+
+            san.nextTick(function () {
+                var dts = wrap.getElementsByTagName('dt');
+                expect(dts[0].title).toBe('erik');
+                expect(dts[1].title).toBe('leeight');
+
+                var dds = wrap.getElementsByTagName('dd');
+                var p1lis = dds[1].getElementsByTagName('li');
+                expect(p1lis[0].title).toBe('12121212');
+                expect(p1lis[1].title).toBe('16161616');
+                expect(p1lis[2].title).toBe('18181818');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
 });

@@ -19,14 +19,11 @@
     <script src="../dist/san.all.js"></script>
 
     <!-- include spec files here... -->
-
-    <script src="from-element.spec.js"></script>
-    <script src="ssr-browser.spec.js"></script>
-
-
+    <script src="ssr/ssr.spec.js"></script>
 </head>
 
 <body>
+##ssr-elements##
 </body>
 </html>
 

@@ -9,3 +9,5 @@ Thumbs.db
 *.gz
 coverage/
 errorShots/
+/test/index-ssr.html
+/test/ssr/ssr.spec.js
