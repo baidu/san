@@ -632,7 +632,7 @@
         var walker = new Walker(source);
 
         var tagReg = /<(\/)?([a-z0-9-]+)\s*/ig;
-        var attrReg = /([-:0-9a-z\(\)\[\]]+)(=(['"])([^\3]*?)\3)?\s*/ig;
+        var attrReg = /([-:0-9a-z()\[\]]+)(=(['"])([^\3]*?)\3)?\s*/ig;
 
         var tagMatch;
         var currentNode = rootNode;
@@ -788,7 +788,7 @@
      */
     function integrateProp(aNode, name, value) {
         // parse two way binding, e.g. value="{=ident=}"
-        var xMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
+        var xMatch = value.match(/^{=\s*(.*?)\s*=}$/);
 
         if (xMatch) {
             aNode.props.push({
@@ -846,7 +846,7 @@
     var directiveParsers = {
         'for': function (value) {
             var walker = new Walker(value);
-            var match = walker.match(/^\s*([\$0-9a-z_]+)(\s*,\s*([\$0-9a-z_]+))?\s+in\s+/ig);
+            var match = walker.match(/^\s*([$0-9a-z_]+)(\s*,\s*([$0-9a-z_]+))?\s+in\s+/ig);
 
             if (match) {
                 return {
@@ -905,7 +905,7 @@
      * @return {Object}
      */
     function parseText(source) {
-        var exprStartReg = /\{\{\s*([\s\S]+?)\s*\}\}/ig;
+        var exprStartReg = /{{\s*([\s\S]+?)\s*}}/ig;
         var exprMatch;
 
         var walker = new Walker(source);
@@ -1029,7 +1029,7 @@
      * @return {string}
      */
     function readIdentifier(walker) {
-        var match = walker.match(/\s*([\$0-9a-z_]+)/ig);
+        var match = walker.match(/\s*([$0-9a-z_]+)/ig);
         return match[1];
     }
 
