@@ -348,15 +348,18 @@ var elementSourceCompiler = {
      */
     inner: function (sourceBuffer, aNode, owner) {
         // inner content
-        // var valueProp = component.props.get('value');
-        // if (tagName === 'textarea' && valueProp) {
-        //     if (valueProp) {
-        //         sourceBuffer.joinString(valueProp.value);
-        //     }
-        // }
-        // else {
+        if (aNode.tagName === 'textarea') {
+            var valueProp = aNode.props.get('value');
+            if (valueProp) {
+                sourceBuffer.addRaw('html += escapeHTML('
+                    + compileExprSource.expr(valueProp.expr)
+                    + ');'
+                );
+            }
 
-        // }
+            return;
+        }
+
         each(aNode.childs, function (aNodeChild) {
             sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
         });
@@ -462,6 +465,8 @@ function genComponentContextCode(component) {
  * @inner
  */
 function componentCompilePreCode() {
+    var $version = '##version##';
+
     function extend(target, source) {
         for (var key in source) {
             if (source.hasOwnProperty(key)) {

@@ -26,10 +26,13 @@ var parseANodeFromEl = require('../parser/parse-anode-from-el');
 function createNodeByEl(el, parent, elWalker) {
     var owner = isComponent(parent) ? parent : parent.owner;
 
-    // find component class
-    var tagName = el.tagName.toLowerCase();
-    var ComponentClass = null;
 
+    var tagName = el.tagName.toLowerCase();
+    var childANode = parseANodeFromEl(el);
+    var stumpName = el.getAttribute('san-stump');
+
+    // find component class
+    var ComponentClass = null;
     if (tagName.indexOf('-') > 0) {
         ComponentClass = owner.components[tagName];
     }
@@ -37,6 +40,7 @@ function createNodeByEl(el, parent, elWalker) {
     var componentName = el.getAttribute('san-component');
     if (componentName) {
         ComponentClass = owner.components[componentName];
+        childANode.tagName = componentName;
     }
 
     var option = {
@@ -44,18 +48,9 @@ function createNodeByEl(el, parent, elWalker) {
         scope: owner.data,
         parent: parent,
         el: el,
-        elWalker: elWalker
+        elWalker: elWalker,
+        aNode: childANode
     };
-
-    // as Component
-    if (ComponentClass) {
-        return new ComponentClass(option);
-    }
-
-    // as normal Element
-    var childANode = parseANodeFromEl(el);
-    var stumpName = el.getAttribute('san-stump');
-    option.aNode = childANode;
 
     if (childANode.directives.get('if') || stumpName === 'if'
         || childANode.directives.get('else') || stumpName === 'else'
@@ -79,6 +74,11 @@ function createNodeByEl(el, parent, elWalker) {
     if (isStump(el)) {
         // as TextNode
         return new TextNode(option);
+    }
+
+    // as Component
+    if (ComponentClass) {
+        return new ComponentClass(option);
     }
 
     // as Element

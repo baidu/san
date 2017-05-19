@@ -55,6 +55,7 @@ Element.prototype._init = function (options) {
     // #[begin] reverse
     if (this.el) {
         this._initFromEl(options);
+        this.el.id = this.id;
     }
     // #[end]
 

@@ -24,6 +24,7 @@ var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 var serializeStump = require('./serialize-stump');
 var serializeANode = require('./serialize-a-node');
+var isStump = require('./is-stump');
 
 /**
  * 循环项的数据容器类
@@ -183,10 +184,11 @@ ForDirective.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var current = options.elWalker.current;
-            if (current.getAttribute('san-stump') === 'for') {
+            if (isStump(current)) {
                 aNode = parseTemplate(current.innerHTML);
                 aNode = aNode.childs[0];
                 this.aNode = aNode;
+                this.el = current;
                 break;
             }
             else {
