@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A MVVM Component Framework",
-  "version": "3.0.3",
+  "version": "3.1.0-alpha.1",
   "contributors": [
     {
       "name": "erik",
@@ -28,9 +28,9 @@
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
-    "build": "node ./tool/build.js"
+    "build": "node ./test/ssr/build-test.js && node ./tool/build.js"
   },
-  "main": "dist/san.source.js",
+  "main": "dist/san.all.js",
   "unpkg": "dist/san",
   "files": [
     "src",
