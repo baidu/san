@@ -14,12 +14,22 @@ var readTertiaryExpr = require('./read-tertiary-expr');
  * @return {Object}
  */
 function readAccessor(walker) {
+    var firstSeg = readIdent(walker);
+    switch (firstSeg) {
+        case 'true':
+        case 'false':
+            return {
+                type: ExprType.BOOL,
+                value: firstSeg === 'true'
+            };
+    }
+
     var result = {
         type: ExprType.ACCESSOR,
         paths: [
             {
                 type: ExprType.STRING,
-                value: readIdent(walker)
+                value: firstSeg
             }
         ]
     };
