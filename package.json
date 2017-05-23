@@ -28,7 +28,7 @@
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
-    "build": "node ./test/ssr/build-test.js && node ./tool/build.js"
+    "build": "node ./tool/build.js && node ./test/ssr/build-test.js"
   },
   "main": "dist/san.all.js",
   "unpkg": "dist/san",
