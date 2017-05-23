@@ -689,4 +689,117 @@ describe("Component serialize from compiled renderer and reverse", function () {
         });
     });
 
+    it("bool attr, init false", function (done) {
+        ##cmpt24##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
+        myComponent.data.set('distate', true);
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("bool attr, init true", function (done) {
+        ##cmpt25##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
+        myComponent.data.set('distate', false);
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+
+    it("checkbox checked", function (done) {
+        ##cmpt26##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeFalsy();
+        expect(inputs[1].checked).toBeTruthy();
+        expect(inputs[2].checked).toBeTruthy();
+
+        myComponent.data.set('cValue', ['1']);
+
+        san.nextTick(function () {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBeTruthy();
+            expect(inputs[1].checked).toBeFalsy();
+            expect(inputs[2].checked).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("radio checked", function (done) {
+        ##cmpt27##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeFalsy();
+        expect(inputs[1].checked).toBeTruthy();
+        expect(inputs[2].checked).toBeFalsy();
+
+        myComponent.data.set('cValue', '1');
+
+        san.nextTick(function () {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBeTruthy();
+            expect(inputs[1].checked).toBeFalsy();
+            expect(inputs[2].checked).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("option selected", function (done) {
+        ##cmpt28##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        var select = wrap.getElementsByTagName('select')[0];
+        expect(select.selectedIndex).toBe(1);
+
+        myComponent.data.set('online', 'otakustay');
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+            expect(select.selectedIndex).toBe(2);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });

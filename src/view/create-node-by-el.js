@@ -21,11 +21,12 @@ var parseANodeFromEl = require('../parser/parse-anode-from-el');
  * @param {HTMLElement} el 页面中存在的元素
  * @param {Node} parent 父亲节点
  * @param {DOMChildsWalker} elWalker 遍历元素的功能对象
+ * @param {Model=} scope 所属数据环境
  * @return {Node}
  */
-function createNodeByEl(el, parent, elWalker) {
+function createNodeByEl(el, parent, elWalker, scope) {
     var owner = isComponent(parent) ? parent : parent.owner;
-
+    scope = scope || (isComponent(parent) ? parent.data : parent.scope);
 
     var tagName = el.tagName.toLowerCase();
     var childANode = parseANodeFromEl(el);
@@ -45,7 +46,7 @@ function createNodeByEl(el, parent, elWalker) {
 
     var option = {
         owner: owner,
-        scope: owner.data,
+        scope: scope,
         parent: parent,
         el: el,
         elWalker: elWalker,

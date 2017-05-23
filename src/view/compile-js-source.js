@@ -301,14 +301,67 @@ var elementSourceCompiler = {
         });
 
         props.each(function (prop) {
-            if (tagName === 'textarea' && prop.name === 'value') {
-                return;
+            if (prop.name === 'value') {
+                switch (tagName) {
+                    case 'textarea':
+                        return;
+
+                    case 'select':
+                        sourceBuffer.addRaw('$selectValue = '
+                            + compileExprSource.expr(prop.expr)
+                            + ';'
+                        );
+                        return;
+
+                    case 'option':
+                        sourceBuffer.addRaw('if ('
+                            + compileExprSource.expr(prop.expr)
+                            + ' === $selectValue) {');
+                        sourceBuffer.joinString(' selected');
+                        sourceBuffer.addRaw('}');
+                        break;
+                }
             }
 
             switch (prop.name) {
                 case 'readonly':
                 case 'disabled':
                 case 'mutiple':
+                    sourceBuffer.joinRaw('boolAttrFilter("' + prop.name + '", '
+                        + compileExprSource.expr(prop.expr)
+                        + ')'
+                    );
+                    break;
+
+                case 'checked':
+                    if (tagName === 'input') {
+                        var valueProp = props.get('value');
+                        var valueCode = compileExprSource.expr(valueProp.expr);
+
+                        if (valueProp) {
+                            switch (props.get('type').raw) {
+                                case 'checkbox':
+                                    sourceBuffer.addRaw('if (contains('
+                                        + compileExprSource.expr(prop.expr)
+                                        + ', '
+                                        + valueCode
+                                        +')) {');
+                                    sourceBuffer.joinString(' checked');
+                                    sourceBuffer.addRaw('}');
+                                    break;
+
+                                case 'radio':
+                                    sourceBuffer.addRaw('if ('
+                                        + compileExprSource.expr(prop.expr)
+                                        + ' === '
+                                        + valueCode
+                                        +') {');
+                                    sourceBuffer.joinString(' checked');
+                                    sourceBuffer.addRaw('}');
+                                    break;
+                            }
+                        }
+                    }
                     break;
 
                 default:
@@ -316,9 +369,10 @@ var elementSourceCompiler = {
                         sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
                     }
                     else {
-                        sourceBuffer.joinString(' ' + prop.name + '="');
-                        sourceBuffer.joinExpr(prop.expr);
-                        sourceBuffer.joinString('"');
+                        sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
+                            + compileExprSource.expr(prop.expr)
+                            + ')'
+                        );
                     }
                     break;
             }
@@ -337,6 +391,10 @@ var elementSourceCompiler = {
         if (!autoCloseTags[tagName]) {
             sourceBuffer.joinString('</' + tagName + '>');
         }
+
+        if (tagName === 'select') {
+            sourceBuffer.addRaw('$selectValue = null;');
+        }
     },
 
     /**
@@ -351,9 +409,9 @@ var elementSourceCompiler = {
         if (aNode.tagName === 'textarea') {
             var valueProp = aNode.props.get('value');
             if (valueProp) {
-                sourceBuffer.addRaw('html += escapeHTML('
+                sourceBuffer.joinRaw('escapeHTML('
                     + compileExprSource.expr(valueProp.expr)
-                    + ');'
+                    + ')'
                 );
             }
 
@@ -477,6 +535,30 @@ function componentCompilePreCode() {
         return target;
     }
 
+    function each(array, iterator, thisArg) {
+        if (array && array.length > 0) {
+            if (thisArg) {
+                iterator = bind(iterator, thisArg);
+            }
+
+            for (var i = 0, l = array.length; i < l; i++) {
+                if (iterator(array[i], i) === false) {
+                    break;
+                }
+            }
+        }
+    }
+
+    function contains(array, value) {
+        var result;
+        each(array, function (item) {
+            result = item === value;
+            return !result;
+        });
+
+        return result;
+    }
+
     var HTML_ENTITY = {
         /* jshint ignore:start */
         '&': '&amp;',
@@ -530,6 +612,22 @@ function componentCompilePreCode() {
             return source ? sep + source : source;
         }
     };
+
+    function attrFilter(name, value) {
+        if (value) {
+            return ' ' + name + '="' + value + '"';
+        }
+
+        return '';
+    }
+
+    function boolAttrFilter(name, value) {
+        if (value && value !== 'false' && value !== '0') {
+            return ' ' + name;
+        }
+
+        return '';
+    }
 }
 
 /**

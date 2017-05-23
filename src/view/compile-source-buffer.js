@@ -29,6 +29,18 @@ CompileSourceBuffer.prototype.addRaw = function (code) {
 };
 
 /**
+ * 添加被拼接为html的原始代码
+ *
+ * @param {string} code 原始代码
+ */
+CompileSourceBuffer.prototype.joinRaw = function (code) {
+    this.segs.push({
+        type: 'JOIN_RAW',
+        code: code
+    });
+};
+
+/**
  * 添加renderer方法的起始源码
  */
 CompileSourceBuffer.prototype.addRendererStart = function () {
@@ -113,6 +125,10 @@ CompileSourceBuffer.prototype.toCode = function (str) {
 
             case 'JOIN_EXPR':
                 code.push('html += ' + compileExprSource.expr(seg.expr) + ';');
+                break;
+
+            case 'JOIN_RAW':
+                code.push('html += ' + seg.code + ';');
                 break;
 
             case 'RAW':

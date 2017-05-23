@@ -135,6 +135,14 @@ let componentDatas = [
                 ]
             }
         ]
+    },
+    {},
+    {distate: true},
+    {cValue: ['2', '3'], list: ['1', '2', '3']},
+    {cValue: '2', list: ['1', '2', '3']},
+    {
+        persons: ['errorrik', 'firede', 'otakustay'],
+        online: 'firede'
     }
 ];
 

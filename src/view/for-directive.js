@@ -180,6 +180,10 @@ ForDirective.prototype._init = function (options) {
 
     // #[begin] reverse
     if (options.el) {
+        var index = 0;
+        var directive;
+        var listData;
+
         /* eslint-disable no-constant-condition */
         while (1) {
         /* eslint-enable no-constant-condition */
@@ -193,8 +197,15 @@ ForDirective.prototype._init = function (options) {
             }
             else {
                 current.removeAttribute('san-for');
-                var child = createNodeByEl(current, this, options.elWalker);
+
+                directive = directive || aNode.directives.get('for');
+                listData = listData || this.evalExpr(directive.list) || [];
+                var itemScope = new ForItemData(this.scope, directive, listData[index], index);
+
+                var child = createNodeByEl(current, this, options.elWalker, itemScope);
                 this.childs.push(child);
+
+                index++;
             }
 
             var next = options.elWalker.next;
