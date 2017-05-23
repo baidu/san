@@ -425,30 +425,5 @@ ForDirective.prototype._attached = function () {
     }
 };
 
-// #[begin] ssr
-/**
- * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
- *
- * @return {string}
- */
-ForDirective.prototype.serialize = function () {
-    var directive = this.aNode.directives.get('for');
-    var extraProp = ' san-for="' + escapeHTML(directive.raw) + '"';
-    var str = '';
-
-    each(
-        this.evalExpr(directive.list),
-        function (item, i) {
-            var child = createForDirectiveChild(this, item, i);
-            this.childs.push(child);
-            str += child.serialize(extraProp);
-        },
-        this
-    );
-
-    str += serializeStump('for', serializeANode(this.aNode));
-    return str;
-};
-// #[end]
 
 exports = module.exports = ForDirective;

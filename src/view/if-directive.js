@@ -197,27 +197,5 @@ IfDirective.prototype._attached = function () {
     }
 };
 
-// #[begin] ssr
-/**
- * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
- *
- * @return {string}
- */
-IfDirective.prototype.serialize = function () {
-    var isElse = this.aNode.directives.get('else');
-
-    if (this.evalExpr(this.cond)) {
-        var child = createIfDirectiveChild(this);
-        this.childs[0] = child;
-        return child.serialize(
-            isElse
-                ? ' san-else'
-                : ' san-if="' + escapeHTML(this.cond.raw) + '"'
-        );
-    }
-
-    return serializeStump(isElse ? 'else' : 'if', serializeANode(this.aNode));
-};
-// #[end]
 
 exports = module.exports = IfDirective;

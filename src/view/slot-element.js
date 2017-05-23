@@ -133,28 +133,5 @@ SlotElement.prototype._dispose = function () {
 SlotElement.prototype._pushChildANode = Element.prototype._pushChildANode;
 // #[end
 
-// #[begin] ssr
-/**
- * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
- *
- * @return {string}
- */
-SlotElement.prototype.serialize = function () {
-    var element = this;
-    var extraProp = this.name !== '____' ? ' name="' + this.name + '"' : '';
-    if (this.owner === this.parentComponent) {
-        extraProp += ' by-default="1"';
-    }
-    // start tag
-    var str = serializeStump('slot-start', '', extraProp);
-    each(element.aNode.childs, function (aNodeChild) {
-        var child = createNode(aNodeChild, element);
-        str += child.serialize();
-    });
-    str += serializeStump('slot-stop');
-
-    return str;
-};
-// #[end]
 
 exports = module.exports = SlotElement;

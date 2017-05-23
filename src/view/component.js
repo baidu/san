@@ -618,59 +618,5 @@ Component._fillData = function (options) {
 };
 // #[end]
 
-// #[begin] ssr
-/**
- * 序列化文本节点，用于服务端生成在浏览器端可被反解的html串
- *
- * @return {string}
- */
-Component.prototype.serialize = function () {
-    var element = this;
-    var tagName = element.tagName;
-
-    // start tag
-    var str = '<' + tagName;
-    element.props.each(function (prop) {
-        var value = isComponent(element)
-            ? evalExpr(prop.expr, element.data, element)
-            : element.evalExpr(prop.expr, 1);
-
-        str +=
-            getPropHandler(element, prop.name)
-                .input
-                .attr(element, prop.name, value)
-            || '';
-    });
-
-    element.binds.each(function (bindInfo) {
-        str += ' prop-' + bindInfo.name + '="' + bindInfo.raw + '"';
-    });
-
-    if (element.subTag) {
-        str += ' san-component="' + element.subTag + '"';
-    }
-
-    str += '>';
-
-    // component data
-    if (!element.owner) {
-        str += serializeStump('data', JSON.stringify(element.data.get()));
-    }
-
-    // inner content
-    each(element.aNode.childs, function (aNodeChild) {
-        var child = createNode(aNodeChild, element);
-        element.childs.push(child);
-        str += child.serialize();
-    });
-
-    // close tag
-    if (!autoCloseTags[tagName]) {
-        str += '</' + tagName + '>';
-    }
-
-    return str;
-};
-// #[end]
 
 exports = module.exports = Component;
