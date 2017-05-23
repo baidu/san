@@ -143,7 +143,11 @@ let componentDatas = [
     {
         persons: ['errorrik', 'firede', 'otakustay'],
         online: 'firede'
-    }
+    },
+    {
+        date: new Date(1983, 8, 3)
+    },
+    {}
 ];
 
 

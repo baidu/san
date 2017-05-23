@@ -8,7 +8,7 @@ var ExprType = require('../parser/expr-type');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var flatComponentBinds = require('./flat-component-binds');
-
+var each = require('../util/each');
 
 // #[begin] ssr
 
@@ -462,6 +462,78 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
 }
 
+var stringifier = {
+    obj: function (source) {
+        var prefixComma;
+        var result = '{';
+
+        for (var key in source) {
+            if (prefixComma) {
+                result += ','
+            }
+            prefixComma = 1;
+
+            result += compileExprSource.stringLiteralize(key) + ':' + stringifier.any(source[key]);
+        }
+
+        return result + '}';
+    },
+
+    arr: function (source) {
+        var prefixComma;
+        var result = '[';
+
+        each(source, function (value) {
+            if (prefixComma) {
+                result += ','
+            }
+            prefixComma = 1;
+
+            result += stringifier.any(value);
+        });
+
+        return result + ']';
+    },
+
+    str: function (source) {
+        return compileExprSource.stringLiteralize(source);
+    },
+
+    date: function (source) {
+        return 'new Date(' + source.getTime() + ')'
+    },
+
+    any: function (source) {
+        switch (typeof source) {
+            case 'string':
+                return stringifier.str(source);
+
+            case 'number':
+                return '' + source;
+
+            case 'boolean':
+                return source ? 'true' : 'false';
+
+            case 'object':
+                if (!source) {
+                    return null;
+                }
+
+                if (source instanceof Array) {
+                    return stringifier.arr(source);
+                }
+
+                if (source instanceof Date) {
+                    return stringifier.date(source);
+                }
+
+                return stringifier.obj(source);
+        }
+
+        throw new Error('Cannot Stringify:' + source);
+    }
+};
+
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
  *
@@ -508,7 +580,7 @@ function genComponentContextCode(component) {
     code.push('},');
 
     // data
-    code.push('data: ' + JSON.stringify(component.data.get()) + ',');
+    code.push('data: ' + stringifier.any(component.data.get()) + ',');
 
     // tagName
     code.push('tagName: "' + component.tagName + '"');
@@ -628,6 +700,89 @@ function componentCompilePreCode() {
 
         return '';
     }
+
+    function stringLiteralize(source) {
+        return '"'
+            + source
+                .replace(/\x5C/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/\x0A/g, '\\n')
+                .replace(/\x09/g, '\\t')
+                .replace(/\x0D/g, '\\r')
+            + '"';
+    }
+
+    var stringifier = {
+        obj: function (source) {
+            var prefixComma;
+            var result = '{';
+
+            for (var key in source) {
+                if (prefixComma) {
+                    result += ','
+                }
+                prefixComma = 1;
+
+                result += stringLiteralize(key) + ':' + stringifier.any(source[key]);
+            }
+
+            return result + '}';
+        },
+
+        arr: function (source) {
+            var prefixComma;
+            var result = '[';
+
+            each(source, function (value) {
+                if (prefixComma) {
+                    result += ','
+                }
+                prefixComma = 1;
+
+                result += stringifier.any(value);
+            });
+
+            return result + ']';
+        },
+
+        str: function (source) {
+            return stringLiteralize(source);
+        },
+
+        date: function (source) {
+            return 'new Date(' + source.getTime() + ')'
+        },
+
+        any: function (source) {
+            switch (typeof source) {
+                case 'string':
+                    return stringifier.str(source);
+
+                case 'number':
+                    return '' + source;
+
+                case 'boolean':
+                    return source ? 'true' : 'false';
+
+                case 'object':
+                    if (!source) {
+                        return null;
+                    }
+
+                    if (source instanceof Array) {
+                        return stringifier.arr(source);
+                    }
+
+                    if (source instanceof Date) {
+                        return stringifier.date(source);
+                    }
+
+                    return stringifier.obj(source);
+            }
+
+            throw new Error('Cannot Stringify:' + source);
+        }
+    };
 }
 
 /**
