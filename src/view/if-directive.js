@@ -78,8 +78,7 @@ IfDirective.prototype._init = function (options) {
     // #[begin] reverse
     if (options.el) {
         if (isStump(options.el)) {
-            var aNode = parseTemplate(options.el.innerHTML);
-            aNode = aNode.childs[0];
+            var aNode = parseTemplate(options.el.innerHTML).childs[0];
             this.aNode = aNode;
         }
         else {

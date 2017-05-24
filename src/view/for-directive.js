@@ -180,30 +180,26 @@ ForDirective.prototype._init = function (options) {
 
     // #[begin] reverse
     if (options.el) {
+        aNode = parseTemplate(options.el.innerHTML).childs[0];
+        this.aNode = aNode;
+
         var index = 0;
-        var directive;
-        var listData;
+        var directive = aNode.directives.get('for');
+        var listData = this.evalExpr(directive.list) || [];
 
         /* eslint-disable no-constant-condition */
         while (1) {
         /* eslint-enable no-constant-condition */
-            var current = options.elWalker.current;
-            if (isStump(current)) {
-                aNode = parseTemplate(current.innerHTML);
-                aNode = aNode.childs[0];
-                this.aNode = aNode;
-                this.el = current;
+            var next = options.elWalker.next;
+            if (next.getAttribute('s-stump') === 'for-end') {
+                removeEl(options.el);
+                this.el = next;
+                options.elWalker.goNext();
                 break;
             }
 
-            current.removeAttribute('san-for');
-            current.removeAttribute('s-for');
-
-            directive = directive || aNode.directives.get('for');
-            listData = listData || this.evalExpr(directive.list) || [];
             var itemScope = new ForItemData(this.scope, directive, listData[index], index);
-
-            var child = createNodeByEl(current, this, options.elWalker, itemScope);
+            var child = createNodeByEl(next, this, options.elWalker, itemScope);
             this.childs.push(child);
 
             index++;

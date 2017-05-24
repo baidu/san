@@ -53,23 +53,24 @@ function createNodeByEl(el, parent, elWalker, scope) {
         aNode: childANode
     };
 
-    if (childANode.directives.get('if') || stumpName === 'if'
-        || childANode.directives.get('else') || stumpName === 'else'
-    ) {
+    if (childANode.directives.get('if') || childANode.directives.get('else')) {
         return new IfDirective(option);
     }
 
-    if (childANode.directives.get('for') || stumpName === 'for') {
-        return new ForDirective(option);
-    }
+    switch (stumpName) {
+        case 'if':
+        case 'else':
+            return new IfDirective(option);
 
-    if (stumpName === 'slot-start') {
-        return new SlotElement(option);
-    }
+        case 'for-start':
+            return new ForDirective(option);
 
-    if (stumpName === 'data') {
-        Component._fillData(option);
-        return;
+        case 'slot-start':
+            return new SlotElement(option);
+
+        case 'data':
+            Component._fillData(option);
+            return;
     }
 
     if (isStump(el)) {

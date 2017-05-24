@@ -160,6 +160,9 @@ var aNodeCompiler = {
         var indexName = forDirective.index.raw;
         var listName = compileExprSource.dataAccess(forDirective.list);
 
+        // start stump
+        sourceBuffer.joinString(serializeStump('for-start', serializeANode(aNode)));
+
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
             + indexName + ' < ' + listName + '.length; '
@@ -171,14 +174,13 @@ var aNodeCompiler = {
             aNodeCompiler.compile(
                 forElementANode,
                 sourceBuffer,
-                owner,
-                {prop: ' s-for="' + escapeHTML(forDirective.raw) + '"'}
+                owner
             )
         );
         sourceBuffer.addRaw('}');
 
-        // for stump
-        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
+        // stop stump
+        sourceBuffer.joinString(serializeStump('for-end'));
     },
 
     /**
@@ -218,7 +220,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('})(componentCtx.owner);');
         }
 
-        sourceBuffer.joinString(serializeStump('slot-stop'));
+        sourceBuffer.joinString(serializeStump('slot-end'));
     },
 
     /**

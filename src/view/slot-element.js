@@ -73,7 +73,7 @@ SlotElement.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
-            if (!next || next.getAttribute('san-stump') === 'slot-stop') {
+            if (!next || next.getAttribute('s-stump') === 'slot-end') {
                 next && options.elWalker.goNext();
                 break;
             }
