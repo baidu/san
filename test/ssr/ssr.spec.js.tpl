@@ -7,6 +7,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             el: wrap.firstChild
         });
 
+        expect(wrap.firstChild.className).toBe('');
         expect(myComponent.data.get('email')).toBe('errorrik@gmail.com');
         expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('email', 'erik168@163.com');
