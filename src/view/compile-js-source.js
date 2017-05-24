@@ -96,7 +96,7 @@ var aNodeCompiler = {
                 ifElementANode,
                 sourceBuffer,
                 owner,
-                {prop: ' san-if="' + escapeHTML(ifDirective.raw) + '"'}
+                {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
             )
         );
         if (elseANode) {
@@ -121,7 +121,7 @@ var aNodeCompiler = {
                     elseElementANode,
                     sourceBuffer,
                     owner,
-                    {prop: ' san-else'}
+                    {prop: ' s-else'}
                 )
             );
         }
@@ -172,7 +172,7 @@ var aNodeCompiler = {
                 forElementANode,
                 sourceBuffer,
                 owner,
-                {prop: ' san-for="' + escapeHTML(forDirective.raw) + '"'}
+                {prop: ' s-for="' + escapeHTML(forDirective.raw) + '"'}
             )
         );
         sourceBuffer.addRaw('}');
@@ -452,7 +452,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
 
     extraProp = extraProp || '';
     if (component.subTag) {
-        extraProp += ' san-component="' + component.subTag + '"';
+        extraProp += ' s-component="' + component.subTag + '"';
     }
 
     elementSourceCompiler.tagStart(
@@ -465,7 +465,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     );
 
     if (!component.owner) {
-        sourceBuffer.joinString('<script type="text/san" san-stump="data">');
+        sourceBuffer.joinString('<script type="text/san" s-stump="data">');
         sourceBuffer.joinDataStringify();
         sourceBuffer.joinString('</script>');
     }

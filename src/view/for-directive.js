@@ -195,26 +195,19 @@ ForDirective.prototype._init = function (options) {
                 this.el = current;
                 break;
             }
-            else {
-                current.removeAttribute('san-for');
 
-                directive = directive || aNode.directives.get('for');
-                listData = listData || this.evalExpr(directive.list) || [];
-                var itemScope = new ForItemData(this.scope, directive, listData[index], index);
+            current.removeAttribute('san-for');
+            current.removeAttribute('s-for');
 
-                var child = createNodeByEl(current, this, options.elWalker, itemScope);
-                this.childs.push(child);
+            directive = directive || aNode.directives.get('for');
+            listData = listData || this.evalExpr(directive.list) || [];
+            var itemScope = new ForItemData(this.scope, directive, listData[index], index);
 
-                index++;
-            }
+            var child = createNodeByEl(current, this, options.elWalker, itemScope);
+            this.childs.push(child);
 
-            var next = options.elWalker.next;
-            if (next && (next.getAttribute('san-for') || next.getAttribute('san-stump') === 'for')) {
-                options.elWalker.goNext();
-            }
-            else {
-                break;
-            }
+            index++;
+            options.elWalker.goNext();
         }
 
         this.parent._pushChildANode(this.aNode);

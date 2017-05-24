@@ -42,6 +42,7 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
             break;
 
         case 'san':
+        case 's':
             var directive = parseDirective(realName, value);
             directive && aNode.directives.push(directive);
             break;

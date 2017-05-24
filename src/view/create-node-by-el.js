@@ -30,7 +30,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
     var tagName = el.tagName.toLowerCase();
     var childANode = parseANodeFromEl(el);
-    var stumpName = el.getAttribute('san-stump');
+    var stumpName = el.getAttribute('s-stump');
 
     // find component class
     var ComponentClass = null;
@@ -38,7 +38,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
         ComponentClass = owner.components[tagName];
     }
 
-    var componentName = el.getAttribute('san-component');
+    var componentName = el.getAttribute('s-component');
     if (componentName) {
         ComponentClass = owner.components[componentName];
         childANode.tagName = componentName;

@@ -26,6 +26,32 @@ describe("ForDirective", function () {
         document.body.removeChild(wrap);
     });
 
+    it("render list use s-, data fill before attach", function () {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li s-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(4);
+        expect(lis[2].getAttribute('title')).toBe('varsha');
+        expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+        expect(lis[1].getAttribute('title')).toBe('errorrik');
+        expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("render list, no data", function () {
         var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'

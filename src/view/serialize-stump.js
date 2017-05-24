@@ -13,7 +13,7 @@
  * @return {string}
  */
 function serializeStump(type, content, extraPropSource) {
-    return '<script type="text/san" san-stump="' + type + '"'
+    return '<script type="text/san" s-stump="' + type + '"'
         + (extraPropSource || '') + '>'
         + (content || '') + '</script>';
 }

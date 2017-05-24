@@ -34,6 +34,23 @@ describe("IfDirective", function () {
         document.body.removeChild(wrap);
     });
 
+    it("for false literal use s-", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="false" title="errorrik">errorrik</span></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(0);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
 
     it("render when true, and update soon", function (done) {
         var MyComponent = san.defineComponent({

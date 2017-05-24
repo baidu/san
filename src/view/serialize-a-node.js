@@ -30,14 +30,14 @@ function serializeANode(aNode) {
     aNode.directives.each(function (directive) {
         if (directive.name === 'else' || directive.name === 'if' && directive.isElse) {
             if (!hasElse) {
-                str += ' san-else';
+                str += ' s-else';
             }
             hasElse = 1;
 
             return;
         }
 
-        str += ' san-' + directive.name + '="' + escapeHTML(directive.raw) + '"';
+        str += ' s-' + directive.name + '="' + escapeHTML(directive.raw) + '"';
     });
 
     // for events

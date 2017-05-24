@@ -89,6 +89,8 @@ IfDirective.prototype._init = function (options) {
 
             options.el.removeAttribute('san-if');
             options.el.removeAttribute('san-else');
+            options.el.removeAttribute('s-if');
+            options.el.removeAttribute('s-else');
 
             var child = createNodeByEl(options.el, this, options.elWalker);
             this.childs[0] = child;
