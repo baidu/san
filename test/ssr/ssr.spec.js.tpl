@@ -845,4 +845,54 @@ describe("Component serialize from compiled renderer and reverse", function () {
             done();
         });
     });
+
+    it("bool attr, no binding", function () {
+        ##cmpt31##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("bool attr twoway binding, init true", function (done) {
+        ##cmpt32##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
+        myComponent.data.set('distate', false);
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("bool attr twoway binding, init false", function (done) {
+        ##cmpt33##
+
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
+
+        expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
+        myComponent.data.set('distate', true);
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

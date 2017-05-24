@@ -86,7 +86,7 @@ var compileExprSource = {
      * @return {string}
      */
     text: function (textExpr) {
-        var code = '';
+        var code = '""';
 
         each(textExpr.segs, function (seg) {
             if (seg.type === ExprType.INTERP && !seg.filters[0]) {
@@ -104,12 +104,7 @@ var compileExprSource = {
             }
 
             var segCode = compileExprSource.expr(seg);
-            if (code) {
-                code += ' + ' + segCode;
-            }
-            else {
-                code = segCode;
-            }
+            code += ' + ' + segCode;
         });
 
         return code;

@@ -147,6 +147,9 @@ let componentDatas = [
     {
         date: new Date(1983, 8, 3)
     },
+    {},
+    {},
+    {distate: true},
     {}
 ];
 

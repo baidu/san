@@ -377,7 +377,7 @@ describe("Element", function () {
 
         var input = wrap.getElementsByTagName('input')[0];
         expect(input.disabled).toBeTruthy();
-        expect(input.getAttribute('disabled')).toBe('disabled');
+        expect(input.getAttribute('disabled')).toBe('');
 
 
         myComponent.dispose();

@@ -42,7 +42,7 @@ function serializeANode(aNode) {
 
     // for events
     each(aNode.events, function (event) {
-        str += ' on-' + event.name + '="' + escapeHTML(event.raw) + '"';
+        str += ' on-' + event.name + '="' + escapeHTML(event.expr.raw) + '"';
     });
 
     // for props

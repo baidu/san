@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>tti</title>
+
+    <!-- include source files here... -->
+    <script src="../../dist/san.all.js"></script>
+
+    <!-- include spec files here... -->
+    <script>
+    // cmpt
+    </script>
+</head>
+
+<body>
+<div id="main"><!--html--></div>
+<script>
+var now = new Date();
+new TTIComponent({el: document.getElementById('main').firstChild});
+var tti = (new Date) - now;
+console.log(tti);
+</script>
+</body>

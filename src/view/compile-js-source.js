@@ -235,6 +235,7 @@ var aNodeCompiler = {
             aNode.tagName,
             aNode.props,
             aNode.props,
+            aNode.events,
             extra.prop
         );
 
@@ -290,14 +291,19 @@ var elementSourceCompiler = {
      * @param {string} tagName 标签名
      * @param {IndexedList} props 属性列表
      * @param {IndexedList} binds 绑定信息列表
+     * @param {Array} events 绑定事件列表
      * @param {string?} extraProp 额外的属性串
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, extraProp) {
+    tagStart: function (sourceBuffer, tagName, props, binds, events, extraProp) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
         binds.each(function (bindInfo) {
             sourceBuffer.joinString(' prop-' + bindInfo.name + '="' + bindInfo.raw + '"');
+        });
+
+        each(events, function (event) {
+            sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
         });
 
         props.each(function (prop) {
@@ -327,10 +333,15 @@ var elementSourceCompiler = {
                 case 'readonly':
                 case 'disabled':
                 case 'mutiple':
-                    sourceBuffer.joinRaw('boolAttrFilter("' + prop.name + '", '
-                        + compileExprSource.expr(prop.expr)
-                        + ')'
-                    );
+                    if (prop.raw === '') {
+                        sourceBuffer.joinString(' ' + prop.name);
+                    }
+                    else {
+                        sourceBuffer.joinRaw('boolAttrFilter("' + prop.name + '", '
+                            + compileExprSource.expr(prop.expr)
+                            + ')'
+                        );
+                    }
                     break;
 
                 case 'checked':
@@ -449,6 +460,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         component.tagName,
         component.props,
         component.binds,
+        component.events,
         extraProp
     );
 
