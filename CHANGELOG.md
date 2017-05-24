@@ -9,6 +9,7 @@ ChangeLog
 + 【新特性】- 增加对 slot 的组件反解支持
 + 【新特性】- component 组件反解支持初始化数据灌入
 + 【新特性】- 表达式支持 true/false 字面量
++ 【新特性】- 指令支持 s- 前缀，不再推荐 san- 前缀
 + 【优化】- 组件内部数据操作机制 immutable 化
 + 【bug修复】- 组件在反解时主元素标签声明未生效
 + 【bug修复】- option 在位于 for 或 if 等结构内，selected 状态不生效
