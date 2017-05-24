@@ -152,14 +152,20 @@ var elementPropHandlers = {
             input: {
                 attr: function (element, name, value) {
                     var attrStr = defaultElementPropHandler.input.attr(element, name, value);
-                    var parent = element.parent;
-                    var parentValueProp;
+                    var parentSelect = element.parent;
+                    while (parentSelect) {
+                        if (parentSelect.tagName === 'select') {
+                            break;
+                        }
 
-                    if (parent.tagName === 'select'
-                        && (parentValueProp = parent.props.get('value'))
-                        && parent.evalExpr(parentValueProp.expr) === value
-                    ) {
-                        attrStr += ' selected';
+                        parentSelect = parentSelect.parent;
+                    }
+
+                    if (parentSelect) {
+                        var selectValue = parentSelect.props.get('value');
+                        if (selectValue && parentSelect.evalExpr(selectValue.expr) === value) {
+                            attrStr += ' selected';
+                        }
                     }
 
                     return attrStr;
@@ -183,7 +189,7 @@ function genBoolPropHandler(attrName) {
 
     return {
         input: {
-            attr: function (element, name, value) {console.log(element.props.get(name).raw)
+            attr: function (element, name, value) {
                 // 因为元素的attr值必须经过html escape，否则可能有漏洞
                 // 所以这里直接对假值字符串形式进行处理
                 // NaN之类非主流的就先不考虑了

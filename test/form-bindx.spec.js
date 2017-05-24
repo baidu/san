@@ -659,4 +659,43 @@ describe("Form TwoWay Binding", function () {
             document.body.removeChild(wrap);
         });
     });
+
+    it("select, option in loop", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b title="{{online}}">{{online}}</b>'
+                + '<select value="{=online=}">'
+                +   '<option s-for="p in persons" value="{{p}}">{{p}}</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'firede',
+                    persons: ['errorrik', 'firede']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(1);
+        expect(select.value).toBe('firede');
+        myComponent.data.set('online', 'errorrik');
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            expect(select.selectedIndex).toBe(0);
+            expect(select.value).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
