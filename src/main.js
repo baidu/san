@@ -176,7 +176,7 @@
     }
     else if (typeof define === 'function' && define.amd) {
         // For AMD
-        define([], san);
+        define('san', [], san);
     }
     else {
         // For <script src="..."
