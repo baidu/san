@@ -3,10 +3,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("update attribute", function (done) {
         ##cmpt1##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         expect(wrap.firstChild.className).toBe('');
         expect(myComponent.data.get('email')).toBe('errorrik@gmail.com');
         expect(myComponent.data.get('name')).toBe('errorrik');
@@ -26,10 +22,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update text", function (done) {
         ##cmpt2##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
 
         expect(myComponent.data.get('email')).toBe('errorrik@gmail.com');
@@ -51,10 +43,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update component", function (done) {
         ##cmpt3##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(myComponent.data.get('jokeName')).toBe('airike');
         expect(myComponent.data.get('name')).toBe('errorrik');
@@ -83,10 +71,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("update component, main element has attribute", function (done) {
         ##cmpt4##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.set('name', 'erik');
         myComponent.data.set('jokeName', '2bbbbbbb');
 
@@ -109,10 +93,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update component, merge init data and given data", function (done) {
         ##cmpt5##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML.indexOf('airike') >= 0).toBeTruthy();
@@ -141,10 +121,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update for, init with empty data", function (done) {
         ##cmpt6##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
@@ -169,10 +145,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("push update for, init with many data", function (done) {
         ##cmpt7##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
@@ -200,10 +172,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("remove update for, init with many data", function (done) {
         ##cmpt8##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.removeAt('persons', 0);
 
         var lis = wrap.getElementsByTagName('li');
@@ -229,10 +197,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("set update for, init with many data", function (done) {
         ##cmpt9##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.set('persons[0]', {name: 'erik', email: 'erik168@163.com'});
 
         var lis = wrap.getElementsByTagName('li');
@@ -256,10 +220,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update if, init with true", function (done) {
         ##cmpt10##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('cond', false);
@@ -289,10 +249,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("update if, init with false", function (done) {
         ##cmpt11##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.set('cond', true);
         var spans = wrap.getElementsByTagName('span');
         expect(spans.length).toBe(0);
@@ -311,10 +267,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update else, init with false", function (done) {
         ##cmpt12##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         myComponent.data.set('cond', true);
         var spans = wrap.getElementsByTagName('span');
@@ -338,10 +290,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("update else, init with true", function (done) {
         ##cmpt13##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.set('cond', false);
         var spans = wrap.getElementsByTagName('span');
         expect(spans.length).toBe(1);
@@ -363,10 +311,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it('default and named slot', function (done) {
         ##cmpt14##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var u = wrap.getElementsByTagName('u')[0];
         var p = wrap.getElementsByTagName('p')[0];
@@ -393,10 +337,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it('default and named slot, content by default', function (done) {
         ##cmpt15##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var p = wrap.getElementsByTagName('p')[0];
         var h3 = wrap.getElementsByTagName('h3')[0];
         expect(p.title).toBe('five');
@@ -419,10 +359,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("two way binding text value", function (done) {
         ##cmpt16##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var span = wrap.getElementsByTagName('span')[0];
         var input = wrap.getElementsByTagName('input')[0];
@@ -453,10 +389,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("two way binding textarea value", function (done) {
         ##cmpt17##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var span = wrap.getElementsByTagName('span')[0];
         var input = wrap.getElementsByTagName('textarea')[0];
         expect(span.title).toBe('errorrik');
@@ -486,10 +418,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("component with san-if, init with true", function (done) {
         ##cmpt18##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         expect(myComponent.data.get('jokeName')).toBe('airike');
         expect(myComponent.data.get('name')).toBe('errorrik');
         myComponent.data.set('name', 'erik');
@@ -516,10 +444,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("component with san-if, init with false", function (done) {
         ##cmpt19##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         // expect(myComponent.data.get('jokeName')).toBe('airike');
         // expect(myComponent.data.get('name')).toBe('errorrik');
@@ -548,10 +472,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("component with san-if, init with true, change much times", function (done) {
         ##cmpt20##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(myComponent.data.get('jokeName')).toBe('airike');
         expect(myComponent.data.get('name')).toBe('errorrik');
@@ -587,10 +507,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("component with san-for, then push", function (done) {
         ##cmpt21##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         myComponent.data.push('list', {title: '3', text: 'three'});
 
         var spans = wrap.getElementsByTagName('span');
@@ -615,10 +531,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("component with san-for, then set item", function (done) {
         ##cmpt22##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         myComponent.data.set('list[0].title', '111');
 
@@ -645,10 +557,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("render component with san-if, init true, update soon", function (done) {
         ##cmpt23##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var dts = wrap.getElementsByTagName('dt');
         expect(dts[0].title).toBe('erik');
@@ -693,10 +601,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("bool attr, init false", function (done) {
         ##cmpt24##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
         myComponent.data.set('distate', true);
 
@@ -711,10 +615,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("bool attr, init true", function (done) {
         ##cmpt25##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
         myComponent.data.set('distate', false);
@@ -731,10 +631,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("checkbox checked", function (done) {
         ##cmpt26##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var inputs = wrap.getElementsByTagName('input');
         expect(inputs[0].checked).toBeFalsy();
@@ -758,10 +654,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("radio checked", function (done) {
         ##cmpt27##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var inputs = wrap.getElementsByTagName('input');
         expect(inputs[0].checked).toBeFalsy();
         expect(inputs[1].checked).toBeTruthy();
@@ -784,10 +676,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("option selected", function (done) {
         ##cmpt28##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var select = wrap.getElementsByTagName('select')[0];
         expect(select.selectedIndex).toBe(1);
 
@@ -805,10 +693,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("date data", function (done) {
         ##cmpt29##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         var b = wrap.getElementsByTagName('b')[0];
         expect(b.title).toBe('1983');
@@ -828,10 +712,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("date data with init data", function (done) {
         ##cmpt30##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var b = wrap.getElementsByTagName('b')[0];
         expect(b.title).toBe('1983');
 
@@ -850,10 +730,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("bool attr, no binding", function () {
         ##cmpt31##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
         myComponent.dispose();
         document.body.removeChild(wrap);
@@ -861,10 +737,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("bool attr twoway binding, init true", function (done) {
         ##cmpt32##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(wrap.getElementsByTagName('button')[0].disabled).toBeTruthy();
         myComponent.data.set('distate', false);
@@ -881,10 +753,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("bool attr twoway binding, init false", function (done) {
         ##cmpt33##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         expect(wrap.getElementsByTagName('button')[0].disabled).toBeFalsy();
         myComponent.data.set('distate', true);
 
@@ -899,10 +767,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("s-html", function (done) {
         ##cmpt34##
-
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
 
         expect(/^aa<a>bbb<\/a>cc/i.test(wrap.getElementsByTagName('b')[0].innerHTML)).toBeTruthy();
         myComponent.data.set('html', 'uu<u>xxx</u>yy');
@@ -919,10 +783,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("component event", function (done) {
         ##cmpt35##
 
-        var myComponent = new MyComponent({
-            el: wrap.firstChild
-        });
-
         var span = wrap.getElementsByTagName('span')[0];
         expect(myComponent.data.get('title')).toBe('1');
         expect(span.title).toBe('1');
@@ -935,5 +795,27 @@ describe("Component serialize from compiled renderer and reverse", function () {
             document.body.removeChild(wrap);
             done();
         }, 200);
+    });
+
+    it("data binding name auto camel case", function (done) {
+        ##cmpt36##
+
+        var span = wrap.getElementsByTagName('span')[0];
+
+        expect(span.title).toBe('1');
+        expect(span.innerHTML.indexOf('one') === 0).toBeTruthy();
+
+        myComponent.data.set('title', '2');
+        myComponent.data.set('text', 'two');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('2');
+            expect(span.innerHTML.indexOf('two') === 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
     });
 });

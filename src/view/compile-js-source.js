@@ -9,6 +9,7 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var flatComponentBinds = require('./flat-component-binds');
 var each = require('../util/each');
+var camel2kebab = require('../util/camel2kebab');
 
 // #[begin] ssr
 
@@ -265,7 +266,7 @@ var aNodeCompiler = {
         var givenData = [];
 
         flatComponentBinds(aNode.props);
-        aNode.props.each(function (prop) {
+        component.binds.each(function (prop) {
             givenData.push(
                 compileExprSource.stringLiteralize(prop.name)
                 + ':'
@@ -302,7 +303,7 @@ var elementSourceCompiler = {
         sourceBuffer.joinString(extraProp || '');
 
         binds.each(function (bindInfo) {
-            sourceBuffer.joinString(' prop-' + bindInfo.name + '="' + bindInfo.raw + '"');
+            sourceBuffer.joinString(' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"');
         });
 
         var htmlDirective = aNode.directives.get('html');

@@ -1,0 +1,15 @@
+// component with san-for, then push
+var san = require('../../dist/san.all');
+var Label = san.defineComponent({
+    template: '<a><span title="{{dataTitle}}">{{dataText}}</span></a>'
+});
+
+var MyComponent = san.defineComponent({
+    components: {
+        'ui-label': Label
+    },
+
+    template: '<div><ui-label data-title="{{title}}" data-text="{{text}}"></ui-label></div>'
+});
+
+exports = module.exports = MyComponent;

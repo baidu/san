@@ -8,7 +8,6 @@ var bind = require('./bind');
 /**
  * 遍历数组集合
  *
- * @inner
  * @param {Array} array 数组源
  * @param {function(Any,number):boolean} iterator 遍历函数
  * @param {Object=} thisArg this指向对象

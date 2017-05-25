@@ -131,7 +131,7 @@ SlotElement.prototype._dispose = function () {
  * @param {ANode} aNode 抽象节点对象
  */
 SlotElement.prototype._pushChildANode = Element.prototype._pushChildANode;
-// #[end
+// #[end]
 
 
 exports = module.exports = SlotElement;

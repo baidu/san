@@ -8,7 +8,6 @@ var each = require('./each');
 /**
  * 判断数组中是否包含某项
  *
- * @inner
  * @param {Array} array 数组
  * @param {*} value 包含的项
  * @return {boolean}

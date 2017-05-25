@@ -155,6 +155,10 @@ let componentDatas = [
     {
         title: '1',
         text: 'one'
+    },
+    {
+        title: '1',
+        text: 'one'
     }
 ];
 
@@ -190,6 +194,9 @@ for (let i = 0; i < componentDatas.length; i++) {
     let preCode = `
         ${componentSource}
         var wrap = document.getElementById('wrap-cmpt${index}');
+        var myComponent = new MyComponent({
+            el: wrap.firstChild
+        });
     `;
     specTpl = specTpl.replace('##cmpt' + index + '##', preCode);
 

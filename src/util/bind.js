@@ -6,7 +6,6 @@
 /**
  * Function.prototype.bind 方法的兼容性封装
  *
- * @inner
  * @param {Function} func 要bind的函数
  * @param {Object} thisArg this指向对象
  * @param {...*} args 预设的初始参数

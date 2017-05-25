@@ -8,7 +8,6 @@ var extend = require('./extend');
 /**
  * 构建类之间的继承关系
  *
- * @inner
  * @param {Function} subClass 子类函数
  * @param {Function} superClass 父类函数
  */

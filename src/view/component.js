@@ -8,6 +8,7 @@ var bind = require('../util/bind');
 var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
+var kebab2camel = require('../util/kebab2camel');
 var emitDevtool = require('../util/emit-devtool');
 var Element = require('./element');
 var IndexedList = require('../util/indexed-list');
@@ -178,7 +179,7 @@ Component.prototype.init = function (options) {
 
             // 合并运行时的一些绑定和事件声明
             props: protoANode.props,
-            binds: givenANode.props,
+            binds: Component.camelBindsName(givenANode.props),
             events: protoANode.events,
             directives: givenANode.directives
         });
@@ -233,7 +234,7 @@ Component.prototype._initFromEl = function () {
     this._isInitFromEl = 1;
     this.aNode = parseANodeFromEl(this.el);
     this.aNode.givenSlots = {};
-    this.aNode.binds = this.aNode.props;
+    this.aNode.binds = Component.camelBindsName(this.aNode.props);
     this.aNode.props = this.constructor.prototype.aNode.props;
 
     this.parent && this.parent._pushChildANode(this.aNode);
@@ -600,6 +601,25 @@ Component.prototype._dispose = function () {
     this.listeners = null;
 };
 
+/**
+ * 将 binds 的 name 从 kebabcase 转换成 camelcase
+ *
+ * @paran {IndexedList} binds binds集合
+ * @return {IndexedList}
+ */
+Component.camelBindsName = function (binds) {
+    var result = new IndexedList();
+    binds.each(function (bind) {
+        result.push({
+            name: kebab2camel(bind.name),
+            expr: bind.expr,
+            x: bind.x,
+            raw: bind.raw
+        });
+    });
+
+    return result;
+};
 
 // #[begin] reverse
 /**
