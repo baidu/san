@@ -92,13 +92,14 @@ Component.prototype._toAttached = function () {
  *
  * @param {string} name 事件名
  * @param {Function} listener 监听器
+ * @param {string?} declaration 声明式
  */
-Component.prototype.on = function (name, listener) {
+Component.prototype.on = function (name, listener, declaration) {
     if (typeof listener === 'function') {
         if (!this.listeners[name]) {
             this.listeners[name] = [];
         }
-        this.listeners[name].push(listener);
+        this.listeners[name].push({fn: listener, declaration: declaration});
     }
 };
 
@@ -113,7 +114,7 @@ Component.prototype.un = function (name, listener) {
     var len = nameListeners && nameListeners.length;
 
     while (len--) {
-        if (!listener || listener === nameListeners[len]) {
+        if (!listener || listener === nameListeners[len].fn) {
             nameListeners.splice(len, 1);
         }
     }
@@ -128,7 +129,7 @@ Component.prototype.un = function (name, listener) {
  */
 Component.prototype.fire = function (name, event) {
     each(this.listeners[name], function (listener) {
-        listener.call(this, event);
+        listener.fn.call(this, event);
     }, this);
 };
 
@@ -147,45 +148,47 @@ Component.prototype.init = function (options) {
     this._compile();
 
     var me = this;
+
     var givenANode = options.aNode;
-    if (!options.el) {
-        var protoANode = this.constructor.prototype.aNode;
+    var protoANode = this.constructor.prototype.aNode;
 
-        if (givenANode) {
+    if (givenANode) {
+        // 组件运行时传入的结构，做slot解析
+        var givenSlots = {};
+        each(givenANode.childs, function (child) {
+            var slotName = '____';
+            var slotBind = !child.isText && child.props.get('slot');
+            if (slotBind) {
+                slotName = slotBind.raw;
+            }
 
-            // 组件运行时传入的结构，做slot解析
-            var givenSlots = {};
-            each(givenANode.childs, function (child) {
-                var slotName = '____';
-                var slotBind = !child.isText && child.props.get('slot');
-                if (slotBind) {
-                    slotName = slotBind.raw;
-                }
+            if (!givenSlots[slotName]) {
+                givenSlots[slotName] = [];
+            }
 
-                if (!givenSlots[slotName]) {
-                    givenSlots[slotName] = [];
-                }
+            givenSlots[slotName].push(child);
+        });
 
-                givenSlots[slotName].push(child);
-            });
+        this.aNode = new ANode({
+            tagName: protoANode.tagName || givenANode.tagName,
+            givenSlots: givenSlots,
 
-            this.aNode = new ANode({
-                tagName: protoANode.tagName || givenANode.tagName,
-                givenSlots: givenSlots,
+            // 组件的实际结构应为template编译的结构
+            childs: protoANode.childs,
 
-                // 组件的实际结构应为template编译的结构
-                childs: protoANode.childs,
-
-                // 合并运行时的一些绑定和事件声明
-                props: protoANode.props,
-                binds: givenANode.props,
-                events: protoANode.events,
-                directives: givenANode.directives
-            });
-            each(givenANode.events, function (eventBind) {
-                me.on(eventBind.name, bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope));
-            });
-        }
+            // 合并运行时的一些绑定和事件声明
+            props: protoANode.props,
+            binds: givenANode.props,
+            events: protoANode.events,
+            directives: givenANode.directives
+        });
+        each(givenANode.events, function (eventBind) {
+            me.on(
+                eventBind.name,
+                bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
+                eventBind
+            );
+        });
     }
 
     this._toPhase('compiled');

@@ -87,11 +87,13 @@ Node.prototype._toAttached = function () {
         child._toAttached();
     });
 
-    this._toPhase('created');
-    if (this._attached) {
-        this._attached();
+    if (!this.lifeCycle.is('attached')) {
+        this._toPhase('created');
+        if (this._attached) {
+            this._attached();
+        }
+        this._toPhase('attached');
     }
-    this._toPhase('attached');
 };
 
 /**

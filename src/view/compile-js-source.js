@@ -469,12 +469,21 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         extraProp += ' s-component="' + component.subTag + '"';
     }
 
+    var eventDeclarations = [];
+    for (var key in component.listeners) {
+        each(component.listeners[key], function (listener) {
+            if (listener.declaration) {
+                eventDeclarations.push(listener.declaration);
+            }
+        });
+    }
+
     elementSourceCompiler.tagStart(
         sourceBuffer,
         component.tagName,
         component.props,
         component.binds,
-        component.events,
+        eventDeclarations,
         component.aNode,
         extraProp
     );
