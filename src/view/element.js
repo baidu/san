@@ -90,7 +90,9 @@ Element.prototype._initFromEl = function () {
     this.parent && this.parent._pushChildANode(this.aNode);
     this.tagName = this.aNode.tagName;
 
-    fromElInitChilds(this);
+    if (!this.aNode.directives.get('html')) {
+        fromElInitChilds(this);
+    }
 };
 // #[end]
 
@@ -319,9 +321,20 @@ Element.prototype.updateView = function (changes) {
         });
     });
 
-    each(this.childs, function (child) {
-        child.updateView(changes);
-    });
+    var htmlDirective = this.aNode.directives.get('html');
+    if (htmlDirective) {
+        each(changes, function (change) {
+            if (changeExprCompare(change.expr, htmlDirective.value, me.scope)) {
+                me.el.innerHTML = me.evalExpr(htmlDirective.value);
+                return false;
+            }
+        });
+    }
+    else {
+        each(this.childs, function (child) {
+            child.updateView(changes);
+        });
+    }
 };
 
 

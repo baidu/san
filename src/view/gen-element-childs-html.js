@@ -21,13 +21,20 @@ function genElementChildsHTML(element, buf) {
         }
     }
     else {
-        each(element.aNode.childs, function (aNodeChild) {
-            var child = createNode(aNodeChild, element);
-            if (!this._static) {
-                element.childs.push(child);
-            }
-            child.genHTML(buf);
-        });
+        var htmlDirective = element.aNode.directives.get('html');
+
+        if (htmlDirective) {
+            buf.push(element.evalExpr(htmlDirective.value));
+        }
+        else {
+            each(element.aNode.childs, function (aNodeChild) {
+                var child = createNode(aNodeChild, element);
+                if (!this._static) {
+                    element.childs.push(child);
+                }
+                child.genHTML(buf);
+            });
+        }
     }
 }
 

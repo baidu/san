@@ -150,7 +150,8 @@ let componentDatas = [
     {},
     {},
     {distate: true},
-    {}
+    {},
+    {html: 'aa<a>bbb</a>cc'}
 ];
 
 

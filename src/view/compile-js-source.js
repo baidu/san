@@ -238,6 +238,7 @@ var aNodeCompiler = {
             aNode.props,
             aNode.props,
             aNode.events,
+            aNode,
             extra.prop
         );
 
@@ -296,13 +297,18 @@ var elementSourceCompiler = {
      * @param {Array} events 绑定事件列表
      * @param {string?} extraProp 额外的属性串
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, extraProp) {
+    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
         binds.each(function (bindInfo) {
             sourceBuffer.joinString(' prop-' + bindInfo.name + '="' + bindInfo.raw + '"');
         });
+
+        var htmlDirective = aNode.directives.get('html');
+        if (htmlDirective) {
+            sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
+        }
 
         each(events, function (event) {
             sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
@@ -431,9 +437,15 @@ var elementSourceCompiler = {
             return;
         }
 
-        each(aNode.childs, function (aNodeChild) {
-            sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
-        });
+        var htmlDirective = aNode.directives.get('html');
+        if (htmlDirective) {
+            sourceBuffer.joinExpr(htmlDirective.value);
+        }
+        else {
+            each(aNode.childs, function (aNodeChild) {
+                sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
+            });
+        }
     }
 };
 
@@ -463,6 +475,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         component.props,
         component.binds,
         component.events,
+        component.aNode,
         extraProp
     );
 

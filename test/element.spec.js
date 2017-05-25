@@ -383,4 +383,68 @@ describe("Element", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+    it("s-html", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span s-html="html"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('html', '<b>xxx</b>');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(/^<b>xxx<\/b>/.test(span.innerHTML)).toBeTruthy();
+
+
+        myComponent.data.set('html', '<b>aaa</b>');
+
+
+        san.nextTick(function () {
+
+            expect(/^<b>aaa<\/b>/.test(span.innerHTML)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("s-html with filter", function (done) {
+        var MyComponent = san.defineComponent({
+            filters: {
+                b: function (source) {
+                    return '<b>' + source.replace(/^b:/, '') + '</b>';
+                }
+            },
+
+            template: '<a><span s-html="html|b"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('html', 'b:xxx');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(/^<b>xxx<\/b>/.test(span.innerHTML)).toBeTruthy();
+
+
+        myComponent.data.set('html', 'b:aaa');
+
+
+        san.nextTick(function () {
+
+            expect(/^<b>aaa<\/b>/.test(span.innerHTML)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });
