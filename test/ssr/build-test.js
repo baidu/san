@@ -159,6 +159,9 @@ let componentDatas = [
     {
         title: '1',
         text: 'one'
+    },
+    {
+        title: '1'
     }
 ];
 
@@ -174,6 +177,7 @@ for (let i = 0; i < componentDatas.length; i++) {
     let index = i + 1;
     let ComponentClass = require('./cmpt' + index);
     let renderer = san.compileToRenderer(ComponentClass);
+
     html += '<div id="wrap-cmpt' + index + '">'
         + renderer(componentDatas[i])
         + '</div>\n\n';

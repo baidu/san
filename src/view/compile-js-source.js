@@ -5,6 +5,7 @@
 
 var serializeStump = require('./serialize-stump');
 var ExprType = require('../parser/expr-type');
+var parseExpr = require('../parser/parse-expr');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var flatComponentBinds = require('./flat-component-binds');
@@ -464,6 +465,10 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
+    sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
+    sourceBuffer.addRaw('var $computedName = componentCtx.computedNames[$i];');
+    sourceBuffer.addRaw('data[$computedName] = componentCtx.computed[$computedName]();');
+    sourceBuffer.addRaw('}');
 
     extraProp = extraProp || '';
     if (component.subTag) {
@@ -603,18 +608,40 @@ function genComponentContextCode(component) {
         '},'
     );
 
-    // computed
+    // computed obj
     code.push('computed: {');
     var computedCode = [];
     for (var key in component.computed) {
         var computed = component.computed[key];
 
         if (typeof computed === 'function') {
-            computedCode.push(key + ': ' + computed.toString());
+            computedCode.push(key + ': '
+                + computed.toString().replace(
+                    /this.data.get\(([^\)]+)\)/g,
+                    function (match, exprLiteral) {
+                        var exprStr = (new Function("return " + exprLiteral))();
+                        var expr = parseExpr(exprStr);
+
+                        return compileExprSource.expr(expr);
+                    })
+            );
         }
     }
     code.push(computedCode.join(','));
     code.push('},');
+
+    // computed names
+    code.push('computedNames: [');
+    computedCode = [];
+    for (var key in component.computed) {
+        var computed = component.computed[key];
+
+        if (typeof computed === 'function') {
+            computedCode.push('"' + key + '"');
+        }
+    }
+    code.push(computedCode.join(','));
+    code.push('],');
 
     // data
     code.push('data: ' + stringifier.any(component.data.get()) + ',');
