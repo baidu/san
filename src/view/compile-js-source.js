@@ -65,9 +65,16 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
-        sourceBuffer.joinString('<!--[san:ts]' + aNode.text + '-->');
-        sourceBuffer.joinExpr(aNode.textExpr);
-        sourceBuffer.joinString('<!--[san:te]-->');
+        var value = aNode.textExpr.value;
+
+        if (value == null) {
+            sourceBuffer.joinString('<!--s-ts:' + aNode.text + '-->');
+            sourceBuffer.joinExpr(aNode.textExpr);
+            sourceBuffer.joinString('<!--s-te-->');
+        }
+        else {
+            sourceBuffer.joinString(value);
+        }
     },
 
     /**

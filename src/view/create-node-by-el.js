@@ -37,7 +37,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
     // comment as TextNode
     if (el.nodeType === 8) {
-        if (el.data.indexOf('[san:ts]') >= 0) {
+        if (/^\s*s-ts:/.test(el.data)) {
             return new TextNode(option);
         }
 

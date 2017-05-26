@@ -40,7 +40,7 @@ TextNode.prototype._init = function (options) {
     if (this.el) {
         this.aNode = new ANode({
             isText: 1,
-            text: this.el.data.replace('[san:ts]', '')
+            text: this.el.data.replace('s-ts:', '')
         });
 
         this.parent._pushChildANode(this.aNode);
@@ -49,7 +49,7 @@ TextNode.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
-            if (next.nodeType === 8 && next.data === '[san:te]') {
+            if (next.nodeType === 8 && next.data === 's-te') {
                 options.elWalker.goNext();
                 removeEl(next);
                 break;
