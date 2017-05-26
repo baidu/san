@@ -377,7 +377,6 @@ describe("Element", function () {
 
         var input = wrap.getElementsByTagName('input')[0];
         expect(input.disabled).toBeTruthy();
-        expect(input.getAttribute('disabled')).toBe('');
 
 
         myComponent.dispose();
@@ -396,7 +395,7 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var span = wrap.getElementsByTagName('span')[0];
-        expect(/^<b>xxx<\/b>/.test(span.innerHTML)).toBeTruthy();
+        expect(/^<b>xxx<\/b>/i.test(span.innerHTML)).toBeTruthy();
 
 
         myComponent.data.set('html', '<b>aaa</b>');
@@ -404,7 +403,7 @@ describe("Element", function () {
 
         san.nextTick(function () {
 
-            expect(/^<b>aaa<\/b>/.test(span.innerHTML)).toBeTruthy();
+            expect(/^<b>aaa<\/b>/i.test(span.innerHTML)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -431,7 +430,7 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var span = wrap.getElementsByTagName('span')[0];
-        expect(/^<b>xxx<\/b>/.test(span.innerHTML)).toBeTruthy();
+        expect(/^<b>xxx<\/b>/i.test(span.innerHTML)).toBeTruthy();
 
 
         myComponent.data.set('html', 'b:aaa');
@@ -439,7 +438,7 @@ describe("Element", function () {
 
         san.nextTick(function () {
 
-            expect(/^<b>aaa<\/b>/.test(span.innerHTML)).toBeTruthy();
+            expect(/^<b>aaa<\/b>/i.test(span.innerHTML)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -471,6 +470,61 @@ describe("Element", function () {
         san.nextTick(function () {
             expect(/\/span>hello er<span>erik<\/span>ik!<b/i.test(a.innerHTML)).toBeTruthy();
             expect(b.innerHTML).toBe('bbb');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("complex structure in textnode, no prev sibling", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a>hello {{name|raw}}!<b>bbb</b></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'er<u>erik</u>ik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(/^hello er<u>erik<\/u>ik!<b/i.test(a.innerHTML)).toBeTruthy();
+        expect(b.innerHTML).toBe('bbb');
+
+        myComponent.data.set('name', 'er<span>erik</span>ik');
+
+        san.nextTick(function () {
+            expect(/^hello er<span>erik<\/span>ik!<b/i.test(a.innerHTML)).toBeTruthy();
+            expect(b.innerHTML).toBe('bbb');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("complex structure in textnode, no sibling", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a>hello {{name|raw}}!</a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'er<u>erik</u>ik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(/er<u>erik<\/u>ik/i.test(a.innerHTML)).toBeTruthy();
+
+        myComponent.data.set('name', 'er<span>erik</span>ik');
+
+        san.nextTick(function () {
+            expect(/er<span>erik<\/span>ik/i.test(a.innerHTML)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
