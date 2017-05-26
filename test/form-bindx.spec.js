@@ -698,4 +698,59 @@ describe("Form TwoWay Binding", function () {
             done();
         });
     });
+
+    it("dynamic expr", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<select value="{=item=}">'
+                + '    <option value="0">1</option>'
+                + '    <option value="1">2</option>'
+                + '    <option value="2">3</option>'
+                + '</select>'
+                + '<input type="text" value="{=list[item]=}">'
+                + '<p s-for="i in list" title="{{i}}">{{i}}</p>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    list: ['one', 'two', 'three'],
+                    item: '2'
+                }
+            }
+        })
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var select = wrap.getElementsByTagName('select')[0];
+        var input = wrap.getElementsByTagName('input')[0];
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(input.value).toBe('three');
+        expect(select.selectedIndex).toBe(2);
+        expect(ps[0].title).toBe('one');
+        expect(ps[1].title).toBe('two');
+        expect(ps[2].title).toBe('three');
+        myComponent.data.set('item', '1');
+
+        san.nextTick(function () {
+            expect(input.value).toBe('two');
+            expect(select.selectedIndex).toBe(1);
+
+            triggerEvent('#' + input.id, 'input', '22222');
+
+            setTimeout(function () {
+                expect(input.value).toBe('two22222');
+                expect(ps[0].title).toBe('one');
+                expect(ps[1].title).toBe(input.value);
+                expect(ps[2].title).toBe('three');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 400);
+        });
+    });
 });

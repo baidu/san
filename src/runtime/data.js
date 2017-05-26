@@ -97,7 +97,7 @@ Data.prototype.get = function (expr) {
     }
 
     for (i = start; value != null && i < l; i++) {
-        value = value[paths[i].value || evalExpr(paths[i], this)];
+        value = value[evalExpr(paths[i], this)];
     }
 
     return value;
@@ -113,19 +113,19 @@ Data.prototype.get = function (expr) {
  * @param {*} 变更属性值
  * @return {*} 变更后的新数据对象
  */
-function immutableSet(source, exprPaths, value) {
+function immutableSet(source, exprPaths, value, data) {
     if (exprPaths.length === 0) {
         return value;
     }
 
-    var prop = exprPaths[0].value;
+    var prop = evalExpr(exprPaths[0], data);
 
     if (source instanceof Array) {
         var index = +prop;
 
         if (!isNaN(index)) {
             var result = source.slice(0);
-            result[index] = immutableSet(result[index], exprPaths.slice(1), value);
+            result[index] = immutableSet(result[index], exprPaths.slice(1), value, data);
 
             return result;
         }
@@ -139,7 +139,7 @@ function immutableSet(source, exprPaths, value) {
             }
         }
 
-        result[prop] = immutableSet(source[prop] || {}, exprPaths.slice(1), value);
+        result[prop] = immutableSet(source[prop] || {}, exprPaths.slice(1), value, data);
 
         return result;
     }
@@ -174,7 +174,7 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
-    this.raw = immutableSet(this.raw, expr.paths, value);
+    this.raw = immutableSet(this.raw, expr.paths, value, this);
     !option.silence && this.fire({
         type: DataChangeType.SET,
         expr: expr,
@@ -182,6 +182,8 @@ Data.prototype.set = function (expr, value, option) {
         option: option
     });
 };
+
+
 
 Data.prototype.splice = function (expr, args, option) {
     option = option || {};
@@ -208,7 +210,7 @@ Data.prototype.splice = function (expr, args, option) {
 
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
-        this.raw = immutableSet(this.raw, expr.paths, newArray);
+        this.raw = immutableSet(this.raw, expr.paths, newArray, this);
 
         !option.silence && this.fire({
             expr: expr,
