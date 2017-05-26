@@ -31,7 +31,7 @@
     "build": "node ./tool/build.js && node ./test/ssr/build-test.js"
   },
   "main": "dist/san.all.js",
-  "unpkg": "dist/san",
+  "unpkg": "dist/san.all",
   "files": [
     "src",
     "dist"
