@@ -22,9 +22,6 @@ var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
-var serializeStump = require('./serialize-stump');
-var serializeANode = require('./serialize-a-node');
-var isStump = require('./is-stump');
 
 /**
  * 循环项的数据容器类

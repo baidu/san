@@ -12,7 +12,6 @@ var ANode = require('../parser/a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
-var serializeStump = require('./serialize-stump');
 
 /**
  * 文本节点类
@@ -41,10 +40,26 @@ TextNode.prototype._init = function (options) {
     if (this.el) {
         this.aNode = new ANode({
             isText: 1,
-            text: this.el.innerHTML
+            text: this.el.data.replace('[san:ts]', '')
         });
 
         this.parent._pushChildANode(this.aNode);
+
+        /* eslint-disable no-constant-condition */
+        while (1) {
+        /* eslint-enable no-constant-condition */
+            var next = options.elWalker.next;
+            if (next.nodeType === 8 && next.data === '[san:te]') {
+                options.elWalker.goNext();
+                removeEl(next);
+                break;
+            }
+
+            options.elWalker.goNext();
+        }
+
+        removeEl(this.el);
+        this.el = null;
     }
     // #[end]
 
@@ -57,31 +72,44 @@ TextNode.prototype._init = function (options) {
  * @param {StringBuffer} buf html串存储对象
  */
 TextNode.prototype.genHTML = function (buf) {
-    buf.push(this.evalExpr(this.aNode.textExpr, 1) || (ieOldThan9 ? '\uFEFF' : ''));
-
-    if (!this._static) {
-        genStumpHTML(this, buf);
-    }
+    buf.push(this.evalExpr(this.aNode.textExpr, 1));
 };
 
 /**
  * 刷新文本节点的内容
  */
 TextNode.prototype.update = function () {
-    var el = this._getEl();
-    var node = el.previousSibling;
+    if (!this._located) {
+        var index = -1;
+        var me = this;
+        each(this.parent.childs, function (child, i) {
+            if (child === me) {
+                index = i;
+                return false;
+            }
+        });
 
-    if (node && node.nodeType === 3) {
-        var textProp = typeof node.textContent === 'string'
-            ? 'textContent'
-            : 'data';
-        node[textProp] = this.evalExpr(this.aNode.textExpr);
+        this._prev = this.parent.childs[index - 1];
+        this._located = 1;
+    }
+
+    var text = this.evalExpr(this.aNode.textExpr, 1);
+
+    var parentEl = this.parent._getEl();
+    var insertBeforeEl = this._prev && this._prev._getEl().nextSibling || parentEl.firstChild;
+    var startRemoveEl = insertBeforeEl;
+
+    while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
+        insertBeforeEl = startRemoveEl.nextSibling;
+        removeEl(startRemoveEl);
+        startRemoveEl = insertBeforeEl;
+    }
+
+    if (insertBeforeEl) {
+        insertBeforeEl.insertAdjacentHTML('beforebegin', text);
     }
     else {
-        el.insertAdjacentHTML(
-            'beforebegin',
-            this.evalExpr(this.aNode.textExpr, 1)
-        );
+        parentEl.innerHTML = text;
     }
 };
 

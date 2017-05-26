@@ -11,6 +11,7 @@ var compileExprSource = require('./compile-expr-source');
 var flatComponentBinds = require('./flat-component-binds');
 var each = require('../util/each');
 var camel2kebab = require('../util/camel2kebab');
+var serializeANode = require('./serialize-a-node');
 
 // #[begin] ssr
 
@@ -64,11 +65,9 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
+        sourceBuffer.joinString('<!--[san:ts]' + aNode.text + '-->');
         sourceBuffer.joinExpr(aNode.textExpr);
-
-        if (!aNode.textExpr.value) {
-            sourceBuffer.joinString(serializeStump('text', aNode.text));
-        }
+        sourceBuffer.joinString('<!--[san:te]-->');
     },
 
     /**

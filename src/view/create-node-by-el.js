@@ -10,7 +10,6 @@ var ForDirective = require('./for-directive');
 var Element = require('./element');
 var SlotElement = require('./slot-element');
 var Component = require('./component');
-
 var isStump = require('./is-stump');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
@@ -28,9 +27,28 @@ function createNodeByEl(el, parent, elWalker, scope) {
     var owner = isComponent(parent) ? parent : parent.owner;
     scope = scope || (isComponent(parent) ? parent.data : parent.scope);
 
+    var option = {
+        owner: owner,
+        scope: scope,
+        parent: parent,
+        el: el,
+        elWalker: elWalker
+    };
+
+    // comment as TextNode
+    if (el.nodeType === 8) {
+        if (el.data.indexOf('[san:ts]') >= 0) {
+            return new TextNode(option);
+        }
+
+        return;
+    }
+
+    // element as anything
     var tagName = el.tagName.toLowerCase();
     var childANode = parseANodeFromEl(el);
     var stumpName = el.getAttribute('s-stump');
+    option.aNode = childANode;
 
     // find component class
     var ComponentClass = null;
@@ -44,14 +62,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
         childANode.tagName = componentName;
     }
 
-    var option = {
-        owner: owner,
-        scope: scope,
-        parent: parent,
-        el: el,
-        elWalker: elWalker,
-        aNode: childANode
-    };
+
 
     if (childANode.directives.get('if') || childANode.directives.get('else')) {
         return new IfDirective(option);
@@ -71,11 +82,6 @@ function createNodeByEl(el, parent, elWalker, scope) {
         case 'data':
             Component._fillData(option);
             return;
-    }
-
-    if (isStump(el)) {
-        // as TextNode
-        return new TextNode(option);
     }
 
     // as Component

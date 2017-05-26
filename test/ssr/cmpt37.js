@@ -1,4 +1,4 @@
-// component with san-for, then push
+// computed data
 var san = require('../../dist/san.all');
 
 var MyComponent = san.defineComponent({

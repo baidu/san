@@ -19,8 +19,10 @@ function DOMChildsWalker(el) {
 
     var child = el.firstChild;
     while (child) {
-        if (child.nodeType === 1) {
-            this.raw.push(child);
+        switch (child.nodeType) {
+            case 1:
+            case 8:
+                this.raw.push(child);
         }
 
         child = child.nextSibling;
@@ -48,7 +50,7 @@ function fromElInitChilds(element) {
     var current;
     while ((current = walker.current)) {
         var child = createNodeByEl(current, element, walker);
-        if (child) {
+        if (child && !child._static) {
             element.childs.push(child);
         }
 

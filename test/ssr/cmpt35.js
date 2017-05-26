@@ -1,4 +1,4 @@
-// component with san-for, then push
+
 var san = require('../../dist/san.all');
 var Label = san.defineComponent({
     template: '<a><span title="{{title}}">{{text}}</span></a>',

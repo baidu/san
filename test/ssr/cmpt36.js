@@ -1,4 +1,4 @@
-// component with san-for, then push
+// data binding name auto camel case
 var san = require('../../dist/san.all');
 var Label = san.defineComponent({
     template: '<a><span title="{{dataTitle}}">{{dataText}}</span></a>'

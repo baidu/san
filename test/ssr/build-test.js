@@ -162,6 +162,9 @@ let componentDatas = [
     },
     {
         title: '1'
+    },
+    {
+        name: 'er<u>erik</u>ik'
     }
 ];
 
