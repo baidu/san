@@ -507,6 +507,32 @@ describe("Element", function () {
         });
     });
 
+    it("complex structure in textnode, no next sibling", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span>aaa</span>hello {{name|raw}}!</a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'er<u>erik</u>ik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(/\/span>hello er<u>erik<\/u>ik!$/i.test(a.innerHTML)).toBeTruthy();
+
+        myComponent.data.set('name', 'er<span>erik</span>ik');
+
+        san.nextTick(function () {
+            expect(/\/span>hello er<span>erik<\/span>ik!$/i.test(a.innerHTML)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("complex structure in textnode, no sibling", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a>hello {{name|raw}}!</a>'

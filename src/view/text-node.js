@@ -108,6 +108,9 @@ TextNode.prototype.update = function () {
     if (insertBeforeEl) {
         insertBeforeEl.insertAdjacentHTML('beforebegin', text);
     }
+    else if (this._prev) {
+        this._prev._getEl().insertAdjacentHTML('afterend', text);
+    }
     else {
         parentEl.innerHTML = text;
     }
