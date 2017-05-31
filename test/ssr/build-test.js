@@ -165,6 +165,13 @@ let componentDatas = [
     },
     {
         name: 'er<u>erik</u>ik'
+    },
+    {
+        persons: ['errorrik', 'firede']
+    },
+    {
+        online: 'firede',
+        persons: ['errorrik', 'firede']
     }
 ];
 

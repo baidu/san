@@ -858,4 +858,48 @@ describe("Component serialize from compiled renderer and reverse", function () {
             done();
         });
     });
+
+    it("select, null and undefined should select empty option, init undefined", function (done) {
+        ##cmpt39##
+
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(2);
+        expect(select.value).toBe('');
+        myComponent.data.set('online', 'errorrik');
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            expect(select.selectedIndex).toBe(0);
+            expect(select.value).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].title).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("select, null and undefined should select empty option, init valued", function (done) {
+        ##cmpt40##
+
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(1);
+        expect(select.value).toBe('firede');
+        myComponent.data.set('online', null);
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            expect(select.selectedIndex).toBe(2);
+            expect(select.value).toBe('');
+            expect(wrap.getElementsByTagName('b')[0].title).toBe('');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

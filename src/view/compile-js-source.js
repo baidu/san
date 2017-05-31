@@ -240,6 +240,16 @@ var aNodeCompiler = {
      */
     compileElement: function (aNode, sourceBuffer, owner, extra) {
         extra = extra || {};
+        if (aNode.tagName === 'option'
+            && !aNode.props.get('value')
+            && aNode.childs[0]
+        ) {
+            aNode.props.push({
+                name: 'value',
+                expr: aNode.childs[0].textExpr
+            });
+        }
+
         elementSourceCompiler.tagStart(
             sourceBuffer,
             aNode.tagName,
@@ -310,7 +320,11 @@ var elementSourceCompiler = {
         sourceBuffer.joinString(extraProp || '');
 
         binds.each(function (bindInfo) {
-            sourceBuffer.joinString(' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"');
+            if (bindInfo.raw) {
+                sourceBuffer.joinString(
+                    ' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"'
+                );
+            }
         });
 
         var htmlDirective = aNode.directives.get('html');
@@ -331,17 +345,25 @@ var elementSourceCompiler = {
                     case 'select':
                         sourceBuffer.addRaw('$selectValue = '
                             + compileExprSource.expr(prop.expr)
-                            + ';'
+                            + ' || "";'
                         );
                         return;
 
                     case 'option':
-                        sourceBuffer.addRaw('if ('
+                        sourceBuffer.addRaw('$optionValue = '
                             + compileExprSource.expr(prop.expr)
-                            + ' === $selectValue) {');
+                            + ';'
+                        );
+                        // value
+                        sourceBuffer.addRaw('if ($optionValue != null) {');
+                        sourceBuffer.joinRaw('" value=\\"" + $optionValue + "\\""');
+                        sourceBuffer.addRaw('}');
+
+                        // selected
+                        sourceBuffer.addRaw('if ($optionValue === $selectValue) {');
                         sourceBuffer.joinString(' selected');
                         sourceBuffer.addRaw('}');
-                        break;
+                        return;
                 }
             }
 
@@ -421,6 +443,10 @@ var elementSourceCompiler = {
 
         if (tagName === 'select') {
             sourceBuffer.addRaw('$selectValue = null;');
+        }
+
+        if (tagName === 'option') {
+            sourceBuffer.addRaw('$optionValue = null;');
         }
     },
 

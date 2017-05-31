@@ -151,7 +151,7 @@ var elementPropHandlers = {
         value: {
             input: {
                 attr: function (element, name, value) {
-                    var attrStr = defaultElementPropHandler.input.attr(element, name, value);
+                    var attrStr = ' value="' + (value || '') + '"';
                     var parentSelect = element.parent;
                     while (parentSelect) {
                         if (parentSelect.tagName === 'select') {
@@ -162,8 +162,13 @@ var elementPropHandlers = {
                     }
 
                     if (parentSelect) {
-                        var selectValue = parentSelect.props.get('value');
-                        if (selectValue && parentSelect.evalExpr(selectValue.expr) === value) {
+                        var selectValue = null;
+                        var selectValueProp = parentSelect.props.get('value');
+                        if (selectValueProp) {
+                            selectValue = parentSelect.evalExpr(selectValueProp.expr) || '';
+                        }
+
+                        if (selectValue === value) {
                             attrStr += ' selected';
                         }
                     }
@@ -173,6 +178,19 @@ var elementPropHandlers = {
 
                 prop: defaultElementPropHandler.input.prop
             }
+        }
+    },
+
+    select: {
+        value: {
+            input: {
+                attr: empty,
+                prop: function (element, name, value) {
+                    element.el.value = value || '';
+                }
+            },
+
+            output: defaultElementPropHandler.output
         }
     }
 };

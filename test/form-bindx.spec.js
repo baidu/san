@@ -660,6 +660,7 @@ describe("Form TwoWay Binding", function () {
         });
     });
 
+
     it("select, option in loop", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
@@ -698,6 +699,121 @@ describe("Form TwoWay Binding", function () {
             done();
         });
     });
+
+    it("select, null and undefined should select empty option, init undefined", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b title="{{online}}">{{online}}</b>'
+                + '<select value="{=online=}">'
+                +   '<option s-for="p in persons">{{p}}</option>'
+                +   '<option value="">empty</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    persons: ['errorrik', 'firede']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(2);
+        expect(select.value).toBe('');
+        myComponent.data.set('online', 'errorrik');
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            expect(select.selectedIndex).toBe(0);
+            expect(select.value).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].title).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("select, null and undefined should select empty option, init valued", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b title="{{online}}">{{online}}</b>'
+                + '<select value="{=online=}">'
+                +   '<option s-for="p in persons">{{p}}</option>'
+                +   '<option value="">empty</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'firede',
+                    persons: ['errorrik', 'firede']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(1);
+        expect(select.value).toBe('firede');
+        myComponent.data.set('online', null);
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+
+            expect(select.selectedIndex).toBe(2);
+            expect(select.value).toBe('');
+            expect(wrap.getElementsByTagName('b')[0].title).toBe('');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("select, no binding", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<select>'
+                +   '<option s-for="p in persons">{{p}}</option>'
+                +   '<option value="">empty</option>'
+                + '</select>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'firede',
+                    persons: ['errorrik', 'firede']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(0);
+        expect(select.value).toBe('errorrik');
+
+        san.nextTick(function () {
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 
     it("dynamic expr", function (done) {
         var MyComponent = san.defineComponent({
