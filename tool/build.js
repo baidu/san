@@ -6,21 +6,25 @@ const uglifyJS = require('uglify-js');
 
 
 let editions = {
-    all: {
-        compress: 1,
-        ignoreFeatures: ['devtool', 'error']
-    },
+    all: {},
 
-    source: {},
-
-    release: {
-        ignoreFeatures: ['ssr', 'devtool', 'error']
+    mpa: {
+        ignoreFeatures: ['ssr', 'devtool', 'error'],
+        compress: 1
     },
 
     spa: {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
-    }
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error'],
+        compress: 1
+    },
 
+    'mpa.dev': {
+        ignoreFeatures: ['ssr']
+    },
+
+    'spa.dev': {
+        ignoreFeatures: ['ssr', 'reverse']
+    }
 };
 
 function build() {
@@ -28,7 +32,7 @@ function build() {
     let distDir = path.resolve(rootDir, 'dist');
     let version = JSON.parse(fs.readFileSync(path.resolve(rootDir, 'package.json'))).version;
 
-    let source = pack(rootDir).replace('##version##', version);
+    let source = pack(rootDir).replace(/##version##/g, version);
 
 
     Object.keys(editions).forEach(edition => {
