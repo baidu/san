@@ -235,6 +235,29 @@ describe("Element", function () {
         });
     });
 
+    it("bind draggable", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><div draggable="{{ed}}"></div></a>'
+        });
+
+        var wrap = document.createElement('div');
+        var span = wrap.firstChild.firstChild;
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        expect(span.draggable).toBeFalsy();
+
+        myComponent.data.set('ed', true);
+
+        san.nextTick(function () {
+            expect(span.draggable).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind disabled", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><input type="text" disabled="{{ed}}"><textarea disabled="{{ed}}"></textarea><button disabled="{{ed}}">btn</button></div>'
