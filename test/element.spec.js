@@ -237,24 +237,35 @@ describe("Element", function () {
 
     it("bind draggable", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<a><div draggable="{{ed}}"></div></a>'
+            template: '<a><div draggable="{{draggable}}"></div></a>'
         });
 
         var wrap = document.createElement('div');
-        var span = wrap.firstChild.firstChild;
         document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-        expect(span.draggable).toBeFalsy();
 
-        myComponent.data.set('ed', true);
+        var myComponent = new MyComponent();
+        myComponent.attach(wrap);
 
         san.nextTick(function () {
-            expect(span.draggable).toBeTruthy();
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            var span = wrap.firstChild.firstChild;
+            expect(span.draggable).toBeFalsy();
 
-            done();
+            // change data
+            myComponent.data.set('draggable', true);
+
+            // next tick
+            san.nextTick(function (){
+
+                expect(span.draggable).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+
+            });
+
         });
     });
 
