@@ -30,6 +30,11 @@ let editions = {
 function build() {
     let rootDir = path.resolve(__dirname, '..');
     let distDir = path.resolve(rootDir, 'dist');
+
+    if (!fs.existsSync(distDir)) {
+        fs.mkdirSync(distDir);
+    }
+
     let version = JSON.parse(fs.readFileSync(path.resolve(rootDir, 'package.json'))).version;
 
     let source = pack(rootDir).replace(/##version##/g, version);
