@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'test/lib/triggerEvent.js',
-      'src/main.js',
+      'dist/san.all.js',
       'test/**/*spec.js',
     ],
 
