@@ -76,6 +76,7 @@ var defaultElementPropHandlers = {
         }
     },
 
+    draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
     disabled: genBoolPropHandler('disabled')
 };
