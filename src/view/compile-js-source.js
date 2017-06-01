@@ -774,10 +774,10 @@ function componentCompilePreCode() {
                 return result;
             }
 
-            return source;
+            return source || '';
         },
         _sep: function (source, sep) {
-            return source ? sep + source : source;
+            return source ? sep + source : '';
         }
     };
 

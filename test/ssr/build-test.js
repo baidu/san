@@ -172,7 +172,8 @@ let componentDatas = [
     {
         online: 'firede',
         persons: ['errorrik', 'firede']
-    }
+    },
+    {}
 ];
 
 
