@@ -244,10 +244,6 @@ describe("Element", function () {
         var span = wrap.firstChild.firstChild;
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-
-        // var input = wrap.getElementsByTagName('input')[0];
-        // var textarea = wrap.getElementsByTagName('textarea')[0];
-        // var btn = wrap.getElementsByTagName('button')[0];
         expect(span.draggable).toBeFalsy();
 
         myComponent.data.set('ed', true);
