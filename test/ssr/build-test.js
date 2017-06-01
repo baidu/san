@@ -217,6 +217,14 @@ for (let i = 0; i < componentDatas.length; i++) {
 
 }
 
+
+let karmaHtml = fs.readFileSync(path.resolve(__dirname, '../karma-context.html.tpl'), 'UTF-8');
+fs.writeFileSync(
+    path.resolve(__dirname, '../karma-context.html'),
+    karmaHtml.replace('##ssr-elements##', html),
+    'UTF-8'
+);
+
 fs.writeFileSync(
     path.resolve(__dirname, '../index-ssr.html'),
     htmlTpl.replace('##ssr-elements##', html),
