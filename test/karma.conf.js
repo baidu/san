@@ -83,7 +83,7 @@ module.exports = function(config) {
   if (process.argv.indexOf('--coverage') > -1) {
 
     configuration.reporters.push('coverage');
-    configuration.preprocessors['src/main.js'] = 'coverage';
+    configuration.preprocessors['dist/san.all.js'] = 'coverage';
     configuration.coverageReporter = {
         type : 'html',
         dir : 'coverage/'
