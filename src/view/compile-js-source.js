@@ -695,10 +695,10 @@ function componentCompilePreCode() {
     var $version = '##version##';
 
     function extend(target, source) {
-        for (var key in source) {
-            if (source.hasOwnProperty(key)) {
+        if (source) {
+            Object.keys(source).forEach(function (key) {
                 target[key] = source[key];
-            }
+            });
         }
 
         return target;
@@ -768,8 +768,10 @@ function componentCompilePreCode() {
         _style: function (source) {
             if (typeof source === 'object') {
                 var result = '';
-                for (var key in source) {
-                    result += key + ':' + source[key] + ';';
+                if (source) {
+                    Object.keys(source).forEach(function (key) {
+                        result += key + ':' + source[key] + ';';
+                    });
                 }
 
                 return result;
