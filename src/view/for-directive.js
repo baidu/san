@@ -295,13 +295,28 @@ ForDirective.prototype.updateView = function (changes) {
             };
 
             var changeIndex = +this.evalExpr(changePaths[forLen]);
-            Data.prototype.set.call(
-                this.childs[changeIndex].scope,
-                change.expr,
-                change.value,
-                {silence: 1}
-            );
             childsChanges[changeIndex].push(change);
+
+            switch (change.type) {
+                case DataChangeType.SET:
+                    Data.prototype.set.call(
+                        this.childs[changeIndex].scope,
+                        change.expr,
+                        change.value,
+                        {silence: 1}
+                    );
+                    break;
+
+
+                case DataChangeType.SPLICE:
+                    Data.prototype.splice.call(
+                        this.childs[changeIndex].scope,
+                        change.expr,
+                        [].concat(change.index, change.deleteCount, change.insertions),
+                        {silence: 1}
+                    );
+                    break;
+            }
         }
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
