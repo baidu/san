@@ -816,14 +816,14 @@ function componentCompilePreCode() {
             var prefixComma;
             var result = '{';
 
-            for (var key in source) {
+            Object.keys(source).forEach(function (key) {
                 if (prefixComma) {
                     result += ','
                 }
                 prefixComma = 1;
 
                 result += stringLiteralize(key) + ':' + stringifier.any(source[key]);
-            }
+            });
 
             return result + '}';
         },
