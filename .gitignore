@@ -1,5 +1,6 @@
 node_modules/
-dist/
+dist/*.js
+dist/*.gz
 .idea/
 public/
 npm-debug.log
