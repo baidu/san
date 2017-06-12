@@ -13,7 +13,7 @@ var each = require('./each');
  * @return {boolean}
  */
 function contains(array, value) {
-    var result;
+    var result = false;
     each(array, function (item) {
         result = item === value;
         return !result;

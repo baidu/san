@@ -471,6 +471,115 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("checkbox, set empty data item", function (done) {
+        var MyComponent = san.defineComponent({
+            filters: {
+                join: function (source, sep) {
+                    if (source instanceof Array) {
+                        return source.join(sep);
+                    }
+
+                    return source;
+                }
+            },
+
+            template: '<div>'
+                + '<b>{{online | join("|")}}</b>'
+                + '<label><input type="checkbox" value="errorrik" checked="{=online=}">errorrik</label>'
+                + '<label><input type="checkbox" value="varsha" checked="{=online=}">varsha</label>'
+                + '<label><input type="checkbox" value="firede" checked="{=online=}">firede</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: ['varsha']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+        expect(inputs[2].checked).toBe(false);
+
+        myComponent.data.set('online', []);
+
+        function doneSpec() {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBe(false);
+            expect(inputs[1].checked).toBe(false);
+            expect(inputs[2].checked).toBe(false);
+
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }
+
+        setTimeout(doneSpec, 500);
+
+    });
+
+    it("checkbox, in for", function (done) {
+        var MyComponent = san.defineComponent({
+            template: ''
+                + '<ul><li san-for="item in items">'
+                    + '<u>{{item.label}} - {{item.values}}</u>'
+                    + '<label san-for="box in item.datasource">'
+                        + '<input type="checkbox" value="{{box.value}}" checked="{=item.values=}"> {{box.title}}'
+                    + '</label>'
+                + '</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                items: [
+                    {
+                        label: 'A',
+                        datasource: [
+                            {
+                              title: 'foo',
+                              value: 'foo'
+                            },
+                            {
+                              title: 'bar',
+                              value: 'bar'
+                            }
+                        ],
+                        values: ['foo']
+                    }
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(true);
+        expect(inputs[1].checked).toBe(false);
+
+        triggerEvent('#' + inputs[1].id, 'click');
+        setTimeout(doneSpec, 500);
+
+        function doneSpec() {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBe(true);
+            expect(inputs[1].checked).toBe(true);
+            expect(myComponent.data.get('items[0].values')).toContain('foo');
+            expect(myComponent.data.get('items[0].values')).toContain('bar');
+
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }
+
+    });
+
     it("radio", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'

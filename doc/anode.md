@@ -14,6 +14,7 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[表达式类型](#user-content-表达式类型)  
 　　[STRING](#user-content-string)  
 　　[NUMBER](#user-content-number)  
+　　[BOOL](#user-content-bool)  
 　　[ACCESSOR](#user-content-accessor)  
 　　[INTERP](#user-content-interp)  
 　　[CALL](#user-content-call)  
@@ -124,13 +125,14 @@ exprInfo = {
 var ExprType = {
     STRING: 1,
     NUMBER: 2,
-    ACCESSOR: 3,
-    INTERP: 4,
-    CALL: 5,
-    TEXT: 6,
-    BINARY: 7,
-    UNARY: 8,
-    TERTIARY: 9
+    BOOL: 3,
+    ACCESSOR: 4,
+    INTERP: 5,
+    CALL: 6,
+    TEXT: 7,
+    BINARY: 8,
+    UNARY: 9,
+    TERTIARY: 10
 };
 ```
 
@@ -139,7 +141,7 @@ exprInfo 中必须包含 type 属性，值为上面类型值之一。下面不�
 
 ### STRING
 
-字符串表达式
+字符串字面量
 
 ```javascript
 // value - 字符串的值
@@ -151,13 +153,25 @@ exprInfo = {
 
 ### NUMBER
 
-数值表达式
+数值字面量
 
 ```javascript
 // value - 数值的值
 exprInfo = {
     type: ExprType.NUMBER,
     value: 123.456
+}
+```
+
+### BOOL
+
+布尔字面量
+
+```javascript
+// value - 数值的值
+exprInfo = {
+    type: ExprType.BOOL,
+    value: true
 }
 ```
 
@@ -465,17 +479,22 @@ aNode = {
             "isText": true,
             "text": "Hello {{name}}!",
             "textExpr": {
-                "type": 7,
+                "type": ExprType.TEXT,
                 "segs": [
                     {
-                        "type": 1,
+                        "type": ExprType.STRING,
                         "value": "Hello "
                     },
                     {
-                        "type": 5,
+                        "type": ExprType.INTERP,
                         "expr": {
-                            "type": 3,
-                            "name": "name"
+                            "type": ExprType.ACCESSOR,
+                            "paths": [
+                                {
+                                    "type": ExprType.STRING,
+                                    "value": "name"
+                                }
+                            ]
                         },
                         "filters": []
                     }
@@ -507,17 +526,22 @@ aNode = {
         {
             "name": "title",
             "expr": {
-                "type": 7,
+                "type": ExprType.TEXT,
                 "segs": [
                     {
-                        "type": 1,
+                        "type": ExprType.STRING,
                         "value": "This is "
                     },
                     {
-                        "type": 5,
+                        "type": ExprType.INTERP,
                         "expr": {
-                            "type": 3,
-                            "name": "name"
+                            "type": ExprType.ACCESSOR,
+                            "paths": [
+                                {
+                                    "type": ExprType.STRING,
+                                    "value": "name"
+                                }
+                            ]
                         },
                         "filters": []
                     }
@@ -532,13 +556,18 @@ aNode = {
             "isText": true,
             "text": "click here",
             "textExpr": {
-                "type": 7,
+                "type": ExprType.TEXT,
                 "segs": [
                     {
-                        "type": 5,
+                        "type": ExprType.INTERP,
                         "expr": {
-                            "type": 3,
-                            "name": "name"
+                            "type": ExprType.ACCESSOR,
+                            "paths": [
+                                {
+                                    "type": ExprType.STRING,
+                                    "value": "name"
+                                }
+                            ]
                         },
                         "filters": []
                     }
@@ -552,7 +581,7 @@ aNode = {
 
 ### 双向绑定
 
-双向绑定的属性，绑定信息对象上包含 twoWay 属性，值为 true。
+双向绑定的属性，绑定信息对象上包含 x 属性，值为 true。
 
 ```html
 <input type="text" value="{= name =}">
@@ -565,7 +594,7 @@ aNode = {
         {
             "name": "type",
             "expr": {
-                "type": 1,
+                "type": ExprType.STRING,
                 "value": "text"
             },
             "raw": "text"
@@ -573,10 +602,15 @@ aNode = {
         {
             "name": "value",
             "expr": {
-                "type": 3,
-                "name": "name"
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "name"
+                    }
+                ]
             },
-            "twoWay": true
+            "x": 1
         }
     ],
     "events": [],
@@ -589,7 +623,7 @@ aNode = {
 
 
 ```html
-<p title="{{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"></p>
+<p title="result: {{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"></p>
 ```
 
 ```javascript
@@ -598,68 +632,94 @@ aNode = {
         {
             "name": "title",
             "expr": {
-                "type": 5,
-                "expr": {
-                    "type": 8,
-                    "segs": [
-                        {
-                            "type": 8,
+                "type": ExprType.TEXT,
+                "segs": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "result: "
+                    },
+                    {
+                        "type": ExprType.INTERP,
+                        "expr": {
+                            "type": ExprType.BINARY,
                             "segs": [
                                 {
-                                    "type": 8,
+                                    "type": ExprType.BINARY,
                                     "segs": [
                                         {
-                                            "type": 3,
-                                            "name": "var1"
+                                            "type": ExprType.BINARY,
+                                            "segs": [
+                                                {
+                                                    "type": ExprType.ACCESSOR,
+                                                    "paths": [
+                                                        {
+                                                            "type": ExprType.STRING,
+                                                            "value": "var1"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": ExprType.ACCESSOR,
+                                                    "paths": [
+                                                        {
+                                                            "type": ExprType.STRING,
+                                                            "value": "var2"
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "operator": 45
                                         },
                                         {
-                                            "type": 3,
-                                            "name": "var2"
+                                            "type": ExprType.ACCESSOR,
+                                            "paths": [
+                                                {
+                                                    "type": ExprType.STRING,
+                                                    "value": "var3"
+                                                }
+                                            ]
                                         }
                                     ],
-                                    "operator": 45
+                                    "operator": 47
                                 },
                                 {
-                                    "type": 3,
-                                    "name": "var3"
+                                    "type": 1,
+                                    "value": "static text"
                                 }
                             ],
-                            "operator": 47
+                            "operator": 43
                         },
-                        {
-                            "type": 1,
-                            "literal": "'static text'"
-                        }
-                    ],
-                    "operator": 43
-                },
-                "filters": [
-                    {
-                        "type": 6,
-                        "name": {
-                            "type": 3,
-                            "name": "comma"
-                        },
-                        "args": [
+                        "filters": [
                             {
-                                "type": 8,
-                                "segs": [
+                                "type": ExprType.CALL,
+                                "name": "comma",
+                                "args": [
                                     {
-                                        "type": 3,
-                                        "name": "commaLength"
-                                    },
-                                    {
-                                        "type": 2,
-                                        "literal": "1"
+                                        "type": ExprType.BINARY,
+                                        "segs": [
+                                            {
+                                                "type": ExprType.ACCESSOR,
+                                                "paths": [
+                                                    {
+                                                        "type": ExprType.STRING,
+                                                        "value": "commaLength"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type": 2,
+                                                "value": 1
+                                            }
+                                        ],
+                                        "operator": 43
                                     }
-                                ],
-                                "operator": 43
+                                ]
                             }
                         ]
                     }
                 ]
             },
-            "raw": "{{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"
+            "raw": "result: {{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"
         }
     ],
     "events": [],
@@ -683,7 +743,7 @@ aNode = {
         {
             "name": "type",
             "expr": {
-                "type": 1,
+                "type": ExprType.STRING,
                 "value": "button"
             },
             "raw": "button"
@@ -693,15 +753,17 @@ aNode = {
         {
             "name": "click",
             "expr": {
-                "type": 6,
-                "name": {
-                    "type": 3,
-                    "name": "clicker"
-                },
+                "type": ExprType.CALL,
+                "name": "clicker",
                 "args": [
                     {
-                        "type": 3,
-                        "name": "$event"
+                        "type": ExprType.ACCESSOR,
+                        "paths": [
+                            {
+                                "type": ExprType.STRING,
+                                "value": "$event"
+                            }
+                        ]
                     }
                 ]
             }
@@ -712,9 +774,9 @@ aNode = {
             "isText": true,
             "text": "click here",
             "textExpr": {
-                "type": 7,
+                "type": ExprType.TEXT,
                 "segs": [
-                    {"type": 1, "value": "click here"}
+                    {"type": ExprType.STRING, "value": "click here"}
                 ]
             }
         }
@@ -744,9 +806,9 @@ aNode = {
             "directives": [
                 {
                     "value": {
-                        "type": 3,
+                        "type": ExprType.ACCESSOR,
                         "paths": [
-                            {type: 1, value: "isOnline"}
+                            {type: ExprType.STRING, value: "isOnline"}
                         ]
                     },
                     "name": "if"
@@ -759,9 +821,9 @@ aNode = {
                     "isText": true,
                     "text": "Hello!",
                     "textExpr": {
-                        "type": 7,
+                        "type": ExprType.TEXT,
                         "segs": [
-                            {"type": 1, "value": "Hello!"}
+                            {"type": ExprType.STRING, "value": "Hello!"}
                         ]
                     }
                 }
@@ -782,9 +844,9 @@ aNode = {
                     "isText": true,
                     "text": "Offline",
                     "textExpr": {
-                        "type": 7,
+                        "type": ExprType.TEXT,
                         "segs": [
-                            {"type": 1, "value": "Offline"}
+                            {"type": ExprType.STRING, "value": "Offline"}
                         ]
                     }
                 }
@@ -825,21 +887,21 @@ aNode = {
             "directives": [
                 {
                     "item": {
-                        type: 3,
+                        type: ExprType.ACCESSOR,
                         paths: [
-                            {"type": 1, "value": "p"}
+                            {"type": ExprType.STRING, "value": "p"}
                         ]
                     },
                     "index": {
-                        type: 3,
+                        type: ExprType.ACCESSOR,
                         paths: [
-                            {"type": 1, "value": "index"}
+                            {"type": ExprType.STRING, "value": "index"}
                         ]
                     }
                     "list": {
-                        type: 3,
+                        type: ExprType.ACCESSOR,
                         paths: [
-                            {"type": 1, "value": "persons"}
+                            {"type": ExprType.STRING, "value": "persons"}
                         ]
                     },
                     "name": "for"
@@ -852,30 +914,30 @@ aNode = {
                     "isText": true,
                     "text": "{{p.name}} - {{p.email}}",
                     "textExpr": {
-                        "type": 7,
+                        "type": ExprType.TEXT,
                         "segs": [
                             {
-                                "type": 5,
+                                "type": ExprType.INTERP,
                                 "expr": {
-                                    "type": 3,
+                                    "type": ExprType.ACCESSOR,
                                     "paths": [
-                                        {"type": 1, "value": "p"},
-                                        {"type": 1, "value": "name"}
+                                        {"type": ExprType.STRING, "value": "p"},
+                                        {"type": ExprType.STRING, "value": "name"}
                                     ]
                                 },
                                 "filters": []
                             },
                             {
-                                "type": 1,
+                                "type": ExprType.STRING,
                                 "value": " - "
                             },
                             {
-                                "type": 5,
+                                "type": ExprType.INTERP,
                                 "expr": {
-                                    "type": 3,
+                                    "type": ExprType.ACCESSOR,
                                     "paths": [
-                                        {"type": 1, "value": "p"},
-                                        {"type": 1, "value": "email"}
+                                        {"type": ExprType.STRING, "value": "p"},
+                                        {"type": ExprType.STRING, "value": "email"}
                                     ]
                                 },
                                 "filters": []
