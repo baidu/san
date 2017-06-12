@@ -28,6 +28,9 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
 var flatComponentBinds = require('./flat-component-binds');
+// #[begin] error
+var checkDataTypes = require('../util/check-data-types');
+// #[end]
 
 /* eslint-disable guard-for-in */
 
@@ -201,6 +204,21 @@ Component.prototype.init = function (options) {
             options.data
         )
     );
+
+    // #[begin] error
+    // 只在显示错误的 build 中进行属性校验
+    var dataTypes = this.dataTypes || this.constructor.dataTypes;
+    if (dataTypes) {
+        checkDataTypes(
+            dataTypes,
+            this.data.get(),
+            this.constructor.displayName
+                || this.displayName
+                || this.subTag
+                || this.constructor.name
+        );
+    }
+    // #[end]
 
     Element.prototype._init.call(this, options);
 

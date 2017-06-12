@@ -28,6 +28,9 @@
     // require('./util/string-buffer');
     // require('./util/indexed-list');
     // require('./browser/auto-close-tags');
+    // require('./util/data-types-secret');
+    // require('./util/data-types.js');
+    // require('./util/check-data-types.js');
     // require('./parser/walker');
     // require('./parser/a-node');
     // require('./parser/parse-template');
@@ -53,7 +56,6 @@
     // require('./view/from-el-init-childs');
 
 
-
     // #[main-dependencies]
     /* eslint-disable no-unused-vars */
     var nextTick = require('./util/next-tick');
@@ -66,6 +68,7 @@
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
+    var DataTypes = require('./util/data-types');
 
 
     var san = {
@@ -166,7 +169,14 @@
          * @param {Function} subClass 子类函数
          * @param {Function} superClass 父类函数
          */
-        inherits: inherits
+        inherits: inherits,
+
+        /**
+         * DataTypes
+         *
+         * @type {Object}
+         */
+        DataTypes: DataTypes
     };
 
     // export
