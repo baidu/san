@@ -197,31 +197,29 @@ Component.prototype.init = function (options) {
 
     this._toPhase('compiled');
 
-    var dataTypesChecker;
+    // init data
+    this.data = new Data(
+        extend(
+            typeof this.initData === 'function' && this.initData() || {},
+            options.data
+        )
+    );
 
     // #[begin] error
-    // 只在显示错误的 build 中进行属性校验
+    // 只在开发版本中进行属性校验
     var dataTypes = this.dataTypes || this.constructor.dataTypes;
     if (dataTypes) {
-        dataTypesChecker = createDataTypesChecker(
+        var dataTypeChecker = createDataTypesChecker(
             dataTypes,
             this.constructor.displayName
                 || this.displayName
                 || this.subTag
                 || this.constructor.name
         );
+        this.data.setTypeChecker(dataTypeChecker);
+        this.data.checkDataTypes();
     }
     // #[end]
-
-    // init data
-    this.data = new Data(
-        extend(
-            typeof this.initData === 'function' && this.initData() || {},
-            options.data
-        ),
-        undefined,
-        dataTypesChecker
-    );
 
     Element.prototype._init.call(this, options);
 

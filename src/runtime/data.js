@@ -15,29 +15,33 @@ var each = require('../util/each');
  * @class
  * @param {Object?} data 初始数据
  * @param {Model?} parent 父级数据容器
- * @param {Function?} dataTypesChecker 数据类型校验器
  */
-function Data(data, parent, dataTypesChecker) {
+function Data(data, parent) {
     this.parent = parent;
     this.raw = data || {};
     this.listeners = [];
-
-    // #[begin] error
-    this.dataTypesChecker = dataTypesChecker;
-    this.checkDataTypes();
-    // #[end]
-
 }
 
 // #[begin] error
+// 以下两个函数只在开发模式下可用，在生产模式下不存在
 /**
  * DataTypes 检测
  */
 Data.prototype.checkDataTypes = function () {
-    if (this.dataTypesChecker) {
-        this.dataTypesChecker(this.raw);
+    if (this.typeChecker) {
+        this.typeChecker(this.raw);
     }
 };
+
+/**
+ * 设置 type checker
+ *
+ * @param  {Function} typeChecker 类型校验器
+ */
+Data.prototype.setTypeChecker = function (typeChecker) {
+    this.typeChecker = typeChecker;
+};
+
 // #[end]
 
 /**

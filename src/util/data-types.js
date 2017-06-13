@@ -9,13 +9,32 @@ var extend = require('./extend');
 var ANONYMOUS_CLASS_NAME = '<<anonymous>>';
 var DATA_TYPES_SECRET = require('./data-types-secret');
 
+/**
+ * 获取精确的类型
+ *
+ * @NOTE 如果 obj 是一个 DOMElement，我们会返回 `element`；
+ *
+ * @param  {*} obj 目标
+ * @return {string}
+ */
 function getDataType(obj) {
+
+    if (obj && obj.nodeType === 1) {
+        return 'element';
+    }
+
     return Object.prototype.toString
         .call(obj)
         .slice(8, -1)
         .toLowerCase();
 }
 
+/**
+ * 创建链式的数据类型校验器
+ *
+ * @param  {Function} validate 真正的校验器
+ * @return {Function}
+ */
 function createChainableChecker(validate) {
 
     var checkType = empty;
@@ -56,6 +75,12 @@ function createChainableChecker(validate) {
 
 }
 
+/**
+ * 生成主要类型数据校验器
+ *
+ * @param  {string} type 主类型
+ * @return {Function}
+ */
 function createPrimaryTypeChecker(type) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
@@ -75,6 +100,12 @@ function createPrimaryTypeChecker(type) {
 
 }
 
+/**
+ * 生成 arrayOf 校验器
+ *
+ * @param  {Function} arrayItemChecker 数组中每项数据的校验器
+ * @return {Function}
+ */
 function createArrayOfChecker(arrayItemChecker) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
@@ -117,7 +148,13 @@ function createArrayOfChecker(arrayItemChecker) {
 
 }
 
-function createInstanceChecker(expectedClass) {
+/**
+ * 生成 instanceOf 检测器
+ *
+ * @param  {Function|Class} expectedClass 期待的类
+ * @return {Function}
+ */
+function createInstanceOfChecker(expectedClass) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
 
@@ -144,6 +181,12 @@ function createInstanceChecker(expectedClass) {
 
 }
 
+/**
+ * 生成 shape 校验器
+ *
+ * @param  {Object} shapeTypes shape 校验规则
+ * @return {Function}
+ */
 function createShapeChecker(shapeTypes) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
@@ -191,6 +234,12 @@ function createShapeChecker(shapeTypes) {
 
 }
 
+/**
+ * 生成 oneOf 校验器
+ *
+ * @param  {Array} expectedEnumValues 期待的枚举值
+ * @return {Function}
+ */
 function createOneOfChecker(expectedEnumValues) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName) {
@@ -220,7 +269,13 @@ function createOneOfChecker(expectedEnumValues) {
 
 }
 
-function createEnumOfTypeChecker(expectedEnumOfTypeValues) {
+/**
+ * 生成 oneOfType 校验器
+ *
+ * @param  {Array<Function>} expectedEnumOfTypeValues 期待的枚举类型
+ * @return {Function}
+ */
+function createOneOfTypeChecker(expectedEnumOfTypeValues) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
 
@@ -256,6 +311,12 @@ function createEnumOfTypeChecker(expectedEnumOfTypeValues) {
 
 }
 
+/**
+ * 生成 objectOf 校验器
+ *
+ * @param  {Function} typeChecker 对象属性值校验器
+ * @return {Function}
+ */
 function createObjectOfChecker(typeChecker) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
@@ -305,6 +366,12 @@ function createObjectOfChecker(typeChecker) {
 
 }
 
+/**
+ * 生成 exact 校验器
+ *
+ * @param  {Object} shapeTypes object 形态定义
+ * @return {Function}
+ */
 function createExactChecker(shapeTypes) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
@@ -411,13 +478,14 @@ DataTypes = {
     number: createPrimaryTypeChecker('number'),
     bool: createPrimaryTypeChecker('boolean'),
     symbol: createPrimaryTypeChecker('symbol'),
+    element: createPrimaryTypeChecker('element'),
 
     // 复合类型检测
     arrayOf: createArrayOfChecker,
-    instanceOf: createInstanceChecker,
+    instanceOf: createInstanceOfChecker,
     shape: createShapeChecker,
     oneOf: createOneOfChecker,
-    oneOfType: createEnumOfTypeChecker,
+    oneOfType: createOneOfTypeChecker,
     objectOf: createObjectOfChecker,
     exact: createExactChecker
 

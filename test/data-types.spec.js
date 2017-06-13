@@ -11,7 +11,7 @@ var DataTypes = san.DataTypes;
 describe('DataTypes', function () {
 
     beforeAll(function () {
-        spyOn(console, 'error').and.callThrough();
+        spyOn(console, 'error');
     });
 
     beforeEach(function () {
@@ -41,6 +41,34 @@ describe('DataTypes', function () {
         new Test({
             data: {
                 name: 1
+            }
+        });
+
+        new Test({
+            data: {
+                name: 1
+            }
+        });
+
+        expect(console.error.calls.count()).toBe(1);
+
+    });
+
+    it('custom checker', function () {
+
+        var Test = san.defineComponent({
+            template: '<div>{name}</div>',
+            displayName: 'Test',
+            dataTypes: {
+                name: function (data, dataName, componentName) {
+                    return data[dataName] === 'hello' ? new Error('no `hello` allowed') : null;
+                }
+            }
+        });
+
+        new Test({
+            data: {
+                name: 'hello'
             }
         });
 
@@ -88,6 +116,36 @@ describe('DataTypes', function () {
                 arr1: [],
                 arr2: undefined,
                 arr3: {}
+            }
+        });
+
+        expect(console.error.calls.count()).toBe(2);
+
+    });
+
+    it('element', function () {
+
+        expect(typeof DataTypes.element).toBe('function');
+        expect(typeof DataTypes.element.isRequired).toBe('function');
+
+        var Test = san.defineComponent({
+            template: '<div>{name}</div>',
+            displayName: 'Test',
+            dataTypes: {
+                element1: DataTypes.element.isRequired,
+                element2: DataTypes.element.isRequired,
+                element3: DataTypes.element
+            }
+        });
+
+        new Test({
+            data: {
+                // valid
+                element1: document.body,
+                // isRequired
+                element2: undefined,
+                // not a dom element
+                element3: 'not a dom element'
             }
         });
 
