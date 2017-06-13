@@ -15,14 +15,30 @@ var each = require('../util/each');
  * @class
  * @param {Object?} data 初始数据
  * @param {Model?} parent 父级数据容器
+ * @param {Function?} dataTypesChecker 数据类型校验器
  */
-function Data(data, parent) {
+function Data(data, parent, dataTypesChecker) {
     this.parent = parent;
     this.raw = data || {};
     this.listeners = [];
+
+    // #[begin] error
+    this.dataTypesChecker = dataTypesChecker;
+    this.checkDataTypes();
+    // #[end]
+
 }
 
-
+// #[begin] error
+/**
+ * DataTypes 检测
+ */
+Data.prototype.checkDataTypes = function () {
+    if (this.dataTypesChecker) {
+        this.dataTypesChecker(this.raw);
+    }
+};
+// #[end]
 
 /**
  * 添加数据变更的事件监听器
@@ -181,6 +197,11 @@ Data.prototype.set = function (expr, value, option) {
         value: value,
         option: option
     });
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
+
 };
 
 
@@ -222,6 +243,10 @@ Data.prototype.splice = function (expr, args, option) {
             option: option
         });
     }
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
 
     return returnValue;
 };

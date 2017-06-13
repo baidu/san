@@ -30,10 +30,7 @@ function createChainableChecker(validate) {
         componentName = componentName || ANONYMOUS_CLASS_NAME;
 
         if (secret !== DATA_TYPES_SECRET) {
-            throw new Error(''
-                + 'Calling DataTypes validators directly is not supported. '
-                + 'Use `san.checkDataTypes` to call them.'
-            );
+            throw new Error('Calling DataTypes validators directly is not supported.');
         }
 
         if (dataValue == null) {

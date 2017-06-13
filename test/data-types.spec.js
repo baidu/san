@@ -523,5 +523,49 @@ describe('DataTypes', function () {
 
     });
 
+    it('will trigger a validation while data change', function (done) {
+
+        var Avatar = san.defineComponent({
+            template: '<div>{{name}}</div>',
+            dataTypes: {
+                name: DataTypes.string
+            }
+        });
+
+        var Main = san.defineComponent({
+            template: '<div><avatar name="{{book.name}}" /></div>',
+            components: {
+                avatar: Avatar
+            }
+        });
+
+        var main = new Main({
+            data: {
+                book: {
+                    // 先放一个 number，这里就会触发一个 error
+                    name: 1
+                }
+            }
+        });
+
+        main.attach(document.body);
+
+        expect(console.error.calls.count()).toBe(1);
+
+        // 这里再放一个 boolean，再触一个新的 Error；如果再放一个 string，是不会触新的 error 的。
+        main.data.set('book.name', false);
+
+        setTimeout(function () {
+
+            expect(console.error.calls.count()).toBe(2);
+
+            main.detach();
+
+            done();
+
+        }, 1);
+
+    });
+
 
 });

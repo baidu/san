@@ -29,7 +29,7 @@ var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
 var flatComponentBinds = require('./flat-component-binds');
 // #[begin] error
-var checkDataTypes = require('../util/check-data-types');
+var createDataTypesChecker = require('../util/create-data-types-checker');
 // #[end]
 
 /* eslint-disable guard-for-in */
@@ -197,21 +197,14 @@ Component.prototype.init = function (options) {
 
     this._toPhase('compiled');
 
-    // init data
-    this.data = new Data(
-        extend(
-            typeof this.initData === 'function' && this.initData() || {},
-            options.data
-        )
-    );
+    var dataTypesChecker;
 
     // #[begin] error
     // 只在显示错误的 build 中进行属性校验
     var dataTypes = this.dataTypes || this.constructor.dataTypes;
     if (dataTypes) {
-        checkDataTypes(
+        dataTypesChecker = createDataTypesChecker(
             dataTypes,
-            this.data.get(),
             this.constructor.displayName
                 || this.displayName
                 || this.subTag
@@ -219,6 +212,16 @@ Component.prototype.init = function (options) {
         );
     }
     // #[end]
+
+    // init data
+    this.data = new Data(
+        extend(
+            typeof this.initData === 'function' && this.initData() || {},
+            options.data
+        ),
+        undefined,
+        dataTypesChecker
+    );
 
     Element.prototype._init.call(this, options);
 
