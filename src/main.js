@@ -28,7 +28,6 @@
     // require('./util/string-buffer');
     // require('./util/indexed-list');
     // require('./browser/auto-close-tags');
-    // require('./util/data-types-secret');
     // require('./util/data-types.js');
     // require('./util/create-data-types-checker.js');
     // require('./parser/walker');

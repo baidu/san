@@ -7,7 +7,6 @@ var bind = require('./bind');
 var empty = require('./empty');
 var extend = require('./extend');
 var ANONYMOUS_CLASS_NAME = '<<anonymous>>';
-var DATA_TYPES_SECRET = require('./data-types-secret');
 
 /**
  * 获取精确的类型
@@ -17,7 +16,7 @@ var DATA_TYPES_SECRET = require('./data-types-secret');
  * @param  {*} obj 目标
  * @return {string}
  */
-function getDataType(obj) {
+function getType(obj) {
 
     if (obj && obj.nodeType === 1) {
         return 'element';
@@ -41,28 +40,28 @@ function createChainableChecker(validate) {
 
     // 只在 error 功能启用时才有实际上的 dataTypes 检测
     // #[begin] error
-    checkType = function (isRequired, data, dataName, componentName, fullDataName, secret) {
+    checkType = function (isRequired, data, dataName, componentName, fullDataName) {
 
         var dataValue = data[dataName];
-        var dataType = getDataType(dataValue);
+        var dataType = getType(dataValue);
 
         componentName = componentName || ANONYMOUS_CLASS_NAME;
 
-        if (secret !== DATA_TYPES_SECRET) {
-            throw new Error('Calling DataTypes validators directly is not supported.');
-        }
-
+        // 如果是 null 或 undefined，那么要提前返回啦
         if (dataValue == null) {
-            return isRequired
-                ? new Error(''
+            // 是 required 就报错
+            if (isRequired) {
+                throw new Error(''
                     + 'The `' + dataName + '` '
                     + 'is marked as required in `' + componentName + '`, '
                     + 'but its value is ' + dataType
-                )
-                : null;
+                );
+            }
+            // 不是 required，那就是 ok 的
+            return;
         }
 
-        return validate(data, dataName, componentName, fullDataName, secret);
+        validate(data, dataName, componentName, fullDataName);
 
     };
     // #[end]
@@ -83,13 +82,13 @@ function createChainableChecker(validate) {
  */
 function createPrimaryTypeChecker(type) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
         var dataValue = data[dataName];
-        var dataType = getDataType(dataValue);
+        var dataType = getType(dataValue);
 
         if (dataType !== type) {
-            return new Error(''
+            throw new Error(''
                 + 'Invalid ' + componentName + ' data `' + fullDataName + '` of type'
                 + '(' + dataType + ' supplied to ' + componentName + ', '
                 + 'expected ' + type + ')'
@@ -108,20 +107,20 @@ function createPrimaryTypeChecker(type) {
  */
 function createArrayOfChecker(arrayItemChecker) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
         if (typeof arrayItemChecker !== 'function') {
-            return new Error(''
+            throw new Error(''
                 + 'Data `' + dataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `arrayOf`, expected `function`'
             );
         }
 
         var dataValue = data[dataName];
-        var dataType = getDataType(dataValue);
+        var dataType = getType(dataValue);
 
         if (dataType !== 'array') {
-            return new Error(''
+            throw new Error(''
                 + 'Invalid ' + componentName + ' data `' + fullDataName + '` of type'
                 + '(' + dataType + ' supplied to ' + componentName + ', '
                 + 'expected array)'
@@ -129,20 +128,8 @@ function createArrayOfChecker(arrayItemChecker) {
         }
 
         for (var i = 0, len = dataValue.length; i < len; i++) {
-            var itemError = arrayItemChecker(
-                dataValue,
-                i,
-                componentName,
-                fullDataName + '[' + i + ']',
-                secret
-            );
-
-            if (itemError instanceof Error) {
-                return itemError;
-            }
+            arrayItemChecker(dataValue, i, componentName, fullDataName + '[' + i + ']');
         }
-
-        return null;
 
     });
 
@@ -156,12 +143,12 @@ function createArrayOfChecker(arrayItemChecker) {
  */
 function createInstanceOfChecker(expectedClass) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
         var dataValue = data[dataName];
 
         if (dataValue instanceof expectedClass) {
-            return null;
+            return;
         }
 
         var dataValueClassName = dataValue.constructor && dataValue.constructor.name
@@ -170,7 +157,7 @@ function createInstanceOfChecker(expectedClass) {
 
         var expectedClassName = expectedClass.name || ANONYMOUS_CLASS_NAME;
 
-        return new Error(''
+        throw new Error(''
             + 'Invalid ' + componentName + ' data `' + fullDataName + '` of type'
             + '(' + dataValueClassName + ' supplied to ' + componentName + ', '
             + 'expected instance of ' + expectedClassName + ')'
@@ -189,20 +176,20 @@ function createInstanceOfChecker(expectedClass) {
  */
 function createShapeChecker(shapeTypes) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
-        if (getDataType(shapeTypes) !== 'object') {
-            return new Error(''
+        if (getType(shapeTypes) !== 'object') {
+            throw new Error(''
                 + 'Data `' + fullDataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `shape`, expected `object`'
             );
         }
 
         var dataValue = data[dataName];
-        var dataType = getDataType(dataValue);
+        var dataType = getType(dataValue);
 
         if (dataType !== 'object') {
-            return new Error(''
+            throw new Error(''
                 + 'Invalid ' + componentName + ' data `' + fullDataName + '` of type'
                 + '(' + dataType + ' supplied to ' + componentName + ', '
                 + 'expected object)'
@@ -212,23 +199,11 @@ function createShapeChecker(shapeTypes) {
         for (var shapeKeyName in shapeTypes) {
             if (shapeTypes.hasOwnProperty(shapeKeyName)) {
                 var checker = shapeTypes[shapeKeyName];
-                if (typeof checker !== 'function') {
-                    continue;
-                }
-                var error = checker(
-                    dataValue,
-                    shapeKeyName,
-                    componentName,
-                    fullDataName + '.' + shapeKeyName,
-                    secret
-                );
-                if (error instanceof Error) {
-                    return error;
+                if (typeof checker === 'function') {
+                    checker(dataValue, shapeKeyName, componentName, fullDataName + '.' + shapeKeyName);
                 }
             }
         }
-
-        return null;
 
     });
 
@@ -244,8 +219,8 @@ function createOneOfChecker(expectedEnumValues) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
-        if (getDataType(expectedEnumValues) !== 'array') {
-            return new Error(''
+        if (getType(expectedEnumValues) !== 'array') {
+            throw new Error(''
                 + 'Data `' + fullDataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `oneOf`, array is expected.'
             );
@@ -255,11 +230,11 @@ function createOneOfChecker(expectedEnumValues) {
 
         for (var i = 0, len = expectedEnumValues.length; i < len; i++) {
             if (dataValue === expectedEnumValues[i]) {
-                return null;
+                return;
             }
         }
 
-        return new Error(''
+        throw new Error(''
             + 'Invalid ' + componentName + ' data `' + fullDataName + '` of value'
             + '(`' + dataValue + '` supplied to ' + componentName + ', '
             + 'expected one of ' + expectedEnumValues.join(',') + ')'
@@ -277,10 +252,10 @@ function createOneOfChecker(expectedEnumValues) {
  */
 function createOneOfTypeChecker(expectedEnumOfTypeValues) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
-        if (getDataType(expectedEnumOfTypeValues) !== 'array') {
-            return new Error(''
+        if (getType(expectedEnumOfTypeValues) !== 'array') {
+            throw new Error(''
                 + 'Data `' + dataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `oneOf`, array is expected.'
             );
@@ -296,13 +271,19 @@ function createOneOfTypeChecker(expectedEnumOfTypeValues) {
                 continue;
             }
 
-            if (!checker(data, dataName, componentName, fullDataName, secret)) {
-                return null;
+            try {
+                checker(data, dataName, componentName, fullDataName);
+                // 如果 checker 完成校验没报错，那就返回了
+                return;
+            }
+            catch (e) {
+                // 如果有错误，那么应该把错误吞掉
             }
 
         }
 
-        return new Error(''
+        // 所有的可接受 type 都失败了，才丢一个异常
+        throw new Error(''
             + 'Invalid ' + componentName + ' data `' + dataName + '` of value'
             + '(`' + dataValue + '` supplied to ' + componentName + ')'
         );
@@ -319,20 +300,20 @@ function createOneOfTypeChecker(expectedEnumOfTypeValues) {
  */
 function createObjectOfChecker(typeChecker) {
 
-    return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
+    return createChainableChecker(function (data, dataName, componentName, fullDataName) {
 
         if (typeof typeChecker !== 'function') {
-            return new Error(''
+            throw new Error(''
                 + 'Data `' + dataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `objectOf`, expected function'
             );
         }
 
         var dataValue = data[dataName];
-        var dataType = getDataType(dataValue);
+        var dataType = getType(dataValue);
 
         if (dataType !== 'object') {
-            return new Error(''
+            throw new Error(''
                 + 'Invalid ' + componentName + ' data `' + dataName + '` of type'
                 + '(' + dataType + ' supplied to ' + componentName + ', '
                 + 'expected object)'
@@ -340,26 +321,15 @@ function createObjectOfChecker(typeChecker) {
         }
 
         for (var dataKeyName in dataValue) {
-
             if (dataValue.hasOwnProperty(dataKeyName)) {
-
-                var error = typeChecker(
+                typeChecker(
                     dataValue,
                     dataKeyName,
                     componentName,
-                    fullDataName + '.' + dataKeyName,
-                    secret
+                    fullDataName + '.' + dataKeyName
                 );
-
-                if (error instanceof Error) {
-                    return error;
-                }
-
             }
-
         }
-
-        return null;
 
 
     });
@@ -376,18 +346,18 @@ function createExactChecker(shapeTypes) {
 
     return createChainableChecker(function (data, dataName, componentName, fullDataName, secret) {
 
-        if (getDataType(shapeTypes) !== 'object') {
-            return new Error(''
+        if (getType(shapeTypes) !== 'object') {
+            throw new Error(''
                 + 'Data `' + dataName + '` of `' + componentName + '` has invalid '
                 + 'DataType notation inside `exact`'
             );
         }
 
         var dataValue = data[dataName];
-        var dataValueType = getDataType(dataValue);
+        var dataValueType = getType(dataValue);
 
         if (dataValueType !== 'object') {
-            return new Error(''
+            throw new Error(''
                 + 'Invalid data `' + fullDataName + '` of type `' + dataValueType + '`'
                 + '(supplied to ' + componentName + ', expected `object`)'
             );
@@ -407,7 +377,7 @@ function createExactChecker(shapeTypes) {
 
                 // dataValue 中有一个多余的数据项
                 if (!checker) {
-                    return new Error(''
+                    throw new Error(''
                         + 'Invalid data `' + fullDataName + '` key `' + key + '` '
                         + 'supplied to `' + componentName + '`. '
                         + '(`' + key + '` is not defined in `DataTypes.exact`)'
@@ -415,14 +385,14 @@ function createExactChecker(shapeTypes) {
                 }
 
                 if (!(key in dataValue)) {
-                    return new Error(''
+                    throw new Error(''
                         + 'Invalid data `' + fullDataName + '` key `' + key + '` '
                         + 'supplied to `' + componentName + '`. '
                         + '(`' + key + '` is marked `required` in `DataTypes.exact`)'
                     );
                 }
 
-                var error = checker(
+                checker(
                     dataValue,
                     key,
                     componentName,
@@ -430,14 +400,8 @@ function createExactChecker(shapeTypes) {
                     secret
                 );
 
-                if (error instanceof Error) {
-                    return error;
-                }
-
             }
         }
-
-        return null;
 
     });
 

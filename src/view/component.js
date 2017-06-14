@@ -211,10 +211,7 @@ Component.prototype.init = function (options) {
     if (dataTypes) {
         var dataTypeChecker = createDataTypesChecker(
             dataTypes,
-            this.constructor.displayName
-                || this.displayName
-                || this.subTag
-                || this.constructor.name
+            this.subTag || this.constructor.name
         );
         this.data.setTypeChecker(dataTypeChecker);
         this.data.checkDataTypes();

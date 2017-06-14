@@ -1,15 +1,11 @@
 /**
- * @file 检查数据是否符合 data types
+ * @file 创建数据检测函数
  * @author leon<ludafa@outlook.com>
  */
 
 
-var DATA_TYPES_SECRET = require('./data-types-secret');
-var loggedTypeFailures = {};
-var warn = require('./warn');
-
 /**
- * 创建一个 DataTypes 检测器
+ * 创建数据检测函数
  *
  * @param  {Object} dataTypes     数据格式
  * @param  {string} componentName 组件名
@@ -31,28 +27,19 @@ function createDataTypesChecker(dataTypes, componentName) {
                 var dataTypeChecker = dataTypes[dataTypeName];
 
                 if (typeof dataTypeChecker !== 'function') {
-                    warn(''
+                    throw new Error(''
                         + componentName + ':' + dataTypeName + ' is invalid; '
                         + 'it must be a function, usually from san.DataTypes'
                     );
-                    continue;
                 }
 
-                var error = dataTypeChecker(
+                dataTypeChecker(
                     data,
                     dataTypeName,
                     componentName,
-                    dataTypeName,
-                    DATA_TYPES_SECRET
+                    dataTypeName
                 );
 
-                if (
-                    error instanceof Error
-                    && !(error.message in loggedTypeFailures)
-                ) {
-                    loggedTypeFailures[error.message] = true;
-                    warn('Failed data type: ' + error.message);
-                }
 
             }
         }
