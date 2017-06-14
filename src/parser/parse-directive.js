@@ -42,7 +42,7 @@ var directiveParsers = {
 
     'if': function (value) {
         return {
-            value: parseExpr(value)
+            value: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
         };
     },
 

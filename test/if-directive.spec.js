@@ -104,6 +104,32 @@ describe("IfDirective", function () {
         });
     });
 
+    it("render when false, and update soon， interp compat", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span san-if="{{!cond}}" title="errorrik">errorrik</span></div>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('cond', true);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(0);
+
+        myComponent.data.set('cond', false);
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("and else", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span san-if="!cond" title="errorrik">errorrik</span>  <span san-else title="varsha">varsha</span></div>'
