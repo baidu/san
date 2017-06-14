@@ -49,20 +49,29 @@ function ForItemData(parent, forDirective, item, index) {
  */
 ForItemData.prototype.exprResolve = function (expr) {
     var directive = this.directive;
+    var me = this;
 
     // 这里是各种操作方法用的，只能是ExprType.ACCESSOR
-    if (expr.paths[0].value === directive.item.paths[0].value) {
-        return {
-            type: ExprType.ACCESSOR,
-            paths: directive.list.paths.concat(
-                {
-                    type: ExprType.NUMBER,
-                    value: this.get(directive.index)
-                },
-                expr.paths.slice(1)
-            )
-        };
+    function resolveItem(expr) {
+        if (expr.type === ExprType.ACCESSOR
+            && expr.paths[0].value === directive.item.paths[0].value
+        ) {
+            return {
+                type: ExprType.ACCESSOR,
+                paths: directive.list.paths.concat(
+                    {
+                        type: ExprType.NUMBER,
+                        value: me.get(directive.index)
+                    },
+                    expr.paths.slice(1)
+                )
+            };
+        }
+
+        return expr;
     }
+
+    expr = resolveItem(expr);
 
     var resolvedPaths = [];
 
@@ -72,11 +81,11 @@ ForItemData.prototype.exprResolve = function (expr) {
                 && item.paths[0].value === directive.index.paths[0].value
             ? {
                 type: ExprType.NUMBER,
-                value: this.get(directive.index)
+                value: me.get(directive.index)
             }
-            : item
+            : resolveItem(item)
         );
-    }, this);
+    });
 
     return {
         type: ExprType.ACCESSOR,

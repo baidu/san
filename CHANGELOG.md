@@ -21,6 +21,7 @@ ChangeLog
 + 【bug修复】- for 指令 item 表达式内部子项进行 splice 数据操作时，视图更新错误
 + 【bug修复】- 对 option 为空串的 value 进行绑定处理
 + 【bug修复】- 双向绑定包含动态路径的表达式，更新失效
++ 【bug修复】- 双向绑定表达式包含 for 指令定义的 item 时，更新失效
 + 【bug修复】- 组件在反解时主元素标签声明未生效
 + 【bug修复】- option 在位于 for 或 if 等结构内，selected 状态不生效
 
