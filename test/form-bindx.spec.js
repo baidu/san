@@ -978,4 +978,62 @@ describe("Form TwoWay Binding", function () {
             }, 400);
         });
     });
+
+    it("dynamic expr with for", function (done) {
+        var MyComponent = san.defineComponent({
+            template: ''
+            + '<ul>'
+              + '<li><b title="{{result.ec0}}">{{result.ec0}}</b><b title="{{result.ec1}}">{{result.ec1}}</b></li>'
+              + '<li s-for="item, index in config">'
+                + '<h4 title="{{item.name}}">{{item.name}}</h4>'
+                + '<div s-for="child, i in item.children">'
+                + '{{index}} - {{i}}: <input type="text" value="{=result[child.name]=}">'
+                + '</div>'
+              + '</li>'
+            + '</ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                result: {},
+                config: [
+                    {
+                        name: 'erik',
+                        children: [
+                            {name: 'ec0'},
+                            {name: 'ec1'}
+                        ]
+                    }
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        var bs = wrap.getElementsByTagName('b');
+
+        expect(bs[0].title).toBe('');
+        expect(bs[1].title).toBe('');
+        myComponent.data.set('result.ec0', 'hello');
+
+        san.nextTick(function () {
+            expect(bs[0].title).toBe('hello');
+            expect(inputs[0].value).toBe('hello');
+
+            triggerEvent('#' + inputs[1].id, 'input', 'san');
+
+            setTimeout(function () {
+                expect(inputs[1].value).toBe('san');
+                expect(bs[0].title).toBe('hello');
+                expect(bs[1].title).toBe('san');
+                expect(myComponent.data.get('result.ec1')).toBe('san');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 400);
+        });
+    });
 });
