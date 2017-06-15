@@ -567,7 +567,7 @@ describe("Slot", function () {
                     + '</x-issue>'
                 + '</li></ul>',
 
-            addText(index) {
+            addText: function (index) {
                 this.data.push('items[' + index + '].datasource', {label: 'newone'});
             }
         });
