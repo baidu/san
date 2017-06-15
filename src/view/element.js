@@ -37,6 +37,7 @@ var parseANodeFromEl = require('../parser/parse-anode-from-el');
  */
 function Element(options) {
     this.childs = [];
+    this.slotChilds = [];
     this._elFns = {};
 
     Node.call(this, options);
@@ -331,10 +332,18 @@ Element.prototype.updateView = function (changes) {
         });
     }
     else {
-        each(this.childs, function (child) {
-            child.updateView(changes);
-        });
+        this.updateChilds(changes);
     }
+};
+
+Element.prototype.updateChilds = function (changes) {
+    each(this.childs, function (child) {
+        child.updateView(changes);
+    });
+
+    each(this.slotChilds, function (child) {
+        child.slotUpdateView(changes);
+    });
 };
 
 
@@ -378,6 +387,9 @@ Element.prototype._dispose = function () {
 
     this.props = null;
     this.binds = null;
+
+    // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
+    this.slotChilds = null;
 
     Node.prototype._dispose.call(this);
 };

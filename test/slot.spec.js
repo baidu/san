@@ -548,6 +548,65 @@ describe("Slot", function () {
         })
     });
 
+    it("complex for", function (done) {
+        var Issue = san.defineComponent({
+            template: '<div><slot/></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-issue': Issue
+            },
+
+            template: ''
+                + '<ul><li s-for="item, index in items">'
+                    + '<h4>{{item.label}}</h4>'
+                    + '<x-issue>'
+                        + '<button on-click="addText(index)">Add</button>'
+                        + '<p s-for="o in item.datasource" title="{{o.label}}">{{o.label}}</p>'
+                    + '</x-issue>'
+                + '</li></ul>',
+
+            addText(index) {
+                this.data.push('items[' + index + '].datasource', {label: 'newone'});
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                items: [
+                    {
+                        label: 'A',
+                        datasource: [{label: 'oldone'}]
+                    }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(1);
+        expect(ps[0].title).toBe('oldone');
+
+        var buttons = wrap.getElementsByTagName('button');
+        triggerEvent('#' + buttons[0].id, 'click');
+
+        setTimeout(function () {
+            var ps = wrap.getElementsByTagName('p');
+            expect(ps.length).toBe(2);
+            expect(ps[0].title).toBe('oldone');
+            expect(ps[1].title).toBe('newone');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 400);
+    });
+
     it("component in for directly", function (done) {
         var Link = san.defineComponent({
             template: '<a href="{{to}}"><slot></slot></a>'

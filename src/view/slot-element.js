@@ -8,6 +8,7 @@ var each = require('../util/each');
 var empty = require('../util/empty');
 var Node = require('./node');
 var Element = require('./element');
+var Component = require('./component');
 var ANode = require('../parser/a-node');
 var serializeStump = require('./serialize-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
@@ -65,7 +66,20 @@ SlotElement.prototype._init = function (options) {
 
     options.aNode = aNode;
     Node.prototype._init.call(this, options);
-    this.owner.slotChilds.push(this);
+    var parent = this.parent;
+    while (parent) {
+        if (!(parent instanceof SlotElement)
+            && (
+                !(parent instanceof Component) && parent.owner === this.owner
+                || parent === this.owner
+            )
+        ) {
+            parent.slotChilds.push(this);
+            break;
+        }
+
+        parent = parent.parent;
+    }
 
     // #[begin] reverse
     if (options.el) {
@@ -83,7 +97,7 @@ SlotElement.prototype._init = function (options) {
             options.elWalker.goNext();
         }
 
-        if (!literalOwner !== this.owner) {
+        if (literalOwner !== this.owner) {
             literalOwner.aNode.givenSlots[this.name] = this.aNode;
         }
     }

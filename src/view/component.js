@@ -41,7 +41,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) {
-    this.slotChilds = [];
+    // this.slotChilds = [];
     this.dataChanges = [];
     this.listeners = {};
 
@@ -333,6 +333,11 @@ Component.prototype.ref = function (name) {
     var owner = this;
 
     function childsTraversal(element) {
+        each(element.slotChilds, function (slotChild) {
+            childsTraversal(slotChild);
+            return !refComponent;
+        });
+
         each(element.childs, function (child) {
             if (isComponent(child)) {
                 var refDirective = child.aNode.directives.get('ref');
@@ -352,10 +357,7 @@ Component.prototype.ref = function (name) {
 
 
     childsTraversal(this);
-    each(this.slotChilds, function (slotChild) {
-        childsTraversal(slotChild);
-        return !refComponent;
-    });
+
     return refComponent;
 };
 
@@ -509,14 +511,7 @@ Component.prototype.updateView = function (changes) {
             });
         });
 
-
-        each(this.childs, function (child) {
-            child.updateView(dataChanges);
-        });
-
-        each(this.slotChilds, function (child) {
-            child.slotUpdateView(dataChanges);
-        });
+        this.updateChilds(dataChanges);
 
         this._toPhase('updated');
 
@@ -607,7 +602,7 @@ Component.prototype._dispose = function () {
     Element.prototype._dispose.call(this);
 
     // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
-    this.slotChilds = null;
+    // this.slotChilds = null;
 
     this.data.unlisten();
     this.dataChanger = null;
