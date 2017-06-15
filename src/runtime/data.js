@@ -22,7 +22,27 @@ function Data(data, parent) {
     this.listeners = [];
 }
 
+// #[begin] error
+// 以下两个函数只在开发模式下可用，在生产模式下不存在
+/**
+ * DataTypes 检测
+ */
+Data.prototype.checkDataTypes = function () {
+    if (this.typeChecker) {
+        this.typeChecker(this.raw);
+    }
+};
 
+/**
+ * 设置 type checker
+ *
+ * @param  {Function} typeChecker 类型校验器
+ */
+Data.prototype.setTypeChecker = function (typeChecker) {
+    this.typeChecker = typeChecker;
+};
+
+// #[end]
 
 /**
  * 添加数据变更的事件监听器
@@ -181,6 +201,11 @@ Data.prototype.set = function (expr, value, option) {
         value: value,
         option: option
     });
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
+
 };
 
 
@@ -222,6 +247,10 @@ Data.prototype.splice = function (expr, args, option) {
             option: option
         });
     }
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
 
     return returnValue;
 };
