@@ -53,6 +53,7 @@
     "webdriverio": "^4.2.16",
     "http-server": "^0.9.0",
     "uglify-js": "^2.8.22",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "art-template": "^4.10.2"
   }
 }
