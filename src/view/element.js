@@ -342,7 +342,7 @@ Element.prototype.updateChilds = function (changes) {
     });
 
     each(this.slotChilds, function (child) {
-        child.slotUpdateView(changes);
+        Element.prototype.updateChilds.call(child, changes);
     });
 };
 

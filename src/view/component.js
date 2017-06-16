@@ -28,9 +28,7 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
 var flatComponentBinds = require('./flat-component-binds');
-// #[begin] error
 var createDataTypesChecker = require('../util/create-data-types-checker');
-// #[end]
 
 /* eslint-disable guard-for-in */
 
@@ -41,7 +39,6 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) {
-    // this.slotChilds = [];
     this.dataChanges = [];
     this.listeners = {};
 
@@ -211,7 +208,7 @@ Component.prototype.init = function (options) {
     if (dataTypes) {
         var dataTypeChecker = createDataTypesChecker(
             dataTypes,
-            this.subTag || this.constructor.name
+            this.subTag || this.name || this.constructor.name
         );
         this.data.setTypeChecker(dataTypeChecker);
         this.data.checkDataTypes();
@@ -600,9 +597,6 @@ Component.prototype.watch = function (dataName, listener) {
  */
 Component.prototype._dispose = function () {
     Element.prototype._dispose.call(this);
-
-    // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
-    // this.slotChilds = null;
 
     this.data.unlisten();
     this.dataChanger = null;

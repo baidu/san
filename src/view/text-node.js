@@ -93,7 +93,6 @@ TextNode.prototype.update = function () {
         this._located = 1;
     }
 
-    var text = this.evalExpr(this.aNode.textExpr, 1);
 
     var parentEl = this.parent._getEl();
     var insertBeforeEl = this._prev && this._prev._getEl().nextSibling || parentEl.firstChild;
@@ -105,6 +104,7 @@ TextNode.prototype.update = function () {
         startRemoveEl = insertBeforeEl;
     }
 
+    var text = this.evalExpr(this.aNode.textExpr, 1);
     if (insertBeforeEl) {
         insertBeforeEl.insertAdjacentHTML('beforebegin', text);
     }
@@ -132,22 +132,5 @@ TextNode.prototype.updateView = function (changes) {
     });
 };
 
-TextNode.prototype._attached = function () {
-    // 移除节点桩元素前面的空白 FEFF 字符
-    if (ieOldThan9 && this._getEl()) {
-        var headingBlank = this.el.previousSibling;
-
-        if (headingBlank && headingBlank.nodeType === 3) {
-            var textProp = typeof headingBlank.textContent === 'string'
-                ? 'textContent'
-                : 'data';
-            var text = headingBlank[textProp];
-
-            if (!text || text === '\uFEFF') {
-                removeEl(headingBlank);
-            }
-        }
-    }
-};
 
 exports = module.exports = TextNode;

@@ -51,7 +51,6 @@ ForItemData.prototype.exprResolve = function (expr) {
     var directive = this.directive;
     var me = this;
 
-    // 这里是各种操作方法用的，只能是ExprType.ACCESSOR
     function resolveItem(expr) {
         if (expr.type === ExprType.ACCESSOR
             && expr.paths[0].value === directive.item.paths[0].value

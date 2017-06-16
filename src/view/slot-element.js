@@ -66,6 +66,8 @@ SlotElement.prototype._init = function (options) {
 
     options.aNode = aNode;
     Node.prototype._init.call(this, options);
+
+
     var parent = this.parent;
     while (parent) {
         if (!(parent instanceof SlotElement)
@@ -118,16 +120,6 @@ SlotElement.prototype.genHTML = function (buf) {
  */
 SlotElement.prototype.updateView = empty;
 
-/**
- * 视图更新函数
- *
- * @param {Array} changes 数据变化信息
- */
-SlotElement.prototype.slotUpdateView = function (changes) {
-    each(this.childs, function (child) {
-        child.updateView(changes);
-    });
-};
 
 /**
  * 销毁释放元素行为

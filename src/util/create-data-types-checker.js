@@ -4,6 +4,8 @@
  */
 
 
+// #[begin] error
+
 /**
  * 创建数据检测函数
  *
@@ -27,7 +29,7 @@ function createDataTypesChecker(dataTypes, componentName) {
                 var dataTypeChecker = dataTypes[dataTypeName];
 
                 if (typeof dataTypeChecker !== 'function') {
-                    throw new Error(''
+                    throw new Error('[SAN ERROR] '
                         + componentName + ':' + dataTypeName + ' is invalid; '
                         + 'it must be a function, usually from san.DataTypes'
                     );
@@ -47,5 +49,7 @@ function createDataTypesChecker(dataTypes, componentName) {
     };
 
 }
+
+// #[end]
 
 module.exports = createDataTypesChecker;

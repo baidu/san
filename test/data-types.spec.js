@@ -103,46 +103,6 @@ describe('DataTypes', function () {
 
     });
 
-    it('element', function () {
-
-        var Test = san.defineComponent({
-            template: '<div>{name}</div>',
-            displayName: 'Test',
-            dataTypes: {
-                element1: DataTypes.element,
-                element2: DataTypes.element.isRequired
-            }
-        });
-
-        expect(typeof DataTypes.element).toBe('function');
-        expect(typeof DataTypes.element.isRequired).toBe('function');
-
-        expect(function () {
-            new Test({
-                data: {}
-            });
-        }).toThrow();
-
-        expect(function () {
-            new Test({
-                data: {
-                    element1: {name: 'not a element'},
-                    element2: document.body
-                }
-            });
-        }).toThrow();
-
-        expect(function () {
-            new Test({
-                data: {
-                    element1: document.body,
-                    element2: document.body
-                }
-            });
-        }).not.toThrow();
-
-    });
-
     it('object', function () {
 
         var Test = san.defineComponent({
