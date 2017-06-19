@@ -34,8 +34,9 @@
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
     "build": "node ./tool/build.js && node ./test/ssr/build-test.js"
   },
-  "main": "dist/san.all.js",
-  "unpkg": "dist/san.mpa.js",
+  "main": "dist/san.ssr.js",
+  "browser": "dist/san.dev.js",
+  "unpkg": "dist/san.min.js",
   "files": [
     "src",
     "dist"
