@@ -1,5 +1,5 @@
 // computed data
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 
 var MyComponent = san.defineComponent({
     computed: {

@@ -1,5 +1,5 @@
 // component with san-if, init with false
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var Label = san.defineComponent({
     template: '<a><span title="{{title}}">{{text}}</span></a>'
 });

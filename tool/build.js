@@ -6,20 +6,33 @@ const uglifyJS = require('uglify-js');
 
 
 let editions = {
-    all: {},
+    ssr: {},
 
-    mpa: {
+    '__': {
+        ignoreFeatures: ['ssr', 'devtool', 'error']
+    },
+
+    min: {
         ignoreFeatures: ['ssr', 'devtool', 'error'],
         compress: 1
     },
 
-    spa: {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error'],
+    dev: {
+        ignoreFeatures: ['ssr']
+    },
+
+    'dev.min': {
+        ignoreFeatures: ['ssr'],
         compress: 1
     },
 
-    'mpa.dev': {
-        ignoreFeatures: ['ssr']
+    spa: {
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
+    },
+
+    'spa.min': {
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error'],
+        compress: 1
     },
 
     'spa.dev': {
@@ -58,7 +71,7 @@ function build() {
         }
 
         fs.writeFileSync(
-            `${distDir}/san.${edition}.js`,
+            edition === '__' ? `${distDir}/san.js` : `${distDir}/san.${edition}.js`,
             editionSource,
             'UTF-8'
         );

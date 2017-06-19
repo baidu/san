@@ -1,5 +1,5 @@
 // update component, main element has attribute
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var Label = san.defineComponent({
     template: '<span class="label" title="{{text}}">{{text}}</span>'
 });

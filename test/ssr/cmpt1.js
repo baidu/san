@@ -1,5 +1,5 @@
 // update attribute
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var MyComponent = san.defineComponent({
     template: '<a><span title="{{email}}">{{name}}</span></a>'
 });

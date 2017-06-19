@@ -1,5 +1,5 @@
 // component with san-for, then set item
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var Label = san.defineComponent({
     template: '<a><span title="{{title}}">{{text}}</span></a>'
 });

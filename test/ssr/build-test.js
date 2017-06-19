@@ -1,4 +1,4 @@
-const san = require('../../dist/san.all');
+const san = require('../../dist/san.ssr');
 const fs = require('fs');
 const path = require('path');
 

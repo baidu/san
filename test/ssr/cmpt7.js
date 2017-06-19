@@ -1,5 +1,5 @@
 // push update for, init with many data
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var MyComponent = san.defineComponent({
     template: '<ul>'
         + '<li>name - email</li>'

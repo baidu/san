@@ -1,5 +1,5 @@
 // default and named slot, content by default
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var Tab = san.defineComponent({
     template: '<div>'
         +   '<div class="head"><slot name="title"><h3 title="{{title}}">{{title}}</h3></slot></div>'
