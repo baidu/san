@@ -80,7 +80,15 @@ function createNodeByEl(el, parent, elWalker, scope) {
             return new SlotElement(option);
 
         case 'data':
-            Component._fillData(option);
+            // fill component data
+            var data = (new Function(
+                'return ' + el.innerHTML.replace(/^[\s\n]*/ ,'')
+            ))();
+
+            for (var key in data) {
+                owner.data.set(key, data[key]);
+            }
+
             return;
     }
 

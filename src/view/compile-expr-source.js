@@ -2,6 +2,7 @@
  * @file 编译源码的 helper 方法集合
  * @author errorrik(errorrik@gmail.com)
  */
+
 var ExprType = require('../parser/expr-type');
 
 // #[begin] ssr

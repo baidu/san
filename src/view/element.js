@@ -382,7 +382,6 @@ Element.prototype._dispose = function () {
     }
     this._elFns = null;
 
-    this.el = null;
     this.childs = null;
 
     this.props = null;

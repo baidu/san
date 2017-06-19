@@ -8,7 +8,6 @@ var bind = require('../util/bind');
 var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
-var kebab2camel = require('../util/kebab2camel');
 var emitDevtool = require('../util/emit-devtool');
 var Element = require('./element');
 var IndexedList = require('../util/indexed-list');
@@ -28,6 +27,7 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
 var flatComponentBinds = require('./flat-component-binds');
+var camelComponentBinds = require('./camel-component-binds');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -179,7 +179,7 @@ Component.prototype.init = function (options) {
 
             // 合并运行时的一些绑定和事件声明
             props: protoANode.props,
-            binds: Component.camelBindsName(givenANode.props),
+            binds: camelComponentBinds(givenANode.props),
             events: protoANode.events,
             directives: givenANode.directives
         });
@@ -247,7 +247,7 @@ Component.prototype._initFromEl = function () {
     this._isInitFromEl = 1;
     this.aNode = parseANodeFromEl(this.el);
     this.aNode.givenSlots = {};
-    this.aNode.binds = Component.camelBindsName(this.aNode.props);
+    this.aNode.binds = camelComponentBinds(this.aNode.props);
     this.aNode.props = this.constructor.prototype.aNode.props;
 
     this.parent && this.parent._pushChildANode(this.aNode);
@@ -605,46 +605,6 @@ Component.prototype._dispose = function () {
     this.data = null;
     this.listeners = null;
 };
-
-/**
- * 将 binds 的 name 从 kebabcase 转换成 camelcase
- *
- * @paran {IndexedList} binds binds集合
- * @return {IndexedList}
- */
-Component.camelBindsName = function (binds) {
-    var result = new IndexedList();
-    binds.each(function (bind) {
-        result.push({
-            name: kebab2camel(bind.name),
-            expr: bind.expr,
-            x: bind.x,
-            raw: bind.raw
-        });
-    });
-
-    return result;
-};
-
-// #[begin] reverse
-/**
- * 填充组件数据
- * create-node-by-el调用，用于组件反解时组件恢复数据
- *
- * @paran {Object} options 参数选项
- * @param {HTMLElement} options.el 数据承载的script标签元素
- * @param {Component} options.owner 所属组件
- */
-Component._fillData = function (options) {
-    var data = (new Function(
-        'return ' + options.el.innerHTML.replace(/^[\s\n]*/ ,'')
-    ))();
-
-    for (var key in data) {
-        options.owner.data.set(key, data[key]);
-    }
-};
-// #[end]
 
 
 exports = module.exports = Component;

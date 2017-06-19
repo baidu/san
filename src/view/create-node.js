@@ -9,8 +9,8 @@ var TextNode = require('./text-node');
 var Element = require('./element');
 var SlotElement = require('./slot-element');
 var Component = require('./component');
-var IfDirective = require('./if-directive');
 var ForDirective = require('./for-directive');
+var IfDirective = require('./if-directive');
 
 
 /**

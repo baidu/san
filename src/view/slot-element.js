@@ -8,6 +8,7 @@ var each = require('../util/each');
 var empty = require('../util/empty');
 var Node = require('./node');
 var Element = require('./element');
+var isComponent = require('./is-component');
 var Component = require('./component');
 var ANode = require('../parser/a-node');
 var serializeStump = require('./serialize-stump');
@@ -70,11 +71,10 @@ SlotElement.prototype._init = function (options) {
 
     var parent = this.parent;
     while (parent) {
-        if (!(parent instanceof SlotElement)
-            && (
-                !(parent instanceof Component) && parent.owner === this.owner
-                || parent === this.owner
-            )
+        if (parent === this.owner
+            || !(parent instanceof SlotElement)
+                && !isComponent(parent)
+                && parent.owner === this.owner
         ) {
             parent.slotChilds.push(this);
             break;

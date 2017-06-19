@@ -1,3 +1,8 @@
+/**
+ * @file 将组件的绑定信息进行扁平处理
+ * @author errorrik(errorrik@gmail.com)
+ */
+
 
 /**
  * 将组件的绑定信息进行扁平处理

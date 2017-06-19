@@ -22,11 +22,11 @@ function IndexedList() {
  * @param {Object} item 要添加的对象
  */
 IndexedList.prototype.push = function (item) {
-    // #begin-ignore
+    // #[begin] error
     if (!item.name) {
-        throw new Error('Miss "name" property');
+        throw new Error('[SAN ERROR] Miss "name" property');
     }
-    // #end-ignore
+    // #[end]
 
     if (!this.index[item.name]) {
         this.raw.push(item);

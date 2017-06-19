@@ -220,7 +220,7 @@ Data.prototype.splice = function (expr, args, option) {
 
     // #[begin] error
     if (expr.type !== ExprType.ACCESSOR) {
-        throw new Error('[SAN ERROR] Invalid Expression in Data set: ' + exprRaw);
+        throw new Error('[SAN ERROR] Invalid Expression in Data splice: ' + exprRaw);
     }
     // #[end]
 
