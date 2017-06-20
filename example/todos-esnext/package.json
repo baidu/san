@@ -14,7 +14,7 @@
     "font-awesome": "^4.6.3",
     "jquery": "^3.1.1",
     "moment": "^2.15.1",
-    "san": "^3.0.3-rc.10",
+    "san": "^3.1.0-rc.2",
     "san-router": "^1.0.1"
   },
   "devDependencies": {
