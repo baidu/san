@@ -1,4 +1,4 @@
-var san = require('../../dist/san.all');
+var san = require('../../dist/san.ssr');
 var swig  = require('swig');
 var art = require('art-template');
 

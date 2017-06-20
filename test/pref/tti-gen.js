@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const san = require('../../dist/san.all');
+const san = require('../../dist/san.ssr');
 const TTIComponent = require('./tti-component');
 
 let componentCode = fs.readFileSync(path.resolve(__dirname, 'tti-component.js'), 'UTF-8')
