@@ -120,6 +120,16 @@ SlotElement.prototype.genHTML = function (buf) {
  */
 SlotElement.prototype.updateView = empty;
 
+/**
+ * 获取节点对应的主元素
+ * slot是片段的管理，没有主元素，所以直接返回爹的主元素，不持有引用
+ *
+ * @protected
+ * @return {HTMLElement}
+ */
+SlotElement.prototype._getEl = function () {
+    return this.parent._getEl();
+};
 
 /**
  * 销毁释放元素行为

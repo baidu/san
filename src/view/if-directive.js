@@ -157,7 +157,7 @@ IfDirective.prototype.updateView = function (changes) {
 
     if (this.evalExpr(this.cond)) {
         if (child) {
-            child.updateView(changes);
+            this.updateChilds(changes);
         }
         else {
             child = createIfDirectiveChild(this);

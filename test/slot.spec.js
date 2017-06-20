@@ -1,5 +1,45 @@
 describe("Slot", function () {
 
+    it("text only", function (done) {
+        var Block = san.defineComponent({
+            template: '<u class="x-block"><slot/></u>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-block': Block
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-block>{{foo}}</x-block>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                foo: 'foo'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(1);
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('foo');
+
+        myComponent.data.set('foo', 'san');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u').length).toBe(1);
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 
 
     it("default", function (done) {
@@ -707,6 +747,50 @@ describe("Slot", function () {
             var a = wrap.getElementsByTagName('a')[0];
             expect(a.href).toBe('http://ecomfe.github.io/san/');
             expect(a.getElementsByTagName('b')[0].title).toBe('link');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("component in if directly", function (done) {
+        var Block = san.defineComponent({
+            template: '<u class="x-block"><slot/></u>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-block': Block
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-block san-if="f">{{foo}}</x-block>'
+                  + '<x-block san-else>{{bar}}</x-block>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                f: false,
+                foo: 'foo',
+                bar: 'bar'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(1);
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('bar');
+
+        myComponent.data.set('bar', 'san');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u').length).toBe(1);
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('san');
+
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
