@@ -18,7 +18,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'test/lib/triggerEvent.js',
-      'dist/san.all.js',
+      'dist/san.dev.js',
       'test/**/*spec.js',
     ],
 
@@ -83,7 +83,7 @@ module.exports = function(config) {
   if (process.argv.indexOf('--coverage') > -1) {
 
     configuration.reporters.push('coverage');
-    configuration.preprocessors['dist/san.all.js'] = 'coverage';
+    configuration.preprocessors['dist/san.dev.js'] = 'coverage';
     configuration.coverageReporter = {
         type : 'html',
         dir : 'coverage/'
