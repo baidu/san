@@ -33,14 +33,16 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 
 <!-- compressed -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-3/san.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-0/san.min.js"></script>
 
 <!-- compressed(https) -->
-<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-0-3/san.js"></script>
+<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-1-0/san.min.js"></script>
 
 <!-- source -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-0-3/san.source.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-0/san.js"></script>
 ```
+
+[Dist Files](https://github.com/ecomfe/san/tree/master/dist)
 
 ## Document
 
@@ -59,3 +61,4 @@ CDN:
 - [san-router](https://github.com/ecomfe/san-router) - Official Router for San
 - [san-store](https://github.com/ecomfe/san-store) - Official Application States Management for San
 - [san-update](https://github.com/ecomfe/san-update) - Immutable Data Update Library
+- [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
