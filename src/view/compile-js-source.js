@@ -8,7 +8,7 @@ var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
-var flatComponentBinds = require('./flat-component-binds');
+var postComponentBinds = require('./post-component-binds');
 var each = require('../util/each');
 var camel2kebab = require('../util/camel2kebab');
 var serializeANode = require('./serialize-a-node');
@@ -282,7 +282,7 @@ var aNodeCompiler = {
 
         var givenData = [];
 
-        flatComponentBinds(aNode.props);
+        postComponentBinds(aNode.props);
         component.binds.each(function (prop) {
             givenData.push(
                 compileExprSource.stringLiteralize(prop.name)
@@ -314,17 +314,25 @@ var elementSourceCompiler = {
      * @param {IndexedList} binds 绑定信息列表
      * @param {Array} events 绑定事件列表
      * @param {string?} extraProp 额外的属性串
+     * @param {boolean?} isComponent 是否组件
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp) {
+    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
         binds.each(function (bindInfo) {
-            if (bindInfo.raw) {
+            if (isComponent) {
+                sourceBuffer.joinString(
+                    ' prop-' + camel2kebab(bindInfo.name)
+                        + (bindInfo.raw ? '="' + bindInfo.raw + '"' : '')
+                );
+            }
+            else if (bindInfo.raw) {
                 sourceBuffer.joinString(
                     ' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"'
                 );
             }
+
         });
 
         var htmlDirective = aNode.directives.get('html');
@@ -508,6 +516,11 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         extraProp += ' s-component="' + component.subTag + '"';
     }
 
+    var refDirective = component.aNode.directives.get('ref');
+    if (refDirective) {
+        extraProp += ' s-ref="' + refDirective.value.raw + '"';
+    }
+
     var eventDeclarations = [];
     for (var key in component.listeners) {
         each(component.listeners[key], function (listener) {
@@ -524,7 +537,8 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         component.binds,
         eventDeclarations,
         component.aNode,
-        extraProp
+        extraProp,
+        1
     );
 
     if (!component.owner) {

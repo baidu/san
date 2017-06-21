@@ -939,4 +939,20 @@ describe("Component serialize from compiled renderer and reverse", function () {
             done();
         });
     });
+
+    it("data binding no expr, auto true", function (done) {
+        ##cmpt42##
+
+        var us = wrap.getElementsByTagName('u');
+
+        expect(us.length).toBe(1);
+        expect(myComponent.ref('l').data.get('hasu')).toBeTruthy();
+
+        san.nextTick(function () {
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
 });

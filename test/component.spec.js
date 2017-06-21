@@ -2358,5 +2358,42 @@ describe("Component", function () {
             done();
         })
     });
+
+    it("data binding no expr, auto true", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><u s-if="hasu"></u><span title="{{dataTitle}}">{{dataText}}</span></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label s-ref="l" data-title="{{title}}" data-text="{{text}}" hasu></ui-label></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                title: '1',
+                text: 'one'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+
+        expect(us.length).toBe(1);
+        expect(myComponent.ref('l').data.get('hasu')).toBeTruthy();
+
+        san.nextTick(function () {
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
 });
 

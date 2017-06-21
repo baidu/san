@@ -26,7 +26,7 @@ var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
-var flatComponentBinds = require('./flat-component-binds');
+var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
@@ -217,7 +217,7 @@ Component.prototype.init = function (options) {
 
     Element.prototype._init.call(this, options);
 
-    flatComponentBinds(this.binds);
+    postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
         me.data.set(bind.name, me.evalExpr(bind.expr));
     });
