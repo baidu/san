@@ -33,13 +33,13 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 
 <!-- compressed -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-1/san.min.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-2/san.min.js"></script>
 
 <!-- compressed(https) -->
-<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-1-1/san.min.js"></script>
+<script src="https://ss1.bdstatic.com/5eN1bjq8AAUYm2zgoY3K/r/www/cache/efe/san/3-1-2/san.min.js"></script>
 
 <!-- source -->
-<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-1/san.js"></script>
+<script src="http://s1.bdstatic.com/r/www/cache/efe/san/3-1-2/san.js"></script>
 ```
 
 [Dist Files](https://github.com/ecomfe/san/tree/master/dist)
