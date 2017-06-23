@@ -10,7 +10,7 @@ var Node = require('./node');
 var Element = require('./element');
 var isComponent = require('./is-component');
 var Component = require('./component');
-var ANode = require('../parser/a-node');
+var createANode = require('../parser/create-a-node');
 var serializeStump = require('./serialize-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
@@ -37,7 +37,7 @@ SlotElement.prototype._init = function (options) {
     var literalOwner = options.owner;
     var nameBind = options.aNode.props.get('name');
     this.name = nameBind ? nameBind.raw : '____';
-    var aNode = new ANode();
+    var aNode = createANode();
 
     // #[begin] reverse
     if (options.el) {
@@ -51,14 +51,11 @@ SlotElement.prototype._init = function (options) {
     // #[end]
         var givenSlots = literalOwner.aNode.givenSlots;
         var givenChilds = givenSlots && givenSlots[this.name];
+        aNode.childs = givenChilds || options.aNode.childs.slice(0);
 
         if (givenChilds) {
-            aNode.childs = givenChilds;
             options.owner = literalOwner.owner;
             options.scope = literalOwner.scope;
-        }
-        else {
-            aNode.childs = options.aNode.childs.slice(0);
         }
     // #[begin] reverse
     }
@@ -68,14 +65,14 @@ SlotElement.prototype._init = function (options) {
     options.aNode = aNode;
     Node.prototype._init.call(this, options);
 
-
     var parent = this.parent;
     while (parent) {
-        if (parent === this.owner
-            || !(parent instanceof SlotElement)
-                && !isComponent(parent)
-                && parent.owner === this.owner
-        ) {
+        if (parent === this.owner) {
+            parent.ownSlotChilds.push(this);
+            break;
+        }
+
+        if (!(parent instanceof SlotElement) && parent.owner === this.owner) {
             parent.slotChilds.push(this);
             break;
         }

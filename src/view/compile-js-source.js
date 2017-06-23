@@ -6,6 +6,7 @@
 var serializeStump = require('./serialize-stump');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
+var createANode = require('../parser/create-a-node');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
@@ -85,7 +86,7 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileIf: function (aNode, sourceBuffer, owner) {
-        var ifElementANode = new ANode({
+        var ifElementANode = createANode({
             childs: aNode.childs,
             props: aNode.props,
             events: aNode.events,
@@ -116,7 +117,7 @@ var aNodeCompiler = {
         sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
 
         if (elseANode) {
-            var elseElementANode = new ANode({
+            var elseElementANode = createANode({
                 childs: elseANode.childs,
                 props: elseANode.props,
                 events: elseANode.events,
@@ -154,7 +155,7 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileFor: function (aNode, sourceBuffer, owner) {
-        var forElementANode = new ANode({
+        var forElementANode = createANode({
             childs: aNode.childs,
             props: aNode.props,
             events: aNode.events,

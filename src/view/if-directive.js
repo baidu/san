@@ -11,7 +11,7 @@ var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var parseTemplate = require('../parser/parse-template');
-var ANode = require('../parser/a-node');
+var createANode = require('../parser/create-a-node');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 var removeEl = require('../browser/remove-el');
 var escapeHTML = require('../runtime/escape-html');
@@ -40,7 +40,7 @@ inherits(IfDirective, Element);
  */
 function createIfDirectiveChild(ifElement) {
     var aNode = ifElement.aNode;
-    var childANode = new ANode({
+    var childANode = createANode({
         childs: aNode.childs,
         props: aNode.props,
         events: aNode.events,
@@ -181,7 +181,7 @@ IfDirective.prototype._pushChildANode = empty;
 IfDirective.prototype._attached = function () {
     // 移除节点桩元素前面的空白 FEFF 字符
     if (ieOldThan9 && this._getEl()) {
-        var headingBlank = this.el.previousSibling;
+        var headingBlank = this._getEl().previousSibling;
 
         if (headingBlank && headingBlank.nodeType === 3) {
             var textProp = typeof headingBlank.textContent === 'string'

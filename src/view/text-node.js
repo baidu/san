@@ -8,7 +8,7 @@ var inherits = require('../util/inherits');
 var each = require('../util/each');
 var Node = require('./node');
 var genStumpHTML = require('./gen-stump-html');
-var ANode = require('../parser/a-node');
+var createANode = require('../parser/create-a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
@@ -38,7 +38,7 @@ TextNode.prototype._init = function (options) {
     // #[begin] reverse
     // from el
     if (this.el) {
-        this.aNode = new ANode({
+        this.aNode = createANode({
             isText: 1,
             text: this.el.data.replace('s-ts:', '')
         });
@@ -79,23 +79,22 @@ TextNode.prototype.genHTML = function (buf) {
  * 刷新文本节点的内容
  */
 TextNode.prototype.update = function () {
+    var me = this;
+
     if (!this._located) {
-        var index = -1;
-        var me = this;
         each(this.parent.childs, function (child, i) {
             if (child === me) {
-                index = i;
+                me._prev = me.parent.childs[i - 1];
                 return false;
             }
         });
 
-        this._prev = this.parent.childs[index - 1];
         this._located = 1;
     }
 
 
     var parentEl = this.parent._getEl();
-    var insertBeforeEl = this._prev && this._prev._getEl().nextSibling || parentEl.firstChild;
+    var insertBeforeEl = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
     var startRemoveEl = insertBeforeEl;
 
     while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
@@ -108,8 +107,8 @@ TextNode.prototype.update = function () {
     if (insertBeforeEl) {
         insertBeforeEl.insertAdjacentHTML('beforebegin', text);
     }
-    else if (this._prev) {
-        this._prev._getEl().insertAdjacentHTML('afterend', text);
+    else if (me._prev) {
+        me._prev._getEl().insertAdjacentHTML('afterend', text);
     }
     else {
         parentEl.innerHTML = text;

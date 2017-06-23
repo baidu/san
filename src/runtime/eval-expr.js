@@ -40,7 +40,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
 
         case ExprType.TERTIARY:
             return evalExpr(
-                evalExpr(expr.segs[0], data, owner) ? expr.segs[1] : expr.segs[2],
+                expr.segs[evalExpr(expr.segs[0], data, owner) ? 1 : 2],
                 data,
                 owner
             );

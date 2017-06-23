@@ -4,7 +4,7 @@
  */
 
 var each = require('../util/each');
-var ANode = require('./a-node');
+var createANode = require('./create-a-node');
 var integrateAttr = require('./integrate-attr');
 
 // #[begin] reverse
@@ -15,7 +15,7 @@ var integrateAttr = require('./integrate-attr');
  * @return {ANode}
  */
 function parseANodeFromEl(el) {
-    var aNode = new ANode();
+    var aNode = createANode();
     aNode.tagName = el.tagName.toLowerCase();
 
     each(

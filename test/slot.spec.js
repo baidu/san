@@ -716,6 +716,89 @@ describe("Slot", function () {
         })
     });
 
+    it("component in for directly, other component in slot", function (done) {
+        var BoxGroup = san.defineComponent({
+            template: '<ul class="box-group">'
+                + '<li san-for="item in datasource">'
+                + '<label><input type="checkbox" value="{{item.value}}" checked="{=value=}" /><span>{{item.text}}</span></label>'
+                + '</li>'
+                + '</ul>'
+        });
+
+        var Issue = san.defineComponent({
+            template: '<div><slot/></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-boxgroup': BoxGroup,
+                'x-issue': Issue
+            },
+            filters: {
+                jo: function (source) {
+                    return source.join('|')
+                }
+            },
+            template: '<div>'
+              + '<button on-click="onClick">Clear</button><hr/>'
+              + '<x-issue san-for="p in groups">'
+                + '<u title="{{p.value|jo}}">value: {{p.value}}</u>'
+                + '<ui-boxgroup datasource="{{p.datasource}}" value="{=p.value=}" /><hr/>'
+              + '</x-issue>'
+              + '</div>',
+
+            onClick: function() {
+                this.data.set('groups[0].value', []);
+                this.data.set('groups[1].value', []);
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                groups: [
+                    {
+                        datasource: [
+                            {text: 'foo', value: 'foo'},
+                            {text: 'bar', value: 'bar'}
+                        ],
+                        value: ['foo', 'bar']
+                    },
+                    {
+                        datasource: [
+                            {text: 'abc', value: 'abc'},
+                            {text: '123', value: '123'}
+                        ],
+                        value: ['abc']
+                    }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us[0].title.indexOf('foo') >= 0).toBeTruthy();
+        expect(us[0].title.indexOf('bar') >= 0).toBeTruthy();
+        expect(us[1].title.indexOf('abc') >= 0).toBeTruthy();
+        expect(us[1].title.indexOf('123') >= 0).toBeFalsy();
+
+        var button = wrap.getElementsByTagName('button')[0];
+        triggerEvent('#' + button.id, 'click');
+
+
+        setTimeout(function () {
+            expect(us[0].title).toBe('');
+            expect(us[1].title).toBe('');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 400)
+    });
+
     it("component in if", function (done) {
         var Link = san.defineComponent({
             template: '<a href="{{to}}"><slot></slot></a>'

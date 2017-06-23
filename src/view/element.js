@@ -157,9 +157,7 @@ Element.prototype._attached = function () {
     });
 };
 
-function bindOutputer(bindInfo) {
-    getPropHandler(this, bindInfo.name).output(this, bindInfo);
-}
+
 
 /**
  * 处理自身变化时双绑的逻辑
@@ -175,7 +173,10 @@ Element.prototype._initSelfChanger = function () {
         }
 
         var el = me._getEl();
-        var outputer = bind(bindOutputer, me, bindInfo);
+        function outputer() {
+            getPropHandler(me, bindInfo.name).output(me, bindInfo);
+        };
+
         switch (bindInfo.name) {
             case 'value':
                 switch (me.tagName) {
@@ -336,12 +337,12 @@ Element.prototype.updateView = function (changes) {
     }
 };
 
-Element.prototype.updateChilds = function (changes) {
+Element.prototype.updateChilds = function (changes, slotChildsName) {
     each(this.childs, function (child) {
         child.updateView(changes);
     });
 
-    each(this.slotChilds, function (child) {
+    each(this[slotChildsName || 'slotChilds'], function (child) {
         Element.prototype.updateChilds.call(child, changes);
     });
 };

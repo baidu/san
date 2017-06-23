@@ -3,7 +3,8 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var ANode = require('./a-node');
+
+var createANode = require('./create-a-node');
 var Walker = require('./walker');
 var ExprType = require('./expr-type');
 var integrateAttr = require('./integrate-attr');
@@ -16,7 +17,7 @@ var autoCloseTags = require('../browser/auto-close-tags');
  * @return {ANode}
  */
 function parseTemplate(source) {
-    var rootNode = new ANode();
+    var rootNode = createANode();
 
     if (typeof source !== 'string') {
         return rootNode;
@@ -55,7 +56,7 @@ function parseTemplate(source) {
             walker.go(1);
         }
         else if (!tagEnd) {
-            var aElement = new ANode({
+            var aElement = createANode({
                 tagName: tagName,
                 parent: currentNode
             });
@@ -144,7 +145,7 @@ function parseTemplate(source) {
      */
     function pushTextNode(text) {
         if (text) {
-            currentNode.childs.push(new ANode({
+            currentNode.childs.push(createANode({
                 isText: 1,
                 text: text,
                 parent: currentNode

@@ -44,7 +44,7 @@ function escapeHTML(source) {
         return '';
     }
 
-    return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
+    return ('' + source).replace(/[&<>"']/g, htmlFilterReplacer);
 }
 
 exports = module.exports = escapeHTML;

@@ -82,21 +82,12 @@ function integrateProp(aNode, name, value) {
     }
 
     // parse normal prop
-    aNode.props.push(textPropExtra({
+    var prop = {
         name: name,
         expr: parseText(value),
         raw: value
-    }));
-}
+    };
 
-/**
- * 为text类型的属性绑定附加额外的行为，用于一些特殊需求，比如class中插值的自动展开
- *
- * @inner
- * @param {Object} prop 绑定信息
- * @return {Object}
- */
-function textPropExtra(prop) {
     // 这里不能把只有一个插值的属性抽取
     // 因为插值里的值可能是html片段，容易被注入
     // 组件的数据绑定在组件init时做抽取
@@ -115,7 +106,8 @@ function textPropExtra(prop) {
             break;
     }
 
-    return prop;
+    aNode.props.push(prop);
 }
+
 
 exports = module.exports = integrateAttr;

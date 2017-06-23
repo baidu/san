@@ -14,7 +14,7 @@ var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var parseTemplate = require('../parser/parse-template');
-var ANode = require('../parser/a-node');
+var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var Data = require('../runtime/data');
@@ -215,7 +215,7 @@ ForDirective.prototype._init = function (options) {
     }
     // #[end]
 
-    this.itemANode = new ANode({
+    this.itemANode = createANode({
         childs: aNode.childs,
         props: aNode.props,
         events: aNode.events,
@@ -419,7 +419,7 @@ ForDirective.prototype.updateView = function (changes) {
 ForDirective.prototype._attached = function () {
     // 移除节点桩元素前面的空白 FEFF 字符
     if (ieOldThan9 && this._getEl()) {
-        var headingBlank = this.el.previousSibling;
+        var headingBlank = this._getEl().previousSibling;
 
         if (headingBlank && headingBlank.nodeType === 3) {
             var textProp = typeof headingBlank.textContent === 'string'

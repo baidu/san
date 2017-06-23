@@ -12,7 +12,7 @@ var emitDevtool = require('../util/emit-devtool');
 var Element = require('./element');
 var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
-var ANode = require('../parser/a-node');
+var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
 var parseText = require('../parser/parse-text');
 var parseTemplate = require('../parser/parse-template');
@@ -41,6 +41,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
 function Component(options) {
     this.dataChanges = [];
     this.listeners = {};
+    this.ownSlotChilds = [];
 
     Element.call(this, options);
 }
@@ -170,7 +171,7 @@ Component.prototype.init = function (options) {
             givenSlots[slotName].push(child);
         });
 
-        this.aNode = new ANode({
+        this.aNode = createANode({
             tagName: protoANode.tagName || givenANode.tagName,
             givenSlots: givenSlots,
 
@@ -272,25 +273,25 @@ Component.prototype._calcComputed = function (computedExpr) {
     this.data.set(computedExpr, this.computed[computedExpr].call({
         data: {
             get: bind(function (expr) {
-                if (expr) {
-                    if (!computedDeps[expr]) {
-                        computedDeps[expr] = 1;
+                // #[begin] error
+                if (!expr) {
+                    throw new Error('[SAN ERROR] call get method in computed need argument');
+                }
+                // #[end]
 
-                        if (this.computed[expr]) {
-                            this._calcComputed(expr);
-                        }
+                if (!computedDeps[expr]) {
+                    computedDeps[expr] = 1;
 
-                        this.watch(expr, function () {
-                            this._calcComputed(computedExpr);
-                        });
+                    if (this.computed[expr]) {
+                        this._calcComputed(expr);
                     }
 
-                    return this.data.get(expr);
+                    this.watch(expr, function () {
+                        this._calcComputed(computedExpr);
+                    });
                 }
 
-                // #[begin] error
-                throw new Error('[SAN ERROR] call get method in computed need argument');
-                // #[end]
+                return this.data.get(expr);
             }, this)
         }
     }));
@@ -329,11 +330,15 @@ Component.prototype.ref = function (name) {
     var refComponent;
     var owner = this;
 
-    function childsTraversal(element) {
-        each(element.slotChilds, function (slotChild) {
+    function slotChildsTraversal(childs) {
+        each(childs, function (slotChild) {
             childsTraversal(slotChild);
             return !refComponent;
         });
+    }
+
+    function childsTraversal(element) {
+        slotChildsTraversal(element.slotChilds);
 
         each(element.childs, function (child) {
             if (isComponent(child)) {
@@ -343,8 +348,11 @@ Component.prototype.ref = function (name) {
                 ) {
                     refComponent = child;
                 }
+
+                slotChildsTraversal(child.slotChilds);
             }
-            else if (child instanceof Element) {
+
+            if (!refComponent && child instanceof Element) {
                 childsTraversal(child);
             }
 
@@ -352,8 +360,8 @@ Component.prototype.ref = function (name) {
         });
     }
 
-
     childsTraversal(this);
+    slotChildsTraversal(this.ownSlotChilds);
 
     return refComponent;
 };
@@ -397,7 +405,7 @@ Component.prototype._compile = function () {
 
     // pre compile template
     if (!proto.hasOwnProperty('_compiled')) {
-        proto.aNode = new ANode();
+        proto.aNode = createANode();
 
         var tpl = ComponentClass.template || proto.template;
         if (tpl) {
@@ -491,6 +499,10 @@ Component.prototype.updateView = function (changes) {
         });
     });
 
+    each(this.slotChilds, function (child) {
+        Element.prototype.updateChilds.call(child, changes);
+    });
+
 
     var dataChanges = me.dataChanges;
     if (dataChanges.length) {
@@ -508,7 +520,7 @@ Component.prototype.updateView = function (changes) {
             });
         });
 
-        this.updateChilds(dataChanges);
+        this.updateChilds(dataChanges, 'ownSlotChilds');
 
         this._toPhase('updated');
 
@@ -597,6 +609,8 @@ Component.prototype.watch = function (dataName, listener) {
  */
 Component.prototype._dispose = function () {
     Element.prototype._dispose.call(this);
+
+    this.ownSlotChilds = null;
 
     this.data.unlisten();
     this.dataChanger = null;
