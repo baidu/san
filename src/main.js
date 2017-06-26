@@ -95,8 +95,15 @@
          * @return {function(Object):string}
          */
         compileToRenderer: function (ComponentClass) {
-            var code = compileJSSource(ComponentClass);
-            return (new Function('return ' + code))();
+            var renderer = ComponentClass.__ssrRenderer;
+
+            if (!renderer) {
+                var code = compileJSSource(ComponentClass);
+                renderer = (new Function('return ' + code))();
+                ComponentClass.__ssrRenderer = renderer;
+            }
+
+            return renderer;
         },
 
         /**
