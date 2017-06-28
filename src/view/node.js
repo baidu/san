@@ -82,7 +82,7 @@ Node.prototype._getEl = function () {
  *
  * @protected
  */
-Node.prototype._toAttached = function () {
+Node.prototype._toAttached = function (isChild) {
     each(this.childs, function (child) {
         child._toAttached(true);
     });
