@@ -84,10 +84,13 @@ Node.prototype._getEl = function () {
  */
 Node.prototype._toAttached = function () {
     each(this.childs, function (child) {
-        child._toAttached();
+        child._toAttached(true);
     });
 
     if (!this.lifeCycle.is('attached')) {
+        if (isChild) {
+            this._toPhase('created');
+        }
         if (this._attached) {
             this._attached();
         }
