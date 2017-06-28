@@ -2149,12 +2149,14 @@
      *
      * @protected
      */
-    Node.prototype._toAttached = function () {
+    Node.prototype._toAttached = function (isChild) {
         each(this.childs, function (child) {
-            child._toAttached();
+            child._toAttached(true);
         });
 
-        this._toPhase('created');
+        if (isChild) {
+            this._toPhase('created');
+        }
         if (this._attached) {
             this._attached();
         }
