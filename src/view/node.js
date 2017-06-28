@@ -88,7 +88,6 @@ Node.prototype._toAttached = function () {
     });
 
     if (!this.lifeCycle.is('attached')) {
-        this._toPhase('created');
         if (this._attached) {
             this._attached();
         }
