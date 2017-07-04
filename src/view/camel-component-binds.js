@@ -4,7 +4,7 @@
  */
 
 var kebab2camel = require('../util/kebab2camel');
-
+var IndexedList = require('../util/indexed-list');
 
 /**
  * 将 binds 的 name 从 kebabcase 转换成 camelcase
