@@ -203,8 +203,16 @@ Component.prototype.init = function (options) {
         )
     );
 
+    Element.prototype._init.call(this, options);
+
+    postComponentBinds(this.binds);
+    this.scope && this.binds.each(function (bind) {
+        me.data.set(bind.name, me.evalExpr(bind.expr));
+    });
+
     // #[begin] error
-    // 只在开发版本中进行属性校验
+    // 在初始化 + 数据绑定后，开始数据校验
+    // NOTE: 只在开发版本中进行属性校验
     var dataTypes = this.dataTypes || this.constructor.dataTypes;
     if (dataTypes) {
         var dataTypeChecker = createDataTypesChecker(
@@ -215,13 +223,6 @@ Component.prototype.init = function (options) {
         this.data.checkDataTypes();
     }
     // #[end]
-
-    Element.prototype._init.call(this, options);
-
-    postComponentBinds(this.binds);
-    this.scope && this.binds.each(function (bind) {
-        me.data.set(bind.name, me.evalExpr(bind.expr));
-    });
 
     this.computedDeps = {};
     for (var expr in this.computed) {

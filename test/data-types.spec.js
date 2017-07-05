@@ -816,5 +816,49 @@ describe('DataTypes', function () {
 
     });
 
+    it('will check after data binding', function () {
+
+        var MyButton = san.defineComponent({
+            template: '<button>hello, {{text}}</button>',
+            dataTypes: {
+                text: DataTypes.string.isRequired
+            }
+        });
+
+        var Avatar = san.defineComponent({
+            template: ''
+                + '<div>'
+                +     '<my-button text="{{name}}" />'
+                + '</div>',
+            components: {
+                'my-button': MyButton
+            }
+        });
+
+        var avatar;
+
+        expect(function () {
+
+            avatar = new Avatar({
+                data: {
+                    name: 'world'
+                }
+            });
+
+            avatar.attach(document.body);
+
+            avatar.dispose();
+
+        }).not.toThrow();
+
+        expect(function () {
+            new Avatar({
+                data: {
+                }
+            }).attach(document.body);
+        }).toThrow();
+
+    });
+
 
 });
