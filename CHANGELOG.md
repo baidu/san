@@ -8,6 +8,7 @@ ChangeLog
 
 + 【优化】- compileToRenderer 方法增加对编译结果缓存
 + 【bug修复】- 在做 data binding 处理前过早地进行了数据校验
++ 【bug修复】- created 生命周期钩子可能被运行两次
 
 
 

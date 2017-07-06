@@ -27,45 +27,80 @@ describe("Component", function () {
     });
 
     it("life cycle", function () {
-        var isInited = false;
-        var isCreated = false;
-        var isAttached = false;
-        var isDetached = false;
-        var isDisposed = false;
+        var mainInited = 0;
+        var mainCreated = 0;
+        var mainAttached = 0;
+        var mainDetached = 0;
+        var mainDisposed = 0;
+        var labelInited = 0;
+        var labelCreated = 0;
+        var labelAttached = 0;
+        var labelDetached = 0;
+        var labelDisposed = 0;
 
-        var MyComponent = san.defineComponent({
-            components: {
-                'ui-color': ColorPicker
-            },
-            template: '<span title="{{color}}">{{color}}</span>',
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
 
             inited: function () {
-                isInited = true;
+                labelInited++;
             },
 
             created: function () {
-                isCreated = true;
+                labelCreated++;
             },
 
             attached: function () {
-                isAttached = true;
+                labelAttached++;
+                labelDetached = 0;
             },
 
             detached: function () {
-                isDetached = true;
+                labelDetached++;
+                labelAttached = 0;
             },
 
             disposed: function () {
-                isDisposed = true;
+                labelDisposed++;
+            }
+        })
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+            template: '<div title="{{color}}"><ui-label text="{{color}}"/>{{color}}</div>',
+
+            inited: function () {
+                mainInited++;
+            },
+
+            created: function () {
+                mainCreated++;
+            },
+
+            attached: function () {
+                mainAttached++;
+                mainDetached = 0;
+            },
+
+            detached: function () {
+                mainDetached++;
+                mainAttached = 0;
+            },
+
+            disposed: function () {
+                mainDisposed++;
             }
         });
+
         var myComponent = new MyComponent();
         expect(myComponent.lifeCycle.is('inited')).toBe(true);
         expect(myComponent.lifeCycle.is('created')).toBe(false);
         expect(myComponent.lifeCycle.is('attached')).toBe(false);
-        expect(isInited).toBe(true);
-        expect(isCreated).toBe(false);
-        expect(isAttached).toBe(false);
+        expect(mainInited).toBe(1);
+        expect(mainCreated).toBe(0);
+        expect(mainAttached).toBe(0);
+        expect(labelInited).toBe(0);
 
         myComponent.data.set('color', 'green');
 
@@ -75,20 +110,34 @@ describe("Component", function () {
         expect(myComponent.lifeCycle.is('inited')).toBe(true);
         expect(myComponent.lifeCycle.is('created')).toBe(true);
         expect(myComponent.lifeCycle.is('attached')).toBe(true);
-        expect(isInited).toBe(true);
-        expect(isCreated).toBe(true);
-        expect(isAttached).toBe(true);
+        expect(mainInited).toBe(1);
+        expect(mainCreated).toBe(1);
+        expect(mainAttached).toBe(1);
+        expect(labelInited).toBe(1);
+        expect(labelCreated).toBe(1);
+        expect(labelAttached).toBe(1);
 
         myComponent.detach();
         expect(myComponent.lifeCycle.is('created')).toBe(true);
         expect(myComponent.lifeCycle.is('attached')).toBe(false);
         expect(myComponent.lifeCycle.is('detached')).toBe(true);
-        expect(isDetached).toBe(true);
+        expect(mainCreated).toBe(1);
+        expect(mainDetached).toBe(1);
+        expect(mainAttached).toBe(0);
+        expect(labelInited).toBe(1);
+        expect(labelCreated).toBe(1);
+        expect(labelAttached).toBe(1);
 
         myComponent.attach(wrap);
         expect(myComponent.lifeCycle.is('created')).toBe(true);
         expect(myComponent.lifeCycle.is('attached')).toBe(true);
         expect(myComponent.lifeCycle.is('detached')).toBe(false);
+        expect(mainCreated).toBe(1);
+        expect(mainDetached).toBe(0);
+        expect(mainAttached).toBe(1);
+        expect(labelInited).toBe(1);
+        expect(labelCreated).toBe(1);
+        expect(labelAttached).toBe(1);
 
 
         myComponent.dispose();
@@ -97,7 +146,8 @@ describe("Component", function () {
         expect(myComponent.lifeCycle.is('attached')).toBe(false);
         expect(myComponent.lifeCycle.is('detached')).toBe(false);
         expect(myComponent.lifeCycle.is('disposed')).toBe(true);
-        expect(isDisposed).toBe(true);
+        expect(mainDisposed).toBe(1);
+        expect(labelDisposed).toBe(1);
 
         document.body.removeChild(wrap);
     });

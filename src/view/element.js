@@ -257,9 +257,12 @@ Element.prototype._attach = function (parentEl, beforeEl) {
         }
     }
 
-    var buf = new StringBuffer();
-    genElementChildsHTML(this, buf);
-    this.el.innerHTML = buf.toString();
+    if (!this._contentReady) {
+        var buf = new StringBuffer();
+        genElementChildsHTML(this, buf);
+        this.el.innerHTML = buf.toString();
+        this._contentReady = 1;
+    }
 };
 
 /**
