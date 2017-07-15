@@ -9,6 +9,7 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
+var empty = require('../util/empty');
 var Element = require('./element');
 var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
@@ -231,6 +232,11 @@ Component.prototype.init = function (options) {
         }
     }
 
+
+    if (!this.dataChanger) {
+        this.dataChanger = bind(this._dataChanger, this);
+        this.data.listen(this.dataChanger);
+    }
     this._toPhase('inited');
 
     // #[begin] reverse
@@ -450,12 +456,7 @@ Component.prototype._compile = function () {
  *
  * @private
  */
-Component.prototype._initSelfChanger = function () {
-    if (!this.dataChanger) {
-        this.dataChanger = bind(this._dataChanger, this);
-        this.data.listen(this.dataChanger);
-    }
-};
+Component.prototype._initSelfChanger = empty;
 
 /**
  * 视图更新函数
@@ -617,7 +618,6 @@ Component.prototype._dispose = function () {
     this.dataChanger = null;
     this.dataChanges = null;
 
-    this.data = null;
     this.listeners = null;
 };
 

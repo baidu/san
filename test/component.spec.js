@@ -985,6 +985,59 @@ describe("Component", function () {
 
     });
 
+    it("dispatch in inited, parent data change, view should change soon", function (done) {
+        var Child = san.defineComponent({
+            template: '<div>child</div>',
+            inited: function () {
+                this.dispatch('childInited');
+            }
+        });
+
+        var Parent = san.defineComponent({
+            messages: {
+                childInited: function () {
+                    this.data.set('xx', true);
+                }
+            },
+
+            template: '<div><b title="{{xx?\'good\':\'bad\'}}"></b><slot></slot><b title="{{xx?\'good\':\'bad\'}}"></b></div>',
+
+            initData: function () {
+                return {
+                    xx: false
+                };
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'a-child': Child,
+                'a-parent': Parent
+            },
+
+            template: '<div class="app"><a-parent><a-child /></a-parent></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].title).toBe('bad');
+        expect(bs[1].title).toBe('good');
+
+        san.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].title).toBe('good');
+            expect(bs[1].title).toBe('good');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("outer bind declaration should not set main element property", function (done) {
         var times = 0;
         var subTimes = 0;
