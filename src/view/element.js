@@ -16,6 +16,7 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var fromElInitChilds = require('./from-el-init-childs');
 var isComponent = require('./is-component');
+var isBrowser = require('../browser/is-browser');
 var on = require('../browser/on');
 var un = require('../browser/un');
 var removeEl = require('../browser/remove-el');
@@ -182,7 +183,7 @@ Element.prototype._initSelfChanger = function () {
                 switch (me.tagName) {
                     case 'input':
                     case 'textarea':
-                        if (root.CompositionEvent) {
+                        if (isBrowser && window.CompositionEvent) {
                             me._onEl('compositionstart', function () {
                                 this.composing = 1;
                             });
