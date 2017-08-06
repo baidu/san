@@ -185,18 +185,6 @@ var elementPropHandlers = {
                         }
                     }
 
-                    // if (parentSelect) {
-                    //     var selectValue = null;
-                    //     var selectValueProp = parentSelect.props.get('value');
-                    //     if (selectValueProp) {
-                    //         selectValue = parentSelect.evalExpr(selectValueProp.expr) || '';
-                    //     }
-
-                    //     if (selectValue === value) {
-                    //         attrStr += ' selected';
-                    //     }
-                    // }
-
                     return attrStr;
                 },
 
