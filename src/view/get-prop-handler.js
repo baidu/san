@@ -6,6 +6,9 @@
 var contains = require('../util/contains');
 var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
+var isComponent = require('./is-component');
+
+
 /**
  * HTML 属性和 DOM 操作属性的对照表
  *
@@ -162,17 +165,37 @@ var elementPropHandlers = {
                         parentSelect = parentSelect.parent;
                     }
 
+
                     if (parentSelect) {
                         var selectValue = null;
-                        var selectValueProp = parentSelect.props.get('value');
-                        if (selectValueProp) {
-                            selectValue = parentSelect.evalExpr(selectValueProp.expr) || '';
+                        var prop;
+                        var expr;
+
+                        if ((prop = parentSelect.props.get('value'))
+                            && (expr = prop.expr)
+                        ) {
+                            selectValue = isComponent(parentSelect)
+                                    ? evalExpr(expr, parentSelect.data, parentSelect)
+                                    : parentSelect.evalExpr(expr)
+                                || '';
                         }
 
                         if (selectValue === value) {
                             attrStr += ' selected';
                         }
                     }
+
+                    // if (parentSelect) {
+                    //     var selectValue = null;
+                    //     var selectValueProp = parentSelect.props.get('value');
+                    //     if (selectValueProp) {
+                    //         selectValue = parentSelect.evalExpr(selectValueProp.expr) || '';
+                    //     }
+
+                    //     if (selectValue === value) {
+                    //         attrStr += ' selected';
+                    //     }
+                    // }
 
                     return attrStr;
                 },

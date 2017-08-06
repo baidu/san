@@ -923,6 +923,43 @@ describe("Form TwoWay Binding", function () {
         });
     });
 
+    it("select as component root element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<select value="{=online=}">'
+                +   '<option value="errorrik">errorrik</option>'
+                +   '<option value="otakustay">otakustay</option>'
+                +   '<option value="firede">firede</option>'
+                + '</select>',
+
+            initData: function () {
+                return {
+                    online: 'firede'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var select = wrap.getElementsByTagName('select')[0];
+
+        expect(select.selectedIndex).toBe(2);
+        expect(select.value).toBe('firede');
+
+        myComponent.data.set('online', 'errorrik');
+
+        san.nextTick(function () {
+            var select = wrap.getElementsByTagName('select')[0];
+            expect(select.selectedIndex).toBe(0);
+            expect(select.value).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 
     it("dynamic expr", function (done) {
         var MyComponent = san.defineComponent({
