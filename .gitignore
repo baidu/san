@@ -4,6 +4,7 @@ dist/*.gz
 .idea/
 public/
 npm-debug.log
+package-lock.json
 Thumbs.db
 .DS_Store
 *.swp
