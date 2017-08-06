@@ -7,6 +7,7 @@ ChangeLog
 
 + 【优化】- 组件 dispose 后，如果有异步任务更新组件数据，使其静默失效，不用报错
 + 【bug修复】- 当子组件在 inited 中 dispatch message 导致父组件数据变更时，视图未更新
++ 【bug修复】- 在 WebPack 下未能通知 DevTool
 
 
 3.1.3
