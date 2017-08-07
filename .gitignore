@@ -9,6 +9,8 @@ Thumbs.db
 .DS_Store
 *.swp
 *.gz
+bug.html
+test.html
 coverage/
 errorShots/
 /test/index-ssr.html
