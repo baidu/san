@@ -1920,7 +1920,8 @@ describe("Component", function () {
             setTimeout(detect, 500);
         }
 
-        triggerEvent('#' + myComponent.childs[1].id, 'click');
+
+        triggerEvent('#' + wrap.firstChild.getElementsByTagName('*')[0].id, 'click');
 
         detect();
     });
