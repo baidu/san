@@ -29,7 +29,7 @@ function genElementChildsHTML(element, buf) {
         else {
             each(element.aNode.childs, function (aNodeChild) {
                 var child = createNode(aNodeChild, element);
-                if (!this._static) {
+                if (!child._static) {
                     element.childs.push(child);
                 }
                 child.genHTML(buf);
