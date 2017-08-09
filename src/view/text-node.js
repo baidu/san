@@ -7,7 +7,6 @@
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var Node = require('./node');
-var genStumpHTML = require('./gen-stump-html');
 var createANode = require('../parser/create-a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
