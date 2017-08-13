@@ -10,7 +10,8 @@
  * @param {StringBuffer} buf html串存储对象
  */
 function genStumpHTML(node, buf) {
-    buf.push('<script type="text/san" id="' + node.id + '"></script>');
+    // buf.push('<script type="text/san" id="' + node.id + '"></script>');
+    buf.push('<!--san:' + node.id + '-->');
 }
 
 exports = module.exports = genStumpHTML;

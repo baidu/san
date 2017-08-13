@@ -13,6 +13,8 @@ var Element = require('./element');
 var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
+var getNodeStump = require('./get-node-stump');
+var getNodeStumpParent = require('./get-node-stump-parent');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
@@ -152,9 +154,8 @@ ForDirective.prototype._pushChildANode = empty;
  * 生成html
  *
  * @param {StringBuffer} buf html串存储对象
- * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
  */
-ForDirective.prototype.genHTML = function (buf, onlyChilds) {
+ForDirective.prototype.genHTML = function (buf) {
     each(
         this.evalExpr(this.aNode.directives.get('for').list),
         function (item, i) {
@@ -165,12 +166,7 @@ ForDirective.prototype.genHTML = function (buf, onlyChilds) {
         this
     );
 
-    if (!onlyChilds) {
-        if (ieOldThan9 && !this.childs.length) {
-            buf.push('\uFEFF');
-        }
-        genStumpHTML(this, buf);
-    }
+    genStumpHTML(this, buf);
 };
 
 /**
@@ -243,10 +239,28 @@ ForDirective.prototype._attach = function (parentEl, beforeEl) {
         }
     }
 
-    var buf = new StringBuffer();
-    this.genHTML(buf, 1);
-    this._getEl().insertAdjacentHTML('beforebegin', buf.toString());
+    this._paintList();
 };
+
+/**
+ * 绘制整个列表。用于被 attach，或整个列表数据被重置时的刷新
+ *
+ * @private
+ */
+ForDirective.prototype._paintList = function () {
+    var el = this._getEl();
+    var parent = getNodeStumpParent(this);
+
+    each(
+        this.evalExpr(this.aNode.directives.get('for').list),
+        function (item, i) {
+            var child = createForDirectiveChild(this, item, i);
+            this.childs.push(child);
+            child.attach(parent, el);
+        },
+        this
+    );
+}
 
 /**
  * 将元素从页面上移除的行为
@@ -261,9 +275,7 @@ ForDirective.prototype._detach = function () {
  */
 ForDirective.prototype._create = function () {
     if (!this.el) {
-        this.el = document.createElement('script');
-        this.el.type = 'text/san';
-        this.el.id = this.id;
+        this.el = document.createComment('san:' + this.id);
     }
 };
 
@@ -390,9 +402,7 @@ ForDirective.prototype.updateView = function (changes) {
 
     if (repaintAll) {
         // 整个列表都需要重新刷新
-        var buf = new StringBuffer();
-        this.genHTML(buf, 1);
-        this._getEl().insertAdjacentHTML('beforebegin', buf.toString());
+        this._paintList();
         this._toAttached();
     }
     else {
@@ -416,22 +426,14 @@ ForDirective.prototype.updateView = function (changes) {
     }
 };
 
-ForDirective.prototype._attached = function () {
-    // 移除节点桩元素前面的空白 FEFF 字符
-    if (ieOldThan9 && this._getEl()) {
-        var headingBlank = this._getEl().previousSibling;
-
-        if (headingBlank && headingBlank.nodeType === 3) {
-            var textProp = typeof headingBlank.textContent === 'string'
-                ? 'textContent'
-                : 'data';
-            var text = headingBlank[textProp];
-
-            if (!text || text === '\uFEFF') {
-                removeEl(headingBlank);
-            }
-        }
-    }
+/**
+ * 获取节点对应的主元素
+ *
+ * @protected
+ * @return {HTMLElement}
+ */
+ForDirective.prototype._getEl = function () {
+    return getNodeStump(this);
 };
 
 

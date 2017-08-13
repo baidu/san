@@ -18,6 +18,8 @@ var escapeHTML = require('../runtime/escape-html');
 var isStump = require('./is-stump');
 var ExprType = require('../parser/expr-type');
 var TextNode = require('./text-node');
+var getNodeStump = require('./get-node-stump');
+var getNodeStumpParent = require('./get-node-stump-parent');
 
 /**
  * if 指令处理类
@@ -59,9 +61,7 @@ function createIfDirectiveChild(ifElement) {
  */
 IfDirective.prototype._create = function () {
     if (!this.el) {
-        this.el = document.createElement('script');
-        this.el.type = 'text/san';
-        this.el.id = this.id;
+        this.el = document.createComment('san:' + this.id);
     }
 };
 
@@ -139,9 +139,6 @@ IfDirective.prototype.genHTML = function (buf) {
         this.childs[0] = child;
         child.genHTML(buf);
     }
-    else if (ieOldThan9) {
-        buf.push('\uFEFF');
-    }
 
     genStumpHTML(this, buf);
 };
@@ -153,7 +150,6 @@ IfDirective.prototype.genHTML = function (buf) {
  */
 IfDirective.prototype.updateView = function (changes) {
     var child = this.childs[0];
-    var el = this._getEl();
 
     if (this.evalExpr(this.cond)) {
         if (child) {
@@ -161,13 +157,24 @@ IfDirective.prototype.updateView = function (changes) {
         }
         else {
             child = createIfDirectiveChild(this);
-            child.attach(el.parentNode, el);
+            child.attach(getNodeStumpParent(this), this._getEl());
             this.childs[0] = child;
         }
     }
     else {
         this._disposeChilds();
     }
+};
+
+
+/**
+ * 获取节点对应的主元素
+ *
+ * @protected
+ * @return {HTMLElement}
+ */
+IfDirective.prototype._getEl = function () {
+    return getNodeStump(this);
 };
 
 // #[begin] reverse
@@ -178,23 +185,6 @@ IfDirective.prototype.updateView = function (changes) {
 IfDirective.prototype._pushChildANode = empty;
 // #[end]
 
-IfDirective.prototype._attached = function () {
-    // 移除节点桩元素前面的空白 FEFF 字符
-    if (ieOldThan9 && this._getEl()) {
-        var headingBlank = this._getEl().previousSibling;
-
-        if (headingBlank && headingBlank.nodeType === 3) {
-            var textProp = typeof headingBlank.textContent === 'string'
-                ? 'textContent'
-                : 'data';
-            var text = headingBlank[textProp];
-
-            if (!text || text === '\uFEFF') {
-                removeEl(headingBlank);
-            }
-        }
-    }
-};
 
 
 exports = module.exports = IfDirective;
