@@ -25,7 +25,6 @@ var defineComponent = require('./define-component');
 var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
-var serializeStump = require('./serialize-stump');
 var fromElInitChilds = require('./from-el-init-childs');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');

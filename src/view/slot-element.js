@@ -11,7 +11,7 @@ var Element = require('./element');
 var isComponent = require('./is-component');
 var Component = require('./component');
 var createANode = require('../parser/create-a-node');
-var serializeStump = require('./serialize-stump');
+var isEndStump = require('./is-end-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
 
@@ -35,20 +35,23 @@ inherits(SlotElement, Node);
  */
 SlotElement.prototype._init = function (options) {
     var literalOwner = options.owner;
-    var nameBind = options.aNode.props.get('name');
-    this.name = nameBind ? nameBind.raw : '____';
     var aNode = createANode();
 
     // #[begin] reverse
     if (options.el) {
-        this.name = options.el.getAttribute('name') || '____';
-        if (!options.el.getAttribute('by-default')) {
+        if (options.stumpText.indexOf('!') !== 0) {
             options.owner = literalOwner.owner;
             options.scope = literalOwner.scope;
+            options.stumpText = options.stumpText.slice(1);
         }
+        this.name = options.stumpText || '____';
     }
     else {
     // #[end]
+
+        var nameBind = options.aNode.props.get('name');
+        this.name = nameBind ? nameBind.raw : '____';
+
         var givenSlots = literalOwner.aNode.givenSlots;
         var givenChilds = givenSlots && givenSlots[this.name];
         aNode.childs = givenChilds || options.aNode.childs.slice(0);
@@ -57,6 +60,7 @@ SlotElement.prototype._init = function (options) {
             options.owner = literalOwner.owner;
             options.scope = literalOwner.scope;
         }
+
     // #[begin] reverse
     }
     // #[end]
@@ -86,7 +90,7 @@ SlotElement.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
-            if (!next || next.getAttribute('s-stump') === 'slot-end') {
+            if (!next || isEndStump(next, 'slot')) {
                 next && options.elWalker.goNext();
                 break;
             }

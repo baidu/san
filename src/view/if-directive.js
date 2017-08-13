@@ -15,7 +15,6 @@ var createANode = require('../parser/create-a-node');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 var removeEl = require('../browser/remove-el');
 var escapeHTML = require('../runtime/escape-html');
-var isStump = require('./is-stump');
 var ExprType = require('../parser/expr-type');
 var TextNode = require('./text-node');
 var getNodeStump = require('./get-node-stump');
@@ -75,8 +74,8 @@ IfDirective.prototype._init = function (options) {
 
     // #[begin] reverse
     if (options.el) {
-        if (isStump(options.el)) {
-            var aNode = parseTemplate(options.el.innerHTML).childs[0];
+        if (options.el.nodeType === 8) {
+            var aNode = parseTemplate(options.stumpText).childs[0];
             this.aNode = aNode;
         }
         else {

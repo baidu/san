@@ -14,6 +14,7 @@ var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var getNodeStump = require('./get-node-stump');
+var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
@@ -181,7 +182,7 @@ ForDirective.prototype._init = function (options) {
 
     // #[begin] reverse
     if (options.el) {
-        aNode = parseTemplate(options.el.innerHTML).childs[0];
+        aNode = parseTemplate(options.stumpText).childs[0];
         this.aNode = aNode;
 
         var index = 0;
@@ -192,7 +193,7 @@ ForDirective.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
-            if (next.getAttribute('s-stump') === 'for-end') {
+            if (isEndStump(next, 'for')) {
                 removeEl(options.el);
                 this.el = next;
                 options.elWalker.goNext();

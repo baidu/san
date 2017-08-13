@@ -10,7 +10,6 @@ var ForDirective = require('./for-directive');
 var Element = require('./element');
 var SlotElement = require('./slot-element');
 var Component = require('./component');
-var isStump = require('./is-stump');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
 // #[begin] reverse
@@ -35,10 +34,39 @@ function createNodeByEl(el, parent, elWalker, scope) {
         elWalker: elWalker
     };
 
-    // comment as TextNode
+    // comment as stump
     if (el.nodeType === 8) {
-        if (/^\s*s-ts:/.test(el.data)) {
-            return new TextNode(option);
+        var stumpMatch = el.data.match(/^\s*s-([a-z]+)(:[\s\S]+)?$/);
+
+        if (stumpMatch) {
+            option.stumpText = stumpMatch[2] ? stumpMatch[2].slice(1) : '';
+
+            switch (stumpMatch[1]) {
+                case 'text':
+                    return new TextNode(option);
+
+                case 'for':
+                    return new ForDirective(option);
+
+                case 'slot':
+                    return new SlotElement(option);
+
+                case 'if':
+                case 'else':
+                    return new IfDirective(option);
+
+                case 'data':
+                    // fill component data
+                    var data = (new Function(
+                        'return ' + option.stumpText.replace(/^[\s\n]*/ ,'')
+                    ))();
+
+                    for (var key in data) {
+                        owner.data.set(key, data[key]);
+                    }
+
+                    return;
+            }
         }
 
         return;
@@ -47,7 +75,6 @@ function createNodeByEl(el, parent, elWalker, scope) {
     // element as anything
     var tagName = el.tagName.toLowerCase();
     var childANode = parseANodeFromEl(el);
-    var stumpName = el.getAttribute('s-stump');
     option.aNode = childANode;
 
     // find component class
@@ -63,34 +90,10 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
 
-
     if (childANode.directives.get('if') || childANode.directives.get('else')) {
         return new IfDirective(option);
     }
 
-    switch (stumpName) {
-        case 'if':
-        case 'else':
-            return new IfDirective(option);
-
-        case 'for-start':
-            return new ForDirective(option);
-
-        case 'slot-start':
-            return new SlotElement(option);
-
-        case 'data':
-            // fill component data
-            var data = (new Function(
-                'return ' + el.innerHTML.replace(/^[\s\n]*/ ,'')
-            ))();
-
-            for (var key in data) {
-                owner.data.set(key, data[key]);
-            }
-
-            return;
-    }
 
     // as Component
     if (ComponentClass) {

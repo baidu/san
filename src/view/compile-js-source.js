@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var serializeStump = require('./serialize-stump');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
@@ -15,6 +14,27 @@ var camel2kebab = require('../util/camel2kebab');
 var serializeANode = require('./serialize-a-node');
 
 // #[begin] ssr
+
+/**
+ * 生成序列化时起始桩的html
+ *
+ * @param {string} type 桩类型标识
+ * @param {string?} content 桩内的内容
+ * @return {string}
+ */
+function serializeStump(type, content) {
+    return '<!--s-' + type + (content ? ':' + content : '') + '-->';
+}
+
+/**
+ * 生成序列化时结束桩的html
+ *
+ * @param {string} type 桩类型标识
+ * @return {string}
+ */
+function serializeStumpEnd(type) {
+    return '<!--/s-' + type + '-->';
+}
 
 /**
  * ANode 的编译方法集合对象
@@ -69,9 +89,9 @@ var aNodeCompiler = {
         var value = aNode.textExpr.value;
 
         if (value == null) {
-            sourceBuffer.joinString('<!--s-ts:' + aNode.text + '-->');
+            sourceBuffer.joinString('<!--s-text:' + aNode.text + '-->');
             sourceBuffer.joinExpr(aNode.textExpr);
-            sourceBuffer.joinString('<!--s-te-->');
+            sourceBuffer.joinString('<!--/s-text-->');
         }
         else {
             sourceBuffer.joinString(value);
@@ -170,7 +190,7 @@ var aNodeCompiler = {
         var listName = compileExprSource.dataAccess(forDirective.list);
 
         // start stump
-        sourceBuffer.joinString(serializeStump('for-start', serializeANode(aNode)));
+        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
 
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
@@ -189,7 +209,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('}');
 
         // stop stump
-        sourceBuffer.joinString(serializeStump('for-end'));
+        sourceBuffer.joinString(serializeStumpEnd('for'));
     },
 
     /**
@@ -202,7 +222,6 @@ var aNodeCompiler = {
     compileSlot: function (aNode, sourceBuffer, owner) {
         var nameProp = aNode.props.get('name');
         var name = nameProp ? nameProp.raw : '____';
-        var extraProp = nameProp ? ' name="' + name + '"' : '';
         var isGivenContent = 0;
         var childs = aNode.childs;
 
@@ -211,11 +230,9 @@ var aNodeCompiler = {
             childs = owner.aNode.givenSlots[name];
         }
 
-
-        if (!isGivenContent) {
-            extraProp += ' by-default="1"';
-        }
-        sourceBuffer.joinString(serializeStump('slot-start', '', extraProp));
+        var stumpText = (!isGivenContent ? '!' : '')
+            + (nameProp ? nameProp.raw : '');
+        sourceBuffer.joinString(serializeStump('slot', stumpText));
 
         if (isGivenContent) {
             sourceBuffer.addRaw('(function (componentCtx) {');
@@ -229,7 +246,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('})(componentCtx.owner);');
         }
 
-        sourceBuffer.joinString(serializeStump('slot-end'));
+        sourceBuffer.joinString(serializeStumpEnd('slot'));
     },
 
     /**
@@ -543,9 +560,9 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     );
 
     if (!component.owner) {
-        sourceBuffer.joinString('<script type="text/san" s-stump="data">');
+        sourceBuffer.joinString('<!--s-data:');
         sourceBuffer.joinDataStringify();
-        sourceBuffer.joinString('</script>');
+        sourceBuffer.joinString('-->');
     }
 
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);

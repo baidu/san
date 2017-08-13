@@ -7,6 +7,7 @@
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var Node = require('./node');
+var isEndStump = require('./is-end-stump');
 var createANode = require('../parser/create-a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
@@ -39,7 +40,7 @@ TextNode.prototype._init = function (options) {
     if (this.el) {
         this.aNode = createANode({
             isText: 1,
-            text: this.el.data.replace('s-ts:', '')
+            text: options.stumpText
         });
 
         this.parent._pushChildANode(this.aNode);
@@ -48,7 +49,7 @@ TextNode.prototype._init = function (options) {
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
-            if (next.nodeType === 8 && next.data === 's-te') {
+            if (isEndStump(next, 'text')) {
                 options.elWalker.goNext();
                 removeEl(next);
                 break;
