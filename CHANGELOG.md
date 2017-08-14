@@ -8,6 +8,7 @@ ChangeLog
 
 + 【变更】- 组件反解的标记格式变更，统一使用 comment 标记
 + 【优化】- 使用 comment 替代 script 做为桩元素，避免影响 css selector
++ 【bug修复】- 双向绑定的表单元素做为组件 root，用户输入时数据未更新
 
 3.1.5
 -------
