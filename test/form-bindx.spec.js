@@ -38,6 +38,46 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("text input as component root element", function (done) {
+        var defName = 'text value';
+
+        var MyComponent = san.defineComponent({
+            template: '<input value="{=name=}">'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: defName
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.value).toBe(defName);
+
+        var inputValue = 'test' + (+new Date());
+        function doneSpec() {
+            if (input.value !== defName) {
+                expect(input.value).toBe(defName + inputValue);
+                expect(myComponent.data.get('name')).toBe(defName + inputValue);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + input.id, 'input', inputValue);
+        setTimeout(doneSpec, 500);
+
+    });
+
     it("textarea value", function (done) {
         var defName = 'textarea val</textarea>ue';
 
