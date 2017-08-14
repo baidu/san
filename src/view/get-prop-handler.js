@@ -54,8 +54,8 @@ var defaultElementPropHandler = {
         }
     },
 
-    output: function (element, bindInfo) {
-        element.scope.set(bindInfo.expr, element.el[bindInfo.name], {
+    output: function (element, bindInfo, data) {
+        data.set(bindInfo.expr, element.el[bindInfo.name], {
             target: {
                 id: element.id,
                 prop: bindInfo.name
@@ -118,17 +118,17 @@ var elementPropHandlers = {
                 }
             },
 
-            output: function (element, bindInfo) {
+            output: function (element, bindInfo, data) {
                 var el = element.el;
                 var bindType = element.props.get('type') || {};
 
                 switch (bindType.raw) {
                     case 'checkbox':
-                        element.scope[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                        data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
                         break;
 
                     case 'radio':
-                        el.checked && element.scope.set(bindInfo.expr, el.value, {
+                        el.checked && data.set(bindInfo.expr, el.value, {
                             target: {
                                 id: element.id,
                                 prop: bindInfo.name

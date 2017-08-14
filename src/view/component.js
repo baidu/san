@@ -450,12 +450,6 @@ Component.prototype._compile = function () {
     }
 };
 
-/**
- * 初始化自身变化时，监听数据变化的行为
- *
- * @private
- */
-Component.prototype._initSelfChanger = empty;
 
 /**
  * 视图更新函数

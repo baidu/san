@@ -141,7 +141,7 @@ Element.prototype.create = function () {
  * 完成创建元素DOM后的行为
  */
 Element.prototype._attached = function () {
-    this._initSelfChanger();
+    this._initRootBindx();
 
     var me = this;
     each(this.aNode.events, function (eventBind) {
@@ -165,17 +165,19 @@ Element.prototype._attached = function () {
  *
  * @private
  */
-Element.prototype._initSelfChanger = function () {
+Element.prototype._initRootBindx = function () {
     var me = this;
+    var xBinds = isComponent(me) ? this.props : this.binds;
+    var data = isComponent(me) ? this.data : this.scope;
 
-    this.binds && this.binds.each(function (bindInfo) {
+    xBinds && xBinds.each(function (bindInfo) {
         if (!bindInfo.x) {
             return;
         }
 
         var el = me._getEl();
         function outputer() {
-            getPropHandler(me, bindInfo.name).output(me, bindInfo);
+            getPropHandler(me, bindInfo.name).output(me, bindInfo, data);
         };
 
         switch (bindInfo.name) {
