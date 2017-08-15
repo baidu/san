@@ -67,7 +67,7 @@ function build() {
             ast.compute_char_frequency();
             ast.mangle_names();
 
-            editionSource = ast.print_to_string();
+            editionSource = ast.print_to_string({screw_ie8: false});
         }
 
         fs.writeFileSync(
