@@ -155,8 +155,9 @@ ForDirective.prototype._pushChildANode = empty;
  * 生成html
  *
  * @param {StringBuffer} buf html串存储对象
+ * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
  */
-ForDirective.prototype.genHTML = function (buf) {
+ForDirective.prototype.genHTML = function (buf, onlyChilds) {
     each(
         this.evalExpr(this.aNode.directives.get('for').list),
         function (item, i) {
@@ -167,7 +168,9 @@ ForDirective.prototype.genHTML = function (buf) {
         this
     );
 
-    genStumpHTML(this, buf);
+    if (!onlyChilds) {
+        genStumpHTML(this, buf);
+    }
 };
 
 /**
@@ -251,16 +254,28 @@ ForDirective.prototype._attach = function (parentEl, beforeEl) {
 ForDirective.prototype._paintList = function () {
     var parentEl = getNodeStumpParent(this);
     var el = this._getEl() || parentEl.firstChild;
+    var prevEl = el && el.previousSibling;
+    var buf = new StringBuffer();
 
-    each(
-        this.evalExpr(this.aNode.directives.get('for').list),
-        function (item, i) {
-            var child = createForDirectiveChild(this, item, i);
-            this.childs.push(child);
-            child.attach(parentEl, el);
-        },
-        this
-    );
+    if (!prevEl) {
+        this.genHTML(buf, 1);
+        parentEl.insertAdjacentHTML('afterbegin', buf.toString());
+    }
+    else if (prevEl.nodeType === 1) {
+        this.genHTML(buf, 1);
+        prevEl.insertAdjacentHTML('afterend', buf.toString());
+    }
+    else {
+        each(
+            this.evalExpr(this.aNode.directives.get('for').list),
+            function (item, i) {
+                var child = createForDirectiveChild(this, item, i);
+                this.childs.push(child);
+                child.attach(parentEl, el);
+            },
+            this
+        );
+    }
 }
 
 /**
