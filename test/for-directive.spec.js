@@ -503,7 +503,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data set after attach", function (done) {
+    it("data set after attach(has two side sibling)", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -536,7 +536,71 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data set after attach", function (done) {
+    it("data set after attach(has last sibling, no first sibling)", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'any', email: 'anyone@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(3);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data set after attach(has last sibling, no first sibling, start with empty data)", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data item set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}} in {{org}}</li><li>name - email</li></ul>'
         });

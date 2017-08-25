@@ -249,15 +249,15 @@ ForDirective.prototype._attach = function (parentEl, beforeEl) {
  * @private
  */
 ForDirective.prototype._paintList = function () {
-    var el = this._getEl();
-    var parent = getNodeStumpParent(this);
+    var parentEl = getNodeStumpParent(this);
+    var el = this._getEl() || parentEl.firstChild;
 
     each(
         this.evalExpr(this.aNode.directives.get('for').list),
         function (item, i) {
             var child = createForDirectiveChild(this, item, i);
             this.childs.push(child);
-            child.attach(parent, el);
+            child.attach(parentEl, el);
         },
         this
     );
