@@ -418,8 +418,7 @@ ForDirective.prototype.updateView = function (changes) {
                 childsChanges[len].length && child.updateView(childsChanges[len]);
             }
             else {
-                var el = attachStump._getEl();
-                child.attach(el.parentNode, el);
+                child.attach(getNodeStumpParent(attachStump), attachStump._getEl());
             }
 
             attachStump = child;

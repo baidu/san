@@ -6,7 +6,8 @@ ChangeLog
 3.2.1
 -------
 
-+ 【bug修复】- if 指令节点在 IE11- 下 update 时位置不正确
++ 【bug修复】- if 指令节点在 IE 下 update 时位置可能不正确
++ 【bug修复】- for 指令节点初始数据为空，在 IE 下 update 时可能出错或位置不正确
 
 
 
