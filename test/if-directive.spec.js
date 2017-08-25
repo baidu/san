@@ -1,5 +1,17 @@
 describe("IfDirective", function () {
 
+    function nextElement(el) {
+        var next = el.nextSibling;
+        while (next) {
+            if (next.nodeType === 1) {
+                break;
+            }
+
+            next = next.nextSibling;
+        }
+        return next;
+    }
+
     it("for true literal", function () {
         var MyComponent = san.defineComponent({
             template: '<div><span san-if="true" title="errorrik">errorrik</span></div>'
@@ -49,6 +61,56 @@ describe("IfDirective", function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+    });
+
+    it("position right when create", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><b san-if="true" title="errorrik">errorrik</b><u>uuu</u></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.previousSibling).toBe(null);
+        var u = nextElement(b);
+        expect(u != null).toBeTruthy();
+        if (u) {
+            expect(u.tagName).toBe('U');
+        }
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("position right when update", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><b san-if="cond" title="errorrik">errorrik</b><u>uuu</u></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        myComponent.data.set('cond', true);
+
+        san.nextTick(function () {
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(b.previousSibling).toBe(null);
+            var u = nextElement(b);
+            expect(u != null).toBeTruthy();
+            if (u) {
+                expect(u.tagName).toBe('U');
+            }
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
 

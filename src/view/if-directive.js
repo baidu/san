@@ -156,7 +156,8 @@ IfDirective.prototype.updateView = function (changes) {
         }
         else {
             child = createIfDirectiveChild(this);
-            child.attach(getNodeStumpParent(this), this._getEl());
+            var parentEl = getNodeStumpParent(this);
+            child.attach(parentEl, this._getEl() || parentEl.firstChild);
             this.childs[0] = child;
         }
     }
