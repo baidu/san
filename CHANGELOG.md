@@ -7,6 +7,7 @@ ChangeLog
 -------
 
 + 【优化】- 提升 for 指令元素全更新时的性能
++ 【优化】- 增加 select/table 等元素设置 innerHTML 在 IE 下可能导致问题的提示
 + 【bug修复】- if 指令元素在 IE 下 update 时位置可能不正确
 + 【bug修复】- for 指令元素初始数据为空，在 IE 下 update 时可能出错或位置不正确
 + 【bug修复】- input 作为组件主元素时，在 IE 下会出现运行时错误
