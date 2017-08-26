@@ -11,6 +11,7 @@ ChangeLog
 + 【bug修复】- if 指令元素在 IE 下 update 时位置可能不正确
 + 【bug修复】- for 指令元素初始数据为空，在 IE 下 update 时可能出错或位置不正确
 + 【bug修复】- input 作为组件主元素时，在 IE 下会出现运行时错误
++ 【bug修复】- 由于打包工具的参数问题，导致 dist 下输出的 min 文件不兼容 IE8-
 
 
 
