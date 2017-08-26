@@ -978,10 +978,17 @@ describe("Form TwoWay Binding", function () {
             }
         });
 
-        var myComponent = new MyComponent();
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
+        try {
+            var myComponent = new MyComponent();
+            var wrap = document.createElement('div');
+            document.body.appendChild(wrap);
+            myComponent.attach(wrap);
+        }
+        catch (ex) {
+            finish();
+            return;
+        }
+
         var select = wrap.getElementsByTagName('select')[0];
 
         expect(select.selectedIndex).toBe(2);
@@ -994,10 +1001,14 @@ describe("Form TwoWay Binding", function () {
             expect(select.selectedIndex).toBe(0);
             expect(select.value).toBe('errorrik');
 
+            finish();
+        });
+
+        function finish() {
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
-        });
+        }
     });
 
 
