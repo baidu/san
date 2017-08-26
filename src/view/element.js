@@ -16,6 +16,7 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var fromElInitChilds = require('./from-el-init-childs');
 var isComponent = require('./is-component');
+var warnSetHTML = require('./warn-set-html');
 var isBrowser = require('../browser/is-browser');
 var on = require('../browser/on');
 var un = require('../browser/un');
@@ -268,6 +269,9 @@ Element.prototype._attach = function (parentEl, beforeEl) {
         // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题
         var html = buf.toString();
         if (html) {
+            // #[begin] error
+            warnSetHTML(this.el);
+            // #[end]
             this.el.innerHTML = html;
         }
 
@@ -340,6 +344,9 @@ Element.prototype.updateView = function (changes) {
     if (htmlDirective) {
         each(changes, function (change) {
             if (changeExprCompare(change.expr, htmlDirective.value, me.scope)) {
+                // #[begin] error
+                warnSetHTML(me.el);
+                // #[end]
                 me.el.innerHTML = me.evalExpr(htmlDirective.value);
                 return false;
             }

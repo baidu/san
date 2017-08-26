@@ -8,6 +8,7 @@ var inherits = require('../util/inherits');
 var each = require('../util/each');
 var Node = require('./node');
 var isEndStump = require('./is-end-stump');
+var warnSetHTML = require('./warn-set-html');
 var createANode = require('../parser/create-a-node');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var removeEl = require('../browser/remove-el');
@@ -111,6 +112,9 @@ TextNode.prototype.update = function () {
         me._prev._getEl().insertAdjacentHTML('afterend', text);
     }
     else {
+        // #[begin] error
+        warnSetHTML(parentEl);
+        // #[end]
         parentEl.innerHTML = text;
     }
 };

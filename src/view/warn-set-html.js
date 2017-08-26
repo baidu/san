@@ -1,0 +1,34 @@
+/**
+ * @file  获取节点 stump 的 comment
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+// #[begin] error
+/**
+ * 获取节点 stump 的 comment
+ *
+ * @param {HTMLElement} el HTML元素
+ */
+function warnSetHTML(el) {
+    // dont warn if not in browser runtime
+    if (!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && window.document)) {
+        return;
+    }
+
+    // some html elements cannot set innerHTML in old ie
+    // see: https://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
+    if (/^(col|colgroup|frameset|style|table|tbody|tfoot|thead|tr|select)$/i.test(el.tagName)) {
+        var message = '[SAN WARNING] set html for element "' + el.tagName 
+            + '" may cause an error in old IE';
+
+        if (typeof console === 'object' && console.warn) {
+            console.warn(message);
+        }
+        else {
+            throw new Error(message);
+        }
+    }
+}
+// #[end]
+
+exports = module.exports = warnSetHTML;
