@@ -10,7 +10,7 @@
  * @return {boolean}
  */
 function isComponent(node) {
-    return node && node._type === 'component';
+    return node && node._type === 'san-cmpt';
 }
 
 exports = module.exports = isComponent;

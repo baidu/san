@@ -54,7 +54,7 @@ inherits(Component, Element);
  * @protected
  * @type {string}
  */
-Component.prototype._type = 'component';
+Component.prototype._type = 'san-cmpt';
 
 /* eslint-disable operator-linebreak */
 /**
