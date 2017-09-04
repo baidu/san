@@ -13,6 +13,15 @@ var inherits = require('../util/inherits');
  * @return {Function}
  */
 function defineComponent(proto) {
+
+    if (typeof proto === 'function' && proto.prototype._type === 'component') {
+        return proto;
+    }
+
+    if (typeof proto !== 'object') {
+        throw new Error('[SAN FATAL] param must be a plain object.');
+    }
+
     function ComponentClass(option) {
         Component.call(this, option);
     }
