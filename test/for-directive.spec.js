@@ -472,6 +472,46 @@ describe("ForDirective", function () {
         });
     });
 
+
+    it("data set after attach, for in tr should warning parent(tbody) in chrome", function (done) {
+        // dont run this spec in ie
+        if (/msie/i.test(navigator.userAgent)) {
+            done();
+            return;
+        }
+
+        var MyComponent = san.defineComponent({
+            template: '<div><table><thead><tr><th>name</th><th>email</th></tr></thead>' +
+                '<tbody><tr title="{{p.name}}" san-for="p,i in persons"><td>{{p.name}}</td><td>{{p.email}}</td></tr></tbody></table></div>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'firede', email: 'firede@gmail.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var trs = wrap.getElementsByTagName('tr');
+        expect(trs.length).toBe(3);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var trs = wrap.getElementsByTagName('tr');
+            expect(trs.length).toBe(2);
+            expect(trs[1].getAttribute('title')).toBe('otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("data item set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
