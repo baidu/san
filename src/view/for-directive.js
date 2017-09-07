@@ -16,6 +16,7 @@ var createNodeByEl = require('./create-node-by-el');
 var getNodeStump = require('./get-node-stump');
 var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
+var warnSetHTML = require('./warn-set-html');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
@@ -259,10 +260,16 @@ ForDirective.prototype._paintList = function () {
 
     if (!prevEl) {
         this.genHTML(buf, 1);
+        // #[begin] error
+        warnSetHTML(parentEl);
+        // #[end]
         parentEl.insertAdjacentHTML('afterbegin', buf.toString());
     }
     else if (prevEl.nodeType === 1) {
         this.genHTML(buf, 1);
+        // #[begin] error
+        warnSetHTML(parentEl);
+        // #[end]
         prevEl.insertAdjacentHTML('afterend', buf.toString());
     }
     else {

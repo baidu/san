@@ -104,6 +104,10 @@ TextNode.prototype.update = function () {
         startRemoveEl = insertBeforeEl;
     }
 
+    // #[begin] error
+    warnSetHTML(parentEl);
+    // #[end]
+    
     var text = this.evalExpr(this.aNode.textExpr, 1);
     if (insertBeforeEl) {
         insertBeforeEl.insertAdjacentHTML('beforebegin', text);
@@ -112,9 +116,6 @@ TextNode.prototype.update = function () {
         me._prev._getEl().insertAdjacentHTML('afterend', text);
     }
     else {
-        // #[begin] error
-        warnSetHTML(parentEl);
-        // #[end]
         parentEl.innerHTML = text;
     }
 };
