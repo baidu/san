@@ -2,6 +2,7 @@
  * @file 生命周期类
  * @author errorrik(errorrik@gmail.com)
  */
+var each = require('../util/each');
 
 /* eslint-disable fecs-valid-var-jsdoc */
 /**
@@ -19,22 +20,27 @@ var LifeCycles = {
         value: 2
     },
 
-    created: {
+    painting: {
         value: 3
     },
 
-    attached: {
+    created: {
         value: 4,
-        mutex: 'detached'
+        mutex: 'painting'
+    },
+
+    attached: {
+        value: 5,
+        mutex: 'detached,painting'
     },
 
     detached: {
-        value: 5,
+        value: 6,
         mutex: 'attached'
     },
 
     disposed: {
-        value: 6,
+        value: 7,
         mutex: '*'
     }
 };
@@ -55,19 +61,22 @@ function LifeCycle() {
  * @param {string} name 生命周期名称
  */
 LifeCycle.prototype.set = function (name) {
+    var me = this;
     var lifeCycle = LifeCycles[name];
     if (!lifeCycle) {
         return;
     }
 
     if (lifeCycle.mutex === '*') {
-        this.raw = {};
+        me.raw = {};
     }
     else if (lifeCycle.mutex) {
-        this.raw[LifeCycles[lifeCycle.mutex].value] = 0;
+        each(lifeCycle.mutex.split(','), function (mutex) {
+            me.raw[LifeCycles[mutex].value] = 0;
+        }); 
     }
 
-    this.raw[lifeCycle.value] = 1;
+    me.raw[lifeCycle.value] = 1;
 };
 
 /**

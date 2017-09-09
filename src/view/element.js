@@ -107,6 +107,7 @@ Element.prototype._create = function () {
     var me = this;
 
     if (!this.el) {
+        me.lifeCycle.set('painting');
         me.el = createEl(me.tagName);
         me.el.id = me.id;
 

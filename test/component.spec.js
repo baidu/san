@@ -370,6 +370,47 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("data set in inited should not update view", function (done) {
+        var up = false;
+        var MyComponent = san.defineComponent({
+
+            template: '<a><span title="{{name}}-{{email}}">{{name}}</span></a>',
+
+            inited: function () {
+                this.data.set('name', 'errorrik');
+            },
+
+            initData: function () {
+                return {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                }
+            },
+
+            updated: function () {
+                up = true;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('errorrik-errorrik@gmail.com');
+        expect(up).toBeFalsy();
+
+        san.nextTick(function () {
+            expect(up).toBeFalsy();
+            expect(span.title).toBe('errorrik-errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("template as static property", function () {
         var MyComponent = san.defineComponent({});
         MyComponent.template = '<span title="{{color}}">{{color}}</span>';
@@ -853,7 +894,7 @@ describe("Component", function () {
                 'UI:select-item-detached': function () {
                     expect(false).toBeTruthy();
                 }
-            },
+            }
         });
 
         var myComponent = new MyComponent();

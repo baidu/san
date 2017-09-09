@@ -30,6 +30,7 @@ function genElementChildsHTML(element, buf) {
             each(element.aNode.childs, function (aNodeChild) {
                 var child = createNode(aNodeChild, element);
                 if (!child._static) {
+                    child.lifeCycle.set('painting');
                     element.childs.push(child);
                 }
                 child.genHTML(buf);

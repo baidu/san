@@ -563,23 +563,25 @@ Component.prototype.updateView = function (changes) {
  * @param {Object} change 数据变化信息
  */
 Component.prototype._dataChanger = function (change) {
-    var len = this.dataChanges.length;
+    if (this.lifeCycle.is('painting') || this.lifeCycle.is('created')) {
+        var len = this.dataChanges.length;
 
-    if (!len) {
-        nextTick(this.updateView, this);
-    }
-
-    while (len--) {
-        switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
-            case 1:
-            case 2:
-                if (change.type === DataChangeType.SET) {
-                    this.dataChanges.splice(len, 1);
-                }
+        if (!len) {
+            nextTick(this.updateView, this);
         }
-    }
 
-    this.dataChanges.push(change);
+        while (len--) {
+            switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
+                case 1:
+                case 2:
+                    if (change.type === DataChangeType.SET) {
+                        this.dataChanges.splice(len, 1);
+                    }
+            }
+        }
+
+        this.dataChanges.push(change);
+    }
 };
 
 
