@@ -537,7 +537,7 @@ describe("Component-TwoWay Binding", function () {
 
     it("binding expr use index variable", function (done) {
         var Color = san.defineComponent({
-            template: '<div><input type="text" value="{=color=}"></div>',
+            template: '<div><input type="text" value="{=color=}"></div>'
         });
         var MyComponent = san.defineComponent({
             components: {
