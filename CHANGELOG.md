@@ -7,6 +7,7 @@ ChangeLog
 
 + 【优化】- 增加 defineComponent 方法被多次调用的健壮性，传入一个组件将直接返回
 + 【优化】- 增加 insertAdjacentHTML 在 IE 下可能导致问题的提示
++ 【bug修复】- inited 中进行 data 操作，会触发视图更新
 
 3.2.1
 -------
