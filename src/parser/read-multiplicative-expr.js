@@ -18,6 +18,7 @@ function readMultiplicativeExpr(walker) {
 
     var code = walker.currentCode();
     switch (code) {
+        case 37: // %
         case 42: // *
         case 47: // /
             walker.go(1);

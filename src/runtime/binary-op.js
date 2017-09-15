@@ -10,6 +10,9 @@
  */
 var BinaryOp = {
     /* eslint-disable */
+    37: function (a, b) {
+        return a % b;
+    },
     43: function (a, b) {
         return a + b;
     },

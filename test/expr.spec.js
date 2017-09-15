@@ -207,6 +207,23 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("binary number %", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1 % val2 | tobe(2)}}</b>',
+            filters: {tobe: tobeFilter}
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 30);
+        myComponent.data.set('val2', 7);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("binary number ==", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{val1 == val2 | tobe(!0)}}</b>',
@@ -364,6 +381,24 @@ describe("Expression", function () {
     it("confuse a * b + c", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{val1 * val2 + val3 | tobe(17)}}</b>',
+            filters: {tobe: tobeFilter}
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 3);
+        myComponent.data.set('val2', 4);
+        myComponent.data.set('val3', 5);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("confuse a % b + c", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1 % val2 + val3 | tobe(8)}}</b>',
             filters: {tobe: tobeFilter}
         });
         var myComponent = new MyComponent();
