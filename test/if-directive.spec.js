@@ -293,11 +293,55 @@ describe("IfDirective", function () {
 
             myComponent.data.set('cond2', false);
             san.nextTick(function () {
-                var spans = wrap.getElementsByTagName('span');
-                expect(spans.length).toBe(0);
+                expect(wrap.getElementsByTagName('span').length).toBe(0);
                 var bs = wrap.getElementsByTagName('b');
                 expect(bs[0].title).toBe('nobody');
                 
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("multi elif", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="num > 10000" title="biiig">biiig</span>  \n'
+            + '<span s-elif="num > 1000" title="biig">biig</span>  \n' +
+            + '<span s-elif="num > 100" title="big">big</span>  \n' +
+            ' <b s-else title="small">small</b></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 300
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('big');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('biiig');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('small');
+
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();
