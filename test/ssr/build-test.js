@@ -174,7 +174,15 @@ let componentDatas = [
         persons: ['errorrik', 'firede']
     },
     {},
-    {}
+    {},
+    {
+        cond1: true,
+        cond2: true
+    },
+    {},
+    {num: 300},
+    {num: 30000},
+    {num: 30}
 ];
 
 
