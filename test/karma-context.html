@@ -96,6 +96,16 @@ Reloaded before every execution run.
 
 <div id="wrap-cmpt42"><div><!--s-data:{}--><a s-component="ui-label" s-ref="l" prop-hasu><u s-if="hasu"></u></a></div></div>
 
+<div id="wrap-cmpt43"><div><!--s-data:{"cond1":true,"cond2":true}--><span s-if="cond1" prop-title="errorrik" title="errorrik">errorrik</span><!--s-elif:<span s-elif="cond2" title="leeight">leeight</span>--></div></div>
+
+<div id="wrap-cmpt44"><div><!--s-data:{}--><!--s-if:<span s-if="cond1" title="errorrik">errorrik</span>--><!--s-elif:<span s-elif="cond2" title="leeight">leeight</span>--></div></div>
+
+<div id="wrap-cmpt45"><div><!--s-data:{"num":300}--><!--s-if:<span s-if="num > 10000" title="biiig">biiig</span>--><!--s-elif:<span s-elif="num > 1000" title="biig">biig</span>--><span s-elif="num &gt; 100" prop-title="big" title="big">big</span><!--s-else:<b s-else title="small">small</b>--></div></div>
+
+<div id="wrap-cmpt46"><div><!--s-data:{"num":30000}--><span s-if="num &gt; 10000" prop-title="biiig" title="biiig">biiig</span><!--s-elif:<span s-elif="num > 1000" title="biig">biig</span>--><!--s-elif:<span s-elif="num > 100" title="big">big</span>--><!--s-else:<b s-else title="small">small</b>--></div></div>
+
+<div id="wrap-cmpt47"><div><!--s-data:{"num":30}--><!--s-if:<span s-if="num > 10000" title="biiig">biiig</span>--><!--s-elif:<span s-elif="num > 1000" title="biig">biig</span>--><!--s-elif:<span s-elif="num > 100" title="big">big</span>--><b s-else prop-title="small" title="small">small</b></div></div>
+
 
 
   <!-- The scripts need to be in the body DOM element, as some test running frameworks need the body
