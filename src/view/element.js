@@ -116,7 +116,7 @@ Element.prototype._create = function () {
                 ? evalExpr(prop.expr, me.data, me)
                 : me.evalExpr(prop.expr, 1);
 
-            var match = /^\s+([a-zA-Z0-9_-]+)=(['"])([^\2]*)\2$/.exec(
+            var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/i.exec(
                 getPropHandler(me, prop.name)
                     .input
                     .attr(me, prop.name, value)
@@ -180,7 +180,7 @@ Element.prototype._initRootBindx = function () {
         var el = me._getEl();
         function outputer() {
             getPropHandler(me, bindInfo.name).output(me, bindInfo, data);
-        };
+        }
 
         switch (bindInfo.name) {
             case 'value':
@@ -265,7 +265,7 @@ Element.prototype._attach = function (parentEl, beforeEl) {
     if (!this._contentReady) {
         var buf = new StringBuffer();
         genElementChildsHTML(this, buf);
-        
+
         // html 没内容就不要设置 innerHTML了
         // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题
         var html = buf.toString();
