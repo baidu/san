@@ -116,7 +116,7 @@ Element.prototype._create = function () {
                 ? evalExpr(prop.expr, me.data, me)
                 : me.evalExpr(prop.expr, 1);
 
-            var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/.exec(
+            var match = /^\s+([a-zA-Z0-9_-]+)=(['"])([^\2]*)\2$/.exec(
                 getPropHandler(me, prop.name)
                     .input
                     .attr(me, prop.name, value)
