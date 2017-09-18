@@ -95,14 +95,15 @@ function parseTemplate(source) {
                 }
             }
 
-            // match if directive for else directive
-            var elseDirective = aElement.directives.get('else');
+            // match if directive for else/elif directive
+            var elseDirective = aElement.directives.get('else') || aElement.directives.get('elif');
             if (elseDirective) {
                 var parentChildsLen = currentNode.childs.length;
 
                 while (parentChildsLen--) {
                     var parentChild = currentNode.childs[parentChildsLen];
                     if (parentChild.isText) {
+                        currentNode.childs.splice(parentChildsLen, 1);
                         continue
                     }
 
@@ -114,17 +115,16 @@ function parseTemplate(source) {
                     }
                     // #[end]
 
-                    parentChild['else'] = aElement;
-                    elseDirective.value = {
-                        type: ExprType.UNARY,
-                        expr: childIfDirective.value
-                    };
+                    parentChild.elses = parentChild.elses || [];
+                    parentChild.elses.push(aElement);
 
                     break;
                 }
             }
+            else {
+                currentNode.childs.push(aElement);
+            }
 
-            currentNode.childs.push(aElement);
             if (!tagClose) {
                 currentNode = aElement;
             }

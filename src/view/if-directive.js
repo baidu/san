@@ -36,23 +36,24 @@ inherits(IfDirective, Element);
  * 创建 if 指令对应条件为 true 时对应的元素
  *
  * @inner
- * @param {IfDirective} ifElement if指令元素
+ * @param {ANode} directiveANode 指令ANode
+ * @param {IfDirective} mainIf 主if元素
  * @return {Element}
  */
-function createIfDirectiveChild(ifElement) {
-    var aNode = ifElement.aNode;
+function createIfDirectiveChild(directiveANode, mainIf) {
     var childANode = createANode({
-        childs: aNode.childs,
-        props: aNode.props,
-        events: aNode.events,
-        tagName: aNode.tagName,
-        directives: (new IndexedList()).concat(aNode.directives)
+        childs: directiveANode.childs,
+        props: directiveANode.props,
+        events: directiveANode.events,
+        tagName: directiveANode.tagName,
+        directives: (new IndexedList()).concat(directiveANode.directives)
     });
 
     childANode.directives.remove('if');
     childANode.directives.remove('else');
+    childANode.directives.remove('elif');
 
-    return createNode(childANode, ifElement);
+    return createNode(childANode, mainIf);
 }
 
 /**
@@ -123,7 +124,7 @@ IfDirective.prototype._init = function (options) {
     }
     // #[end]
 
-    this.cond = (this.aNode.directives.get('else') || this.aNode.directives.get('if')).value;
+    this.cond = this.aNode.directives.get('if').value;
 };
 
 /**
@@ -133,10 +134,29 @@ IfDirective.prototype._init = function (options) {
  * @param {StringBuffer} buf html串存储对象
  */
 IfDirective.prototype.genHTML = function (buf) {
-    if (this.evalExpr(this.cond)) {
-        var child = createIfDirectiveChild(this);
-        this.childs[0] = child;
+    var me = this;
+    var elseIndex = null;
+    var child;
+
+    if (me.evalExpr(me.cond)) {
+        child = createIfDirectiveChild(me.aNode, me);
+    }
+    else {
+        each(me.aNode.elses, function (elseANode, index) {
+            var elif = elseANode.directives.get('elif');
+
+            if (!elif || elif && me.evalExpr(elif.value)) {
+                child = createIfDirectiveChild(elseANode, me);
+                elseIndex = index;
+                return false;
+            }
+        });
+    }
+
+    if (child) {
+        me.childs[0] = child;
         child.genHTML(buf);
+        me.elseIndex = elseIndex;
     }
 
     genStumpHTML(this, buf);
@@ -148,21 +168,40 @@ IfDirective.prototype.genHTML = function (buf) {
  * @param {Array} changes 数据变化信息
  */
 IfDirective.prototype.updateView = function (changes) {
-    var child = this.childs[0];
+    var me = this;
+    var childANode = me.aNode;
+    var elseIndex;
 
     if (this.evalExpr(this.cond)) {
-        if (child) {
-            this.updateChilds(changes);
-        }
-        else {
-            child = createIfDirectiveChild(this);
-            var parentEl = getNodeStumpParent(this);
-            child.attach(parentEl, this._getEl() || parentEl.firstChild);
-            this.childs[0] = child;
-        }
+        elseIndex = null;
     }
     else {
-        this._disposeChilds();
+        each(me.aNode.elses, function (elseANode, index) {
+            var elif = elseANode.directives.get('elif');
+
+            if (elif && me.evalExpr(elif.value) || !elif) {
+                elseIndex = index;
+                childANode = elseANode;
+                return false;
+            }
+        });
+    }
+
+    if (elseIndex === me.elseIndex) {
+        me.updateChilds(changes);
+    }
+    else {
+        me._disposeChilds();
+
+        if (typeof elseIndex !== 'undefined') {
+            var child = createIfDirectiveChild(childANode, me);
+            var parentEl = getNodeStumpParent(me);
+            child.attach(parentEl, me._getEl() || parentEl.firstChild);
+
+            me.childs[0] = child;
+        }
+
+        me.elseIndex = elseIndex;
     }
 };
 
