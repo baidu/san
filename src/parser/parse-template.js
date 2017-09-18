@@ -107,10 +107,8 @@ function parseTemplate(source) {
                         continue
                     }
 
-                    var childIfDirective = parentChild.directives.get('if');
-
                     // #[begin] error
-                    if (!childIfDirective) {
+                    if (!parentChild.directives.get('if')) {
                         throw new Error('[SAN FATEL] else not match if.');
                     }
                     // #[end]

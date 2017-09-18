@@ -59,9 +59,6 @@ var aNodeCompiler = {
         else if (aNode.directives.get('if')) {
             compileMethod = 'compileIf';
         }
-        else if (aNode.directives.get('else')) {
-            compileMethod = 'compileElse';
-        }
         else if (aNode.directives.get('for')) {
             compileMethod = 'compileFor';
         }
@@ -106,65 +103,82 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileIf: function (aNode, sourceBuffer, owner) {
-        var ifElementANode = createANode({
-            childs: aNode.childs,
-            props: aNode.props,
-            events: aNode.events,
-            tagName: aNode.tagName,
-            directives: (new IndexedList()).concat(aNode.directives)
-        });
-        ifElementANode.directives.remove('if');
+        sourceBuffer.addRaw('(function () {');
+        sourceBuffer.addRaw('var ifIndex = null;');
 
+        // for ifIndex
         var ifDirective = aNode.directives.get('if');
-        var elseANode = aNode['else'];
-
-        // for condition true content
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
+        sourceBuffer.addRaw('    ifIndex = -1;');
+        sourceBuffer.addRaw('}');
+        each(aNode.elses, function (elseANode, index) {
+            var elifDirective = elseANode.directives.get('elif');
+            if (elifDirective) {
+                sourceBuffer.addRaw('else if (' + compileExprSource.expr(elifDirective.value) + ') {');
+            }
+            else {
+                sourceBuffer.addRaw('else {');
+            }
+
+            sourceBuffer.addRaw('    ifIndex = ' + index + ';');
+            sourceBuffer.addRaw('}');
+        });
+
+        // for output main if html
+        sourceBuffer.addRaw('if (ifIndex === -1) {');
         sourceBuffer.addRaw(
             aNodeCompiler.compile(
-                ifElementANode,
+                rinseANode(aNode),
                 sourceBuffer,
                 owner,
                 {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
             )
         );
-        if (elseANode) {
-            sourceBuffer.joinString(serializeStump('else', serializeANode(elseANode)));
-        }
-
-        // for condition false content
         sourceBuffer.addRaw('} else {');
         sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
+        sourceBuffer.addRaw('}');
 
-        if (elseANode) {
-            var elseElementANode = createANode({
-                childs: elseANode.childs,
-                props: elseANode.props,
-                events: elseANode.events,
-                tagName: elseANode.tagName,
-                directives: (new IndexedList()).concat(elseANode.directives)
-            });
-            elseElementANode.directives.remove('else');
+        // for output else html
+        each(aNode.elses, function (elseANode, index) {
+            var elifDirective = elseANode.directives.get('elif');
+            sourceBuffer.addRaw('if (ifIndex === ' + index + ') {');
             sourceBuffer.addRaw(
                 aNodeCompiler.compile(
-                    elseElementANode,
+                    rinseANode(elseANode),
                     sourceBuffer,
                     owner,
-                    {prop: ' s-else'}
+                    {
+                        prop: elifDirective ? ' s-elif="' + escapeHTML(elifDirective.raw) + '"' : ' s-else'
+                    }
                 )
             );
+            sourceBuffer.addRaw('} else {');
+            sourceBuffer.joinString(serializeStump(elifDirective ? 'elif' : 'else', serializeANode(elseANode)));
+            sourceBuffer.addRaw('}');
+        });
+
+        sourceBuffer.addRaw('})();');
+
+        /**
+         * 清洗 if aNode，返回纯净无 if 指令的 aNode
+         *
+         * @param {ANode} ifANode 节点对象
+         * @return {ANode} 
+         */
+        function rinseANode(ifANode) {
+            var result = createANode({
+                childs: ifANode.childs,
+                props: ifANode.props,
+                events: ifANode.events,
+                tagName: ifANode.tagName,
+                directives: (new IndexedList()).concat(ifANode.directives)
+            });
+            result.directives.remove('if');
+            result.directives.remove('elif');
+            result.directives.remove('else');
+
+            return result;
         }
-
-        sourceBuffer.addRaw('}');
-    },
-
-    /**
-     * 编译 else 节点
-     *
-     * @param {ANode} aNode 节点对象
-     */
-    compileElse: function (aNode) {
-        // 啥都不干，交给 compileIf 了
     },
 
     /**

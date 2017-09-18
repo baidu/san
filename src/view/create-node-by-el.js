@@ -52,8 +52,13 @@ function createNodeByEl(el, parent, elWalker, scope) {
                     return new SlotElement(option);
 
                 case 'if':
-                case 'else':
                     return new IfDirective(option);
+                
+
+                case 'else':
+                case 'elif':
+                    createNodeByElseStump(option, stumpMatch[1]);
+                    return;
 
                 case 'data':
                     // fill component data
@@ -90,8 +95,16 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
 
-    if (childANode.directives.get('if') || childANode.directives.get('else')) {
+    if (childANode.directives.get('if')) {
         return new IfDirective(option);
+    }
+
+    if (childANode.directives.get('else')) {
+        return createNodeByElseEl(option, 'else');
+    }
+    
+    if (childANode.directives.get('elif')) {
+        return createNodeByElseEl(option, 'elif');
     }
 
 
@@ -102,6 +115,85 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
     // as Element
     return new Element(option);
+}
+
+function createNodeByElseEl(option, type) {
+    var parentChilds = option.parent.childs;
+    var len = parentChilds.length;
+
+    while (len--) {
+        var ifNode = parentChilds[len];
+        if (ifNode instanceof TextNode) {
+            continue;
+        }
+
+        if (ifNode instanceof IfDirective) {
+            if (!ifNode.aNode.elses) {
+                ifNode.aNode.elses = [];
+            }
+            ifNode.aNode.elses.push(option.aNode);
+            ifNode.elseIndex = ifNode.aNode.elses.length - 1;
+
+            option.el.removeAttribute('san-' + type);
+            option.el.removeAttribute('s-' + type);
+
+            var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
+            ifNode.childs[0] = elseChild;
+            option.aNode.childs = option.aNode.childs.slice(0);
+            break;
+        }
+
+        throw new Error('[SAN FATEL] ' + type + ' not match if.');
+    }
+}
+
+function createNodeByElseStump(option, type) {
+    var parentChilds = option.parent.childs;
+    var len = parentChilds.length;
+
+    while (len--) {
+        var ifNode = parentChilds[len];
+        if (ifNode instanceof TextNode) {
+            continue;
+        }
+
+        if (ifNode instanceof IfDirective) {
+            if (!ifNode.aNode.elses) {
+                ifNode.aNode.elses = [];
+            }
+
+            var elseANode;
+            switch (type) {
+                case 'else':
+                    elseANode = parseTemplate(
+                        option.stumpText.replace('san-else', '').replace('s-else', '')
+                    ).childs[0];
+                    elseANode.directives.push({
+                        value: 1,
+                        name: type
+                    });
+
+                    break;
+
+                case 'elif':
+                    elseANode = parseTemplate(
+                        option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
+                    ).childs[0];
+
+                    var ifDirective = elseANode.directives.get('if');
+                    elseANode.directives.remove('if');
+                    ifDirective.name = 'elif';
+                    elseANode.directives.push(ifDirective);
+
+                    break;
+            }
+
+            ifNode.aNode.elses.push(elseANode);
+            break;
+        }
+
+        throw new Error('[SAN FATEL] ' + type + ' not match if.');
+    }
 }
 // #[end]
 

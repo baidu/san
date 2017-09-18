@@ -80,44 +80,17 @@ IfDirective.prototype._init = function (options) {
             this.aNode = aNode;
         }
         else {
+            this.elseIndex = -1;
             this.el = null;
             this._create();
             options.el.parentNode.insertBefore(this.el, options.el.nextSibling);
 
             options.el.removeAttribute('san-if');
-            options.el.removeAttribute('san-else');
             options.el.removeAttribute('s-if');
-            options.el.removeAttribute('s-else');
 
             var child = createNodeByEl(options.el, this, options.elWalker);
             this.childs[0] = child;
             this.aNode.childs = child.aNode.childs.slice(0);
-        }
-
-        // match if directive for else directive
-        var elseDirective = this.aNode.directives.get('else');
-        if (elseDirective) {
-            var parentChilds = this.parent.childs;
-            var len = parentChilds.length;
-
-            while (len--) {
-                var child = parentChilds[len];
-
-                if (child instanceof TextNode) {
-                    continue;
-                }
-
-                if (child instanceof IfDirective) {
-                    elseDirective.value = {
-                        type: ExprType.UNARY,
-                        expr: child.aNode.directives.get('if').value
-                    };
-
-                    break;
-                }
-
-                throw new Error('[SAN FATEL] else not match if.');
-            }
         }
 
         this.parent._pushChildANode(this.aNode);
@@ -135,11 +108,12 @@ IfDirective.prototype._init = function (options) {
  */
 IfDirective.prototype.genHTML = function (buf) {
     var me = this;
-    var elseIndex = null;
+    var elseIndex;
     var child;
 
     if (me.evalExpr(me.cond)) {
         child = createIfDirectiveChild(me.aNode, me);
+        elseIndex = -1;
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {
@@ -173,7 +147,7 @@ IfDirective.prototype.updateView = function (changes) {
     var elseIndex;
 
     if (this.evalExpr(this.cond)) {
-        elseIndex = null;
+        elseIndex = -1;
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {

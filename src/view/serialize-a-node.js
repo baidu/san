@@ -37,17 +37,17 @@ function serializeANode(aNode) {
             return;
         }
 
-        str += ' s-' + directive.name + '="' + escapeHTML(directive.raw) + '"';
+        str += ' s-' + directive.name + '="' + directive.raw + '"';
     });
 
     // for events
     each(aNode.events, function (event) {
-        str += ' on-' + event.name + '="' + escapeHTML(event.expr.raw) + '"';
+        str += ' on-' + event.name + '="' + event.expr.raw + '"';
     });
 
     // for props
     aNode.props.each(function (prop) {
-        str += ' ' + prop.name + '="' + escapeHTML(prop.raw) + '"';
+        str += ' ' + prop.name + '="' + prop.raw + '"';
     });
 
     if (autoCloseTags[tagName]) {

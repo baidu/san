@@ -35,7 +35,7 @@ function createNode(aNode, parent, scope) {
         return new TextNode(options);
     }
 
-    if (aNode.directives.get('if') || aNode.directives.get('else')) {
+    if (aNode.directives.get('if')) {
         return new IfDirective(options);
     }
 
