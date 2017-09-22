@@ -604,8 +604,8 @@ Component.prototype.watch = function (dataName, listener) {
 /**
  * 组件销毁的行为
  */
-Component.prototype._dispose = function () {
-    Element.prototype._dispose.call(this);
+Component.prototype._dispose = function (dontDetach) {
+    Element.prototype._dispose.call(this, dontDetach);
 
     this.ownSlotChilds = null;
 

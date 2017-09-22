@@ -102,8 +102,8 @@ Node.prototype._toAttached = function () {
 /**
  * 销毁释放元素
  */
-Node.prototype.dispose = function () {
-    this._dispose();
+Node.prototype.dispose = function (dontDetach) {
+    this._dispose(dontDetach);
     this._toPhase('disposed');
 };
 

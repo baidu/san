@@ -41,6 +41,7 @@ function Element(options) {
     this.childs = [];
     this.slotChilds = [];
     this._elFns = {};
+    this._propVals = {};
 
     Node.call(this, options);
 }
@@ -331,6 +332,10 @@ Element.prototype.updateView = function (changes) {
     var me = this;
 
     this.props.each(function (prop) {
+        if (prop.expr.value) {
+            return;
+        }
+
         each(changes, function (change) {
             if (!isDataChangeByElement(change, me, prop.name)
                 && changeExprCompare(change.expr, prop.expr, me.scope)
@@ -389,10 +394,9 @@ Element.prototype._detach = function () {
 /**
  * 销毁释放元素的行为
  */
-Element.prototype._dispose = function () {
-    this._disposeChilds();
-    this.detach();
-
+Element.prototype._dispose = function (dontDetach) {
+    this._disposeChilds(dontDetach);
+    
     // el 事件解绑
     for (var key in this._elFns) {
         var nameListeners = this._elFns[key];
@@ -404,10 +408,14 @@ Element.prototype._dispose = function () {
     }
     this._elFns = null;
 
-    this.childs = null;
+    if (!dontDetach) {
+        this.detach();
+    }
 
+    this.childs = null;
     this.props = null;
     this.binds = null;
+    this._propVals = null;
 
     // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
     this.slotChilds = null;
@@ -418,9 +426,9 @@ Element.prototype._dispose = function () {
 /**
  * 销毁释放子元素的行为
  */
-Element.prototype._disposeChilds = function () {
+Element.prototype._disposeChilds = function (dontDetach) {
     each(this.childs, function (child) {
-        child.dispose();
+        child.dispose(dontDetach);
     });
     this.childs.length = 0;
 };

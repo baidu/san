@@ -258,7 +258,26 @@ ForDirective.prototype._paintList = function () {
     var prevEl = el && el.previousSibling;
     var buf = new StringBuffer();
 
+    prev: while (prevEl) {
+        switch (prevEl.nodeType) {
+            case 1:
+                break prev;
+
+            case 3:
+                if (!/^\s*$/.test(prevEl.textContent)) {
+                    break prev;
+                }
+
+                removeEl(prevEl)
+                break;
+
+        }
+
+        prevEl = prevEl.previousSibling;
+    }
+
     if (!prevEl) {
+        console.log(1)
         this.genHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
@@ -288,8 +307,19 @@ ForDirective.prototype._paintList = function () {
 /**
  * 将元素从页面上移除的行为
  */
+ForDirective.prototype._clearChilds = function () {
+    each(this.childs, function (child) {
+        child.dispose(false);
+        removeEl(child._getEl());
+    });
+    this.childs.length = 0;
+};
+
+/**
+ * 将元素从页面上移除的行为
+ */
 ForDirective.prototype._detach = function () {
-    this._disposeChilds();
+    this._clearChilds();
     removeEl(this._getEl());
 };
 
@@ -314,7 +344,6 @@ ForDirective.prototype.updateView = function (changes) {
         childsChanges.push([]);
     });
 
-    var repaintAll = 0;
     var forDirective = this.aNode.directives.get('for');
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
@@ -364,8 +393,45 @@ ForDirective.prototype.updateView = function (changes) {
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
-            this._disposeChilds();
-            repaintAll = 1;
+            var oldLen = this.childs.length;
+            var newList = this.evalExpr(forDirective.list);
+            var newLen = newList.length;
+
+            // 老的比新的多的部分，干掉
+            for (var i = oldLen - 1; i >= newLen; i--) {
+                var childNeedRemove = this.childs[i];
+
+                childNeedRemove.dispose(false);
+                removeEl(childNeedRemove._getEl());
+                this.childs.splice(i, 1);
+                childsChanges.splice(i, 1);
+            }
+
+            // 整项变更
+            for (var i = 0; i < newLen; i++) {
+                childsChanges[i] = [
+                    {
+                        type: DataChangeType.SET,
+                        option: change.option,
+                        expr: {
+                            type: ExprType.ACCESSOR,
+                            paths: forDirective.item.paths.slice(0)
+                        },
+                        value: newList[i]
+                    }
+                ];
+                if (this.childs[i]) {
+                    Data.prototype.set.call(
+                        this.childs[i].scope,
+                        forDirective.item,
+                        newList[i],
+                        {silence: 1}
+                    );
+                }
+                else {
+                    this.childs[i] = createForDirectiveChild(this, newList[i], i);
+                }
+            }
         }
         else if (relation === 2 && change.type === DataChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
@@ -422,29 +488,21 @@ ForDirective.prototype.updateView = function (changes) {
         return !repaintAll;
     }, this);
 
+    // 对相应的项进行更新
+    // 如果不attached则直接创建，如果存在则调用更新函数
+    var len = this.childs.length;
+    var attachStump = this;
 
-    if (repaintAll) {
-        // 整个列表都需要重新刷新
-        this._paintList();
-        this._toAttached();
-    }
-    else {
-        // 对相应的项进行更新
-        // 如果不存在则直接创建，如果存在则调用更新函数
-        var len = this.childs.length;
-        var attachStump = this;
-
-        while (len--) {
-            var child = this.childs[len];
-            if (child.lifeCycle.is('attached')) {
-                childsChanges[len].length && child.updateView(childsChanges[len]);
-            }
-            else {
-                child.attach(getNodeStumpParent(attachStump), attachStump._getEl());
-            }
-
-            attachStump = child;
+    while (len--) {
+        var child = this.childs[len];
+        if (child.lifeCycle.is('attached')) {
+            childsChanges[len].length && child.updateView(childsChanges[len]);
         }
+        else {
+            child.attach(getNodeStumpParent(attachStump), attachStump._getEl());
+        }
+
+        attachStump = child;
     }
 };
 

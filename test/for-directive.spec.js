@@ -512,7 +512,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data item set after attach", function (done) {
+    it("data item prop set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -536,6 +536,37 @@ describe("ForDirective", function () {
             expect(lis.length).toBe(4);
             expect(lis[1].getAttribute('title')).toBe('erik');
             expect(lis[1].innerHTML.indexOf('erik - errorrik@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data item set after attach", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+
+        myComponent.data.set('persons[0]', {name: 'otakustay', email: 'otakustay@gmail.com'});
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(4);
+            expect(lis[1].getAttribute('title')).toBe('otakustay');
+            expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);

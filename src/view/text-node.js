@@ -73,13 +73,20 @@ TextNode.prototype._init = function (options) {
  * @param {StringBuffer} buf html串存储对象
  */
 TextNode.prototype.genHTML = function (buf) {
-    buf.push(this.evalExpr(this.aNode.textExpr, 1));
+    this.content = this.evalExpr(this.aNode.textExpr, 1);
+    buf.push(this.content);
 };
 
 /**
  * 刷新文本节点的内容
  */
 TextNode.prototype.update = function () {
+    var text = this.evalExpr(this.aNode.textExpr, 1);
+    if (text === this.content) {
+        return;
+    }
+    this.content = text;
+
     var me = this;
 
     if (!this._located) {
@@ -108,7 +115,7 @@ TextNode.prototype.update = function () {
     warnSetHTML(parentEl);
     // #[end]
     
-    var text = this.evalExpr(this.aNode.textExpr, 1);
+    
     if (insertBeforeEl) {
         insertBeforeEl.insertAdjacentHTML('beforebegin', text);
     }
