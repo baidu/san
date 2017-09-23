@@ -81,14 +81,17 @@ TextNode.prototype.genHTML = function (buf) {
  * 刷新文本节点的内容
  */
 TextNode.prototype.update = function () {
+    // 根据 text value 判断是否需要更新
     var text = this.evalExpr(this.aNode.textExpr, 1);
     if (text === this.content) {
         return;
     }
     this.content = text;
 
+
     var me = this;
 
+    // 无 stump 元素，所以需要根据组件结构定位
     if (!this._located) {
         each(this.parent.childs, function (child, i) {
             if (child === me) {
@@ -100,30 +103,86 @@ TextNode.prototype.update = function () {
         this._located = 1;
     }
 
+    // 两种 update 模式
+    // 1. 单纯的 text node
+    // 2. 可能是复杂的 html 结构
+    if (!me.updateMode) {
+        me.updateMode = 1;
+        each(this.aNode.textExpr.segs, function (seg) {
+            if (seg.type === ExprType.INTERP) {
+                each(seg.filters, function (filter) {
+                    switch (filter.name) {
+                        case 'html':
+                        case 'url':
+                            return;
+                    }
+
+                    me.updateMode = 2;
+                    return false;
+                });
+            }
+
+            return me.updateMode < 2;
+        });
+    }
 
     var parentEl = this.parent._getEl();
-    var insertBeforeEl = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
-    var startRemoveEl = insertBeforeEl;
+    switch (me.updateMode) {
+        case 1:
+            if (me.el) {
+                me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+            }
+            else {
+                var el = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
+                if (el) {
+                    switch (el.nodeType) {
+                        case 3:
+                            me.el = el;
+                            me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+                            break;
+                        case 1:
+                            el.insertAdjacentHTML('beforebegin', text);
+                            break;
+                        default:
+                            me.el = document.createTextNode(text);
+                            parentEl.insertBefore(me.el, el);
+                    }
+                }
+                else {
+                    parentEl.insertAdjacentHTML('beforeend', text);
+                }
+            }
 
-    while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
-        insertBeforeEl = startRemoveEl.nextSibling;
-        removeEl(startRemoveEl);
-        startRemoveEl = insertBeforeEl;
-    }
+            break;
 
-    // #[begin] error
-    warnSetHTML(parentEl);
-    // #[end]
-    
-    
-    if (insertBeforeEl) {
-        insertBeforeEl.insertAdjacentHTML('beforebegin', text);
-    }
-    else if (me._prev) {
-        me._prev._getEl().insertAdjacentHTML('afterend', text);
-    }
-    else {
-        parentEl.innerHTML = text;
+        case 2:
+            var insertBeforeEl = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
+            var startRemoveEl = insertBeforeEl;
+        
+            while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
+                insertBeforeEl = startRemoveEl.nextSibling;
+                removeEl(startRemoveEl);
+                startRemoveEl = insertBeforeEl;
+            }
+        
+            // #[begin] error
+            warnSetHTML(parentEl);
+            // #[end]
+            
+            
+            if (insertBeforeEl) {
+                insertBeforeEl.insertAdjacentHTML('beforebegin', text);
+            }
+            else if (me._prev) {
+                me._prev._getEl().insertAdjacentHTML('afterend', text);
+            }
+            else {
+                parentEl.innerHTML = text;
+            }
+
+            break;
+
+
     }
 };
 

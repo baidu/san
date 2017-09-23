@@ -484,8 +484,6 @@ ForDirective.prototype.updateView = function (changes) {
             });
             childsChanges.splice.apply(childsChanges, childsChangesSpliceArgs);
         }
-
-        return !repaintAll;
     }, this);
 
     // 对相应的项进行更新
