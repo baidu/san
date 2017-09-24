@@ -964,4 +964,52 @@ describe("ForDirective", function () {
 
     });
 
+    it("in no tbody declaration, may append in right position", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<table cellpadding="0" cellspacing="0" width="100">'
+                + '<tr><th san-for="item in schema">{{item.label}}</th></tr>'
+                + '<tr s-for="item in datasource">'
+                + '<td s-for="col in schema">{{item[col.name]}}</td>'
+                + '</tr>'
+            + '</table>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                schema: [
+                    {name: 'name', label: 'Name'},
+                    {name: 'age', label: 'Age'}
+                ],
+
+                datasource: [
+                    {name: 'foo', age: 5}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var tr0 = wrap.getElementsByTagName('tr')[0];
+        var trParent = tr0.parentNode;
+        
+        
+        myComponent.data.push('datasource', {name: 'xxx', age: 10});
+        myComponent.data.push('datasource', {name: 'yyy', age: 20});
+
+        san.nextTick(function () {
+            var trs = wrap.getElementsByTagName('tr');
+            for (var i = 0; i < trs.length; i++) {
+                expect(trs[i].parentNode).toBe(trParent)
+            }
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
 });

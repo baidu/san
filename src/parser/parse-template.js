@@ -120,6 +120,16 @@ function parseTemplate(source) {
                 }
             }
             else {
+                if (aElement.tagName === 'tr' && currentNode.tagName === 'table') {
+                    var tbodyNode = createANode({
+                        tagName: 'tbody',
+                        parent: currentNode
+                    });
+                    currentNode.childs.push(tbodyNode);
+                    currentNode = tbodyNode;
+                    aElement.parent = tbodyNode;
+                }
+
                 currentNode.childs.push(aElement);
             }
 
