@@ -757,4 +757,52 @@ describe("IfDirective", function () {
         });
     });
 
+    it("has event binding", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="cond1" title="errorrik" on-click="notice(\'errorrik\')">errorrik</span>  \n'
+                + '<span s-elif="cond2" title="leeight" on-click="notice(\'leeight\')">leeight</span>  \n' +
+                ' <b s-else title="nobody" on-click="notice(\'nobody\')">nobody</b></div>',
+
+            notice: function (msg) {
+                alert(msg)
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                cond1: true,
+                cond2: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('cond1', false);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('leeight');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('cond2', false);
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('span').length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('nobody');
+                
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
 });
