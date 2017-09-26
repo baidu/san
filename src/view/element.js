@@ -411,6 +411,7 @@ Element.prototype._dispose = function (dontDetach) {
     if (!dontDetach) {
         this.detach();
     }
+    this._toPhase('detached');
 
     this.childs = null;
     this.props = null;
