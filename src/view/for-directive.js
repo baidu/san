@@ -268,7 +268,7 @@ ForDirective.prototype._paintList = function () {
                     break prev;
                 }
 
-                removeEl(prevEl)
+                removeEl(prevEl);
                 break;
 
         }
@@ -512,7 +512,7 @@ ForDirective.prototype.updateView = function (changes) {
             childsChanges[newChildsLen].length && child.updateView(childsChanges[newChildsLen]);
         }
         else {
-            child.attach(parentEl, attachStump._getEl());
+            child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
         }
 
         attachStump = child;

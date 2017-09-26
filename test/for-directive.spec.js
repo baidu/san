@@ -965,6 +965,11 @@ describe("ForDirective", function () {
     });
 
     it("in no tbody declaration, may append in right position", function (done) {
+        if (/msie/i.test(navigator.userAgent)) {
+            done();
+            return;
+        }
+        
         var MyComponent = san.defineComponent({
             template: '<table cellpadding="0" cellspacing="0" width="100">'
                 + '<tr><th san-for="item in schema">{{item.label}}</th></tr>'

@@ -964,6 +964,11 @@ describe("Form TwoWay Binding", function () {
     });
 
     it("select as component root element", function (done) {
+        if (/msie/i.test(navigator.userAgent)) {
+            done();
+            return;
+        }
+
         var MyComponent = san.defineComponent({
             template: '<select value="{=online=}">'
                 +   '<option value="errorrik">errorrik</option>'
@@ -978,16 +983,11 @@ describe("Form TwoWay Binding", function () {
             }
         });
 
-        try {
-            var myComponent = new MyComponent();
-            var wrap = document.createElement('div');
-            document.body.appendChild(wrap);
-            myComponent.attach(wrap);
-        }
-        catch (ex) {
-            finish();
-            return;
-        }
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
 
         var select = wrap.getElementsByTagName('select')[0];
 
