@@ -408,10 +408,13 @@ Element.prototype._dispose = function (dontDetach) {
     }
     this._elFns = null;
 
+    
     if (!dontDetach) {
         this.detach();
     }
-    this._toPhase('detached');
+    else if (this.lifeCycle.is('attached')) {
+        this._toPhase('detached');
+    }
 
     this.childs = null;
     this.props = null;
