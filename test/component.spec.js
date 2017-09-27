@@ -113,9 +113,11 @@ describe("Component", function () {
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(1);
         expect(mainAttached).toBe(1);
+        expect(mainDetached).toBe(0);
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
         myComponent.detach();
         expect(myComponent.lifeCycle.is('created')).toBe(true);
@@ -127,6 +129,7 @@ describe("Component", function () {
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
         myComponent.attach(wrap);
         expect(myComponent.lifeCycle.is('created')).toBe(true);
@@ -138,6 +141,7 @@ describe("Component", function () {
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
 
         myComponent.dispose();
@@ -148,6 +152,8 @@ describe("Component", function () {
         expect(myComponent.lifeCycle.is('disposed')).toBe(true);
         expect(mainDisposed).toBe(1);
         expect(labelDisposed).toBe(1);
+        expect(mainDetached).toBe(1);
+        expect(labelDetached).toBe(1);
 
         document.body.removeChild(wrap);
     });
