@@ -124,7 +124,7 @@ function createNodeByElseEl(option, type) {
 
     while (len--) {
         var ifNode = parentChilds[len];
-        if (ifNode instanceof TextNode) {
+        if (ifNode._type === 'san-text') {
             continue;
         }
 
@@ -154,7 +154,7 @@ function createNodeByElseStump(option, type) {
 
     while (len--) {
         var ifNode = parentChilds[len];
-        if (ifNode instanceof TextNode) {
+        if (ifNode._type === 'san-text') {
             continue;
         }
 

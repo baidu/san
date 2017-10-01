@@ -44,9 +44,9 @@ function createIf(options) {
         }
         else {
             node.elseIndex = -1;
-            node.el = null;
-            node._create();
-            options.el.parentNode.insertBefore(node.el, options.el.nextSibling);
+            var el = document.createComment('san:' + this.id);
+            options.el.parentNode.insertBefore(el, options.el.nextSibling);
+            
 
             options.el.removeAttribute('san-if');
             options.el.removeAttribute('s-if');
@@ -54,6 +54,8 @@ function createIf(options) {
             var child = createNodeByEl(options.el, node, options.elWalker);
             node.childs[0] = child;
             node.aNode.childs = child.aNode.childs.slice(0);
+
+            node.el = el;
         }
 
         node.parent._pushChildANode(node.aNode);

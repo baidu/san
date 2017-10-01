@@ -19,17 +19,11 @@ function elementInit(node, options) {
     node.slotChilds = [];
     node._elFns = {};
     node._propVals = {};
+    
 
     // #[begin] reverse
     if (node.el) {
-        node.aNode = parseANodeFromEl(node.el);
-        node.parent && node.parent._pushChildANode(node.aNode);
-        node.tagName = node.aNode.tagName;
-    
-        if (!node.aNode.directives.get('html')) {
-            fromElInitChilds(node);
-        }
-        node.el.id = node.id;
+        node._initFromEl();
     }
     // #[end]
 
@@ -59,6 +53,17 @@ function elementInit(node, options) {
 
 function elementOwnGetEl() {
     return nodeGetEl(this);
+}
+
+function elementOwnInitFromEl() {
+    this.aNode = parseANodeFromEl(this.el);
+    this.parent && this.parent._pushChildANode(this.aNode);
+    this.tagName = this.aNode.tagName;
+
+    if (!this.aNode.directives.get('html')) {
+        fromElInitChilds(this);
+    }
+    this.el.id = this.id;
 }
 
 exports = module.exports = elementInit;

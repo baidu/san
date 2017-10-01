@@ -9,6 +9,7 @@ var elementOwnDispose = require('./element-own-dispose');
 var elementOwnUpdateView = require('./element-own-update-view');
 var nodeOwnToPhase = require('./node-own-to-phase');
 var nodeOwnToAttached = require('./node-own-to-attached');
+var elementOwnPushChildANode = require('./element-own-push-child-anode');
 
 function createElement(options) {
     var element = nodeInit(options);
@@ -24,6 +25,8 @@ function createElement(options) {
     element._getEl = elementOwnGetEl;
     element._toPhase = nodeOwnToPhase;
     element._toAttached = nodeOwnToAttached;
+    element._pushChildANode = elementOwnPushChildANode;
+    element._initFromEl = elementOwnInitFromEl;
 
     elementInit(element, options);
     element.lifeCycle.set('inited');

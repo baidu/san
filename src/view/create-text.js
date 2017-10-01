@@ -20,7 +20,7 @@ function createText(options) {
     node.updateView = textUpdateView;
     node.dispose = textDispose;
     node._toPhase = empty;
-    node._type = 'text';
+    node._type = 'san-text';
 
     // #[begin] reverse
     // from el

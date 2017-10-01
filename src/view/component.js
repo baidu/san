@@ -39,6 +39,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnUpdateView = require('./element-own-update-view');
+var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -628,5 +629,7 @@ Component.prototype.create = elementOwnCreate;
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;
 Component.prototype._getEl = elementOwnGetEl;
+
+Component.prototype._pushChildANode = elementOwnPushChildANode;
 
 exports = module.exports = Component;
