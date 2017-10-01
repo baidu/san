@@ -41,9 +41,8 @@
     // require('./runtime/binary-op');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
-    // require('./view/node');
     // require('./view/gen-stump-html');
-    // require('./view/text-node');
+    // require('./view/create-text');
     // require('./view/get-prop-handler');
     // require('./view/is-data-change-by-element');
     // require('./view/event-declaration-listener');

@@ -23,7 +23,7 @@ function genElementStartHTML(element, buf) {
     element.props.each(function (prop) {
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
-            : element.evalExpr(prop.expr, 1);
+            : nodeEvalExpr(element, prop.expr, 1);
 
         buf.push(
             getPropHandler(element, prop.name)

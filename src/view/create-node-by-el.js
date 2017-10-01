@@ -4,11 +4,12 @@
  */
 
 var isComponent = require('./is-component');
-var TextNode = require('./text-node');
-var IfDirective = require('./if-directive');
-var ForDirective = require('./for-directive');
-var Element = require('./element');
-var SlotElement = require('./slot-element');
+var isIf = require('./is-if');
+var createText = require('./create-text');
+var createElement = require('./create-element');
+var createIf = require('./create-if');
+var createFor = require('./create-for');
+var createSlot = require('./create-slot');
 var Component = require('./component');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
@@ -43,16 +44,16 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
             switch (stumpMatch[1]) {
                 case 'text':
-                    return new TextNode(option);
+                    return createText(option);
 
                 case 'for':
-                    return new ForDirective(option);
+                    return createFor(option);
 
                 case 'slot':
-                    return new SlotElement(option);
+                    return createSlot(option);
 
                 case 'if':
-                    return new IfDirective(option);
+                    return createIf(option);
                 
 
                 case 'else':
@@ -96,7 +97,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
 
     if (childANode.directives.get('if')) {
-        return new IfDirective(option);
+        return createIf(option);
     }
 
     if (childANode.directives.get('else')) {
@@ -114,7 +115,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
     // as Element
-    return new Element(option);
+    return createElement(option);
 }
 
 function createNodeByElseEl(option, type) {
@@ -127,7 +128,7 @@ function createNodeByElseEl(option, type) {
             continue;
         }
 
-        if (ifNode instanceof IfDirective) {
+        if (isIf(ifNode)) {
             if (!ifNode.aNode.elses) {
                 ifNode.aNode.elses = [];
             }
@@ -157,7 +158,7 @@ function createNodeByElseStump(option, type) {
             continue;
         }
 
-        if (ifNode instanceof IfDirective) {
+        if (isIf(ifNode)) {
             if (!ifNode.aNode.elses) {
                 ifNode.aNode.elses = [];
             }

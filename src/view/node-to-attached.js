@@ -10,20 +10,20 @@
  */
 function nodeToAttached(node) {
     each(node.childs, function (child) {
-        child._toAttached();
+        child._toAttached && child._toAttached();
     });
 
     if (!node.lifeCycle.is('created')) {
-        node.lifeCycle.set('created');
+        node._toPhase('created');
     }
 
     if (!node.lifeCycle.is('attached')) {
         if (node._attached) {
             node._attached();
         }
-        node.lifeCycle.set('attached');
+        node._toPhase('attached');
     }
 }
 
 
-exports = module.exports = nodeGetEl;
+exports = module.exports = nodeToAttached;

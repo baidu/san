@@ -6,7 +6,6 @@
 var empty = require('../util/empty');
 var inherits = require('../util/inherits');
 var IndexedList = require('../util/indexed-list');
-var Element = require('./element');
 var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
@@ -16,21 +15,55 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
 var removeEl = require('../browser/remove-el');
 var escapeHTML = require('../runtime/escape-html');
 var ExprType = require('../parser/expr-type');
-var TextNode = require('./text-node');
 var getNodeStump = require('./get-node-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
 
-/**
- * if 指令处理类
- *
- * @class
- * @param {Object} options 初始化参数
- */
-function IfDirective(options) {
-    Element.call(this, options);
-}
+function createIf(options) {
+    var node = nodeInit(options);
+    node._type = 'san-if';
+    node.childs = [];
 
-inherits(IfDirective, Element);
+    node._getEl = ifOwnGetEl;
+    node.genHTML = ifOwnGenHTML;
+    node.updateView = ifOwnUpdateView;
+    node.create = ifOwnCreate;
+    node.attach = ifOwnAttach;
+    node.dispose = elementOwnDispose;
+    node._toPhase = nodeOwnToPhase;
+    node._toAttached = nodeOwnToAttached;
+
+    // #[begin] reverse
+    node._pushChildANode = empty;
+    // #[end]
+    
+    // #[begin] reverse
+    if (options.el) {
+        if (options.el.nodeType === 8) {
+            var aNode = parseTemplate(options.stumpText).childs[0];
+            node.aNode = aNode;
+        }
+        else {
+            node.elseIndex = -1;
+            node.el = null;
+            node._create();
+            options.el.parentNode.insertBefore(node.el, options.el.nextSibling);
+
+            options.el.removeAttribute('san-if');
+            options.el.removeAttribute('s-if');
+
+            var child = createNodeByEl(options.el, node, options.elWalker);
+            node.childs[0] = child;
+            node.aNode.childs = child.aNode.childs.slice(0);
+        }
+
+        node.parent._pushChildANode(node.aNode);
+    }
+    // #[end]
+
+    node.cond = node.aNode.directives.get('if').value;
+
+    return node;
+}
 
 /**
  * 创建 if 指令对应条件为 true 时对应的元素
@@ -59,46 +92,12 @@ function createIfDirectiveChild(directiveANode, mainIf) {
 /**
  * 创建元素DOM行为
  */
-IfDirective.prototype._create = function () {
-    if (!this.el) {
-        this.el = document.createComment('san:' + this.id);
+function ifOwnCreate() {
+    if (!this.lifeCycle.is('created')) {
+        this.el = this.el || document.createComment('san:' + this.id);
+        this.lifeCycle.set('created');
     }
-};
-
-/**
- * 初始化行为
- *
- * @param {Object} options 初始化参数
- */
-IfDirective.prototype._init = function (options) {
-    Node.prototype._init.call(this, options);
-
-    // #[begin] reverse
-    if (options.el) {
-        if (options.el.nodeType === 8) {
-            var aNode = parseTemplate(options.stumpText).childs[0];
-            this.aNode = aNode;
-        }
-        else {
-            this.elseIndex = -1;
-            this.el = null;
-            this._create();
-            options.el.parentNode.insertBefore(this.el, options.el.nextSibling);
-
-            options.el.removeAttribute('san-if');
-            options.el.removeAttribute('s-if');
-
-            var child = createNodeByEl(options.el, this, options.elWalker);
-            this.childs[0] = child;
-            this.aNode.childs = child.aNode.childs.slice(0);
-        }
-
-        this.parent._pushChildANode(this.aNode);
-    }
-    // #[end]
-
-    this.cond = this.aNode.directives.get('if').value;
-};
+}
 
 /**
  * 生成html
@@ -106,12 +105,12 @@ IfDirective.prototype._init = function (options) {
  *
  * @param {StringBuffer} buf html串存储对象
  */
-IfDirective.prototype.genHTML = function (buf) {
+function ifOwnGenHTML(buf) {
     var me = this;
     var elseIndex;
     var child;
 
-    if (me.evalExpr(me.cond)) {
+    if (nodeEvalExpr(me, me.cond)) {
         child = createIfDirectiveChild(me.aNode, me);
         elseIndex = -1;
     }
@@ -119,7 +118,7 @@ IfDirective.prototype.genHTML = function (buf) {
         each(me.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.get('elif');
 
-            if (!elif || elif && me.evalExpr(elif.value)) {
+            if (!elif || elif && nodeEvalExpr(me, elif.value)) {
                 child = createIfDirectiveChild(elseANode, me);
                 elseIndex = index;
                 return false;
@@ -134,26 +133,32 @@ IfDirective.prototype.genHTML = function (buf) {
     }
 
     genStumpHTML(this, buf);
-};
+}
 
+function ifOwnAttach(parentEl, beforeEl) {
+    if (!this.lifeCycle.is('attached')) {
+        elementAttach(this, parentEl, beforeEl);
+        nodeToAttached(this);
+    }
+}
 /**
  * 视图更新函数
  *
  * @param {Array} changes 数据变化信息
  */
-IfDirective.prototype.updateView = function (changes) {
+function ifOwnUpdateView(changes) {
     var me = this;
     var childANode = me.aNode;
     var elseIndex;
 
-    if (this.evalExpr(this.cond)) {
+    if (nodeEvalExpr(this, this.cond)) {
         elseIndex = -1;
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.get('elif');
 
-            if (elif && me.evalExpr(elif.value) || !elif) {
+            if (elif && nodeEvalExpr(me, elif.value) || !elif) {
                 elseIndex = index;
                 childANode = elseANode;
                 return false;
@@ -162,10 +167,10 @@ IfDirective.prototype.updateView = function (changes) {
     }
 
     if (elseIndex === me.elseIndex) {
-        me.updateChilds(changes);
+        elementUpdateChilds(me, changes);
     }
-    else {
-        me._disposeChilds();
+    else {debugger
+        elementDisposeChilds(me);
 
         if (typeof elseIndex !== 'undefined') {
             var child = createIfDirectiveChild(childANode, me);
@@ -177,7 +182,7 @@ IfDirective.prototype.updateView = function (changes) {
 
         me.elseIndex = elseIndex;
     }
-};
+}
 
 
 /**
@@ -186,18 +191,10 @@ IfDirective.prototype.updateView = function (changes) {
  * @protected
  * @return {HTMLElement}
  */
-IfDirective.prototype._getEl = function () {
+function ifOwnGetEl() {
     return getNodeStump(this);
-};
-
-// #[begin] reverse
-/**
- * 清空添加子节点的 ANode 的行为
- * 从 el 初始化时，不接受子节点的 ANode信息
- */
-IfDirective.prototype._pushChildANode = empty;
-// #[end]
+}
 
 
 
-exports = module.exports = IfDirective;
+exports = module.exports = createIf;

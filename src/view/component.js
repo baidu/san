@@ -10,7 +10,6 @@ var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
 var empty = require('../util/empty');
-var Element = require('./element');
 var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
@@ -28,6 +27,18 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var fromElInitChilds = require('./from-el-init-childs');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
+var nodeToAttached = require('./node-to-attached');
+var nodeEvalExpr = require('./node-eval-expr');
+var nodeInit = require('./node-init');
+var elementUpdateChilds = require('./element-update-childs');
+var elementOwnSetProp = require('./element-own-set-prop');
+var elementInit = require('./element-init');
+var elementOwnGenHTML = require('./element-own-gen-html');
+var elementOwnCreate = require('./element-own-create');
+var elementOwnAttach = require('./element-own-attach');
+var elementOwnDetach = require('./element-own-detach');
+var elementOwnDispose = require('./element-own-dispose');
+var elementOwnUpdateView = require('./element-own-update-view');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -39,108 +50,13 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) {
+    this.lifeCycle = new LifeCycle();
+    options = options || {};
+
     this.dataChanges = [];
     this.listeners = {};
     this.ownSlotChilds = [];
 
-    Element.call(this, options);
-}
-
-inherits(Component, Element);
-
-/**
- * 类型标识
- *
- * @protected
- * @type {string}
- */
-Component.prototype._type = 'san-cmpt';
-
-/* eslint-disable operator-linebreak */
-/**
- * 使节点到达相应的生命周期
- *
- * @protected
- * @param {string} name 生命周期名称
- */
-Component.prototype._callHook =
-Component.prototype._toPhase = function (name) {
-    Node.prototype._toPhase.call(this, name);
-
-    if (typeof this[name] === 'function') {
-        this[name].call(this);
-    }
-
-    // 通知devtool
-    // #[begin] devtool
-    emitDevtool('comp-' + name, this);
-    // #[end]
-};
-/* eslint-enable operator-linebreak */
-
-/**
- * 通知自己和childs完成attached状态
- *
- * @protected
- */
-Component.prototype._toAttached = function () {
-    this._getEl();
-    Node.prototype._toAttached.call(this);
-};
-
-
-/**
- * 添加事件监听器
- *
- * @param {string} name 事件名
- * @param {Function} listener 监听器
- * @param {string?} declaration 声明式
- */
-Component.prototype.on = function (name, listener, declaration) {
-    if (typeof listener === 'function') {
-        if (!this.listeners[name]) {
-            this.listeners[name] = [];
-        }
-        this.listeners[name].push({fn: listener, declaration: declaration});
-    }
-};
-
-/**
- * 移除事件监听器
- *
- * @param {string} name 事件名
- * @param {Function=} listener 监听器
- */
-Component.prototype.un = function (name, listener) {
-    var nameListeners = this.listeners[name];
-    var len = nameListeners && nameListeners.length;
-
-    while (len--) {
-        if (!listener || listener === nameListeners[len].fn) {
-            nameListeners.splice(len, 1);
-        }
-    }
-};
-
-
-/**
- * 派发事件
- *
- * @param {string} name 事件名
- * @param {Object} event 事件对象
- */
-Component.prototype.fire = function (name, event) {
-    each(this.listeners[name], function (listener) {
-        listener.fn.call(this, event);
-    }, this);
-};
-
-/**
- * 初始化
- *
- * @param {Object} options 初始化参数
- */
-Component.prototype.init = function (options) {
     this.filters = this.filters || this.constructor.filters || {};
     this.computed = this.computed || this.constructor.computed || {};
     this.messages = this.messages || this.constructor.messages || {};
@@ -203,11 +119,12 @@ Component.prototype.init = function (options) {
         )
     );
 
-    Element.prototype._init.call(this, options);
+    nodeInit(options, this);
+    elementInit(this, options);
 
     postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
-        me.data.set(bind.name, me.evalExpr(bind.expr));
+        me.data.set(bind.name, nodeEvalExpr(me, bind.expr));
     });
 
     // #[begin] error
@@ -241,10 +158,88 @@ Component.prototype.init = function (options) {
     // #[begin] reverse
     // 如果从el编译的，认为已经attach了，触发钩子
     if (this._isInitFromEl) {
-        this._toAttached();
+        nodeToAttached(this);
     }
     // #[end]
+}
+
+/**
+ * 类型标识
+ *
+ * @protected
+ * @type {string}
+ */
+Component.prototype._type = 'san-cmpt';
+
+/* eslint-disable operator-linebreak */
+/**
+ * 使节点到达相应的生命周期
+ *
+ * @protected
+ * @param {string} name 生命周期名称
+ */
+Component.prototype._callHook =
+Component.prototype._toPhase = function (name) {
+    this.lifeCycle.set(name);
+
+    if (typeof this[name] === 'function') {
+        this[name](this);
+    }
+
+    // 通知devtool
+    // #[begin] devtool
+    emitDevtool('comp-' + name, this);
+    // #[end]
 };
+/* eslint-enable operator-linebreak */
+
+
+/**
+ * 添加事件监听器
+ *
+ * @param {string} name 事件名
+ * @param {Function} listener 监听器
+ * @param {string?} declaration 声明式
+ */
+Component.prototype.on = function (name, listener, declaration) {
+    if (typeof listener === 'function') {
+        if (!this.listeners[name]) {
+            this.listeners[name] = [];
+        }
+        this.listeners[name].push({fn: listener, declaration: declaration});
+    }
+};
+
+/**
+ * 移除事件监听器
+ *
+ * @param {string} name 事件名
+ * @param {Function=} listener 监听器
+ */
+Component.prototype.un = function (name, listener) {
+    var nameListeners = this.listeners[name];
+    var len = nameListeners && nameListeners.length;
+
+    while (len--) {
+        if (!listener || listener === nameListeners[len].fn) {
+            nameListeners.splice(len, 1);
+        }
+    }
+};
+
+
+/**
+ * 派发事件
+ *
+ * @param {string} name 事件名
+ * @param {Object} event 事件对象
+ */
+Component.prototype.fire = function (name, event) {
+    each(this.listeners[name], function (listener) {
+        listener.fn.call(this, event);
+    }, this);
+};
+
 
 // #[begin] reverse
 /**
@@ -358,7 +353,7 @@ Component.prototype.ref = function (name) {
                 slotChildsTraversal(child.slotChilds);
             }
 
-            if (!refComponent && child instanceof Element) {
+            if (!refComponent && child._type !== 'text') {
                 childsTraversal(child);
             }
 
@@ -450,6 +445,7 @@ Component.prototype._compile = function () {
     }
 };
 
+Component.prototype.setProp = elementOwnSetProp;
 
 /**
  * 视图更新函数
@@ -485,7 +481,7 @@ Component.prototype.updateView = function (changes) {
                     updateExpr = changeExpr;
                 }
 
-                me.data.set(setExpr, me.evalExpr(updateExpr), {
+                me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
                     target: {
                         id: me.owner.id
                     }
@@ -495,7 +491,7 @@ Component.prototype.updateView = function (changes) {
     });
 
     each(this.slotChilds, function (child) {
-        Element.prototype.updateChilds.call(child, changes);
+        elementUpdateChilds(child, changes);
     });
 
 
@@ -515,7 +511,7 @@ Component.prototype.updateView = function (changes) {
             });
         });
 
-        this.updateChilds(dataChanges, 'ownSlotChilds');
+        elementUpdateChilds(this, dataChanges, 'ownSlotChilds');
 
         this._toPhase('updated');
 
@@ -604,17 +600,33 @@ Component.prototype.watch = function (dataName, listener) {
 /**
  * 组件销毁的行为
  */
-Component.prototype._dispose = function (dontDetach) {
-    Element.prototype._dispose.call(this, dontDetach);
+Component.prototype.dispose = function (dontDetach) {
+    if (!this.lifeCycle.is('disposed')) {
+        elementDispose(this, dontDetach);
 
-    this.ownSlotChilds = null;
+        this.ownSlotChilds = null;
 
-    this.data.unlisten();
-    this.dataChanger = null;
-    this.dataChanges = null;
+        this.data.unlisten();
+        this.dataChanger = null;
+        this.dataChanges = null;
 
-    this.listeners = null;
+        this.listeners = null;
+
+        this._toPhase('disposed');
+    }
 };
 
+Component.prototype._toAttached = function () {
+    this._getEl();
+    nodeToAttached(this);
+}
+
+Component.prototype._attached = elementOwnAttached;
+
+Component.prototype.genHTML = elementOwnGenHTML;
+Component.prototype.create = elementOwnCreate;
+Component.prototype.attach = elementOwnAttach;
+Component.prototype.detach = elementOwnDetach;
+Component.prototype._getEl = elementOwnGetEl;
 
 exports = module.exports = Component;

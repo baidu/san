@@ -91,10 +91,10 @@ function analInputCheckedState(element, value) {
     if (bindValue && bindType) {
         switch (bindType.raw) {
             case 'checkbox':
-                return contains(value, element.evalExpr(bindValue.expr));
+                return contains(value, nodeEvalExpr(element, bindValue.expr));
 
             case 'radio':
-                return value === element.evalExpr(bindValue.expr);
+                return value === nodeEvalExpr(element, bindValue.expr);
         }
     }
 }
@@ -176,7 +176,7 @@ var elementPropHandlers = {
                         ) {
                             selectValue = isComponent(parentSelect)
                                     ? evalExpr(expr, parentSelect.data, parentSelect)
-                                    : parentSelect.evalExpr(expr)
+                                    : nodeEvalExpr(parentSelect, expr)
                                 || '';
                         }
 

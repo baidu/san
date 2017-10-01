@@ -6,6 +6,7 @@
 var escapeHTML = require('../runtime/escape-html');
 var each = require('../util/each');
 var createNode = require('./create-node');
+var nodeEvalExpr = require('./node-eval-expr');
 
 /**
  * 生成子元素html
@@ -17,14 +18,14 @@ function genElementChildsHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
-            buf.push(escapeHTML(element.evalExpr(valueProp.expr)));
+            buf.push(escapeHTML(nodeEvalExpr(element, valueProp.expr)));
         }
     }
     else {
         var htmlDirective = element.aNode.directives.get('html');
 
         if (htmlDirective) {
-            buf.push(element.evalExpr(htmlDirective.value));
+            buf.push(nodeEvalExpr(element, htmlDirective.value));
         }
         else {
             each(element.aNode.childs, function (aNodeChild) {

@@ -5,12 +5,12 @@
 
 
 var isComponent = require('./is-component');
-var TextNode = require('./text-node');
-var Element = require('./element');
-var SlotElement = require('./slot-element');
+var createText = require('./create-text');
+var createElement = require('./create-element');
+var createSlot = require('./create-slot');
 var Component = require('./component');
-var ForDirective = require('./for-directive');
-var IfDirective = require('./if-directive');
+var createFor = require('./create-for');
+var createIf = require('./create-if');
 
 
 /**
@@ -32,15 +32,15 @@ function createNode(aNode, parent, scope) {
     };
 
     if (aNode.isText) {
-        return new TextNode(options);
+        return createText(options);
     }
 
     if (aNode.directives.get('if')) {
-        return new IfDirective(options);
+        return createIf(options);
     }
 
     if (aNode.directives.get('for')) {
-        return new ForDirective(options);
+        return createFor(options);
     }
 
     var ComponentType = owner.components[aNode.tagName];
@@ -50,10 +50,10 @@ function createNode(aNode, parent, scope) {
     }
 
     if (aNode.tagName === 'slot') {
-        return new SlotElement(options);
+        return createSlot(options);
     }
 
-    return new Element(options);
+    return createElement(options);
 }
 
 exports = module.exports = createNode;

@@ -12,19 +12,27 @@ var guid = require('../util/guid');
  * @param {ANode} options.aNode 抽象信息节点对象
  * @param {Component=} options.owner 所属的组件对象
  */
-function nodeInit(options) {
-    options = options || {};
+function nodeInit(options, node) {
+    node = node || options || {};
 
-    options.lifeCycle = new LifeCycle();
-    options.parentComponent = isComponent(options.parent)
+    if (node !== options) {
+        node.owner = options.owner;
+        node.parent = options.parent;
+        node.scope = options.scope;
+        node.aNode = node.aNode || options.aNode;
+        node.el = options.el;
+    }
+
+    node.lifeCycle = node.lifeCycle || new LifeCycle();
+    node.parentComponent = isComponent(options.parent)
             ? options.parent
             : options.parent && options.parent.parentComponent,
 
-    options.id = (options.el && options.el.id)
+    node.id = (options.el && options.el.id)
             || (options.aNode && options.aNode.id)
             || guid();
 
-    return options;
+    return node;
 }
 
 

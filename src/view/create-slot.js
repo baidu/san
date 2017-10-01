@@ -6,34 +6,19 @@
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var empty = require('../util/empty');
-var Node = require('./node');
-var Element = require('./element');
 var isComponent = require('./is-component');
 var Component = require('./component');
 var createANode = require('../parser/create-a-node');
 var isEndStump = require('./is-end-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
-
 /**
  * slot 元素类
  *
- * @class
  * @param {Object} options 初始化参数
  */
-function SlotElement(options) {
-    this.childs = [];
-    Node.call(this, options);
-}
 
-inherits(SlotElement, Node);
-
-/**
- * 初始化行为
- *
- * @param {Object} options 初始化参数
- */
-SlotElement.prototype._init = function (options) {
+function createSlot(options) {
     var literalOwner = options.owner;
     var aNode = createANode();
 
@@ -67,17 +52,32 @@ SlotElement.prototype._init = function (options) {
 
 
     options.aNode = aNode;
-    Node.prototype._init.call(this, options);
 
-    var parent = this.parent;
+
+    var node = nodeInit(options);
+    node.childs = [];
+    node._type = 'san-slot';
+
+    node._getEl = slotOwnGetEl;
+    node.genHTML = slotOwnGenHTML;
+    node.updateView = empty;
+    node.dispose = slotOwnDispose;
+    node._toPhase = nodeOwnToPhase;
+    node._toAttached = nodeOwnToAttached;
+
+    // #[begin] reverse
+    node._pushChildANode = elementOwnPushChildANode;
+    // #[end]
+
+    var parent = node.parent;
     while (parent) {
-        if (parent === this.owner) {
-            parent.ownSlotChilds.push(this);
+        if (parent === node.owner) {
+            parent.ownSlotChilds.push(node);
             break;
         }
 
-        if (!(parent instanceof SlotElement) && parent.owner === this.owner) {
-            parent.slotChilds.push(this);
+        if (parent._type !== 'san-slot' && parent.owner === node.owner) {
+            parent.slotChilds.push(node);
             break;
         }
 
@@ -95,31 +95,29 @@ SlotElement.prototype._init = function (options) {
                 break;
             }
 
-            var child = createNodeByEl(next, this, options.elWalker);
-            this.childs.push(child);
+            var child = createNodeByEl(next, node, options.elWalker);
+            node.childs.push(child);
             options.elWalker.goNext();
         }
 
-        if (literalOwner !== this.owner) {
-            literalOwner.aNode.givenSlots[this.name] = this.aNode;
+        if (literalOwner !== node.owner) {
+            literalOwner.aNode.givenSlots[node.name] = node.aNode;
         }
     }
     // #[end]
-};
+
+    return node;
+}
+
 
 /**
  * 生成元素的html
  *
  * @param {StringBuffer} buf html串存储对象
  */
-SlotElement.prototype.genHTML = function (buf) {
+function slotOwnGenHTML(buf) {
     genElementChildsHTML(this, buf);
 };
-
-/**
- * 隔离实际所属组件对其的视图更新调用。更新应由outer组件调用
- */
-SlotElement.prototype.updateView = empty;
 
 /**
  * 获取节点对应的主元素
@@ -128,27 +126,18 @@ SlotElement.prototype.updateView = empty;
  * @protected
  * @return {HTMLElement}
  */
-SlotElement.prototype._getEl = function () {
+function slotOwnGetEl() {
     return this.parent._getEl();
-};
+}
 
 /**
  * 销毁释放元素行为
  */
-SlotElement.prototype._dispose = function () {
-    Element.prototype._disposeChilds.call(this);
-    Node.prototype._dispose.call(this);
+function slotOwnDispose() {
+    elementDisposeChilds(this);
+    nodeDispose(this);
+
+    this.lifeCycle.set('disposed')
 };
 
-// #[begin] reverse
-/**
- * 添加子节点的 ANode
- * 用于从 el 初始化时，需要将解析的元素抽象成 ANode，并向父级注册
- *
- * @param {ANode} aNode 抽象节点对象
- */
-SlotElement.prototype._pushChildANode = Element.prototype._pushChildANode;
-// #[end]
-
-
-exports = module.exports = SlotElement;
+exports = module.exports = createSlot;

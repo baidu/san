@@ -9,13 +9,13 @@ var inherits = require('../util/inherits');
 var each = require('../util/each');
 var StringBuffer = require('../util/string-buffer');
 var IndexedList = require('../util/indexed-list');
-var Element = require('./element');
 var genStumpHTML = require('./gen-stump-html');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var getNodeStump = require('./get-node-stump');
 var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
+var nodeOwnToPhase = require('./node-own-to-phase');
 var warnSetHTML = require('./warn-set-html');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
@@ -135,22 +135,71 @@ function createForDirectiveChild(forElement, item, index) {
 /**
  * for 指令处理类
  *
- * @class
  * @param {Object} options 初始化参数
  */
-function ForDirective(options) {
-    Element.call(this, options);
+function createFor(options) {
+    var node = nodeInit(options);
+    node.childs = [];
+
+    node.genHTML = forOwnGenHTML;
+    node.updateView = forOwnUpdateView;
+    node.create = forOwnCreate;
+    node.detach = forOwnDetach;
+    node.attach = forOwnAttach;
+    node.dispose = forOwnDispose;
+    node._toPhase = nodeOwnToPhase;
+    node._getEl = forOwnGetEl;
+    node._toAttached = nodeOwnToAttached;
+
+    // #[begin] reverse
+    node._pushChildANode = empty;
+    // #[end]
+    
+    var aNode = node.aNode;
+
+    // #[begin] reverse
+    if (options.el) {
+        aNode = parseTemplate(options.stumpText).childs[0];
+        node.aNode = aNode;
+
+        var index = 0;
+        var directive = aNode.directives.get('for');
+        var listData = nodeEvalExpr(node, directive.list) || [];
+
+        /* eslint-disable no-constant-condition */
+        while (1) {
+        /* eslint-enable no-constant-condition */
+            var next = options.elWalker.next;
+            if (isEndStump(next, 'for')) {
+                removeEl(options.el);
+                node.el = next;
+                options.elWalker.goNext();
+                break;
+            }
+
+            var itemScope = new ForItemData(node.scope, directive, listData[index], index);
+            var child = createNodeByEl(next, node, options.elWalker, itemScope);
+            node.childs.push(child);
+
+            index++;
+            options.elWalker.goNext();
+        }
+
+        node.parent._pushChildANode(node.aNode);
+    }
+    // #[end]
+
+    node.itemANode = createANode({
+        childs: aNode.childs,
+        props: aNode.props,
+        events: aNode.events,
+        tagName: aNode.tagName,
+        directives: (new IndexedList()).concat(aNode.directives)
+    });
+    node.itemANode.directives.remove('for');
+
+    return node;
 }
-
-inherits(ForDirective, Element);
-
-// #[begin] reverse
-/**
- * 清空添加子节点的 ANode 的行为
- * 从 el 初始化时，不接受子节点的 ANode信息
- */
-ForDirective.prototype._pushChildANode = empty;
-// #[end]
 
 /**
  * 生成html
@@ -158,9 +207,9 @@ ForDirective.prototype._pushChildANode = empty;
  * @param {StringBuffer} buf html串存储对象
  * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
  */
-ForDirective.prototype.genHTML = function (buf, onlyChilds) {
+function forOwnGenHTML(buf, onlyChilds) {
     each(
-        this.evalExpr(this.aNode.directives.get('for').list),
+        nodeEvalExpr(this, this.aNode.directives.get('for').list),
         function (item, i) {
             var child = createForDirectiveChild(this, item, i);
             this.childs.push(child);
@@ -172,59 +221,7 @@ ForDirective.prototype.genHTML = function (buf, onlyChilds) {
     if (!onlyChilds) {
         genStumpHTML(this, buf);
     }
-};
-
-/**
- * 初始化行为
- *
- * @param {Object} options 初始化参数
- */
-ForDirective.prototype._init = function (options) {
-    Node.prototype._init.call(this, options);
-
-    var aNode = this.aNode;
-
-    // #[begin] reverse
-    if (options.el) {
-        aNode = parseTemplate(options.stumpText).childs[0];
-        this.aNode = aNode;
-
-        var index = 0;
-        var directive = aNode.directives.get('for');
-        var listData = this.evalExpr(directive.list) || [];
-
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (isEndStump(next, 'for')) {
-                removeEl(options.el);
-                this.el = next;
-                options.elWalker.goNext();
-                break;
-            }
-
-            var itemScope = new ForItemData(this.scope, directive, listData[index], index);
-            var child = createNodeByEl(next, this, options.elWalker, itemScope);
-            this.childs.push(child);
-
-            index++;
-            options.elWalker.goNext();
-        }
-
-        this.parent._pushChildANode(this.aNode);
-    }
-    // #[end]
-
-    this.itemANode = createANode({
-        childs: aNode.childs,
-        props: aNode.props,
-        events: aNode.events,
-        tagName: aNode.tagName,
-        directives: (new IndexedList()).concat(aNode.directives)
-    });
-    this.itemANode.directives.remove('for');
-};
+}
 
 
 /**
@@ -233,7 +230,11 @@ ForDirective.prototype._init = function (options) {
  * @param {HTMLElement} parentEl 要添加到的父元素
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
-ForDirective.prototype._attach = function (parentEl, beforeEl) {
+function forOwnAttach(parentEl, beforeEl) {
+    if (this.lifeCycle.is('attached')) {
+        return;
+    }
+
     this.create();
     if (parentEl) {
         if (beforeEl) {
@@ -244,15 +245,7 @@ ForDirective.prototype._attach = function (parentEl, beforeEl) {
         }
     }
 
-    this._paintList();
-};
-
-/**
- * 绘制整个列表。用于被 attach
- *
- * @private
- */
-ForDirective.prototype._paintList = function () {
+    // paint list
     var parentEl = getNodeStumpParent(this);
     var el = this._getEl() || parentEl.firstChild;
     var prevEl = el && el.previousSibling;
@@ -292,7 +285,7 @@ ForDirective.prototype._paintList = function () {
     }
     else {
         each(
-            this.evalExpr(this.aNode.directives.get('for').list),
+            nodeEvalExpr(this, this.aNode.directives.get('for').list),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.childs.push(child);
@@ -301,24 +294,39 @@ ForDirective.prototype._paintList = function () {
             this
         );
     }
-}
+
+    nodeToAttached(this);
+};
+
 
 /**
  * 将元素从页面上移除的行为
  */
-ForDirective.prototype._detach = function () {
-    this._disposeChilds(true);
-    removeEl(this._getEl());
+function forOwnDetach() {
+    if (this.lifeCycle.is('attached')) {
+        elementDisposeChilds(this, true);
+        removeEl(this._getEl());
+        this.lifeCycle.set('detached');
+    }
 };
 
 /**
  * 创建元素DOM行为
  */
-ForDirective.prototype._create = function () {
-    if (!this.el) {
-        this.el = document.createComment('san:' + this.id);
+function forOwnCreate() {
+    if (!this.lifeCycle.is('created')) {
+        this.el = this.el || document.createComment('san:' + this.id);
+        this.lifeCycle.set('created');
     }
-};
+}
+
+function forOwnDispose(dontDetach) {
+    elementDisposeChilds(this, dontDetach);
+    if (!dontDetach) {
+        removeEl(this._getEl());
+    }
+    nodeDispose(this);
+}
 
 
 /**
@@ -326,7 +334,7 @@ ForDirective.prototype._create = function () {
  *
  * @param {Array} changes 数据变化信息
  */
-ForDirective.prototype.updateView = function (changes) {
+ function forOwnUpdateView(changes) {
     var childsChanges = [];
     var oldChildsLen = this.childs.length;
     each(this.childs, function () {
@@ -359,7 +367,7 @@ ForDirective.prototype.updateView = function (changes) {
                 paths: forDirective.item.paths.concat(changePaths.slice(forLen + 1))
             };
 
-            var changeIndex = +this.evalExpr(changePaths[forLen]);
+            var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
             childsChanges[changeIndex].push(change);
 
             switch (change.type) {
@@ -387,7 +395,7 @@ ForDirective.prototype.updateView = function (changes) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
             var oldLen = this.childs.length;
-            var newList = this.evalExpr(forDirective.list);
+            var newList = nodeEvalExpr(this, forDirective.list);
             var newLen = newList.length;
 
             // 老的比新的多的部分，标记需要dispose
@@ -496,7 +504,7 @@ ForDirective.prototype.updateView = function (changes) {
 
     if (clearAll) {
         parentEl.innerHTML = '';
-        this._create();
+        this.el = document.createComment('san:' + this.id);
         parentEl.appendChild(this.el);
         return;
     }
@@ -505,7 +513,40 @@ ForDirective.prototype.updateView = function (changes) {
     // 对相应的项进行更新
     // 如果不attached则直接创建，如果存在则调用更新函数
     var attachStump = this;
+    var newChildBuf;
+    var newChilds;
 
+    // for (var i = 0; i < newChildsLen; i++) {
+    //     var child = this.childs[i];
+
+    //     if (child.lifeCycle.is('attached')) {
+    //         childsChanges[i].length && child.updateView(childsChanges[i]);
+    //     }
+    //     else {
+    //         newChilds = newChilds || [];
+    //         newChilds.push(child);
+    //         newChildBuf = newChildBuf || new StringBuffer();
+    //         child.genHTML(newChildBuf);
+
+    //         var nextChild = this.childs[i + 1];
+    //         if (!nextChild || nextChild.lifeCycle.is('attached')) {
+    //             var beforeEl = nextChild && nextChild._getEl();
+    //             if (!beforeEl) {
+    //                 beforeEl = document.createElement('script');
+    //                 parentEl.insertBefore(beforeEl, this._getEl());
+    //             }
+    //             beforeEl.insertAdjacentHTML('beforebegin', newChildBuf.toString());
+    //             each(newChilds, function (newChild) {
+    //                 newChild._toAttached();
+    //             });
+    //             newChildBuf = null;
+    //             newChilds = null;
+    //             if (!nextChild) {
+    //                 parentEl.removeChild(beforeEl);
+    //             }
+    //         }
+    //     }
+    // }
     while (newChildsLen--) {
         var child = this.childs[newChildsLen];
         if (child.lifeCycle.is('attached')) {
@@ -517,7 +558,7 @@ ForDirective.prototype.updateView = function (changes) {
 
         attachStump = child;
     }
-};
+}
 
 /**
  * 获取节点对应的主元素
@@ -525,9 +566,9 @@ ForDirective.prototype.updateView = function (changes) {
  * @protected
  * @return {HTMLElement}
  */
-ForDirective.prototype._getEl = function () {
+function forOwnGetEl() {
     return getNodeStump(this);
-};
+}
 
 
-exports = module.exports = ForDirective;
+exports = module.exports = createFor;
