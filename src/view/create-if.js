@@ -7,6 +7,7 @@ var empty = require('../util/empty');
 var inherits = require('../util/inherits');
 var IndexedList = require('../util/indexed-list');
 var genStumpHTML = require('./gen-stump-html');
+var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var parseTemplate = require('../parser/parse-template');
@@ -20,7 +21,7 @@ var getNodeStumpParent = require('./get-node-stump-parent');
 
 function createIf(options) {
     var node = nodeInit(options);
-    node._type = 'san-if';
+    node._type = NodeType.IF;
     node.childs = [];
 
     node._getEl = ifOwnGetEl;

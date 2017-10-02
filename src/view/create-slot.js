@@ -9,6 +9,7 @@ var empty = require('../util/empty');
 var isComponent = require('./is-component');
 var Component = require('./component');
 var createANode = require('../parser/create-a-node');
+var NodeType = require('./node-type');
 var isEndStump = require('./is-end-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
@@ -56,7 +57,7 @@ function createSlot(options) {
 
     var node = nodeInit(options);
     node.childs = [];
-    node._type = 'san-slot';
+    node._type = NodeType.SLOT;
 
     node._getEl = slotOwnGetEl;
     node.genHTML = slotOwnGenHTML;
@@ -76,7 +77,7 @@ function createSlot(options) {
             break;
         }
 
-        if (parent._type !== 'san-slot' && parent.owner === node.owner) {
+        if (parent._type !== NodeType.SLOT && parent.owner === node.owner) {
             parent.slotChilds.push(node);
             break;
         }

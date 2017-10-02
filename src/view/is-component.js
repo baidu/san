@@ -3,6 +3,8 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var NodeType = require('./node-type');
+
 /**
  * 判断一个node是否组件
  *
@@ -10,7 +12,7 @@
  * @return {boolean}
  */
 function isComponent(node) {
-    return node && node._type === 'san-cmpt';
+    return node && node._type === NodeType.CMPT;
 }
 
 exports = module.exports = isComponent;

@@ -29,6 +29,7 @@ var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var nodeToAttached = require('./node-to-attached');
 var nodeEvalExpr = require('./node-eval-expr');
+var NodeType = require('./node-type');
 var nodeInit = require('./node-init');
 var elementUpdateChilds = require('./element-update-childs');
 var elementOwnSetProp = require('./element-own-set-prop');
@@ -170,7 +171,7 @@ function Component(options) {
  * @protected
  * @type {string}
  */
-Component.prototype._type = 'san-cmpt';
+Component.prototype._type = NodeType.CMPT;
 
 /* eslint-disable operator-linebreak */
 /**
@@ -354,7 +355,7 @@ Component.prototype.ref = function (name) {
                 slotChildsTraversal(child.slotChilds);
             }
 
-            if (!refComponent && child._type !== 'text') {
+            if (!refComponent && child._type !== NodeType.TEXT) {
                 childsTraversal(child);
             }
 

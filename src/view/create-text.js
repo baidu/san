@@ -4,6 +4,7 @@
  */
 
 var nodeInit = require('./node-init');
+var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var createANode = require('../parser/create-a-node');
 
@@ -20,7 +21,7 @@ function createText(options) {
     node.updateView = textUpdateView;
     node.dispose = textDispose;
     node._toPhase = empty;
-    node._type = 'san-text';
+    node._type = NodeType.TEXT;
 
     // #[begin] reverse
     // from el

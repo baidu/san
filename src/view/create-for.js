@@ -10,6 +10,7 @@ var each = require('../util/each');
 var StringBuffer = require('../util/string-buffer');
 var IndexedList = require('../util/indexed-list');
 var genStumpHTML = require('./gen-stump-html');
+var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var getNodeStump = require('./get-node-stump');
@@ -139,6 +140,7 @@ function createForDirectiveChild(forElement, item, index) {
  */
 function createFor(options) {
     var node = nodeInit(options);
+    node._type = NodeType.FOR;
     node.childs = [];
 
     node.genHTML = forOwnGenHTML;

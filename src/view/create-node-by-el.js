@@ -4,7 +4,6 @@
  */
 
 var isComponent = require('./is-component');
-var isIf = require('./is-if');
 var createText = require('./create-text');
 var createElement = require('./create-element');
 var createIf = require('./create-if');
@@ -122,26 +121,26 @@ function createNodeByElseEl(option, type) {
     var parentChilds = option.parent.childs;
     var len = parentChilds.length;
 
-    while (len--) {
+    matchif: while (len--) {
         var ifNode = parentChilds[len];
-        if (ifNode._type === 'san-text') {
-            continue;
-        }
+        switch (ifNode._type) {
+            case NodeType.TEXT:
+                continue matchif;
+            
+            case NodeType.IF:
+                if (!ifNode.aNode.elses) {
+                    ifNode.aNode.elses = [];
+                }
+                ifNode.aNode.elses.push(option.aNode);
+                ifNode.elseIndex = ifNode.aNode.elses.length - 1;
 
-        if (isIf(ifNode)) {
-            if (!ifNode.aNode.elses) {
-                ifNode.aNode.elses = [];
-            }
-            ifNode.aNode.elses.push(option.aNode);
-            ifNode.elseIndex = ifNode.aNode.elses.length - 1;
+                option.el.removeAttribute('san-' + type);
+                option.el.removeAttribute('s-' + type);
 
-            option.el.removeAttribute('san-' + type);
-            option.el.removeAttribute('s-' + type);
-
-            var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
-            ifNode.childs[0] = elseChild;
-            option.aNode.childs = option.aNode.childs.slice(0);
-            break;
+                var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
+                ifNode.childs[0] = elseChild;
+                option.aNode.childs = option.aNode.childs.slice(0);
+                break matchif;
         }
 
         throw new Error('[SAN FATEL] ' + type + ' not match if.');
@@ -152,45 +151,45 @@ function createNodeByElseStump(option, type) {
     var parentChilds = option.parent.childs;
     var len = parentChilds.length;
 
-    while (len--) {
+    matchif: while (len--) {
         var ifNode = parentChilds[len];
-        if (ifNode._type === 'san-text') {
-            continue;
-        }
+        switch (ifNode._type) {
+            case NodeType.TEXT:
+                continue matchif;
+            
+            case NodeType.IF:
+                if (!ifNode.aNode.elses) {
+                    ifNode.aNode.elses = [];
+                }
 
-        if (isIf(ifNode)) {
-            if (!ifNode.aNode.elses) {
-                ifNode.aNode.elses = [];
-            }
+                var elseANode;
+                switch (type) {
+                    case 'else':
+                        elseANode = parseTemplate(
+                            option.stumpText.replace('san-else', '').replace('s-else', '')
+                        ).childs[0];
+                        elseANode.directives.push({
+                            value: 1,
+                            name: type
+                        });
 
-            var elseANode;
-            switch (type) {
-                case 'else':
-                    elseANode = parseTemplate(
-                        option.stumpText.replace('san-else', '').replace('s-else', '')
-                    ).childs[0];
-                    elseANode.directives.push({
-                        value: 1,
-                        name: type
-                    });
+                        break;
 
-                    break;
+                    case 'elif':
+                        elseANode = parseTemplate(
+                            option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
+                        ).childs[0];
 
-                case 'elif':
-                    elseANode = parseTemplate(
-                        option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
-                    ).childs[0];
+                        var ifDirective = elseANode.directives.get('if');
+                        elseANode.directives.remove('if');
+                        ifDirective.name = 'elif';
+                        elseANode.directives.push(ifDirective);
 
-                    var ifDirective = elseANode.directives.get('if');
-                    elseANode.directives.remove('if');
-                    ifDirective.name = 'elif';
-                    elseANode.directives.push(ifDirective);
+                        break;
+                }
 
-                    break;
-            }
-
-            ifNode.aNode.elses.push(elseANode);
-            break;
+                ifNode.aNode.elses.push(elseANode);
+                break matchif;
         }
 
         throw new Error('[SAN FATEL] ' + type + ' not match if.');
