@@ -1,5 +1,5 @@
 /**
- * @file slot元素类
+ * @file 创建 slot 元素
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -14,11 +14,10 @@ var isEndStump = require('./is-end-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
 
 /**
- * slot 元素类
+ * 创建 slot 元素
  *
  * @param {Object} options 初始化参数
  */
-
 function createSlot(options) {
     var literalOwner = options.owner;
     var aNode = createANode();
@@ -124,7 +123,6 @@ function slotOwnGenHTML(buf) {
  * 获取节点对应的主元素
  * slot是片段的管理，没有主元素，所以直接返回爹的主元素，不持有引用
  *
- * @protected
  * @return {HTMLElement}
  */
 function slotOwnGetEl() {

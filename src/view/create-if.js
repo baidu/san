@@ -1,5 +1,5 @@
 /**
- * @file if指令处理类
+ * @file 创建 if 指令元素
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -19,6 +19,11 @@ var ExprType = require('../parser/expr-type');
 var getNodeStump = require('./get-node-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
 
+/**
+ * 创建 if 指令元素
+ *
+ * @param {Object} options 初始化参数
+ */
 function createIf(options) {
     var node = nodeInit(options);
     node._type = NodeType.IF;

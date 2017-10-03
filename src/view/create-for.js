@@ -1,5 +1,5 @@
 /**
- * @file for指令处理类
+ * @file 创建 for 指令元素
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -134,7 +134,7 @@ function createForDirectiveChild(forElement, item, index) {
 }
 
 /**
- * for 指令处理类
+ * 创建 for 指令元素
  *
  * @param {Object} options 初始化参数
  */

@@ -9,7 +9,7 @@ var nodeEvalExpr = require('./node-eval-expr');
 var createANode = require('../parser/create-a-node');
 
 /**
- * 初始化 text 节点
+ * 创建 text 节点
  *
  * @param {Object} options 初始化参数
  * @param {ANode} options.aNode 抽象信息节点对象
