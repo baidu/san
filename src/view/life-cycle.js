@@ -2,49 +2,6 @@
  * @file 生命周期类
  * @author errorrik(errorrik@gmail.com)
  */
-var each = require('../util/each');
-
-/* eslint-disable fecs-valid-var-jsdoc */
-/**
- * 节点生命周期信息
- *
- * @inner
- * @type {Object}
- */
-var LifeCycles = {
-    compiled: {
-        value: 1
-    },
-
-    inited: {
-        value: 2
-    },
-
-    painting: {
-        value: 3
-    },
-
-    created: {
-        value: 4,
-        mutex: 'painting'
-    },
-
-    attached: {
-        value: 5,
-        mutex: 'detached,painting'
-    },
-
-    detached: {
-        value: 6,
-        mutex: 'attached'
-    },
-
-    disposed: {
-        value: 7,
-        mutex: '*'
-    }
-};
-/* eslint-enable fecs-valid-var-jsdoc */
 
 /**
  * 生命周期类
@@ -55,28 +12,58 @@ function LifeCycle() {
     this.raw = {};
 }
 
+LifeCycle.COMPILED = {
+    value: 1
+};
+
+LifeCycle.INITED = {
+    value: 2
+};
+
+LifeCycle.PAINTING = {
+    value: 3
+};
+
+LifeCycle.CREATED = {
+    value: 4,
+    mutex: function (lifeCycle) {
+        lifeCycle.raw[LifeCycle.PAINTING.value] = 0;
+    }
+};
+
+LifeCycle.ATTACHED = {
+    value: 5,
+    mutex: function (lifeCycle) {
+        lifeCycle.raw[LifeCycle.PAINTING.value] = 0;
+        lifeCycle.raw[LifeCycle.DETACHED.value] = 0;
+    }
+};
+
+LifeCycle.DETACHED = {
+    value: 6,
+    mutex: function (lifeCycle) {
+        lifeCycle.raw[LifeCycle.ATTACHED.value] = 0;
+    }
+};
+
+LifeCycle.DISPOSED = {
+    value: 7,
+    mutex: function (lifeCycle) {
+        lifeCycle.raw = {};
+    }
+};
+
 /**
  * 设置生命周期
  *
  * @param {string} name 生命周期名称
  */
-LifeCycle.prototype.set = function (name) {
-    var me = this;
-    var lifeCycle = LifeCycles[name];
-    if (!lifeCycle) {
-        return;
+LifeCycle.prototype.set = function (phase) {
+    if (phase.mutex) {
+        phase.mutex(this);
     }
 
-    if (lifeCycle.mutex === '*') {
-        me.raw = {};
-    }
-    else if (lifeCycle.mutex) {
-        each(lifeCycle.mutex.split(','), function (mutex) {
-            me.raw[LifeCycles[mutex].value] = 0;
-        }); 
-    }
-
-    me.raw[lifeCycle.value] = 1;
+    this.raw[phase.value] = 1;
 };
 
 /**
@@ -85,9 +72,8 @@ LifeCycle.prototype.set = function (name) {
  * @param {string} name 生命周期名称
  * @return {boolean}
  */
-LifeCycle.prototype.is = function (name) {
-    var lifeCycle = LifeCycles[name];
-    return lifeCycle && !!this.raw[lifeCycle.value];
+LifeCycle.prototype.is = function (phase) {
+    return this.raw[phase.value];
 };
 
 exports = module.exports = LifeCycle;
