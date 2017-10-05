@@ -23,7 +23,6 @@ function nodeInit(options, node) {
         node.el = options.el;
     }
 
-    node.lifeCycle = node.lifeCycle || new LifeCycle();
     node.parentComponent = isComponent(options.parent)
             ? options.parent
             : options.parent && options.parent.parentComponent,

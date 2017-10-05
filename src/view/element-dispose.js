@@ -23,7 +23,7 @@ function elementDispose(element, dontDetach) {
     if (!dontDetach) {
         element.detach();
     }
-    else if (element.lifeCycle.is('attached')) {
+    else if (element._toPhase) {
         element._toPhase('detached');
     }
 

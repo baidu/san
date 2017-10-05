@@ -5,7 +5,7 @@
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function elementAttach(element, parentEl, beforeEl) {
-    element.create();
+    element._create();
     if (parentEl) {
         if (beforeEl) {
             parentEl.insertBefore(element.el, beforeEl);

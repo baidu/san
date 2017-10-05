@@ -12,41 +12,41 @@ function LifeCycle() {
     this.raw = {};
 }
 
-LifeCycle.COMPILED = {
+LifeCycle.compiled = {
     value: 1
 };
 
-LifeCycle.INITED = {
+LifeCycle.inited = {
     value: 2
 };
 
-LifeCycle.PAINTING = {
+LifeCycle.painting = {
     value: 3
 };
 
-LifeCycle.CREATED = {
+LifeCycle.created = {
     value: 4,
     mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.PAINTING.value] = 0;
+        lifeCycle.raw[LifeCycle.painting.value] = 0;
     }
 };
 
-LifeCycle.ATTACHED = {
+LifeCycle.attached = {
     value: 5,
     mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.PAINTING.value] = 0;
-        lifeCycle.raw[LifeCycle.DETACHED.value] = 0;
+        lifeCycle.raw[LifeCycle.painting.value] = 0;
+        lifeCycle.raw[LifeCycle.detached.value] = 0;
     }
 };
 
-LifeCycle.DETACHED = {
+LifeCycle.detached = {
     value: 6,
     mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.ATTACHED.value] = 0;
+        lifeCycle.raw[LifeCycle.attached.value] = 0;
     }
 };
 
-LifeCycle.DISPOSED = {
+LifeCycle.disposed = {
     value: 7,
     mutex: function (lifeCycle) {
         lifeCycle.raw = {};
@@ -58,12 +58,16 @@ LifeCycle.DISPOSED = {
  *
  * @param {string} name 生命周期名称
  */
-LifeCycle.prototype.set = function (phase) {
-    if (phase.mutex) {
-        phase.mutex(this);
-    }
+LifeCycle.prototype.set = function (name) {
+    var phase = LifeCycle[name];
 
-    this.raw[phase.value] = 1;
+    if (phase) {
+        if (phase.mutex) {
+            phase.mutex(this);
+        }
+
+        this.raw[phase.value] = 1;
+    }
 };
 
 /**
@@ -72,8 +76,10 @@ LifeCycle.prototype.set = function (phase) {
  * @param {string} name 生命周期名称
  * @return {boolean}
  */
-LifeCycle.prototype.is = function (phase) {
-    return this.raw[phase.value];
+LifeCycle.prototype.is = function (name) {
+    var phase = LifeCycle[name];
+
+    return phase && this.raw[phase.value];
 };
 
 exports = module.exports = LifeCycle;

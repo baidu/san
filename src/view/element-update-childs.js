@@ -1,6 +1,6 @@
 function elementUpdateChilds(element, changes, slotChildsName) {
     each(element.childs, function (child) {
-        child.updateView(changes);
+        child._update(changes);
     });
 
     each(element[slotChildsName || 'slotChilds'], function (child) {

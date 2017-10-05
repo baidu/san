@@ -5,6 +5,8 @@ var elementAddElEvent = require('./element-add-el-event');
  * 完成创建元素DOM后的行为
  */
 function elementAttached(element) {
+    element._toPhase('created');
+
     var data = isComponent(element) ? element.data : element.scope;
 
     // 处理自身变化时双向绑定的逻辑
@@ -81,6 +83,8 @@ function elementAttached(element) {
             )
         );
     });
+
+    element._toPhase('attached');
 }
 
 

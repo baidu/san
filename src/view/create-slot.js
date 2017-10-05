@@ -57,13 +57,11 @@ function createSlot(options) {
     var node = nodeInit(options);
     node.childs = [];
     node._type = NodeType.SLOT;
+    node.dispose = slotOwnDispose;
 
     node._getEl = slotOwnGetEl;
-    node.genHTML = slotOwnGenHTML;
-    node.updateView = empty;
-    node.dispose = slotOwnDispose;
-    node._toPhase = nodeOwnToPhase;
-    node._toAttached = nodeOwnToAttached;
+    node._attachHTML = slotOwnAttachHTML;
+    node._update = empty;
 
     // #[begin] reverse
     node._pushChildANode = elementOwnPushChildANode;
@@ -115,9 +113,9 @@ function createSlot(options) {
  *
  * @param {StringBuffer} buf html串存储对象
  */
-function slotOwnGenHTML(buf) {
+function slotOwnAttachHTML(buf) {
     genElementChildsHTML(this, buf);
-};
+}
 
 /**
  * 获取节点对应的主元素
@@ -135,8 +133,6 @@ function slotOwnGetEl() {
 function slotOwnDispose() {
     elementDisposeChilds(this);
     nodeDispose(this);
-
-    this.lifeCycle.set('disposed')
-};
+}
 
 exports = module.exports = createSlot;

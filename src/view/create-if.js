@@ -18,6 +18,7 @@ var escapeHTML = require('../runtime/escape-html');
 var ExprType = require('../parser/expr-type');
 var getNodeStump = require('./get-node-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * 创建 if 指令元素
@@ -26,17 +27,14 @@ var getNodeStumpParent = require('./get-node-stump-parent');
  */
 function createIf(options) {
     var node = nodeInit(options);
-    node._type = NodeType.IF;
     node.childs = [];
+    node._type = NodeType.IF;
 
-    node._getEl = ifOwnGetEl;
-    node.genHTML = ifOwnGenHTML;
-    node.updateView = ifOwnUpdateView;
-    node.create = ifOwnCreate;
-    node.attach = ifOwnAttach;
-    node.dispose = elementOwnDispose;
-    node._toPhase = nodeOwnToPhase;
-    node._toAttached = nodeOwnToAttached;
+    node.dispose = forOwnDispose;
+
+    node._getEl = nodeOwnGetStumpEl;
+    node._attachHTML = ifOwnAttachHTML;
+    node._update = ifOwnUpdate;
 
     // #[begin] reverse
     node._pushChildANode = empty;
@@ -97,15 +95,6 @@ function createIfDirectiveChild(directiveANode, mainIf) {
     return createNode(childANode, mainIf);
 }
 
-/**
- * 创建元素DOM行为
- */
-function ifOwnCreate() {
-    if (!this.lifeCycle.is('created')) {
-        this.el = this.el || document.createComment('san:' + this.id);
-        this.lifeCycle.set('created');
-    }
-}
 
 /**
  * 生成html
@@ -113,7 +102,7 @@ function ifOwnCreate() {
  *
  * @param {StringBuffer} buf html串存储对象
  */
-function ifOwnGenHTML(buf) {
+function ifOwnAttachHTML(buf) {
     var me = this;
     var elseIndex;
     var child;
@@ -136,25 +125,19 @@ function ifOwnGenHTML(buf) {
 
     if (child) {
         me.childs[0] = child;
-        child.genHTML(buf);
+        child._attachHTML(buf);
         me.elseIndex = elseIndex;
     }
 
     genStumpHTML(this, buf);
 }
 
-function ifOwnAttach(parentEl, beforeEl) {
-    if (!this.lifeCycle.is('attached')) {
-        elementAttach(this, parentEl, beforeEl);
-        nodeToAttached(this);
-    }
-}
 /**
  * 视图更新函数
  *
  * @param {Array} changes 数据变化信息
  */
-function ifOwnUpdateView(changes) {
+function ifOwnUpdate(changes) {
     var me = this;
     var childANode = me.aNode;
     var elseIndex;
@@ -177,7 +160,7 @@ function ifOwnUpdateView(changes) {
     if (elseIndex === me.elseIndex) {
         elementUpdateChilds(me, changes);
     }
-    else {debugger
+    else {
         elementDisposeChilds(me);
 
         if (typeof elseIndex !== 'undefined') {
@@ -191,18 +174,5 @@ function ifOwnUpdateView(changes) {
         me.elseIndex = elseIndex;
     }
 }
-
-
-/**
- * 获取节点对应的主元素
- *
- * @protected
- * @return {HTMLElement}
- */
-function ifOwnGetEl() {
-    return getNodeStump(this);
-}
-
-
 
 exports = module.exports = createIf;

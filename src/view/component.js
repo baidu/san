@@ -33,14 +33,12 @@ var NodeType = require('./node-type');
 var nodeInit = require('./node-init');
 var elementUpdateChilds = require('./element-update-childs');
 var elementOwnSetProp = require('./element-own-set-prop');
-var elementInit = require('./element-init');
-var elementOwnGenHTML = require('./element-own-gen-html');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
-var elementOwnUpdateView = require('./element-own-update-view');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
+var attachings = require('./attachings');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -52,7 +50,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) {
-    this.lifeCycle = new LifeCycle();
+    elementInitProps(this);
     options = options || {};
 
     this.dataChanges = [];
@@ -122,7 +120,25 @@ function Component(options) {
     );
 
     nodeInit(options, this);
-    elementInit(this, options);
+
+    // #[begin] reverse
+    if (this.el) {
+        this.aNode = parseANodeFromEl(this.el);
+        this.aNode.givenSlots = {};
+        this.aNode.binds = camelComponentBinds(this.aNode.props);
+        this.aNode.props = this.constructor.prototype.aNode.props;
+
+        this.parent && this.parent._pushChildANode(this.aNode);
+        this.tagName = this.aNode.tagName;
+
+        fromElInitChilds(this);
+        attachings.add(this);
+    }
+    // #[end]
+
+    elementInitTagName(this);
+    this.props = this.aNode.props;
+    this.binds = this.aNode.binds || this.aNode.props;
 
     postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
@@ -150,7 +166,6 @@ function Component(options) {
         }
     }
 
-
     if (!this.dataChanger) {
         this.dataChanger = bind(this._dataChanger, this);
         this.data.listen(this.dataChanger);
@@ -159,8 +174,8 @@ function Component(options) {
 
     // #[begin] reverse
     // 如果从el编译的，认为已经attach了，触发钩子
-    if (this._isInitFromEl) {
-        nodeToAttached(this);
+    if (this.el) {
+        attachings.done();
     }
     // #[end]
 }
@@ -182,6 +197,10 @@ Component.prototype._type = NodeType.CMPT;
  */
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
+    if (this.lifeCycle.is(name)) {
+        return;
+    }
+
     this.lifeCycle.set(name);
 
     if (typeof this[name] === 'function') {
@@ -241,25 +260,6 @@ Component.prototype.fire = function (name, event) {
         listener.fn.call(this, event);
     }, this);
 };
-
-
-// #[begin] reverse
-/**
- * 从存在的 el 中编译抽象节点
- */
-Component.prototype._initFromEl = function () {
-    this._isInitFromEl = 1;
-    this.aNode = parseANodeFromEl(this.el);
-    this.aNode.givenSlots = {};
-    this.aNode.binds = camelComponentBinds(this.aNode.props);
-    this.aNode.props = this.constructor.prototype.aNode.props;
-
-    this.parent && this.parent._pushChildANode(this.aNode);
-    this.tagName = this.aNode.tagName;
-
-    fromElInitChilds(this);
-};
-// #[end]
 
 /**
  * 计算 computed 属性的值
@@ -454,7 +454,7 @@ Component.prototype.setProp = elementOwnSetProp;
  *
  * @param {Array?} changes 数据变化信息
  */
-Component.prototype.updateView = function (changes) {
+Component.prototype._update = function (changes) {
     if (this.lifeCycle.is('disposed')) {
         return;
     }
@@ -547,7 +547,7 @@ Component.prototype.updateView = function (changes) {
                 });
             });
 
-            me.owner.updateView();
+            me.owner._update();
         }
 
     }
@@ -565,7 +565,7 @@ Component.prototype._dataChanger = function (change) {
         var len = this.dataChanges.length;
 
         if (!len) {
-            nextTick(this.updateView, this);
+            nextTick(this._update, this);
         }
 
         while (len--) {
@@ -618,19 +618,16 @@ Component.prototype.dispose = function (dontDetach) {
     }
 };
 
-Component.prototype._toAttached = function () {
+Component.prototype._attached = function () {
     this._getEl();
-    nodeToAttached(this);
-}
+    elementAttached(this);
+};
 
-Component.prototype._attached = elementOwnAttached;
-
-Component.prototype.genHTML = elementOwnGenHTML;
-Component.prototype.create = elementOwnCreate;
+Component.prototype._attachHTML = elementOwnAttachHTML;
+Component.prototype._create = elementOwnCreate;
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;
 Component.prototype._getEl = elementOwnGetEl;
-
 Component.prototype._pushChildANode = elementOwnPushChildANode;
 
 exports = module.exports = Component;

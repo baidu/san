@@ -16,7 +16,7 @@ var createNodeByEl = require('./create-node-by-el');
 var getNodeStump = require('./get-node-stump');
 var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
-var nodeOwnToPhase = require('./node-own-to-phase');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var warnSetHTML = require('./warn-set-html');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
@@ -140,18 +140,17 @@ function createForDirectiveChild(forElement, item, index) {
  */
 function createFor(options) {
     var node = nodeInit(options);
-    node._type = NodeType.FOR;
     node.childs = [];
+    node._type = NodeType.FOR;
 
-    node.genHTML = forOwnGenHTML;
-    node.updateView = forOwnUpdateView;
-    node.create = forOwnCreate;
-    node.detach = forOwnDetach;
     node.attach = forOwnAttach;
+    node.detach = forOwnDetach;
     node.dispose = forOwnDispose;
-    node._toPhase = nodeOwnToPhase;
-    node._getEl = forOwnGetEl;
-    node._toAttached = nodeOwnToAttached;
+
+    node._attachHTML = forOwnAttachHTML;
+    node._update = forOwnUpdate;
+    node._create = forOwnCreate;
+    node._getEl = nodeOwnGetStumpEl;
 
     // #[begin] reverse
     node._pushChildANode = empty;
@@ -209,19 +208,19 @@ function createFor(options) {
  * @param {StringBuffer} buf html串存储对象
  * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
  */
-function forOwnGenHTML(buf, onlyChilds) {
+function forOwnAttachHTML(buf, onlyChilds) {
+    var me = this;
     each(
-        nodeEvalExpr(this, this.aNode.directives.get('for').list),
+        nodeEvalExpr(me, me.aNode.directives.get('for').list),
         function (item, i) {
-            var child = createForDirectiveChild(this, item, i);
-            this.childs.push(child);
-            child.genHTML(buf);
-        },
-        this
+            var child = createForDirectiveChild(me, item, i);
+            me.childs.push(child);
+            child._attachHTML(buf);
+        }
     );
 
     if (!onlyChilds) {
-        genStumpHTML(this, buf);
+        genStumpHTML(me, buf);
     }
 }
 
@@ -233,11 +232,7 @@ function forOwnGenHTML(buf, onlyChilds) {
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function forOwnAttach(parentEl, beforeEl) {
-    if (this.lifeCycle.is('attached')) {
-        return;
-    }
-
-    this.create();
+    this._create();
     if (parentEl) {
         if (beforeEl) {
             parentEl.insertBefore(this.el, beforeEl);
@@ -272,14 +267,14 @@ function forOwnAttach(parentEl, beforeEl) {
     }
 
     if (!prevEl) {
-        this.genHTML(buf, 1);
+        this._attachHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
         parentEl.insertAdjacentHTML('afterbegin', buf.toString());
     }
     else if (prevEl.nodeType === 1) {
-        this.genHTML(buf, 1);
+        this._attachHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
@@ -297,7 +292,7 @@ function forOwnAttach(parentEl, beforeEl) {
         );
     }
 
-    nodeToAttached(this);
+    attachings.done();
 };
 
 
@@ -316,10 +311,7 @@ function forOwnDetach() {
  * 创建元素DOM行为
  */
 function forOwnCreate() {
-    if (!this.lifeCycle.is('created')) {
-        this.el = this.el || document.createComment('san:' + this.id);
-        this.lifeCycle.set('created');
-    }
+    this.el = this.el || document.createComment('san:' + this.id);
 }
 
 function forOwnDispose(dontDetach) {
@@ -336,7 +328,7 @@ function forOwnDispose(dontDetach) {
  *
  * @param {Array} changes 数据变化信息
  */
- function forOwnUpdateView(changes) {
+ function forOwnUpdate(changes) {
     var childsChanges = [];
     var oldChildsLen = this.childs.length;
     each(this.childs, function () {
@@ -518,58 +510,48 @@ function forOwnDispose(dontDetach) {
     var newChildBuf;
     var newChilds;
 
-    // for (var i = 0; i < newChildsLen; i++) {
-    //     var child = this.childs[i];
+    for (var i = 0; i < newChildsLen; i++) {
+        var child = this.childs[i];
 
-    //     if (child.lifeCycle.is('attached')) {
-    //         childsChanges[i].length && child.updateView(childsChanges[i]);
-    //     }
-    //     else {
-    //         newChilds = newChilds || [];
-    //         newChilds.push(child);
-    //         newChildBuf = newChildBuf || new StringBuffer();
-    //         child.genHTML(newChildBuf);
-
-    //         var nextChild = this.childs[i + 1];
-    //         if (!nextChild || nextChild.lifeCycle.is('attached')) {
-    //             var beforeEl = nextChild && nextChild._getEl();
-    //             if (!beforeEl) {
-    //                 beforeEl = document.createElement('script');
-    //                 parentEl.insertBefore(beforeEl, this._getEl());
-    //             }
-    //             beforeEl.insertAdjacentHTML('beforebegin', newChildBuf.toString());
-    //             each(newChilds, function (newChild) {
-    //                 newChild._toAttached();
-    //             });
-    //             newChildBuf = null;
-    //             newChilds = null;
-    //             if (!nextChild) {
-    //                 parentEl.removeChild(beforeEl);
-    //             }
-    //         }
-    //     }
-    // }
-    while (newChildsLen--) {
-        var child = this.childs[newChildsLen];
         if (child.lifeCycle.is('attached')) {
-            childsChanges[newChildsLen].length && child.updateView(childsChanges[newChildsLen]);
+            childsChanges[i].length && child._update(childsChanges[i]);
         }
         else {
-            child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
+            newChilds = newChilds || [];
+            newChilds.push(child);
+            newChildBuf = newChildBuf || new StringBuffer();
+            child._attachHTML(newChildBuf);
+
+            var nextChild = this.childs[i + 1];
+            if (!nextChild || nextChild.lifeCycle.is('attached')) {
+                var beforeEl = nextChild && nextChild._getEl();
+                if (!beforeEl) {
+                    beforeEl = document.createElement('script');
+                    parentEl.insertBefore(beforeEl, this._getEl());
+                }
+                beforeEl.insertAdjacentHTML('beforebegin', newChildBuf.toString());
+
+                newChildBuf = null;
+                newChilds = null;
+                if (!nextChild) {
+                    parentEl.removeChild(beforeEl);
+                }
+            }
         }
-
-        attachStump = child;
     }
-}
+    attachings.done();
+    
+    // while (newChildsLen--) {
+    //     var child = this.childs[newChildsLen];
+    //     if (child.lifeCycle.is('attached')) {
+    //         childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
+    //     }
+    //     else {
+    //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
+    //     }
 
-/**
- * 获取节点对应的主元素
- *
- * @protected
- * @return {HTMLElement}
- */
-function forOwnGetEl() {
-    return getNodeStump(this);
+    //     attachStump = child;
+    // }
 }
 
 

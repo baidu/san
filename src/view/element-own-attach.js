@@ -1,5 +1,6 @@
 
 var elementAttach = require('./element-attach');
+var attachings = require('./attachings');
 
 /**
  * 将元素attach到页面
@@ -10,7 +11,10 @@ var elementAttach = require('./element-attach');
 function elementOwnAttach(parentEl, beforeEl) {
     if (!this.lifeCycle.is('attached')) {
         elementAttach(this, parentEl, beforeEl);
-        nodeToAttached(this);
+        attachings.add(this);
+        attachings.done();
+
+        this._toPhase('attached');
     }
 }
 

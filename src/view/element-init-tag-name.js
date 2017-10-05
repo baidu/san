@@ -3,9 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var nodeInit = require('./node-init');
-var nodeGetEl = require('./node-get-el');
-
 
 /**
  * 初始化 text 节点
@@ -14,19 +11,7 @@ var nodeGetEl = require('./node-get-el');
  * @param {ANode} options.aNode 抽象信息节点对象
  * @param {Component=} options.owner 所属的组件对象
  */
-function elementInit(node, options) {
-    node.childs = [];
-    node.slotChilds = [];
-    node._elFns = {};
-    node._propVals = {};
-    
-
-    // #[begin] reverse
-    if (node.el) {
-        node._initFromEl();
-    }
-    // #[end]
-
+function elementInitTagName(node) {
     node.tagName = node.tagName || node.aNode.tagName || 'div';
     // ie8- 不支持innerHTML输出自定义标签
     if (ieOldThan9 && node.tagName.indexOf('-') > 0) {
@@ -44,26 +29,7 @@ function elementInit(node, options) {
             expr: node.aNode.childs[0].textExpr
         });
     }
-
-    node.props = node.aNode.props;
-    node.binds = node.aNode.binds || node.aNode.props;
-
-    return node;
 }
 
-function elementOwnGetEl() {
-    return nodeGetEl(this);
-}
 
-function elementOwnInitFromEl() {
-    this.aNode = parseANodeFromEl(this.el);
-    this.parent && this.parent._pushChildANode(this.aNode);
-    this.tagName = this.aNode.tagName;
-
-    if (!this.aNode.directives.get('html')) {
-        fromElInitChilds(this);
-    }
-    this.el.id = this.id;
-}
-
-exports = module.exports = elementInit;
+exports = module.exports = elementInitTagName;

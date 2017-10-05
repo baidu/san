@@ -8,8 +8,12 @@ var elementDispose = require('./element-dispose');
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function elementOwnDispose(dontDetach) {
-    elementDispose(this, dontDetach);
-    nodeDispose(this);
+    if (!this.lifeCycle.is('disposed')) {
+        elementDispose(this, dontDetach);
+        nodeDispose(this);
+
+        this._toPhase('disposed');
+    }
 }
 
 exports = module.exports = elementOwnDispose;

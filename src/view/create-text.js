@@ -17,11 +17,11 @@ var createANode = require('../parser/create-a-node');
  */
 function createText(options) {
     var node = nodeInit(options);
-    node.genHTML = textGenHTML;
-    node.updateView = textUpdateView;
-    node.dispose = textDispose;
-    node._toPhase = empty;
     node._type = NodeType.TEXT;
+    
+    node.dispose = textOwnDispose;
+    node._attachHTML = textOwnAttachHTML;
+    node._update = textOwnUpdate;
 
     // #[begin] reverse
     // from el
@@ -56,18 +56,18 @@ function createText(options) {
     return node;
 }
 
-function textDispose() {
+function textOwnDispose() {
     this._prev = null;
     this.el = null;
     this.content = null;
 }
 
-function textGenHTML(buf) {
+function textOwnAttachHTML(buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
     buf.push(this.content);
 }
 
-function textUpdateView(changes) {
+function textOwnUpdate(changes) {
     var me = this;
 
     var len = changes ? changes.length : 0;
@@ -171,7 +171,6 @@ function textUpdateView(changes) {
 
                 }
             }
-            
 
             return;
         }
