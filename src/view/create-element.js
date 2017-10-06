@@ -5,6 +5,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementAttached = require('./element-attached');
+var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
@@ -20,7 +21,6 @@ function createElement(options) {
     node._update = elementOwnUpdate;
     node._create = elementOwnCreate;
     node._attached = elementOwnAttached;
-    node.setProp = elementOwnSetProp;
     node._getEl = elementOwnGetEl;
     node._toPhase = elementOwnToPhase;
     
@@ -68,7 +68,7 @@ function elementOwnUpdate(changes) {
             if (!isDataChangeByElement(change, me, prop.name)
                 && changeExprCompare(change.expr, prop.expr, me.scope)
             ) {
-                me.setProp(prop.name, nodeEvalExpr(me, prop.expr));
+                elementSetElProp(me, prop.name, nodeEvalExpr(me, prop.expr));
                 return false;
             }
         });

@@ -13,44 +13,40 @@ function LifeCycle() {
 }
 
 LifeCycle.compiled = {
-    value: 1
+    compiled: 1
 };
-
 LifeCycle.inited = {
-    value: 2
+    compiled: 1,
+    inited: 1
 };
-
 LifeCycle.painting = {
-    value: 3
+    compiled: 1,
+    inited: 1,
+    painting: 1
 };
 
 LifeCycle.created = {
-    value: 4,
-    mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.painting.value] = 0;
-    }
+    compiled: 1,
+    inited: 1,
+    created: 1
 };
 
 LifeCycle.attached = {
-    value: 5,
-    mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.painting.value] = 0;
-        lifeCycle.raw[LifeCycle.detached.value] = 0;
-    }
+    compiled: 1,
+    inited: 1,
+    created: 1,
+    attached: 1
 };
 
 LifeCycle.detached = {
-    value: 6,
-    mutex: function (lifeCycle) {
-        lifeCycle.raw[LifeCycle.attached.value] = 0;
-    }
+    compiled: 1,
+    inited: 1,
+    created: 1,
+    detached: 1
 };
 
 LifeCycle.disposed = {
-    value: 7,
-    mutex: function (lifeCycle) {
-        lifeCycle.raw = {};
-    }
+    disposed: 1
 };
 
 /**
@@ -62,11 +58,7 @@ LifeCycle.prototype.set = function (name) {
     var phase = LifeCycle[name];
 
     if (phase) {
-        if (phase.mutex) {
-            phase.mutex(this);
-        }
-
-        this.raw[phase.value] = 1;
+        this.raw = phase;
     }
 };
 
@@ -77,9 +69,7 @@ LifeCycle.prototype.set = function (name) {
  * @return {boolean}
  */
 LifeCycle.prototype.is = function (name) {
-    var phase = LifeCycle[name];
-
-    return phase && this.raw[phase.value];
+    return this.raw[name];
 };
 
 exports = module.exports = LifeCycle;

@@ -27,7 +27,6 @@ function genElementStartHTML(element, buf) {
 
         buf.push(
             getPropHandler(element, prop.name)
-                .input
                 .attr(element, prop.name, value)
             || ''
         );

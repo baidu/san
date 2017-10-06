@@ -12,9 +12,7 @@ function elementCreate(node) {
             : nodeEvalExpr(node, prop.expr, 1);
 
         var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/i.exec(
-            getPropHandler(node, prop.name)
-                .input
-                .attr(node, prop.name, value)
+            getPropHandler(node, prop.name).attr(node, prop.name, value)
         );
 
         if (match) {

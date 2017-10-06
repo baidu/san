@@ -39,10 +39,13 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
  * @param {number} index 当前项的索引
  */
 function ForItemData(parent, forDirective, item, index) {
-    Data.call(this, {}, parent);
+    this.parent = parent;
+    this.raw = {};
+    this.listeners = [];
+
     this.directive = forDirective;
-    Data.prototype.set.call(this, forDirective.item, item);
-    Data.prototype.set.call(this, forDirective.index, index);
+    this.raw[forDirective.item.raw] = item;
+    this.raw[forDirective.index.raw] = index;
 }
 
 /**
@@ -99,6 +102,7 @@ ForItemData.prototype.exprResolve = function (expr) {
 
 // 代理数据操作方法
 inherits(ForItemData, Data);
+ForItemData.prototype.pset = Data.prototype.set;
 each(
     ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
     function (method) {
@@ -506,7 +510,6 @@ function forOwnDispose(dontDetach) {
 
     // 对相应的项进行更新
     // 如果不attached则直接创建，如果存在则调用更新函数
-    var attachStump = this;
     var newChildBuf;
     var newChilds;
 
@@ -539,19 +542,8 @@ function forOwnDispose(dontDetach) {
             }
         }
     }
-    attachings.done();
     
-    // while (newChildsLen--) {
-    //     var child = this.childs[newChildsLen];
-    //     if (child.lifeCycle.is('attached')) {
-    //         childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
-    //     }
-    //     else {
-    //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
-    //     }
-
-    //     attachStump = child;
-    // }
+    attachings.done();
 }
 
 

@@ -27,12 +27,11 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var fromElInitChilds = require('./from-el-init-childs');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
-var nodeToAttached = require('./node-to-attached');
 var nodeEvalExpr = require('./node-eval-expr');
 var NodeType = require('./node-type');
 var nodeInit = require('./node-init');
 var elementUpdateChilds = require('./element-update-childs');
-var elementOwnSetProp = require('./element-own-set-prop');
+var elementSetElProp = require('./element-set-el-prop');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
@@ -447,8 +446,6 @@ Component.prototype._compile = function () {
     }
 };
 
-Component.prototype.setProp = elementOwnSetProp;
-
 /**
  * 视图更新函数
  *
@@ -503,7 +500,8 @@ Component.prototype._update = function (changes) {
         me.props.each(function (prop) {
             each(dataChanges, function (change) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)) {
-                    me.setProp(
+                    elementSetElProp(
+                        me,
                         prop.name,
                         evalExpr(prop.expr, me.data, me)
                     );
