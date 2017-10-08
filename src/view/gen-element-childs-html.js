@@ -18,14 +18,14 @@ function genElementChildsHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
-            buf.push(escapeHTML(nodeEvalExpr(element, valueProp.expr)));
+            pushStrBuffer(buf, escapeHTML(nodeEvalExpr(element, valueProp.expr)));
         }
     }
     else {
         var htmlDirective = element.aNode.directives.get('html');
 
         if (htmlDirective) {
-            buf.push(nodeEvalExpr(element, htmlDirective.value));
+            pushStrBuffer(buf, nodeEvalExpr(element, htmlDirective.value));
         }
         else {
             each(element.aNode.childs, function (aNodeChild) {

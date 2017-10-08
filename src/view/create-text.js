@@ -18,7 +18,7 @@ var createANode = require('../parser/create-a-node');
 function createText(options) {
     var node = nodeInit(options);
     node._type = NodeType.TEXT;
-    
+
     node.dispose = textOwnDispose;
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
@@ -64,7 +64,7 @@ function textOwnDispose() {
 
 function textOwnAttachHTML(buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
-    buf.push(this.content);
+    pushStrBuffer(buf, this.content);
 }
 
 function textOwnUpdate(changes) {
@@ -144,18 +144,18 @@ function textOwnUpdate(changes) {
                     case 2:
                         var insertBeforeEl = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
                         var startRemoveEl = insertBeforeEl;
-                    
+
                         while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
                             insertBeforeEl = startRemoveEl.nextSibling;
                             removeEl(startRemoveEl);
                             startRemoveEl = insertBeforeEl;
                         }
-                    
+
                         // #[begin] error
                         warnSetHTML(parentEl);
                         // #[end]
-                        
-                        
+
+
                         if (insertBeforeEl) {
                             insertBeforeEl.insertAdjacentHTML('beforebegin', text);
                         }

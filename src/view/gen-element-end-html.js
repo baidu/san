@@ -16,9 +16,9 @@ function genElementEndHTML(element, buf) {
     var tagName = element.tagName;
 
     if (!autoCloseTags[tagName]) {
-        buf.push('</');
-        buf.push(tagName);
-        buf.push('>');
+        pushStrBuffer(buf, '</');
+        pushStrBuffer(buf, tagName);
+        pushStrBuffer(buf, '>');
     }
 }
 

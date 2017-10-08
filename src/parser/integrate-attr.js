@@ -87,6 +87,10 @@ function integrateProp(aNode, name, value) {
         raw: value
     };
 
+    if (prop.expr.value != null && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)) {
+        prop.attr = getPropHandler(aNode, name).attr(aNode, name, value);
+    }
+
     // 这里不能把只有一个插值的属性抽取
     // 因为插值里的值可能是html片段，容易被注入
     // 组件的数据绑定在组件init时做抽取

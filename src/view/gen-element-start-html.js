@@ -18,21 +18,35 @@ function genElementStartHTML(element, buf) {
         return;
     }
 
-    buf.push('<' + element.tagName + ' id="' + element.id + '"');
+    var shouldInitDynamicProp;
+    if (!element.dynamicProps) {
+        shouldInitDynamicProp = 1;
+        element.dynamicProps = new IndexedList();
+    }
+    pushStrBuffer(buf, '<' + element.tagName + ' id="' + element.id + '"');
 
     element.props.each(function (prop) {
+        if (prop.attr) {
+            pushStrBuffer(buf, prop.attr);
+            return;
+        }
+
+        if (shouldInitDynamicProp) {
+            element.dynamicProps.push(prop);
+        }
+
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
             : nodeEvalExpr(element, prop.expr, 1);
 
-        buf.push(
+        pushStrBuffer(buf,
             getPropHandler(element, prop.name)
                 .attr(element, prop.name, value)
             || ''
         );
     });
 
-    buf.push('>');
+    pushStrBuffer(buf, '>');
 }
 
 exports = module.exports = genElementStartHTML;

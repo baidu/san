@@ -7,7 +7,7 @@ var nodeDispose = require('./node-dispose');
  */
 function elementDispose(element, dontDetach) {
     elementDisposeChilds(element, true);
-    
+
     // el 事件解绑
     for (var key in element._elFns) {
         var nameListeners = element._elFns[key];
@@ -19,7 +19,7 @@ function elementDispose(element, dontDetach) {
     }
     element._elFns = null;
 
-    
+
     if (!dontDetach) {
         element.detach();
     }
@@ -28,6 +28,7 @@ function elementDispose(element, dontDetach) {
     }
 
     element.props = null;
+    element.dynamicProps = null;
     element.binds = null;
     element._propVals = null;
 

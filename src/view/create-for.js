@@ -38,14 +38,14 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
  * @param {*} item 当前项的数据
  * @param {number} index 当前项的索引
  */
-function ForItemData(parent, forDirective, item, index) {
-    this.parent = parent;
+function ForItemData(forElement, item, index) {
+    this.parent = forElement.scope;
     this.raw = {};
     this.listeners = [];
 
-    this.directive = forDirective;
-    this.raw[forDirective.item.raw] = item;
-    this.raw[forDirective.index.raw] = index;
+    this.directive = forElement.aNode.directives.get('for');
+    this.raw[this.directive.item.raw] = item;
+    this.raw[this.directive.index.raw] = index;
 }
 
 /**
@@ -102,7 +102,6 @@ ForItemData.prototype.exprResolve = function (expr) {
 
 // 代理数据操作方法
 inherits(ForItemData, Data);
-ForItemData.prototype.pset = Data.prototype.set;
 each(
     ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
     function (method) {
@@ -127,12 +126,9 @@ each(
  * @return {Element}
  */
 function createForDirectiveChild(forElement, item, index) {
-    var itemScope = new ForItemData(
-        forElement.scope,
-        forElement.aNode.directives.get('for'),
-        item,
-        index
-    );
+    var itemScope = new ForItemData(forElement, item, index);
+
+
 
     return createNode(forElement.itemANode, forElement, itemScope);
 }
@@ -159,7 +155,7 @@ function createFor(options) {
     // #[begin] reverse
     node._pushChildANode = empty;
     // #[end]
-    
+
     var aNode = node.aNode;
 
     // #[begin] reverse
@@ -182,7 +178,7 @@ function createFor(options) {
                 break;
             }
 
-            var itemScope = new ForItemData(node.scope, directive, listData[index], index);
+            var itemScope = new ForItemData(node, listData[index], index);
             var child = createNodeByEl(next, node, options.elWalker, itemScope);
             node.childs.push(child);
 
@@ -250,7 +246,7 @@ function forOwnAttach(parentEl, beforeEl) {
     var parentEl = getNodeStumpParent(this);
     var el = this._getEl() || parentEl.firstChild;
     var prevEl = el && el.previousSibling;
-    var buf = new StringBuffer();
+    var buf = createStrBuffer();
 
     prev: while (prevEl) {
         switch (prevEl.nodeType) {
@@ -275,14 +271,14 @@ function forOwnAttach(parentEl, beforeEl) {
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        parentEl.insertAdjacentHTML('afterbegin', buf.toString());
+        parentEl.insertAdjacentHTML('afterbegin', strBufferToStr(buf));
     }
     else if (prevEl.nodeType === 1) {
         this._attachHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        prevEl.insertAdjacentHTML('afterend', buf.toString());
+        prevEl.insertAdjacentHTML('afterend', strBufferToStr(buf));
     }
     else {
         each(
@@ -490,7 +486,7 @@ function forOwnDispose(dontDetach) {
         });
     }
 
-    
+
     // 清除应该干掉的 child
     var clearAll = newChildsLen === 0 && this.parent.childs.length === 1;
 
@@ -522,7 +518,7 @@ function forOwnDispose(dontDetach) {
         else {
             newChilds = newChilds || [];
             newChilds.push(child);
-            newChildBuf = newChildBuf || new StringBuffer();
+            newChildBuf = newChildBuf || createStrBuffer();
             child._attachHTML(newChildBuf);
 
             var nextChild = this.childs[i + 1];
@@ -532,7 +528,7 @@ function forOwnDispose(dontDetach) {
                     beforeEl = document.createElement('script');
                     parentEl.insertBefore(beforeEl, this._getEl());
                 }
-                beforeEl.insertAdjacentHTML('beforebegin', newChildBuf.toString());
+                beforeEl.insertAdjacentHTML('beforebegin', strBufferToStr(newChildBuf));
 
                 newChildBuf = null;
                 newChilds = null;
@@ -542,8 +538,9 @@ function forOwnDispose(dontDetach) {
             }
         }
     }
-    
+
     attachings.done();
+    // console.timeEnd()
 }
 
 

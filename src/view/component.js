@@ -432,6 +432,7 @@ Component.prototype._compile = function () {
                 if (prop) {
                     prop.expr.segs.push(extra.expr.segs[0]);
                     prop.expr.value = null;
+                    prop.attr = null;
                 }
                 else {
                     firstChild.props.push({

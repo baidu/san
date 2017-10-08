@@ -12,7 +12,7 @@ var elementOwnPushChildANode = require('./element-own-push-child-anode');
 
 function createElement(options) {
     var node = nodeInit(options);
-    
+
     // init methods
     node.attach = elementOwnAttach;
     node.detach = elementOwnDetach;
@@ -23,7 +23,7 @@ function createElement(options) {
     node._attached = elementOwnAttached;
     node._getEl = elementOwnGetEl;
     node._toPhase = elementOwnToPhase;
-    
+
     elementInitProps(node);
 
     // #[begin] reverse
@@ -33,7 +33,7 @@ function createElement(options) {
         node.aNode = parseANodeFromEl(node.el);
         node.parent && node.parent._pushChildANode(node.aNode);
         node.tagName = node.aNode.tagName;
-    
+
         if (!node.aNode.directives.get('html')) {
             fromElInitChilds(node);
         }
@@ -59,7 +59,7 @@ function elementOwnUpdate(changes) {
     this._getEl();
     var me = this;
 
-    this.props.each(function (prop) {
+    this.dynamicProps.each(function (prop) {
         if (prop.expr.value) {
             return;
         }

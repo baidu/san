@@ -152,7 +152,7 @@ function parseTemplate(source) {
      * @param {string} text 文本内容
      */
     function pushTextNode(text) {
-        if (text) {
+        if (text && !/^\s+$/.test(text)) {
             currentNode.childs.push(createANode({
                 isText: 1,
                 text: text,

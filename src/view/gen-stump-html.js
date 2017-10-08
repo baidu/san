@@ -11,7 +11,7 @@
  */
 function genStumpHTML(node, buf) {
     // buf.push('<script type="text/san" id="' + node.id + '"></script>');
-    buf.push('<!--san:' + node.id + '-->');
+    pushStrBuffer(buf, '<!--san:' + node.id + '-->');
 }
 
 exports = module.exports = genStumpHTML;
