@@ -645,8 +645,7 @@ describe("ForDirective", function () {
             template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
         var myComponent = new MyComponent();
-        myComponent.data.set('persons', [
-        ]);
+        myComponent.data.set('persons', []);
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -969,7 +968,7 @@ describe("ForDirective", function () {
             done();
             return;
         }
-        
+
         var MyComponent = san.defineComponent({
             template: '<table cellpadding="0" cellspacing="0" width="100">'
                 + '<tr><th san-for="item in schema">{{item.label}}</th></tr>'
@@ -999,8 +998,8 @@ describe("ForDirective", function () {
 
         var tr0 = wrap.getElementsByTagName('tr')[0];
         var trParent = tr0.parentNode;
-        
-        
+
+
         myComponent.data.push('datasource', {name: 'xxx', age: 10});
         myComponent.data.push('datasource', {name: 'yyy', age: 20});
 
