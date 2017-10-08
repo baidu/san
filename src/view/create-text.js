@@ -7,6 +7,7 @@ var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var createANode = require('../parser/create-a-node');
+var pushStrBuffer = require('../runtime/push-str-buffer');
 
 /**
  * 创建 text 节点

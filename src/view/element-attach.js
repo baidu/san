@@ -1,3 +1,8 @@
+
+
+var createStrBuffer = require('../runtime/create-str-buffer');
+var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
+
 /**
  * 将元素attach到页面的行为
  *
@@ -21,7 +26,7 @@ function elementAttach(element, parentEl, beforeEl) {
 
         // html 没内容就不要设置 innerHTML了
         // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题
-        var html = strBufferToStr(buf);
+        var html = stringifyStrBuffer(buf);
         if (html) {
             // #[begin] error
             warnSetHTML(element.el);

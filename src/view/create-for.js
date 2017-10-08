@@ -7,7 +7,6 @@ var empty = require('../util/empty');
 var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
-var StringBuffer = require('../util/string-buffer');
 var IndexedList = require('../util/indexed-list');
 var genStumpHTML = require('./gen-stump-html');
 var NodeType = require('./node-type');
@@ -25,6 +24,8 @@ var parseExpr = require('../parser/parse-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var createStrBuffer = require('../runtime/create-str-buffer');
+var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
 var removeEl = require('../browser/remove-el');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 
@@ -271,14 +272,14 @@ function forOwnAttach(parentEl, beforeEl) {
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        parentEl.insertAdjacentHTML('afterbegin', strBufferToStr(buf));
+        parentEl.insertAdjacentHTML('afterbegin', stringifyStrBuffer(buf));
     }
     else if (prevEl.nodeType === 1) {
         this._attachHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        prevEl.insertAdjacentHTML('afterend', strBufferToStr(buf));
+        prevEl.insertAdjacentHTML('afterend', stringifyStrBuffer(buf));
     }
     else {
         each(
@@ -528,7 +529,7 @@ function forOwnDispose(dontDetach) {
                     beforeEl = document.createElement('script');
                     parentEl.insertBefore(beforeEl, this._getEl());
                 }
-                beforeEl.insertAdjacentHTML('beforebegin', strBufferToStr(newChildBuf));
+                beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
 
                 newChildBuf = null;
                 newChilds = null;

@@ -4,6 +4,7 @@
  */
 
 var autoCloseTags = require('../browser/auto-close-tags');
+var pushStrBuffer = require('../runtime/push-str-buffer');
 
 /**
  * 生成元素标签结束的html

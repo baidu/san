@@ -25,7 +25,6 @@
     // require('./util/next-tick');
     // require('./browser/ie');
     // require('./browser/ie-old-than-9');
-    // require('./util/string-buffer');
     // require('./util/indexed-list');
     // require('./browser/auto-close-tags');
     // require('./util/data-types.js');

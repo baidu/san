@@ -4,6 +4,7 @@
  */
 
 var escapeHTML = require('../runtime/escape-html');
+var pushStrBuffer = require('../runtime/push-str-buffer');
 var each = require('../util/each');
 var createNode = require('./create-node');
 var nodeEvalExpr = require('./node-eval-expr');

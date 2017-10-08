@@ -5,7 +5,6 @@
 
 var ExprType = require('../parser/expr-type');
 var BinaryOp = require('./binary-op');
-var StringBuffer = require('../util/string-buffer');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
 var each = require('../util/each');

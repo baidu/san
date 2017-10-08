@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var ie = require('../browser/ie');
+var ie = require('./ie');
 
 // HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
 //       为了保证script的stump存在，前面加个零宽特殊字符
