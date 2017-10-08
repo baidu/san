@@ -1,15 +1,14 @@
 /**
- * @file 初始化 element 节点
+ * @file 初始化 element 节点的 tagName 处理
  * @author errorrik(errorrik@gmail.com)
  */
 
+var ieOldThan9 = require('../browser/ie-old-than-9');
 
 /**
- * 初始化 text 节点
+ * 初始化 element 节点的 tagName 处理
  *
- * @param {Object} options 初始化参数
- * @param {ANode} options.aNode 抽象信息节点对象
- * @param {Component=} options.owner 所属的组件对象
+ * @param {Object} node 节点对象
  */
 function elementInitTagName(node) {
     node.tagName = node.tagName || node.aNode.tagName || 'div';

@@ -1,17 +1,18 @@
+/**
+ * @file 销毁释放元素
+ * @author errorrik(errorrik@gmail.com)
+ */
 
 var elementDispose = require('./element-dispose');
 
 /**
- * 将元素attach到页面
+ * 销毁释放元素
  *
- * @param {HTMLElement} parentEl 要添加到的父元素
- * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ * @param {boolean} dontDetach 是否不要将节点移除
  */
 function elementOwnDispose(dontDetach) {
     if (!this.lifeCycle.is('disposed')) {
         elementDispose(this, dontDetach);
-        nodeDispose(this);
-
         this._toPhase('disposed');
     }
 }

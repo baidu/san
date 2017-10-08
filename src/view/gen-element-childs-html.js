@@ -13,7 +13,7 @@ var nodeEvalExpr = require('./node-eval-expr');
  * 生成子元素html
  *
  * @param {Element} element 元素
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function genElementChildsHTML(element, buf) {
     if (element.tagName === 'textarea') {

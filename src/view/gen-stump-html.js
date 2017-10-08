@@ -3,14 +3,15 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var pushStrBuffer = require('../runtime/push-str-buffer');
+
 /**
  * 创建桩的html
  *
  * @param {Node} node 节点对象
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function genStumpHTML(node, buf) {
-    // buf.push('<script type="text/san" id="' + node.id + '"></script>');
     pushStrBuffer(buf, '<!--san:' + node.id + '-->');
 }
 

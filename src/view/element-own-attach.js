@@ -1,3 +1,8 @@
+/**
+ * @file 将元素attach到页面
+ * @author errorrik(errorrik@gmail.com)
+ */
+
 
 var elementAttach = require('./element-attach');
 var attachings = require('./attachings');

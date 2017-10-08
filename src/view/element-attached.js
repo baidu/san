@@ -1,8 +1,24 @@
+/**
+ * @file 完成元素 attached 后的行为
+ * @author errorrik(errorrik@gmail.com)
+ */
 
+
+
+var each = require('../util/each');
+var bind = require('../util/bind');
+var isBrowser = require('../browser/is-browser');
+
+var eventDeclarationListener = require('./event-declaration-listener');
 var elementAddElEvent = require('./element-add-el-event');
+var isComponent = require('./is-component');
+var getPropHandler = require('./get-prop-handler');
+
 
 /**
- * 完成创建元素DOM后的行为
+ * 完成元素 attached 后的行为
+ *
+ * @param {Object} element 元素节点
  */
 function elementAttached(element) {
     element._toPhase('created');
@@ -39,7 +55,7 @@ function elementAttached(element) {
                             });
                         }
 
-                        elementAddElEvent(element, 
+                        elementAddElEvent(element,
                             ('oninput' in el) ? 'input' : 'propertychange',
                             function (e) {
                                 if (!this.composing) {
@@ -51,7 +67,7 @@ function elementAttached(element) {
                         break;
 
                     case 'select':
-                    elementAddElEvent(element, 'change', outputer);
+                        elementAddElEvent(element, 'change', outputer);
                         break;
                 }
                 break;
@@ -62,7 +78,7 @@ function elementAttached(element) {
                         switch (el.type) {
                             case 'checkbox':
                             case 'radio':
-                            elementAddElEvent(element, 'click', outputer);
+                                elementAddElEvent(element, 'click', outputer);
                         }
                 }
                 break;
@@ -72,7 +88,7 @@ function elementAttached(element) {
 
     // bind events
     each(element.aNode.events, function (eventBind) {
-        elementAddElEvent(element, 
+        elementAddElEvent(element,
             eventBind.name,
             bind(
                 eventDeclarationListener,

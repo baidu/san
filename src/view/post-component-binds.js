@@ -4,6 +4,8 @@
  */
 
 
+var ExprType = require('../parser/expr-type');
+
 /**
  * 将组件的绑定信息进行后处理
  *

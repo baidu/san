@@ -6,9 +6,10 @@
 
 var createANode = require('./create-a-node');
 var Walker = require('./walker');
-var ExprType = require('./expr-type');
 var integrateAttr = require('./integrate-attr');
 var autoCloseTags = require('../browser/auto-close-tags');
+
+/* eslint-disable fecs-max-statements */
 
 /**
  * 解析 template
@@ -104,7 +105,7 @@ function parseTemplate(source) {
                     var parentChild = currentNode.childs[parentChildsLen];
                     if (parentChild.isText) {
                         currentNode.childs.splice(parentChildsLen, 1);
-                        continue
+                        continue;
                     }
 
                     // #[begin] error
@@ -161,5 +162,7 @@ function parseTemplate(source) {
         }
     }
 }
+
+/* eslint-enable fecs-max-statements */
 
 exports = module.exports = parseTemplate;

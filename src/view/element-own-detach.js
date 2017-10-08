@@ -1,4 +1,11 @@
 /**
+ * @file 将元素从页面上移除
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+var removeEl = require('../browser/remove-el');
+
+/**
  * 将元素从页面上移除
  */
 function elementOwnDetach() {

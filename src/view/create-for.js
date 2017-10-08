@@ -8,15 +8,6 @@ var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
-var genStumpHTML = require('./gen-stump-html');
-var NodeType = require('./node-type');
-var createNode = require('./create-node');
-var createNodeByEl = require('./create-node-by-el');
-var getNodeStump = require('./get-node-stump');
-var isEndStump = require('./is-end-stump');
-var getNodeStumpParent = require('./get-node-stump-parent');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
-var warnSetHTML = require('./warn-set-html');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
@@ -27,15 +18,29 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
 var removeEl = require('../browser/remove-el');
-var ieOldThan9 = require('../browser/ie-old-than-9');
+
+var attachings = require('./attachings');
+var genStumpHTML = require('./gen-stump-html');
+var nodeInit = require('./node-init');
+var NodeType = require('./node-type');
+var nodeEvalExpr = require('./node-eval-expr');
+var createNode = require('./create-node');
+var createNodeByEl = require('./create-node-by-el');
+var isEndStump = require('./is-end-stump');
+var getNodeStumpParent = require('./get-node-stump-parent');
+var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
+var nodeOwnCreateStump = require('./node-own-create-stump');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
+var elementDisposeChilds = require('./element-dispose-childs');
+var warnSetHTML = require('./warn-set-html');
+
 
 /**
  * 循环项的数据容器类
  *
  * @inner
  * @class
- * @param {Data} parent 父级数据容器
- * @param {Object} forDirective 循环指令信息
+ * @param {Object} forElement for元素对象
  * @param {*} item 当前项的数据
  * @param {number} index 当前项的索引
  */
@@ -128,9 +133,6 @@ each(
  */
 function createForDirectiveChild(forElement, item, index) {
     var itemScope = new ForItemData(forElement, item, index);
-
-
-
     return createNode(forElement.itemANode, forElement, itemScope);
 }
 
@@ -138,6 +140,7 @@ function createForDirectiveChild(forElement, item, index) {
  * 创建 for 指令元素
  *
  * @param {Object} options 初始化参数
+ * @return {Object}
  */
 function createFor(options) {
     var node = nodeInit(options);
@@ -146,11 +149,11 @@ function createFor(options) {
 
     node.attach = forOwnAttach;
     node.detach = forOwnDetach;
-    node.dispose = forOwnDispose;
+    node.dispose = nodeOwnSimpleDispose;
 
     node._attachHTML = forOwnAttachHTML;
     node._update = forOwnUpdate;
-    node._create = forOwnCreate;
+    node._create = nodeOwnCreateStump;
     node._getEl = nodeOwnGetStumpEl;
 
     // #[begin] reverse
@@ -204,10 +207,10 @@ function createFor(options) {
 }
 
 /**
- * 生成html
+ * attach元素的html
  *
- * @param {StringBuffer} buf html串存储对象
- * @param {boolean} onlyChilds 是否只生成列表本身html，不生成stump部分
+ * @param {Object} buf html串存储对象
+ * @param {boolean} onlyChilds 是否只attach列表本身html，不包括stump部分
  */
 function forOwnAttachHTML(buf, onlyChilds) {
     var me = this;
@@ -244,7 +247,6 @@ function forOwnAttach(parentEl, beforeEl) {
     }
 
     // paint list
-    var parentEl = getNodeStumpParent(this);
     var el = this._getEl() || parentEl.firstChild;
     var prevEl = el && el.previousSibling;
     var buf = createStrBuffer();
@@ -294,7 +296,7 @@ function forOwnAttach(parentEl, beforeEl) {
     }
 
     attachings.done();
-};
+}
 
 
 /**
@@ -306,22 +308,8 @@ function forOwnDetach() {
         removeEl(this._getEl());
         this.lifeCycle.set('detached');
     }
-};
-
-/**
- * 创建元素DOM行为
- */
-function forOwnCreate() {
-    this.el = this.el || document.createComment('san:' + this.id);
 }
 
-function forOwnDispose(dontDetach) {
-    elementDisposeChilds(this, dontDetach);
-    if (!dontDetach) {
-        removeEl(this._getEl());
-    }
-    nodeDispose(this);
-}
 
 
 /**
@@ -329,7 +317,7 @@ function forOwnDispose(dontDetach) {
  *
  * @param {Array} changes 数据变化信息
  */
- function forOwnUpdate(changes) {
+function forOwnUpdate(changes) {
     var childsChanges = [];
     var oldChildsLen = this.childs.length;
     each(this.childs, function () {

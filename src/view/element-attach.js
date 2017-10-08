@@ -1,11 +1,17 @@
-
+/**
+ * @file 将元素attach到页面
+ * @author errorrik(errorrik@gmail.com)
+ */
 
 var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
+var genElementChildsHTML = require('./gen-element-childs-html');
+var warnSetHTML = require('./warn-set-html');
 
 /**
- * 将元素attach到页面的行为
+ * 将元素attach到页面
  *
+ * @param {Object} element 元素节点
  * @param {HTMLElement} parentEl 要添加到的父元素
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */

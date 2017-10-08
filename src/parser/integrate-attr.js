@@ -9,6 +9,7 @@ var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var ExprType = require('./expr-type');
+var getPropHandler = require('../view/get-prop-handler');
 
 /**
  * 解析抽象节点属性

@@ -1,13 +1,22 @@
+/**
+ * @file 销毁元素节点
+ * @author errorrik(errorrik@gmail.com)
+ */
 
 var elementDisposeChilds = require('./element-dispose-childs');
 var nodeDispose = require('./node-dispose');
+var un = require('../browser/un');
 
 /**
- * 销毁释放元素的行为
+ * 销毁元素节点
+ *
+ * @param {Object} element 要销毁的元素节点
+ * @param {boolean} dontDetach 是否不要将节点从DOM移除
  */
 function elementDispose(element, dontDetach) {
     elementDisposeChilds(element, true);
 
+    /* eslint-disable guard-for-in */
     // el 事件解绑
     for (var key in element._elFns) {
         var nameListeners = element._elFns[key];
@@ -18,6 +27,7 @@ function elementDispose(element, dontDetach) {
         }
     }
     element._elFns = null;
+    /* eslint-enable guard-for-in */
 
 
     if (!dontDetach) {
@@ -34,4 +44,9 @@ function elementDispose(element, dontDetach) {
 
     // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
     element.slotChilds = null;
+
+    nodeDispose(element);
 }
+
+
+exports = module.exports = elementDispose;

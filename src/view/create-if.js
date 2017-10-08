@@ -3,34 +3,35 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var each = require('../util/each');
 var empty = require('../util/empty');
-var inherits = require('../util/inherits');
 var IndexedList = require('../util/indexed-list');
-var genStumpHTML = require('./gen-stump-html');
-var NodeType = require('./node-type');
-var createNode = require('./create-node');
-var createNodeByEl = require('./create-node-by-el');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
-var ieOldThan9 = require('../browser/ie-old-than-9');
-var removeEl = require('../browser/remove-el');
-var escapeHTML = require('../runtime/escape-html');
-var ExprType = require('../parser/expr-type');
-var getNodeStump = require('./get-node-stump');
+var genStumpHTML = require('./gen-stump-html');
+var nodeInit = require('./node-init');
+var NodeType = require('./node-type');
+var nodeEvalExpr = require('./node-eval-expr');
+var createNode = require('./create-node');
+var createNodeByEl = require('./create-node-by-el');
 var getNodeStumpParent = require('./get-node-stump-parent');
+var elementUpdateChilds = require('./element-update-childs');
+var elementDisposeChilds = require('./element-dispose-childs');
+var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * 创建 if 指令元素
  *
  * @param {Object} options 初始化参数
+ * @return {Object}
  */
 function createIf(options) {
     var node = nodeInit(options);
     node.childs = [];
     node._type = NodeType.IF;
 
-    node.dispose = forOwnDispose;
+    node.dispose = nodeOwnSimpleDispose;
 
     node._getEl = nodeOwnGetStumpEl;
     node._attachHTML = ifOwnAttachHTML;
@@ -39,7 +40,7 @@ function createIf(options) {
     // #[begin] reverse
     node._pushChildANode = empty;
     // #[end]
-    
+
     // #[begin] reverse
     if (options.el) {
         if (options.el.nodeType === 8) {
@@ -50,7 +51,7 @@ function createIf(options) {
             node.elseIndex = -1;
             var el = document.createComment('san:' + this.id);
             options.el.parentNode.insertBefore(el, options.el.nextSibling);
-            
+
 
             options.el.removeAttribute('san-if');
             options.el.removeAttribute('s-if');
@@ -97,10 +98,9 @@ function createIfDirectiveChild(directiveANode, mainIf) {
 
 
 /**
- * 生成html
+ * attach元素的html
  *
- *
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function ifOwnAttachHTML(buf) {
     var me = this;

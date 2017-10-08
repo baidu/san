@@ -3,8 +3,9 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-
+var each = require('../util/each');
 var compileExprSource = require('./compile-expr-source');
+
 
 // #[begin] ssr
 /**
@@ -96,23 +97,20 @@ CompileSourceBuffer.prototype.joinExpr = function (expr) {
  *
  * @return {string}
  */
-CompileSourceBuffer.prototype.toCode = function (str) {
+CompileSourceBuffer.prototype.toCode = function () {
     var code = [];
     var temp = '';
-    var inStrLiteral = 0;
 
     function genStrLiteral() {
         if (temp) {
             code.push('html += ' + compileExprSource.stringLiteralize(temp) + ';');
         }
 
-        inStrLiteral = 0;
         temp = '';
     }
 
     each(this.segs, function (seg) {
         if (seg.type === 'JOIN_STRING') {
-            inStrLiteral = 1;
             temp += seg.str;
             return;
         }

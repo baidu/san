@@ -18,15 +18,16 @@ function warnSetHTML(el) {
     // some html elements cannot set innerHTML in old ie
     // see: https://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
     if (/^(col|colgroup|frameset|style|table|tbody|tfoot|thead|tr|select)$/i.test(el.tagName)) {
-        var message = '[SAN WARNING] set html for element "' + el.tagName 
+        var message = '[SAN WARNING] set html for element "' + el.tagName
             + '" may cause an error in old IE';
-
+        /* eslint-disable no-console */
         if (typeof console === 'object' && console.warn) {
             console.warn(message);
         }
         else {
             throw new Error(message);
         }
+        /* eslint-enable no-console */
     }
 }
 // #[end]

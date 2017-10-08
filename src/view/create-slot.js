@@ -3,20 +3,22 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var inherits = require('../util/inherits');
-var each = require('../util/each');
 var empty = require('../util/empty');
-var isComponent = require('./is-component');
-var Component = require('./component');
 var createANode = require('../parser/create-a-node');
 var NodeType = require('./node-type');
 var isEndStump = require('./is-end-stump');
 var genElementChildsHTML = require('./gen-element-childs-html');
+var nodeInit = require('./node-init');
+var nodeDispose = require('./node-dispose');
+var createNodeByEl = require('./create-node-by-el');
+var elementDisposeChilds = require('./element-dispose-childs');
+var elementOwnPushChildANode = require('./element-own-push-child-anode');
 
 /**
  * 创建 slot 元素
  *
  * @param {Object} options 初始化参数
+ * @return {Object}
  */
 function createSlot(options) {
     var literalOwner = options.owner;
@@ -109,17 +111,17 @@ function createSlot(options) {
 
 
 /**
- * 生成元素的html
+ * attach元素的html
  *
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
     genElementChildsHTML(this, buf);
 }
 
 /**
- * 获取节点对应的主元素
- * slot是片段的管理，没有主元素，所以直接返回爹的主元素，不持有引用
+ * 获取 slot 对应的主元素
+ * slot 是片段的管理，没有主元素，所以直接返回爹的主元素，不持有引用
  *
  * @return {HTMLElement}
  */
@@ -128,7 +130,7 @@ function slotOwnGetEl() {
 }
 
 /**
- * 销毁释放元素行为
+ * 销毁释放 slot
  */
 function slotOwnDispose() {
     elementDisposeChilds(this);

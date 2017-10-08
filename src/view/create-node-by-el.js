@@ -3,14 +3,16 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var parseTemplate = require('../parser/parse-template');
+var parseANodeFromEl = require('../parser/parse-anode-from-el');
+
+var NodeType = require('./node-type');
 var isComponent = require('./is-component');
 var createText = require('./create-text');
 var createElement = require('./create-element');
 var createIf = require('./create-if');
 var createFor = require('./create-for');
 var createSlot = require('./create-slot');
-var Component = require('./component');
-var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
 // #[begin] reverse
 /**
@@ -53,7 +55,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
                 case 'if':
                     return createIf(option);
-                
+
 
                 case 'else':
                 case 'elif':
@@ -63,12 +65,14 @@ function createNodeByEl(el, parent, elWalker, scope) {
                 case 'data':
                     // fill component data
                     var data = (new Function(
-                        'return ' + option.stumpText.replace(/^[\s\n]*/ ,'')
+                        'return ' + option.stumpText.replace(/^[\s\n]*/, '')
                     ))();
 
+                    /* eslint-disable guard-for-in */
                     for (var key in data) {
                         owner.data.set(key, data[key]);
                     }
+                    /* eslint-enable guard-for-in */
 
                     return;
             }
@@ -102,7 +106,7 @@ function createNodeByEl(el, parent, elWalker, scope) {
     if (childANode.directives.get('else')) {
         return createNodeByElseEl(option, 'else');
     }
-    
+
     if (childANode.directives.get('elif')) {
         return createNodeByElseEl(option, 'elif');
     }
@@ -126,7 +130,7 @@ function createNodeByElseEl(option, type) {
         switch (ifNode._type) {
             case NodeType.TEXT:
                 continue matchif;
-            
+
             case NodeType.IF:
                 if (!ifNode.aNode.elses) {
                     ifNode.aNode.elses = [];
@@ -156,7 +160,7 @@ function createNodeByElseStump(option, type) {
         switch (ifNode._type) {
             case NodeType.TEXT:
                 continue matchif;
-            
+
             case NodeType.IF:
                 if (!ifNode.aNode.elses) {
                     ifNode.aNode.elses = [];

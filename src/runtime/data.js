@@ -128,10 +128,11 @@ Data.prototype.get = function (expr) {
  * 数据对象变更操作
  *
  * @inner
- * @param {Object|Array} 要变更的源数据
- * @param {Array} 属性路径
- * @param {*} 变更属性值
- * @return {*} 变更后的新数据对象
+ * @param {Object|Array} source 要变更的源数据
+ * @param {Array} exprPaths 属性路径
+ * @param {*} value 变更属性值
+ * @param {Data} data 对应的Data对象
+ * @return {*} 变更后的新数据
  */
 function immutableSet(source, exprPaths, value, data) {
     if (exprPaths.length === 0) {
@@ -139,19 +140,20 @@ function immutableSet(source, exprPaths, value, data) {
     }
 
     var prop = evalExpr(exprPaths[0], data);
+    var result;
 
     if (source instanceof Array) {
         var index = +prop;
 
         if (!isNaN(index)) {
-            var result = source.slice(0);
+            result = source.slice(0);
             result[index] = immutableSet(result[index], exprPaths.slice(1), value, data);
 
             return result;
         }
     }
     else if (typeof source === 'object') {
-        var result = {};
+        result = {};
 
         for (var key in source) {
             if (key !== prop) {

@@ -1,15 +1,40 @@
+/**
+ * @file 创建 element 节点
+ * @author errorrik(errorrik@gmail.com)
+ */
 
+
+var each = require('../util/each');
+var IndexedList = require('../util/indexed-list');
+var changeExprCompare = require('../runtime/change-expr-compare');
+var attachings = require('./attachings');
+var parseANodeFromEl = require('../parser/parse-anode-from-el');
+var fromElInitChilds = require('./from-el-init-childs');
+var isDataChangeByElement = require('./is-data-change-by-element');
+var nodeInit = require('./node-init');
+var nodeEvalExpr = require('./node-eval-expr');
+var elementUpdateChilds = require('./element-update-childs');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
+var elementOwnGetEl = require('./element-own-get-el');
 var elementAttached = require('./element-attached');
 var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
+var warnSetHTML = require('./warn-set-html');
 
+/**
+ * 创建 element 节点
+ *
+ * @param {Object} options 初始化参数
+ * @param {ANode} options.aNode 抽象信息节点对象
+ * @param {Component=} options.owner 所属的组件对象
+ * @return {Object}
+ */
 function createElement(options) {
     var node = nodeInit(options);
 
@@ -38,6 +63,13 @@ function createElement(options) {
             fromElInitChilds(node);
         }
         node.el.id = node.id;
+
+        node.dynamicProps = new IndexedList();
+        node.aNode.props.each(function (prop) {
+            if (!prop.attr) {
+                node.dynamicProps.push(prop);
+            }
+        });
         attachings.add(node);
     }
     // #[end]
@@ -91,18 +123,18 @@ function elementOwnUpdate(changes) {
     }
 }
 
+/**
+ * 执行完成attached状态的行为
+ */
 function elementOwnAttached() {
     elementAttached(this);
 }
 
-function elementOwnGetEl() {
-    if (!this.el) {
-        this.el = document.getElementById(this.id);
-    }
-
-    return this.el;
-}
-
+/**
+ * 使节点到达相应的生命周期
+ *
+ * @param {string} name 生命周期名称
+ */
 function elementOwnToPhase(name) {
     this.lifeCycle.set(name);
 }

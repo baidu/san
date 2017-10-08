@@ -8,7 +8,6 @@ var isComponent = require('./is-component');
 var createText = require('./create-text');
 var createElement = require('./create-element');
 var createSlot = require('./create-slot');
-var Component = require('./component');
 var createFor = require('./create-for');
 var createIf = require('./create-if');
 

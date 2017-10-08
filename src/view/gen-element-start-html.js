@@ -3,16 +3,18 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var IndexedList = require('../util/indexed-list');
 var evalExpr = require('../runtime/eval-expr');
 var pushStrBuffer = require('../runtime/push-str-buffer');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
+var nodeEvalExpr = require('./node-eval-expr');
 
 /**
  * 生成元素标签起始的html
  *
  * @param {Element} element 元素
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function genElementStartHTML(element, buf) {
     if (!element.tagName) {

@@ -11,15 +11,13 @@ var pushStrBuffer = require('../runtime/push-str-buffer');
  *
  * @inner
  * @param {Element} element 元素
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function genElementEndHTML(element, buf) {
     var tagName = element.tagName;
 
     if (!autoCloseTags[tagName]) {
-        pushStrBuffer(buf, '</');
-        pushStrBuffer(buf, tagName);
-        pushStrBuffer(buf, '>');
+        pushStrBuffer(buf, '</' + tagName + '>');
     }
 }
 

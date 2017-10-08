@@ -9,7 +9,7 @@ var IndexedList = require('../util/indexed-list');
 /**
  * 将 binds 的 name 从 kebabcase 转换成 camelcase
  *
- * @paran {IndexedList} binds binds集合
+ * @param {IndexedList} binds binds集合
  * @return {IndexedList}
  */
 function camelComponentBinds(binds) {

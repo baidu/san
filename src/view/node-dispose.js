@@ -1,5 +1,5 @@
 /**
- * @file 销毁节点
+ * @file 销毁节点，清空节点上的无用成员
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -18,6 +18,5 @@ function nodeDispose(node) {
     node.parentComponent = null;
     node.childs = null;
 }
-
 
 exports = module.exports = nodeDispose;

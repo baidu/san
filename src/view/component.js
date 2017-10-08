@@ -3,24 +3,25 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var inherits = require('../util/inherits');
 var bind = require('../util/bind');
 var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
-var empty = require('../util/empty');
 var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
 var parseText = require('../parser/parse-text');
 var parseTemplate = require('../parser/parse-template');
+var parseANodeFromEl = require('../parser/parse-anode-from-el');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
+
 var defineComponent = require('./define-component');
+var attachings = require('./attachings');
 var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
@@ -30,14 +31,19 @@ var camelComponentBinds = require('./camel-component-binds');
 var nodeEvalExpr = require('./node-eval-expr');
 var NodeType = require('./node-type');
 var nodeInit = require('./node-init');
+var elementInitProps = require('./element-init-props');
+var elementInitTagName = require('./element-init-tag-name');
+var elementAttached = require('./element-attached');
+var elementDispose = require('./element-dispose');
 var elementUpdateChilds = require('./element-update-childs');
 var elementSetElProp = require('./element-set-el-prop');
+var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
-var elementOwnDispose = require('./element-own-dispose');
+var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
-var attachings = require('./attachings');
+
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -600,6 +606,8 @@ Component.prototype.watch = function (dataName, listener) {
 
 /**
  * 组件销毁的行为
+ *
+ * @param {boolean} dontDetach 是否不要将节点从DOM移除
  */
 Component.prototype.dispose = function (dontDetach) {
     if (!this.lifeCycle.is('disposed')) {
@@ -617,16 +625,24 @@ Component.prototype.dispose = function (dontDetach) {
     }
 };
 
+/**
+ * 完成组件 attached 后的行为
+ *
+ * @param {Object} element 元素节点
+ */
 Component.prototype._attached = function () {
     this._getEl();
     elementAttached(this);
 };
 
-Component.prototype._attachHTML = elementOwnAttachHTML;
-Component.prototype._create = elementOwnCreate;
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;
+Component.prototype._attachHTML = elementOwnAttachHTML;
+Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
+
+// #[begin] reverse
 Component.prototype._pushChildANode = elementOwnPushChildANode;
+// #[end]
 
 exports = module.exports = Component;

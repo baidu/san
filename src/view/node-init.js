@@ -4,6 +4,7 @@
  */
 
 var guid = require('../util/guid');
+var isComponent = require('./is-component');
 
 /**
  * 初始化节点
@@ -11,6 +12,8 @@ var guid = require('../util/guid');
  * @param {Object} options 初始化参数
  * @param {ANode} options.aNode 抽象信息节点对象
  * @param {Component=} options.owner 所属的组件对象
+ * @param {Object?} node 节点对象，允许为空。空时将options作为节点对象，避免重复创建
+ * @return {Object}
  */
 function nodeInit(options, node) {
     node = node || options || {};

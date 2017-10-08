@@ -3,14 +3,17 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var ExprType = require('../parser/expr-type');
+
+var each = require('../util/each');
+var camel2kebab = require('../util/camel2kebab');
+var IndexedList = require('../util/indexed-list');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
+var escapeHTML = require('../runtime/escape-html');
+var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
-var each = require('../util/each');
-var camel2kebab = require('../util/camel2kebab');
 var serializeANode = require('./serialize-a-node');
 
 // #[begin] ssr
@@ -37,17 +40,220 @@ function serializeStumpEnd(type) {
 }
 
 /**
+ * element 的编译方法集合对象
+ *
+ * @inner
+ */
+var elementSourceCompiler = {
+
+    /* eslint-disable max-params */
+    /**
+     * 编译元素标签头
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {string} tagName 标签名
+     * @param {IndexedList} props 属性列表
+     * @param {IndexedList} binds 绑定信息列表
+     * @param {Array} events 绑定事件列表
+     * @param {Object} aNode 对应的抽象节点对象
+     * @param {string?} extraProp 额外的属性串
+     * @param {boolean?} isComponent 是否组件
+     */
+    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent) {
+        sourceBuffer.joinString('<' + tagName);
+        sourceBuffer.joinString(extraProp || '');
+
+        binds.each(function (bindInfo) {
+            if (isComponent) {
+                sourceBuffer.joinString(
+                    ' prop-' + camel2kebab(bindInfo.name)
+                        + (bindInfo.raw ? '="' + bindInfo.raw + '"' : '')
+                );
+            }
+            else if (bindInfo.raw) {
+                sourceBuffer.joinString(
+                    ' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"'
+                );
+            }
+
+        });
+
+        var htmlDirective = aNode.directives.get('html');
+        if (htmlDirective) {
+            sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
+        }
+
+        each(events, function (event) {
+            sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
+        });
+
+        props.each(function (prop) {
+            if (prop.name === 'value') {
+                switch (tagName) {
+                    case 'textarea':
+                        return;
+
+                    case 'select':
+                        sourceBuffer.addRaw('$selectValue = '
+                            + compileExprSource.expr(prop.expr)
+                            + ' || "";'
+                        );
+                        return;
+
+                    case 'option':
+                        sourceBuffer.addRaw('$optionValue = '
+                            + compileExprSource.expr(prop.expr)
+                            + ';'
+                        );
+                        // value
+                        sourceBuffer.addRaw('if ($optionValue != null) {');
+                        sourceBuffer.joinRaw('" value=\\"" + $optionValue + "\\""');
+                        sourceBuffer.addRaw('}');
+
+                        // selected
+                        sourceBuffer.addRaw('if ($optionValue === $selectValue) {');
+                        sourceBuffer.joinString(' selected');
+                        sourceBuffer.addRaw('}');
+                        return;
+                }
+            }
+
+            switch (prop.name) {
+                case 'draggable':
+                case 'readonly':
+                case 'disabled':
+                case 'mutiple':
+                    if (prop.raw === '') {
+                        sourceBuffer.joinString(' ' + prop.name);
+                    }
+                    else {
+                        sourceBuffer.joinRaw('boolAttrFilter("' + prop.name + '", '
+                            + compileExprSource.expr(prop.expr)
+                            + ')'
+                        );
+                    }
+                    break;
+
+                case 'checked':
+                    if (tagName === 'input') {
+                        var valueProp = props.get('value');
+                        var valueCode = compileExprSource.expr(valueProp.expr);
+
+                        if (valueProp) {
+                            switch (props.get('type').raw) {
+                                case 'checkbox':
+                                    sourceBuffer.addRaw('if (contains('
+                                        + compileExprSource.expr(prop.expr)
+                                        + ', '
+                                        + valueCode
+                                        + ')) {'
+                                    );
+                                    sourceBuffer.joinString(' checked');
+                                    sourceBuffer.addRaw('}');
+                                    break;
+
+                                case 'radio':
+                                    sourceBuffer.addRaw('if ('
+                                        + compileExprSource.expr(prop.expr)
+                                        + ' === '
+                                        + valueCode
+                                        + ') {'
+                                    );
+                                    sourceBuffer.joinString(' checked');
+                                    sourceBuffer.addRaw('}');
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    if (prop.expr.value) {
+                        sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
+                    }
+                    else {
+                        sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
+                            + compileExprSource.expr(prop.expr)
+                            + ')'
+                        );
+                    }
+                    break;
+            }
+        });
+
+        sourceBuffer.joinString('>');
+    },
+    /* eslint-enable max-params */
+
+    /**
+     * 编译元素闭合
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {string} tagName 标签名
+     */
+    tagEnd: function (sourceBuffer, tagName) {
+        if (!autoCloseTags[tagName]) {
+            sourceBuffer.joinString('</' + tagName + '>');
+        }
+
+        if (tagName === 'select') {
+            sourceBuffer.addRaw('$selectValue = null;');
+        }
+
+        if (tagName === 'option') {
+            sourceBuffer.addRaw('$optionValue = null;');
+        }
+    },
+
+    /**
+     * 编译元素内容
+     *
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {ANode} aNode 元素的抽象节点信息
+     * @param {Component} owner 所属组件实例环境
+     */
+    inner: function (sourceBuffer, aNode, owner) {
+        // inner content
+        if (aNode.tagName === 'textarea') {
+            var valueProp = aNode.props.get('value');
+            if (valueProp) {
+                sourceBuffer.joinRaw('escapeHTML('
+                    + compileExprSource.expr(valueProp.expr)
+                    + ')'
+                );
+            }
+
+            return;
+        }
+
+        var htmlDirective = aNode.directives.get('html');
+        if (htmlDirective) {
+            sourceBuffer.joinExpr(htmlDirective.value);
+        }
+        else {
+            /* eslint-disable no-use-before-define */
+            each(aNode.childs, function (aNodeChild) {
+                sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
+            });
+            /* eslint-enable no-use-before-define */
+        }
+    }
+};
+
+/**
  * ANode 的编译方法集合对象
  *
  * @inner
  */
 var aNodeCompiler = {
+
     /**
      * 编译节点
      *
      * @param {ANode} aNode 抽象节点
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
      */
     compile: function (aNode, sourceBuffer, owner, extra) {
         extra = extra || {};
@@ -163,7 +369,7 @@ var aNodeCompiler = {
          * 清洗 if aNode，返回纯净无 if 指令的 aNode
          *
          * @param {ANode} ifANode 节点对象
-         * @return {ANode} 
+         * @return {ANode}
          */
         function rinseANode(ifANode) {
             var result = createANode({
@@ -269,6 +475,7 @@ var aNodeCompiler = {
      * @param {ANode} aNode 节点对象
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
      */
     compileElement: function (aNode, sourceBuffer, owner, extra) {
         extra = extra || {};
@@ -302,6 +509,7 @@ var aNodeCompiler = {
      * @param {ANode} aNode 节点对象
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
      * @param {Function} extra.ComponentClass 对应组件类
      */
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
@@ -331,198 +539,7 @@ var aNodeCompiler = {
     }
 };
 
-/**
- * element 的编译方法集合对象
- *
- * @inner
- */
-var elementSourceCompiler = {
-    /**
-     * 编译元素标签头
-     *
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {string} tagName 标签名
-     * @param {IndexedList} props 属性列表
-     * @param {IndexedList} binds 绑定信息列表
-     * @param {Array} events 绑定事件列表
-     * @param {string?} extraProp 额外的属性串
-     * @param {boolean?} isComponent 是否组件
-     */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent) {
-        sourceBuffer.joinString('<' + tagName);
-        sourceBuffer.joinString(extraProp || '');
-
-        binds.each(function (bindInfo) {
-            if (isComponent) {
-                sourceBuffer.joinString(
-                    ' prop-' + camel2kebab(bindInfo.name)
-                        + (bindInfo.raw ? '="' + bindInfo.raw + '"' : '')
-                );
-            }
-            else if (bindInfo.raw) {
-                sourceBuffer.joinString(
-                    ' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"'
-                );
-            }
-
-        });
-
-        var htmlDirective = aNode.directives.get('html');
-        if (htmlDirective) {
-            sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
-        }
-
-        each(events, function (event) {
-            sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
-        });
-
-        props.each(function (prop) {
-            if (prop.name === 'value') {
-                switch (tagName) {
-                    case 'textarea':
-                        return;
-
-                    case 'select':
-                        sourceBuffer.addRaw('$selectValue = '
-                            + compileExprSource.expr(prop.expr)
-                            + ' || "";'
-                        );
-                        return;
-
-                    case 'option':
-                        sourceBuffer.addRaw('$optionValue = '
-                            + compileExprSource.expr(prop.expr)
-                            + ';'
-                        );
-                        // value
-                        sourceBuffer.addRaw('if ($optionValue != null) {');
-                        sourceBuffer.joinRaw('" value=\\"" + $optionValue + "\\""');
-                        sourceBuffer.addRaw('}');
-
-                        // selected
-                        sourceBuffer.addRaw('if ($optionValue === $selectValue) {');
-                        sourceBuffer.joinString(' selected');
-                        sourceBuffer.addRaw('}');
-                        return;
-                }
-            }
-
-            switch (prop.name) {
-                case 'draggable':
-                case 'readonly':
-                case 'disabled':
-                case 'mutiple':
-                    if (prop.raw === '') {
-                        sourceBuffer.joinString(' ' + prop.name);
-                    }
-                    else {
-                        sourceBuffer.joinRaw('boolAttrFilter("' + prop.name + '", '
-                            + compileExprSource.expr(prop.expr)
-                            + ')'
-                        );
-                    }
-                    break;
-
-                case 'checked':
-                    if (tagName === 'input') {
-                        var valueProp = props.get('value');
-                        var valueCode = compileExprSource.expr(valueProp.expr);
-
-                        if (valueProp) {
-                            switch (props.get('type').raw) {
-                                case 'checkbox':
-                                    sourceBuffer.addRaw('if (contains('
-                                        + compileExprSource.expr(prop.expr)
-                                        + ', '
-                                        + valueCode
-                                        +')) {');
-                                    sourceBuffer.joinString(' checked');
-                                    sourceBuffer.addRaw('}');
-                                    break;
-
-                                case 'radio':
-                                    sourceBuffer.addRaw('if ('
-                                        + compileExprSource.expr(prop.expr)
-                                        + ' === '
-                                        + valueCode
-                                        +') {');
-                                    sourceBuffer.joinString(' checked');
-                                    sourceBuffer.addRaw('}');
-                                    break;
-                            }
-                        }
-                    }
-                    break;
-
-                default:
-                    if (prop.expr.value) {
-                        sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
-                    }
-                    else {
-                        sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
-                            + compileExprSource.expr(prop.expr)
-                            + ')'
-                        );
-                    }
-                    break;
-            }
-        });
-
-        sourceBuffer.joinString('>');
-    },
-
-    /**
-     * 编译元素闭合
-     *
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {string} tagName 标签名
-     */
-    tagEnd: function (sourceBuffer, tagName) {
-        if (!autoCloseTags[tagName]) {
-            sourceBuffer.joinString('</' + tagName + '>');
-        }
-
-        if (tagName === 'select') {
-            sourceBuffer.addRaw('$selectValue = null;');
-        }
-
-        if (tagName === 'option') {
-            sourceBuffer.addRaw('$optionValue = null;');
-        }
-    },
-
-    /**
-     * 编译元素内容
-     *
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {ANode} aNode 元素的抽象节点信息
-     * @param {Component} owner 所属组件实例环境
-     */
-    inner: function (sourceBuffer, aNode, owner) {
-        // inner content
-        if (aNode.tagName === 'textarea') {
-            var valueProp = aNode.props.get('value');
-            if (valueProp) {
-                sourceBuffer.joinRaw('escapeHTML('
-                    + compileExprSource.expr(valueProp.expr)
-                    + ')'
-                );
-            }
-
-            return;
-        }
-
-        var htmlDirective = aNode.directives.get('html');
-        if (htmlDirective) {
-            sourceBuffer.joinExpr(htmlDirective.value);
-        }
-        else {
-            each(aNode.childs, function (aNodeChild) {
-                sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
-            });
-        }
-    }
-};
+/* eslint-disable guard-for-in */
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
@@ -533,8 +550,6 @@ var elementSourceCompiler = {
  * @param {string?} extraProp 额外的属性串
  */
 function compileComponentSource(sourceBuffer, component, extraProp) {
-    var tagName = component.tagName;
-
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
@@ -590,7 +605,7 @@ var stringifier = {
 
         for (var key in source) {
             if (prefixComma) {
-                result += ','
+                result += ',';
             }
             prefixComma = 1;
 
@@ -606,7 +621,7 @@ var stringifier = {
 
         each(source, function (value) {
             if (prefixComma) {
-                result += ','
+                result += ',';
             }
             prefixComma = 1;
 
@@ -621,7 +636,7 @@ var stringifier = {
     },
 
     date: function (source) {
-        return 'new Date(' + source.getTime() + ')'
+        return 'new Date(' + source.getTime() + ')';
     },
 
     any: function (source) {
@@ -687,6 +702,7 @@ function genComponentContextCode(component) {
         '},'
     );
 
+    /* eslint-disable no-redeclare */
     // computed obj
     code.push('computed: {');
     var computedCode = [];
@@ -698,7 +714,7 @@ function genComponentContextCode(component) {
                 + computed.toString().replace(
                     /this.data.get\(([^\)]+)\)/g,
                     function (match, exprLiteral) {
-                        var exprStr = (new Function("return " + exprLiteral))();
+                        var exprStr = (new Function('return ' + exprLiteral))();
                         var expr = parseExpr(exprStr);
 
                         return compileExprSource.expr(expr);
@@ -721,6 +737,7 @@ function genComponentContextCode(component) {
     }
     code.push(computedCode.join(','));
     code.push('],');
+    /* eslint-enable no-redeclare */
 
     // data
     code.push('data: ' + stringifier.any(component.data.get()) + ',');
@@ -731,6 +748,11 @@ function genComponentContextCode(component) {
 
     return code.join('\n');
 }
+
+/* eslint-enable guard-for-in */
+
+/* eslint-disable no-unused-vars */
+/* eslint-disable fecs-camelcase */
 
 /**
  * 组件编译的模板函数
@@ -750,12 +772,8 @@ function componentCompilePreCode() {
         return target;
     }
 
-    function each(array, iterator, thisArg) {
+    function each(array, iterator) {
         if (array && array.length > 0) {
-            if (thisArg) {
-                iterator = bind(iterator, thisArg);
-            }
-
             for (var i = 0, l = array.length; i < l; i++) {
                 if (iterator(array[i], i) === false) {
                     break;
@@ -864,7 +882,7 @@ function componentCompilePreCode() {
 
             Object.keys(source).forEach(function (key) {
                 if (prefixComma) {
-                    result += ','
+                    result += ',';
                 }
                 prefixComma = 1;
 
@@ -880,7 +898,7 @@ function componentCompilePreCode() {
 
             each(source, function (value) {
                 if (prefixComma) {
-                    result += ','
+                    result += ',';
                 }
                 prefixComma = 1;
 
@@ -895,7 +913,7 @@ function componentCompilePreCode() {
         },
 
         date: function (source) {
-            return 'new Date(' + source.getTime() + ')'
+            return 'new Date(' + source.getTime() + ')';
         },
 
         any: function (source) {
@@ -929,6 +947,8 @@ function componentCompilePreCode() {
         }
     };
 }
+/* eslint-enable no-unused-vars */
+/* eslint-enable fecs-camelcase */
 
 /**
  * 将组件编译成 render 方法的 js 源码

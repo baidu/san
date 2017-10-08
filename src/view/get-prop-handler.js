@@ -6,6 +6,8 @@
 var contains = require('../util/contains');
 var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
+var evalExpr = require('../runtime/eval-expr');
+var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 
 
@@ -62,6 +64,12 @@ var defaultElementPropHandler = {
     }
 };
 
+/**
+ * 默认的属性设置变换方法
+ *
+ * @inner
+ * @type {Object}
+ */
 var defaultElementPropHandlers = {
     style: {
         attr: function (element, name, value) {

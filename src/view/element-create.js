@@ -1,22 +1,35 @@
+/**
+ * @file 创建节点对应的 HTMLElement 主元素
+ * @author errorrik(errorrik@gmail.com)
+ */
 
+var createEl = require('../browser/create-el');
+var evalExpr = require('../runtime/eval-expr');
 var nodeEvalExpr = require('./node-eval-expr');
+var isComponent = require('./is-component');
+var getPropHandler = require('./get-prop-handler');
 
-function elementCreate(node) {
-    node.lifeCycle.set('painting');
-    node.el = createEl(node.tagName);
-    node.el.id = node.id;
+/**
+ * 创建节点对应的 HTMLElement 主元素
+ *
+ * @param {Object} element 元素节点
+ */
+function elementCreate(element) {
+    element.lifeCycle.set('painting');
+    element.el = createEl(element.tagName);
+    element.el.id = element.id;
 
-    node.props.each(function (prop) {
-        var value = isComponent(node)
-            ? evalExpr(prop.expr, node.data, node)
-            : nodeEvalExpr(node, prop.expr, 1);
+    element.props.each(function (prop) {
+        var value = isComponent(element)
+            ? evalExpr(prop.expr, element.data, element)
+            : nodeEvalExpr(element, prop.expr, 1);
 
         var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/i.exec(
-            getPropHandler(node, prop.name).attr(node, prop.name, value)
+            getPropHandler(element, prop.name).attr(element, prop.name, value)
         );
 
         if (match) {
-            node.el.setAttribute(match[1], match[3]);
+            element.el.setAttribute(match[1], match[3]);
         }
     });
 }

@@ -4,7 +4,6 @@
  */
 
 var each = require('../util/each');
-var escapeHTML = require('../runtime/escape-html');
 var autoCloseTags = require('../browser/auto-close-tags');
 
 
