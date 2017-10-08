@@ -515,7 +515,7 @@ function forOwnUpdate(changes) {
                 var beforeEl = nextChild && nextChild._getEl();
                 if (!beforeEl) {
                     beforeEl = document.createElement('script');
-                    parentEl.insertBefore(beforeEl, this._getEl());
+                    parentEl.insertBefore(beforeEl, this._getEl() || parentEl.firstChild);
                 }
                 beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
 
@@ -529,7 +529,6 @@ function forOwnUpdate(changes) {
     }
 
     attachings.done();
-    // console.timeEnd()
 }
 
 
