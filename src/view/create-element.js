@@ -100,7 +100,10 @@ function elementOwnUpdate(changes) {
 
         each(changes, function (change) {
             if (!isDataChangeByElement(change, me, prop.name)
-                && changeExprCompare(change.expr, prop.expr, me.scope)
+                && (
+                    changeExprCompare(change.expr, prop.expr, me.scope)
+                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.scope)
+                )
             ) {
                 elementSetElProp(me, prop.name, nodeEvalExpr(me, prop.expr));
                 return false;

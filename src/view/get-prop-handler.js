@@ -91,13 +91,20 @@ var defaultElementPropHandlers = {
 function analInputCheckedState(element, value) {
     var bindValue = element.props.get('value');
     var bindType = element.props.get('type');
+    var bindChecked = element.props.get('checked');
 
     if (bindValue && bindType) {
         switch (bindType.raw) {
             case 'checkbox':
+                if (bindChecked && !bindChecked.hintExpr) {
+                    bindChecked.hintExpr = bindValue.expr;
+                }
                 return contains(value, nodeEvalExpr(element, bindValue.expr));
 
             case 'radio':
+                if (bindChecked && !bindChecked.hintExpr) {
+                    bindChecked.hintExpr = bindValue.expr;
+                }
                 return value === nodeEvalExpr(element, bindValue.expr);
         }
     }

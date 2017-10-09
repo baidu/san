@@ -1016,4 +1016,46 @@ describe("ForDirective", function () {
 
     });
 
+    it("input checked in item", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul>'
+                + '<li s-for="item in list"><input type="checkbox" value="{{item.value}}" checked="{=value=}">{{item.text}}</li>'
+            + '</ul>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                value: ['bar'],
+                list: [
+                    {text: 'foo', value: 'foo'},
+                    {text: 'bar', value: 'bar'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeFalsy();
+        expect(inputs[1].checked).toBeTruthy();
+
+
+        myComponent.data.set('list[1].value', 'bar2');
+        myComponent.data.set('list[0].value', 'bar');
+
+        san.nextTick(function () {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[1].checked).toBeFalsy();
+            expect(inputs[0].checked).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
 });

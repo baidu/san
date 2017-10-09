@@ -507,7 +507,9 @@ Component.prototype._update = function (changes) {
         me.dataChanges = [];
         me.props.each(function (prop) {
             each(dataChanges, function (change) {
-                if (changeExprCompare(change.expr, prop.expr, me.data)) {
+                if (changeExprCompare(change.expr, prop.expr, me.data)
+                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
+                ) {
                     elementSetElProp(
                         me,
                         prop.name,
