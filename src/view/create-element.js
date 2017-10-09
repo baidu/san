@@ -20,6 +20,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnGetEl = require('./element-own-get-el');
+var elementOwnOnEl = require('./element-own-on-el');
 var elementAttached = require('./element-attached');
 var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
@@ -48,6 +49,7 @@ function createElement(options) {
     node._attached = elementOwnAttached;
     node._getEl = elementOwnGetEl;
     node._toPhase = elementOwnToPhase;
+    node._onEl = elementOwnOnEl;
 
     elementInitProps(node);
 

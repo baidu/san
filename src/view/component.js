@@ -38,6 +38,7 @@ var elementDispose = require('./element-dispose');
 var elementUpdateChilds = require('./element-update-childs');
 var elementSetElProp = require('./element-set-el-prop');
 var elementOwnGetEl = require('./element-own-get-el');
+var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
@@ -640,6 +641,7 @@ Component.prototype.detach = elementOwnDetach;
 Component.prototype._attachHTML = elementOwnAttachHTML;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
+Component.prototype._onEl = elementOwnOnEl;
 
 // #[begin] reverse
 Component.prototype._pushChildANode = elementOwnPushChildANode;

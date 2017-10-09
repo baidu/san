@@ -10,7 +10,6 @@ var bind = require('../util/bind');
 var isBrowser = require('../browser/is-browser');
 
 var eventDeclarationListener = require('./event-declaration-listener');
-var elementAddElEvent = require('./element-add-el-event');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 
@@ -43,10 +42,10 @@ function elementAttached(element) {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
-                            elementAddElEvent(element, 'compositionstart', function () {
+                            element._onEl('compositionstart', function () {
                                 this.composing = 1;
                             });
-                            elementAddElEvent(element, 'compositionend', function () {
+                            element._onEl('compositionend', function () {
                                 this.composing = 0;
 
                                 var event = document.createEvent('HTMLEvents');
@@ -55,7 +54,7 @@ function elementAttached(element) {
                             });
                         }
 
-                        elementAddElEvent(element,
+                        element._onEl(
                             ('oninput' in el) ? 'input' : 'propertychange',
                             function (e) {
                                 if (!this.composing) {
@@ -67,7 +66,7 @@ function elementAttached(element) {
                         break;
 
                     case 'select':
-                        elementAddElEvent(element, 'change', outputer);
+                        element._onEl('change', outputer);
                         break;
                 }
                 break;
@@ -78,7 +77,7 @@ function elementAttached(element) {
                         switch (el.type) {
                             case 'checkbox':
                             case 'radio':
-                                elementAddElEvent(element, 'click', outputer);
+                                element._onEl('click', outputer);
                         }
                 }
                 break;
@@ -88,7 +87,7 @@ function elementAttached(element) {
 
     // bind events
     each(element.aNode.events, function (eventBind) {
-        elementAddElEvent(element,
+        element._onEl(
             eventBind.name,
             bind(
                 eventDeclarationListener,
