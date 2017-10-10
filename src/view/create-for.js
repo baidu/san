@@ -324,9 +324,22 @@ function forOwnUpdate(changes) {
         childsChanges.push([]);
     });
 
-    var forDirective = this.aNode.directives.get('for');
-    var parentEl = getNodeStumpParent(this);
+
     var disposeChilds = [];
+    var forDirective = this.aNode.directives.get('for');
+
+    this._getEl();
+    var parentEl = getNodeStumpParent(this);
+    var parentFirstChild = parentEl.firstChild;
+    var parentLastChild = parentEl.lastChild;
+
+    var isOnlyParentChild =
+        oldChildsLen > 0 // 有孩子时
+            && parentFirstChild === this.childs[0]._getEl()
+            && (parentLastChild === this.el || parentLastChild === this.childs[oldChildsLen - 1]._getEl())
+        || oldChildsLen === 0 // 无孩子时
+            && parentFirstChild === this.el
+            && parentLastChild === this.el
 
 
     each(changes, function (change) {
@@ -477,15 +490,13 @@ function forOwnUpdate(changes) {
 
 
     // 清除应该干掉的 child
-    var clearAll = newChildsLen === 0 && this.parent.childs.length === 1;
+    var violentClear = isOnlyParentChild && newChildsLen === 0;
 
     each(disposeChilds, function (child) {
-        var childEl = child._getEl();
-        child.dispose(true);
-        !clearAll && parentEl.removeChild(childEl);
+        child.dispose(violentClear);
     });
 
-    if (clearAll) {
+    if (violentClear) {
         parentEl.innerHTML = '';
         this.el = document.createComment('san:' + this.id);
         parentEl.appendChild(this.el);
@@ -495,36 +506,65 @@ function forOwnUpdate(changes) {
 
     // 对相应的项进行更新
     // 如果不attached则直接创建，如果存在则调用更新函数
-    var newChildBuf;
-    var newChilds;
+    // var newChildBuf;
+    // var newChilds;
 
-    for (var i = 0; i < newChildsLen; i++) {
-        var child = this.childs[i];
+    // for (var i = 0; i < newChildsLen; i++) {
+    //     var child = this.childs[i];
 
-        if (child.lifeCycle.is('attached')) {
-            childsChanges[i].length && child._update(childsChanges[i]);
-        }
-        else {
-            newChilds = newChilds || [];
-            newChilds.push(child);
-            newChildBuf = newChildBuf || createStrBuffer();
-            child._attachHTML(newChildBuf);
+    //     if (child.lifeCycle.is('attached')) {
+    //         childsChanges[i].length && child._update(childsChanges[i]);
+    //     }
+    //     else {
+    //         newChilds = newChilds || [];
+    //         newChilds.push(child);
+    //         newChildBuf = newChildBuf || createStrBuffer();
+    //         child._attachHTML(newChildBuf);
 
-            var nextChild = this.childs[i + 1];
-            if (!nextChild || nextChild.lifeCycle.is('attached')) {
-                var beforeEl = nextChild && nextChild._getEl();
-                if (!beforeEl) {
-                    beforeEl = document.createElement('script');
-                    parentEl.insertBefore(beforeEl, this._getEl() || parentEl.firstChild);
-                }
-                beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
+    //         var nextChild = this.childs[i + 1];
+    //         if (!nextChild || nextChild.lifeCycle.is('attached')) {
+    //             var beforeEl = nextChild && nextChild._getEl();
+    //             if (!beforeEl) {
+    //                 beforeEl = document.createElement('script');
+    //                 parentEl.insertBefore(beforeEl, this._getEl() || parentEl.firstChild);
+    //             }
+    //             beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
 
-                newChildBuf = null;
-                newChilds = null;
-                if (!nextChild) {
-                    parentEl.removeChild(beforeEl);
-                }
+    //             newChildBuf = null;
+    //             newChilds = null;
+    //             if (!nextChild) {
+    //                 parentEl.removeChild(beforeEl);
+    //             }
+    //         }
+    //     }
+    // }
+    // 对相应的项进行更新
+    // 如果不attached则直接创建，如果存在则调用更新函数
+    if (oldChildsLen === 0 && isOnlyParentChild) {
+        var buf = createStrBuffer();
+        each(
+            this.childs,
+            function (child) {
+                child._attachHTML(buf);
             }
+        );
+        parentEl.innerHTML = stringifyStrBuffer(buf);
+        this.el = document.createComment('san:' + this.id);
+        parentEl.appendChild(this.el);
+    }
+    else {
+        var attachStump = this;
+
+        while (newChildsLen--) {
+            var child = this.childs[newChildsLen];
+            if (child.lifeCycle.is('attached')) {
+                childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
+            }
+            else {
+                child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
+            }
+
+            attachStump = child;
         }
     }
 
