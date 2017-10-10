@@ -4,7 +4,7 @@
  */
 
 
-var ExprType = require('../parser/expr-type');
+var postProp = require('../parser/post-prop');
 
 /**
  * 将组件的绑定信息进行后处理
@@ -21,24 +21,7 @@ var ExprType = require('../parser/expr-type');
  */
 function postComponentBinds(binds) {
     binds.each(function (bind) {
-        var expr = bind.expr;
-
-        if (expr.type === ExprType.TEXT) {
-            switch (expr.segs.length) {
-                case 0:
-                    bind.expr = {
-                        type: ExprType.BOOL,
-                        value: true
-                    };
-                    break;
-
-                case 1:
-                    expr = bind.expr = expr.segs[0];
-                    if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
-                        bind.expr = expr.expr;
-                    }
-            }
-        }
+        postProp(bind);
     });
 }
 

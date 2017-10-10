@@ -88,26 +88,44 @@ var defaultElementPropHandlers = {
     disabled: genBoolPropHandler('disabled')
 };
 
-function analInputCheckedState(element, value) {
+var checkedPropHandler = genBoolPropHandler('checked');
+var analInputChecker = {
+    checkbox: contains,
+    radio: function (a, b) {
+        return a === b;
+    }
+};
+
+function analInputCheckedState(element, value, oper) {
     var bindValue = element.props.get('value');
     var bindType = element.props.get('type');
-    var bindChecked = element.props.get('checked');
 
     if (bindValue && bindType) {
-        switch (bindType.raw) {
-            case 'checkbox':
-                if (bindChecked && !bindChecked.hintExpr) {
-                    bindChecked.hintExpr = bindValue.expr;
-                }
-                return contains(value, nodeEvalExpr(element, bindValue.expr));
+        var type = nodeEvalExpr(element, bindType.expr);
 
-            case 'radio':
-                if (bindChecked && !bindChecked.hintExpr) {
-                    bindChecked.hintExpr = bindValue.expr;
-                }
-                return value === nodeEvalExpr(element, bindValue.expr);
+        if (analInputChecker[type]) {
+            var bindChecked = element.props.get('checked');
+            if (!bindChecked.hintExpr) {
+                bindChecked.hintExpr = bindValue.expr;
+            }
+
+            var checkedState = analInputChecker[type](
+                value,
+                nodeEvalExpr(element, bindValue.expr)
+            );
+
+            switch (oper) {
+                case 'attr':
+                    return checkedState ? ' checked="checked"' : '';
+
+                case 'prop':
+                    element.el.checked = checkedState;
+                    return;
+            }
         }
     }
+
+    return checkedPropHandler[oper](element, 'checked', value);
 }
 
 var elementPropHandlers = {
@@ -115,16 +133,11 @@ var elementPropHandlers = {
         mutiple: genBoolPropHandler('mutiple'),
         checked: {
             attr: function (element, name, value) {
-                if (analInputCheckedState(element, value)) {
-                    return ' checked="checked"';
-                }
+                return analInputCheckedState(element, value, 'attr');
             },
 
             prop: function (element, name, value) {
-                var checked = analInputCheckedState(element, value);
-                if (checked != null) {
-                    element.el.checked = checked;
-                }
+                analInputCheckedState(element, value, 'prop');
             },
 
             output: function (element, bindInfo, data) {

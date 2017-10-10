@@ -1019,7 +1019,7 @@ describe("ForDirective", function () {
     it("input checked in item", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul>'
-                + '<li s-for="item in list"><input type="checkbox" value="{{item.value}}" checked="{=value=}">{{item.text}}</li>'
+                + '<li s-for="item in list"><input type="checkbox" value="{{item.value}}" checked="{{value}}">{{item.text}}</li>'
             + '</ul>'
         });
 

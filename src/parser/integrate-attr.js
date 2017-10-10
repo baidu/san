@@ -9,6 +9,7 @@ var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var ExprType = require('./expr-type');
+var postProp = require('./post-prop');
 var getPropHandler = require('../view/get-prop-handler');
 
 /**
@@ -90,6 +91,10 @@ function integrateProp(aNode, name, value) {
 
     if (prop.expr.value != null && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)) {
         prop.attr = getPropHandler(aNode, name).attr(aNode, name, value);
+    }
+
+    if (name === 'checked' && aNode.tagName === 'input') {
+        postProp(prop);
     }
 
     // 这里不能把只有一个插值的属性抽取
