@@ -21,32 +21,22 @@ function genElementStartHTML(element, buf) {
         return;
     }
 
-    var shouldInitDynamicProp;
-    if (!element.dynamicProps) {
-        shouldInitDynamicProp = 1;
-        element.dynamicProps = new IndexedList();
-    }
     pushStrBuffer(buf, '<' + element.tagName + ' id="' + element.id + '"');
 
     element.props.each(function (prop) {
-        if (prop.attr) {
-            pushStrBuffer(buf, prop.attr);
-            return;
-        }
+        var attr = prop.attr;
 
-        if (shouldInitDynamicProp) {
+        if (!attr) {
             element.dynamicProps.push(prop);
+
+            var value = isComponent(element)
+                ? evalExpr(prop.expr, element.data, element)
+                : nodeEvalExpr(element, prop.expr, 1);
+
+            attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
         }
 
-        var value = isComponent(element)
-            ? evalExpr(prop.expr, element.data, element)
-            : nodeEvalExpr(element, prop.expr, 1);
-
-        pushStrBuffer(buf,
-            getPropHandler(element, prop.name)
-                .attr(element, prop.name, value)
-            || ''
-        );
+        pushStrBuffer(buf, attr || '');
     });
 
     pushStrBuffer(buf, '>');

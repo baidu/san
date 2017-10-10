@@ -4,6 +4,7 @@
  */
 
 var LifeCycle = require('./life-cycle');
+var IndexedList = require('../util/indexed-list');
 
 /**
  * 初始化 element 节点的必须属性
@@ -16,6 +17,7 @@ function elementInitProps(element) {
     element.slotChilds = [];
     element._elFns = {};
     element._propVals = {};
+    element.dynamicProps = new IndexedList();
 }
 
 exports = module.exports = elementInitProps;

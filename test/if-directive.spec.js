@@ -168,10 +168,14 @@ describe("IfDirective", function () {
 
     it("render when false, and update soon， interp compat", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><span san-if="{{!cond}}" title="errorrik">errorrik</span></div>'
+            template: '<div><span san-if="{{!cond}}" title="{{name}}">errorrik</span></div>'
         });
-        var myComponent = new MyComponent();
-        myComponent.data.set('cond', true);
+        var myComponent = new MyComponent({
+            data: {
+                cond: true,
+                name: 'errorrik'
+            }
+        });
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -186,9 +190,15 @@ describe("IfDirective", function () {
             var span = wrap.getElementsByTagName('span')[0];
             expect(span.title).toBe('errorrik');
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
+            myComponent.data.set('name', 'erik');
+            san.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.title).toBe('erik');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         });
     });
 
@@ -296,7 +306,7 @@ describe("IfDirective", function () {
                 expect(wrap.getElementsByTagName('span').length).toBe(0);
                 var bs = wrap.getElementsByTagName('b');
                 expect(bs[0].title).toBe('nobody');
-                
+
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();
@@ -797,7 +807,7 @@ describe("IfDirective", function () {
                 expect(wrap.getElementsByTagName('span').length).toBe(0);
                 var bs = wrap.getElementsByTagName('b');
                 expect(bs[0].title).toBe('nobody');
-                
+
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();

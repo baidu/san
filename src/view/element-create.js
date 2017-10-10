@@ -20,14 +20,19 @@ function elementCreate(element) {
     element.el.id = element.id;
 
     element.props.each(function (prop) {
-        var value = isComponent(element)
-            ? evalExpr(prop.expr, element.data, element)
-            : nodeEvalExpr(element, prop.expr, 1);
+        var attr = prop.attr;
 
-        var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/i.exec(
-            getPropHandler(element, prop.name).attr(element, prop.name, value)
-        );
+        if (!attr) {
+            element.dynamicProps.push(prop);
 
+            var value = isComponent(element)
+                ? evalExpr(prop.expr, element.data, element)
+                : nodeEvalExpr(element, prop.expr, 1);
+
+            attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
+        }
+
+        var match = /^\s+([a-z0-9_-]+)=(['"])([^\2]*)\2$/i.exec(attr);
         if (match) {
             element.el.setAttribute(match[1], match[3]);
         }
