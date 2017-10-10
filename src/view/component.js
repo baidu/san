@@ -63,6 +63,7 @@ function Component(options) {
     this.listeners = {};
     this.ownSlotChilds = [];
 
+
     this.filters = this.filters || this.constructor.filters || {};
     this.computed = this.computed || this.constructor.computed || {};
     this.messages = this.messages || this.constructor.messages || {};
@@ -418,7 +419,9 @@ Component.prototype._compile = function () {
 
         var tpl = ComponentClass.template || proto.template;
         if (tpl) {
-            var aNode = parseTemplate(tpl);
+            var aNode = parseTemplate(tpl, {
+                trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace
+            });
             var firstChild = aNode.childs[0];
 
             // #[begin] error

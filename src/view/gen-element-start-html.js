@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var IndexedList = require('../util/indexed-list');
 var evalExpr = require('../runtime/eval-expr');
 var pushStrBuffer = require('../runtime/push-str-buffer');
 var isComponent = require('./is-component');

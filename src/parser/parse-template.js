@@ -14,10 +14,15 @@ var autoCloseTags = require('../browser/auto-close-tags');
 /**
  * 解析 template
  *
- * @param {string} source template 源码
+ * @param {string} source template源码
+ * @param {Object?} options 解析参数
+ * @param {string?} options.trimWhitespace 空白文本的处理策略。none|blank|all
  * @return {ANode}
  */
-function parseTemplate(source) {
+function parseTemplate(source, options) {
+    options = options || {};
+    options.trimWhitespace = options.trimWhitespace || 'none';
+
     var rootNode = createANode();
 
     if (typeof source !== 'string') {
@@ -153,7 +158,19 @@ function parseTemplate(source) {
      * @param {string} text 文本内容
      */
     function pushTextNode(text) {
-        if (text && !/^\s+$/.test(text)) {
+        switch (options.trimWhitespace) {
+            case 'blank':
+                if (/^\s+$/.test(text)) {
+                    text = null;
+                }
+                break;
+
+            case 'all':
+                text = text.replace(/(^\s+|\s+$)/g, '');
+                break;
+        }
+
+        if (text) {
             currentNode.childs.push(createANode({
                 isText: 1,
                 text: text,

@@ -16,9 +16,8 @@ var ExprType = require('../parser/expr-type');
  *
  * bool属性：
  * 当绑定项没有值时，默认为true
-
+ *
  * @param {Object} prop 属性对象
- * @return {Object}
  */
 function postProp(prop) {
     var expr = prop.expr;

@@ -459,6 +459,59 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("template trim whitespace, default none", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  \n    <span>san</span>\n  </a>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.firstChild.nodeType).toBe(3);
+        expect(myComponent.el.lastChild.nodeType).toBe(3);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("template trim whitespace, trim blank", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  \n    <span>san</span>\n  </a>',
+            trimWhitespace: 'blank'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.firstChild.nodeType).toBe(1);
+        expect(myComponent.el.lastChild).toBe(myComponent.el.firstChild);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("template trim whitespace, trim all", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  begin\n    <span>san</span>\nend  </a>'
+        });
+        MyComponent.trimWhitespace = 'all';
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(/^begin</.test(myComponent.el.innerHTML)).toBeTruthy();
+        expect(/>end$/.test(myComponent.el.innerHTML)).toBeTruthy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("filters as static property", function () {
         var MyComponent = san.defineComponent({});
 
