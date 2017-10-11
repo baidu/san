@@ -142,22 +142,27 @@ var elementPropHandlers = {
 
             output: function (element, bindInfo, data) {
                 var el = element.el;
+                var bindValue = element.props.get('value');
                 var bindType = element.props.get('type') || {};
 
-                switch (bindType.raw) {
-                    case 'checkbox':
-                        data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
-                        break;
+                if (bindValue && bindType) {
+                    switch (bindType.raw) {
+                        case 'checkbox':
+                            data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                            return;
 
-                    case 'radio':
-                        el.checked && data.set(bindInfo.expr, el.value, {
-                            target: {
-                                id: element.id,
-                                prop: bindInfo.name
-                            }
-                        });
-                        break;
+                        case 'radio':
+                            el.checked && data.set(bindInfo.expr, el.value, {
+                                target: {
+                                    id: element.id,
+                                    prop: bindInfo.name
+                                }
+                            });
+                            return;
+                    }
                 }
+
+                defaultElementPropHandler.output(element, bindInfo, data);
             }
         }
     },

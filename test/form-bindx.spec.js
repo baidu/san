@@ -620,6 +620,56 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("checkbox, no value", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<label><input type="checkbox" checked="{=saChecked=}">sa</label>'
+                + '<label><input type="checkbox" checked="{=sbChecked=}">sb</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    sbChecked: true
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+
+        function doneSpec() {
+            var sbChecked = myComponent.data.get('sbChecked');
+            if (!sbChecked) {
+                myComponent.data.set('saChecked', true);
+
+                san.nextTick(function () {
+                    var inputs = wrap.getElementsByTagName('input');
+                    expect(inputs[0].checked).toBe(true);
+                    expect(inputs[1].checked).toBe(false);
+
+                    done();
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                });
+
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + inputs[1].id, 'click');
+
+        setTimeout(doneSpec, 500);
+
+    });
+
     it("radio", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
