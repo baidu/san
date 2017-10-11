@@ -505,41 +505,6 @@ function forOwnUpdate(changes) {
 
 
     // 对相应的项进行更新
-    // 如果不attached则直接创建，如果存在则调用更新函数
-    // var newChildBuf;
-    // var newChilds;
-
-    // for (var i = 0; i < newChildsLen; i++) {
-    //     var child = this.childs[i];
-
-    //     if (child.lifeCycle.is('attached')) {
-    //         childsChanges[i].length && child._update(childsChanges[i]);
-    //     }
-    //     else {
-    //         newChilds = newChilds || [];
-    //         newChilds.push(child);
-    //         newChildBuf = newChildBuf || createStrBuffer();
-    //         child._attachHTML(newChildBuf);
-
-    //         var nextChild = this.childs[i + 1];
-    //         if (!nextChild || nextChild.lifeCycle.is('attached')) {
-    //             var beforeEl = nextChild && nextChild._getEl();
-    //             if (!beforeEl) {
-    //                 beforeEl = document.createElement('script');
-    //                 parentEl.insertBefore(beforeEl, this._getEl() || parentEl.firstChild);
-    //             }
-    //             beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
-
-    //             newChildBuf = null;
-    //             newChilds = null;
-    //             if (!nextChild) {
-    //                 parentEl.removeChild(beforeEl);
-    //             }
-    //         }
-    //     }
-    // }
-    // 对相应的项进行更新
-    // 如果不attached则直接创建，如果存在则调用更新函数
     if (oldChildsLen === 0 && isOnlyParentChild) {
         var buf = createStrBuffer();
         each(
@@ -553,18 +518,50 @@ function forOwnUpdate(changes) {
         parentEl.appendChild(this.el);
     }
     else {
-        var attachStump = this;
+        // 如果不attached则直接创建，如果存在则调用更新函数
 
-        while (newChildsLen--) {
-            var child = this.childs[newChildsLen];
+        // var attachStump = this;
+
+        // while (newChildsLen--) {
+        //     var child = this.childs[newChildsLen];
+        //     if (child.lifeCycle.is('attached')) {
+        //         childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
+        //     }
+        //     else {
+        //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
+        //     }
+
+        //     attachStump = child;
+        // }
+
+        var newChildBuf;
+
+        for (var i = 0; i < newChildsLen; i++) {
+            var child = this.childs[i];
+
             if (child.lifeCycle.is('attached')) {
-                childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
+                childsChanges[i].length && child._update(childsChanges[i]);
             }
             else {
-                child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
-            }
+                newChildBuf = newChildBuf || createStrBuffer();
+                child._attachHTML(newChildBuf);
 
-            attachStump = child;
+                // flush new childs html
+                var nextChild = this.childs[i + 1];
+                if (!nextChild || nextChild.lifeCycle.is('attached')) {
+                    var beforeEl = nextChild && nextChild._getEl();
+                    if (!beforeEl) {
+                        beforeEl = document.createElement('script');
+                        parentEl.insertBefore(beforeEl, this.el || parentEl.firstChild);
+                    }
+                    beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
+
+                    newChildBuf = null;
+                    if (!nextChild) {
+                        parentEl.removeChild(beforeEl);
+                    }
+                }
+            }
         }
     }
 
