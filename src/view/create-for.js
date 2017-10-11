@@ -392,7 +392,7 @@ function forOwnUpdate(changes) {
             // 此时需要更新整个列表
             var oldLen = this.childs.length;
             var newList = nodeEvalExpr(this, forDirective.list);
-            var newLen = newList.length;
+            var newLen = newList && newList.length || 0;
 
             // 老的比新的多的部分，标记需要dispose
             if (oldLen > newLen) {
