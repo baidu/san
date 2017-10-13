@@ -66,6 +66,7 @@
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
     var DataTypes = require('./util/data-types');
+    var isComponent = require('./view/is-component');
 
 
     var san = {
@@ -180,7 +181,15 @@
          *
          * @type {Object}
          */
-        DataTypes: DataTypes
+        DataTypes: DataTypes,
+
+        /**
+         * 判断一个node是否组件
+         *
+         * @param {Node} node 节点实例
+         * @return {boolean}
+         */
+        isComponent: isComponent
     };
 
     // export
