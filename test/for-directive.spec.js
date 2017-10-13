@@ -791,6 +791,81 @@ describe("ForDirective", function () {
         });
     });
 
+    it("update not item data", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in persons" title="{{dep.name}}-{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                dep: {name: 'SSG'},
+                persons: [
+                    {name: 'otakustay', email: 'otakustay@gmail.com'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].title).toBe('SSG-otakustay');
+
+        myComponent.data.set('dep.name', 'TG');
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].title).toBe('TG-otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("update not item data in slot", function (done) {
+        var Item = san.defineComponent({
+            template: '<li><slot/></li>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'm-item': Item
+            },
+            template: '<ul><m-item san-for="p in persons">{{dep.name}}-{{p.name}}</m-item></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                dep: {name: 'SSG'},
+                persons: [
+                    {name: 'otakustay'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].innerHTML.indexOf('SSG-otakustay')).toBe(0);
+
+
+        myComponent.data.set('dep.name', 'TG');
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].innerHTML.indexOf('TG-otakustay')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("multi data set after attach, that will influence exists item which should be removed", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><a san-for="item, index in list" title="{{dep}} {{item.name}}">{{dep}} {{item.name}}</a></div>'
