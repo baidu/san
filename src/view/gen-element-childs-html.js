@@ -4,27 +4,29 @@
  */
 
 var escapeHTML = require('../runtime/escape-html');
+var pushStrBuffer = require('../runtime/push-str-buffer');
 var each = require('../util/each');
 var createNode = require('./create-node');
+var nodeEvalExpr = require('./node-eval-expr');
 
 /**
  * 生成子元素html
  *
  * @param {Element} element 元素
- * @param {StringBuffer} buf html串存储对象
+ * @param {Object} buf html串存储对象
  */
 function genElementChildsHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
-            buf.push(escapeHTML(element.evalExpr(valueProp.expr)));
+            pushStrBuffer(buf, escapeHTML(nodeEvalExpr(element, valueProp.expr)));
         }
     }
     else {
         var htmlDirective = element.aNode.directives.get('html');
 
         if (htmlDirective) {
-            buf.push(element.evalExpr(htmlDirective.value));
+            pushStrBuffer(buf, nodeEvalExpr(element, htmlDirective.value));
         }
         else {
             each(element.aNode.childs, function (aNodeChild) {
@@ -32,7 +34,7 @@ function genElementChildsHTML(element, buf) {
                 if (!child._static) {
                     element.childs.push(child);
                 }
-                child.genHTML(buf);
+                child._attachHTML(buf);
             });
         }
     }

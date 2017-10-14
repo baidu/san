@@ -8,7 +8,7 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
         beforeEach(function(done) {
 
             var MyComponent = san.defineComponent({
-                template: '<svg><rect width="{{size}}" height="{{size}}" /></svg>',
+                template: '<svg viewBox="0 0 96 96"><rect width="{{size}}" height="{{size}}" /></svg>',
                 initData: function() {
                     return {
                         size: 50
@@ -35,6 +35,9 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
 
             var rect = wrap.getElementsByTagName('rect')[0];
             expect(+rect.getAttribute('width')).toBe(50);
+
+            var svg = wrap.getElementsByTagName('svg')[0];
+            expect(svg.getAttribute('viewBox')).toBe('0 0 96 96');
 
         });
 

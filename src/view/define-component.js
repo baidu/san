@@ -13,6 +13,18 @@ var inherits = require('../util/inherits');
  * @return {Function}
  */
 function defineComponent(proto) {
+    // 如果传入一个不是 san component 的 constructor，直接返回不是组件构造函数
+    // 这种场景导致的错误 san 不予考虑
+    if (typeof proto === 'function') {
+        return proto;
+    }
+
+    // #[begin] error
+    if (typeof proto !== 'object') {
+        throw new Error('[SAN FATAL] param must be a plain object.');
+    }
+    // #[end]
+
     function ComponentClass(option) {
         Component.call(this, option);
     }

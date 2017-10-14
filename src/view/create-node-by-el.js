@@ -3,14 +3,16 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var isComponent = require('./is-component');
-var TextNode = require('./text-node');
-var IfDirective = require('./if-directive');
-var ForDirective = require('./for-directive');
-var Element = require('./element');
-var SlotElement = require('./slot-element');
-var Component = require('./component');
+var parseTemplate = require('../parser/parse-template');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
+
+var NodeType = require('./node-type');
+var isComponent = require('./is-component');
+var createText = require('./create-text');
+var createElement = require('./create-element');
+var createIf = require('./create-if');
+var createFor = require('./create-for');
+var createSlot = require('./create-slot');
 
 // #[begin] reverse
 /**
@@ -43,27 +45,34 @@ function createNodeByEl(el, parent, elWalker, scope) {
 
             switch (stumpMatch[1]) {
                 case 'text':
-                    return new TextNode(option);
+                    return createText(option);
 
                 case 'for':
-                    return new ForDirective(option);
+                    return createFor(option);
 
                 case 'slot':
-                    return new SlotElement(option);
+                    return createSlot(option);
 
                 case 'if':
+                    return createIf(option);
+
+
                 case 'else':
-                    return new IfDirective(option);
+                case 'elif':
+                    createNodeByElseStump(option, stumpMatch[1]);
+                    return;
 
                 case 'data':
                     // fill component data
                     var data = (new Function(
-                        'return ' + option.stumpText.replace(/^[\s\n]*/ ,'')
+                        'return ' + option.stumpText.replace(/^[\s\n]*/, '')
                     ))();
 
+                    /* eslint-disable guard-for-in */
                     for (var key in data) {
                         owner.data.set(key, data[key]);
                     }
+                    /* eslint-enable guard-for-in */
 
                     return;
             }
@@ -90,8 +99,16 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
 
-    if (childANode.directives.get('if') || childANode.directives.get('else')) {
-        return new IfDirective(option);
+    if (childANode.directives.get('if')) {
+        return createIf(option);
+    }
+
+    if (childANode.directives.get('else')) {
+        return createNodeByElseEl(option, 'else');
+    }
+
+    if (childANode.directives.get('elif')) {
+        return createNodeByElseEl(option, 'elif');
     }
 
 
@@ -101,7 +118,86 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
     // as Element
-    return new Element(option);
+    return createElement(option);
+}
+
+function createNodeByElseEl(option, type) {
+    var parentChilds = option.parent.childs;
+    var len = parentChilds.length;
+
+    matchif: while (len--) {
+        var ifNode = parentChilds[len];
+        switch (ifNode._type) {
+            case NodeType.TEXT:
+                continue matchif;
+
+            case NodeType.IF:
+                if (!ifNode.aNode.elses) {
+                    ifNode.aNode.elses = [];
+                }
+                ifNode.aNode.elses.push(option.aNode);
+                ifNode.elseIndex = ifNode.aNode.elses.length - 1;
+
+                option.el.removeAttribute('san-' + type);
+                option.el.removeAttribute('s-' + type);
+
+                var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
+                ifNode.childs[0] = elseChild;
+                option.aNode.childs = option.aNode.childs.slice(0);
+                break matchif;
+        }
+
+        throw new Error('[SAN FATEL] ' + type + ' not match if.');
+    }
+}
+
+function createNodeByElseStump(option, type) {
+    var parentChilds = option.parent.childs;
+    var len = parentChilds.length;
+
+    matchif: while (len--) {
+        var ifNode = parentChilds[len];
+        switch (ifNode._type) {
+            case NodeType.TEXT:
+                continue matchif;
+
+            case NodeType.IF:
+                if (!ifNode.aNode.elses) {
+                    ifNode.aNode.elses = [];
+                }
+
+                var elseANode;
+                switch (type) {
+                    case 'else':
+                        elseANode = parseTemplate(
+                            option.stumpText.replace('san-else', '').replace('s-else', '')
+                        ).childs[0];
+                        elseANode.directives.push({
+                            value: 1,
+                            name: type
+                        });
+
+                        break;
+
+                    case 'elif':
+                        elseANode = parseTemplate(
+                            option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
+                        ).childs[0];
+
+                        var ifDirective = elseANode.directives.get('if');
+                        elseANode.directives.remove('if');
+                        ifDirective.name = 'elif';
+                        elseANode.directives.push(ifDirective);
+
+                        break;
+                }
+
+                ifNode.aNode.elses.push(elseANode);
+                break matchif;
+        }
+
+        throw new Error('[SAN FATEL] ' + type + ' not match if.');
+    }
 }
 // #[end]
 

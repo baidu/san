@@ -1,5 +1,17 @@
 describe("IfDirective", function () {
 
+    function nextElement(el) {
+        var next = el.nextSibling;
+        while (next) {
+            if (next.nodeType === 1) {
+                break;
+            }
+
+            next = next.nextSibling;
+        }
+        return next;
+    }
+
     it("for true literal", function () {
         var MyComponent = san.defineComponent({
             template: '<div><span san-if="true" title="errorrik">errorrik</span></div>'
@@ -49,6 +61,56 @@ describe("IfDirective", function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+    });
+
+    it("position right when create", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><b san-if="true" title="errorrik">errorrik</b><u>uuu</u></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.previousSibling).toBe(null);
+        var u = nextElement(b);
+        expect(u != null).toBeTruthy();
+        if (u) {
+            expect(u.tagName).toBe('U');
+        }
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("position right when update", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><b san-if="cond" title="errorrik">errorrik</b><u>uuu</u></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        myComponent.data.set('cond', true);
+
+        san.nextTick(function () {
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(b.previousSibling).toBe(null);
+            var u = nextElement(b);
+            expect(u != null).toBeTruthy();
+            if (u) {
+                expect(u.tagName).toBe('U');
+            }
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
 
@@ -106,10 +168,14 @@ describe("IfDirective", function () {
 
     it("render when false, and update soon， interp compat", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><span san-if="{{!cond}}" title="errorrik">errorrik</span></div>'
+            template: '<div><span san-if="{{!cond}}" title="{{name}}">errorrik</span></div>'
         });
-        var myComponent = new MyComponent();
-        myComponent.data.set('cond', true);
+        var myComponent = new MyComponent({
+            data: {
+                cond: true,
+                name: 'errorrik'
+            }
+        });
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
@@ -124,9 +190,15 @@ describe("IfDirective", function () {
             var span = wrap.getElementsByTagName('span')[0];
             expect(span.title).toBe('errorrik');
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
+            myComponent.data.set('name', 'erik');
+            san.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.title).toBe('erik');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         });
     });
 
@@ -156,6 +228,134 @@ describe("IfDirective", function () {
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
+        });
+    });
+
+    it("elif", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="cond1" title="errorrik">errorrik</span>  <span s-elif="cond2" title="leeight">leeight</span></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                cond1: true,
+                cond2: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('errorrik');
+
+        myComponent.data.set('cond1', false);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('leeight');
+
+            myComponent.data.set('cond2', false);
+            san.nextTick(function () {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(0);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("elif and else", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="cond1" title="errorrik">errorrik</span>  \n'
+                + '<span s-elif="cond2" title="leeight">leeight</span>  \n' +
+                ' <b s-else title="nobody">nobody</b></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                cond1: true,
+                cond2: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('cond1', false);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('leeight');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('cond2', false);
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('span').length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('nobody');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("multi elif", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="num > 10000" title="biiig">biiig</span>  \n'
+            + '<span s-elif="num > 1000" title="biig">biig</span>  \n'
+            + '<span s-elif="num > 100" title="big">big</span>  \n'
+            + ' <b s-else title="small">small</b></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 300
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('big');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('biiig');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('small');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         });
     });
 
@@ -564,6 +764,54 @@ describe("IfDirective", function () {
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
+        });
+    });
+
+    it("has event binding", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-if="cond1" title="errorrik" on-click="notice(\'errorrik\')">errorrik</span>  \n'
+                + '<span s-elif="cond2" title="leeight" on-click="notice(\'leeight\')">leeight</span>  \n' +
+                ' <b s-else title="nobody" on-click="notice(\'nobody\')">nobody</b></div>',
+
+            notice: function (msg) {
+                alert(msg)
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                cond1: true,
+                cond2: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('cond1', false);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('leeight');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('cond2', false);
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('span').length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('nobody');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         });
     });
 

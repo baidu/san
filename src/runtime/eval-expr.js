@@ -5,7 +5,6 @@
 
 var ExprType = require('../parser/expr-type');
 var BinaryOp = require('./binary-op');
-var StringBuffer = require('../util/string-buffer');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
 var each = require('../util/each');
@@ -74,7 +73,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
             return value;
 
         case ExprType.TEXT:
-            var buf = new StringBuffer();
+            var buf = '';
             each(expr.segs, function (seg) {
                 var segValue = evalExpr(seg, data, owner);
 
@@ -83,9 +82,9 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                     segValue = escapeHTML(segValue);
                 }
 
-                buf.push(segValue);
+                buf += segValue;
             });
-            return buf.toString();
+            return buf;
     }
 }
 

@@ -25,7 +25,6 @@
     // require('./util/next-tick');
     // require('./browser/ie');
     // require('./browser/ie-old-than-9');
-    // require('./util/string-buffer');
     // require('./util/indexed-list');
     // require('./browser/auto-close-tags');
     // require('./util/data-types.js');
@@ -41,9 +40,8 @@
     // require('./runtime/binary-op');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
-    // require('./view/node');
     // require('./view/gen-stump-html');
-    // require('./view/text-node');
+    // require('./view/create-text');
     // require('./view/get-prop-handler');
     // require('./view/is-data-change-by-element');
     // require('./view/event-declaration-listener');

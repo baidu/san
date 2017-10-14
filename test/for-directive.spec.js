@@ -472,7 +472,107 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data item set after attach", function (done) {
+    it("data set null after attach, has no sibling", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(2);
+        expect(lis[0].getAttribute('title')).toBe('errorrik 1/2');
+
+        myComponent.data.set('persons', null);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+
+    it("data set null after attach, has 2side sibling", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
+
+        myComponent.data.set('persons', null);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data set after attach, for in tr should warning parent(tbody) in chrome", function (done) {
+        // dont run this spec in ie
+        if (/msie/i.test(navigator.userAgent)) {
+            done();
+            return;
+        }
+
+        var MyComponent = san.defineComponent({
+            template: '<div><table><thead><tr><th>name</th><th>email</th></tr></thead>' +
+                '<tbody><tr title="{{p.name}}" san-for="p,i in persons"><td>{{p.name}}</td><td>{{p.email}}</td></tr></tbody></table></div>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'firede', email: 'firede@gmail.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var trs = wrap.getElementsByTagName('tr');
+        expect(trs.length).toBe(3);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var trs = wrap.getElementsByTagName('tr');
+            expect(trs.length).toBe(2);
+            expect(trs[1].getAttribute('title')).toBe('otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data item prop set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -503,7 +603,38 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data set after attach", function (done) {
+    it("data item set after attach", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+
+        myComponent.data.set('persons[0]', {name: 'otakustay', email: 'otakustay@gmail.com'});
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(4);
+            expect(lis[1].getAttribute('title')).toBe('otakustay');
+            expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data set after attach(has two side sibling)", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -536,7 +667,70 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data set after attach", function (done) {
+    it("data set after attach(has last sibling, no first sibling)", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'any', email: 'anyone@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(3);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data set after attach(has last sibling, no first sibling, start with empty data)", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', []);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data item set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}} in {{org}}</li><li>name - email</li></ul>'
         });
@@ -590,6 +784,81 @@ describe("ForDirective", function () {
             expect(lis.length).toBe(1);
             expect(lis[0].getAttribute('title')).toBe('otakustay');
             expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("update not item data", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in persons" title="{{dep.name}}-{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                dep: {name: 'SSG'},
+                persons: [
+                    {name: 'otakustay', email: 'otakustay@gmail.com'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].title).toBe('SSG-otakustay');
+
+        myComponent.data.set('dep.name', 'TG');
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].title).toBe('TG-otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("update not item data in slot", function (done) {
+        var Item = san.defineComponent({
+            template: '<li><slot/></li>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'm-item': Item
+            },
+            template: '<ul><m-item san-for="p in persons">{{dep.name}}-{{p.name}}</m-item></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                dep: {name: 'SSG'},
+                persons: [
+                    {name: 'otakustay'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].innerHTML.indexOf('SSG-otakustay')).toBe(0);
+
+
+        myComponent.data.set('dep.name', 'TG');
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].innerHTML.indexOf('TG-otakustay')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -826,6 +1095,101 @@ describe("ForDirective", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
         done();
+
+    });
+
+    it("in no tbody declaration, may append in right position", function (done) {
+        if (/msie/i.test(navigator.userAgent)) {
+            done();
+            return;
+        }
+
+        var MyComponent = san.defineComponent({
+            template: '<table cellpadding="0" cellspacing="0" width="100">'
+                + '<tr><th san-for="item in schema">{{item.label}}</th></tr>'
+                + '<tr s-for="item in datasource">'
+                + '<td s-for="col in schema">{{item[col.name]}}</td>'
+                + '</tr>'
+            + '</table>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                schema: [
+                    {name: 'name', label: 'Name'},
+                    {name: 'age', label: 'Age'}
+                ],
+
+                datasource: [
+                    {name: 'foo', age: 5}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var tr0 = wrap.getElementsByTagName('tr')[0];
+        var trParent = tr0.parentNode;
+
+
+        myComponent.data.push('datasource', {name: 'xxx', age: 10});
+        myComponent.data.push('datasource', {name: 'yyy', age: 20});
+
+        san.nextTick(function () {
+            var trs = wrap.getElementsByTagName('tr');
+            for (var i = 0; i < trs.length; i++) {
+                expect(trs[i].parentNode).toBe(trParent)
+            }
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("input checked in item", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul>'
+                + '<li s-for="item in list"><input type="checkbox" value="{{item.value}}" checked="{{value}}">{{item.text}}</li>'
+            + '</ul>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                value: ['bar'],
+                list: [
+                    {text: 'foo', value: 'foo'},
+                    {text: 'bar', value: 'bar'}
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeFalsy();
+        expect(inputs[1].checked).toBeTruthy();
+
+
+        myComponent.data.set('list[1].value', 'bar2');
+        myComponent.data.set('list[0].value', 'bar');
+
+        san.nextTick(function () {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[1].checked).toBeFalsy();
+            expect(inputs[0].checked).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
 
     });
 

@@ -12,30 +12,42 @@
  */
 var LifeCycles = {
     compiled: {
-        value: 1
+        compiled: 1
     },
 
     inited: {
-        value: 2
+        compiled: 1,
+        inited: 1
+    },
+
+    painting: {
+        compiled: 1,
+        inited: 1,
+        painting: 1
     },
 
     created: {
-        value: 3
+        compiled: 1,
+        inited: 1,
+        created: 1
     },
 
     attached: {
-        value: 4,
-        mutex: 'detached'
+        compiled: 1,
+        inited: 1,
+        created: 1,
+        attached: 1
     },
 
     detached: {
-        value: 5,
-        mutex: 'attached'
+        compiled: 1,
+        inited: 1,
+        created: 1,
+        detached: 1
     },
 
     disposed: {
-        value: 6,
-        mutex: '*'
+        disposed: 1
     }
 };
 /* eslint-enable fecs-valid-var-jsdoc */
@@ -55,19 +67,11 @@ function LifeCycle() {
  * @param {string} name 生命周期名称
  */
 LifeCycle.prototype.set = function (name) {
-    var lifeCycle = LifeCycles[name];
-    if (!lifeCycle) {
-        return;
-    }
+    var phase = LifeCycles[name];
 
-    if (lifeCycle.mutex === '*') {
-        this.raw = {};
+    if (phase) {
+        this.raw = phase;
     }
-    else if (lifeCycle.mutex) {
-        this.raw[LifeCycles[lifeCycle.mutex].value] = 0;
-    }
-
-    this.raw[lifeCycle.value] = 1;
 };
 
 /**
@@ -77,8 +81,7 @@ LifeCycle.prototype.set = function (name) {
  * @return {boolean}
  */
 LifeCycle.prototype.is = function (name) {
-    var lifeCycle = LifeCycles[name];
-    return lifeCycle && !!this.raw[lifeCycle.value];
+    return this.raw[name];
 };
 
 exports = module.exports = LifeCycle;

@@ -9,6 +9,8 @@ var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var ExprType = require('./expr-type');
+var postProp = require('./post-prop');
+var getPropHandler = require('../view/get-prop-handler');
 
 /**
  * 解析抽象节点属性
@@ -43,8 +45,7 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
 
         case 'san':
         case 's':
-            var directive = parseDirective(realName, value);
-            directive && aNode.directives.push(directive);
+            parseDirective(aNode, realName, value);
             break;
 
         case 'prop':
@@ -87,6 +88,14 @@ function integrateProp(aNode, name, value) {
         expr: parseText(value),
         raw: value
     };
+
+    if (prop.expr.value != null && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)) {
+        prop.attr = getPropHandler(aNode, name).attr(aNode, name, value);
+    }
+
+    if (name === 'checked' && aNode.tagName === 'input') {
+        postProp(prop);
+    }
 
     // 这里不能把只有一个插值的属性抽取
     // 因为插值里的值可能是html片段，容易被注入

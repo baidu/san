@@ -6,6 +6,8 @@
 var contains = require('../util/contains');
 var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
+var evalExpr = require('../runtime/eval-expr');
+var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 
 
@@ -36,21 +38,19 @@ var HTML_ATTR_PROP_MAP = {
  * @type {Object}
  */
 var defaultElementPropHandler = {
-    input: {
-        attr: function (element, name, value) {
-            if (value) {
-                return ' ' + name + '="' + value + '"';
-            }
-        },
+    attr: function (element, name, value) {
+        if (value) {
+            return ' ' + name + '="' + value + '"';
+        }
+    },
 
-        prop: function (element, name, value) {
-            name = HTML_ATTR_PROP_MAP[name] || name;
-            if (svgTags[element.tagName]) {
-                element.el.setAttribute(name, value);
-            }
-            else {
-                element.el[name] = value;
-            }
+    prop: function (element, name, value) {
+        name = HTML_ATTR_PROP_MAP[name] || name;
+        if (svgTags[element.tagName]) {
+            element.el.setAttribute(name, value);
+        }
+        else {
+            element.el[name] = value;
         }
     },
 
@@ -64,18 +64,22 @@ var defaultElementPropHandler = {
     }
 };
 
+/**
+ * 默认的属性设置变换方法
+ *
+ * @inner
+ * @type {Object}
+ */
 var defaultElementPropHandlers = {
     style: {
-        input: {
-            attr: function (element, name, value) {
-                if (value) {
-                    return ' style="' + value + '"';
-                }
-            },
-
-            prop: function (element, name, value) {
-                element.el.style.cssText = value;
+        attr: function (element, name, value) {
+            if (value) {
+                return ' style="' + value + '"';
             }
+        },
+
+        prop: function (element, name, value) {
+            element.el.style.cssText = value;
         }
     },
 
@@ -84,122 +88,138 @@ var defaultElementPropHandlers = {
     disabled: genBoolPropHandler('disabled')
 };
 
-function analInputCheckedState(element, value) {
+var checkedPropHandler = genBoolPropHandler('checked');
+var analInputChecker = {
+    checkbox: contains,
+    radio: function (a, b) {
+        return a === b;
+    }
+};
+
+function analInputCheckedState(element, value, oper) {
     var bindValue = element.props.get('value');
     var bindType = element.props.get('type');
 
     if (bindValue && bindType) {
-        switch (bindType.raw) {
-            case 'checkbox':
-                return contains(value, element.evalExpr(bindValue.expr));
+        var type = nodeEvalExpr(element, bindType.expr);
 
-            case 'radio':
-                return value === element.evalExpr(bindValue.expr);
+        if (analInputChecker[type]) {
+            var bindChecked = element.props.get('checked');
+            if (!bindChecked.hintExpr) {
+                bindChecked.hintExpr = bindValue.expr;
+            }
+
+            var checkedState = analInputChecker[type](
+                value,
+                nodeEvalExpr(element, bindValue.expr)
+            );
+
+            switch (oper) {
+                case 'attr':
+                    return checkedState ? ' checked="checked"' : '';
+
+                case 'prop':
+                    element.el.checked = checkedState;
+                    return;
+            }
         }
     }
+
+    return checkedPropHandler[oper](element, 'checked', value);
 }
 
 var elementPropHandlers = {
     input: {
         mutiple: genBoolPropHandler('mutiple'),
         checked: {
-            input: {
-                attr: function (element, name, value) {
-                    if (analInputCheckedState(element, value)) {
-                        return ' checked="checked"';
-                    }
-                },
+            attr: function (element, name, value) {
+                return analInputCheckedState(element, value, 'attr');
+            },
 
-                prop: function (element, name, value) {
-                    var checked = analInputCheckedState(element, value);
-                    if (checked != null) {
-                        element.el.checked = checked;
-                    }
-                }
+            prop: function (element, name, value) {
+                analInputCheckedState(element, value, 'prop');
             },
 
             output: function (element, bindInfo, data) {
                 var el = element.el;
+                var bindValue = element.props.get('value');
                 var bindType = element.props.get('type') || {};
 
-                switch (bindType.raw) {
-                    case 'checkbox':
-                        data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
-                        break;
+                if (bindValue && bindType) {
+                    switch (bindType.raw) {
+                        case 'checkbox':
+                            data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                            return;
 
-                    case 'radio':
-                        el.checked && data.set(bindInfo.expr, el.value, {
-                            target: {
-                                id: element.id,
-                                prop: bindInfo.name
-                            }
-                        });
-                        break;
+                        case 'radio':
+                            el.checked && data.set(bindInfo.expr, el.value, {
+                                target: {
+                                    id: element.id,
+                                    prop: bindInfo.name
+                                }
+                            });
+                            return;
+                    }
                 }
+
+                defaultElementPropHandler.output(element, bindInfo, data);
             }
         }
     },
 
     textarea: {
         value: {
-            input: {
-                attr: empty,
-                prop: defaultElementPropHandler.input.prop
-            },
-
+            attr: empty,
+            prop: defaultElementPropHandler.prop,
             output: defaultElementPropHandler.output
         }
     },
 
     option: {
         value: {
-            input: {
-                attr: function (element, name, value) {
-                    var attrStr = ' value="' + (value || '') + '"';
-                    var parentSelect = element.parent;
-                    while (parentSelect) {
-                        if (parentSelect.tagName === 'select') {
-                            break;
-                        }
-
-                        parentSelect = parentSelect.parent;
+            attr: function (element, name, value) {
+                var attrStr = ' value="' + (value || '') + '"';
+                var parentSelect = element.parent;
+                while (parentSelect) {
+                    if (parentSelect.tagName === 'select') {
+                        break;
                     }
 
+                    parentSelect = parentSelect.parent;
+                }
 
-                    if (parentSelect) {
-                        var selectValue = null;
-                        var prop;
-                        var expr;
 
-                        if ((prop = parentSelect.props.get('value'))
-                            && (expr = prop.expr)
-                        ) {
-                            selectValue = isComponent(parentSelect)
-                                    ? evalExpr(expr, parentSelect.data, parentSelect)
-                                    : parentSelect.evalExpr(expr)
-                                || '';
-                        }
+                if (parentSelect) {
+                    var selectValue = null;
+                    var prop;
+                    var expr;
 
-                        if (selectValue === value) {
-                            attrStr += ' selected';
-                        }
+                    if ((prop = parentSelect.props.get('value'))
+                        && (expr = prop.expr)
+                    ) {
+                        selectValue = isComponent(parentSelect)
+                                ? evalExpr(expr, parentSelect.data, parentSelect)
+                                : nodeEvalExpr(parentSelect, expr)
+                            || '';
                     }
 
-                    return attrStr;
-                },
+                    if (selectValue === value) {
+                        attrStr += ' selected';
+                    }
+                }
 
-                prop: defaultElementPropHandler.input.prop
-            }
+                return attrStr;
+            },
+
+            prop: defaultElementPropHandler.prop
         }
     },
 
     select: {
         value: {
-            input: {
-                attr: empty,
-                prop: function (element, name, value) {
-                    element.el.value = value || '';
-                }
+            attr: empty,
+            prop: function (element, name, value) {
+                element.el.value = value || '';
             },
 
             output: defaultElementPropHandler.output
@@ -218,25 +238,24 @@ function genBoolPropHandler(attrName) {
     var attrLiteral = ' ' + attrName;
 
     return {
-        input: {
-            attr: function (element, name, value) {
-                // 因为元素的attr值必须经过html escape，否则可能有漏洞
-                // 所以这里直接对假值字符串形式进行处理
-                // NaN之类非主流的就先不考虑了
-                if (element.props.get(name).raw === ''
-                    || value && value !== 'false' && value !== '0'
-                ) {
-                    return attrLiteral;
-                }
-            },
-
-            prop: function (element, name, value) {
-                var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
-                element.el[propName] = !!(value && value !== 'false' && value !== '0');
+        attr: function (element, name, value) {
+            // 因为元素的attr值必须经过html escape，否则可能有漏洞
+            // 所以这里直接对假值字符串形式进行处理
+            // NaN之类非主流的就先不考虑了
+            if (element.props.get(name).raw === ''
+                || value && value !== 'false' && value !== '0'
+            ) {
+                return attrLiteral;
             }
+        },
+
+        prop: function (element, name, value) {
+            var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
+            element.el[propName] = !!(value && value !== 'false' && value !== '0');
         }
     };
 }
+
 
 /**
  * 获取属性处理对象
@@ -246,8 +265,18 @@ function genBoolPropHandler(attrName) {
  * @return {Object}
  */
 function getPropHandler(element, name) {
-    var propHandlers = elementPropHandlers[element.tagName] || {};
-    return propHandlers[name] || defaultElementPropHandlers[name] || defaultElementPropHandler;
+    var tagPropHandlers = elementPropHandlers[element.tagName];
+    if (!tagPropHandlers) {
+        tagPropHandlers = elementPropHandlers[element.tagName] = {};
+    }
+
+    var propHandler = tagPropHandlers[name];
+    if (!propHandler) {
+        propHandler = defaultElementPropHandlers[name] || defaultElementPropHandler;
+        tagPropHandlers[name] = propHandler;
+    }
+
+    return propHandler;
 }
 
 exports = module.exports = getPropHandler;

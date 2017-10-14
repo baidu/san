@@ -59,13 +59,13 @@ function build() {
 
         if (option.compress) {
             let ast = uglifyJS.parse(editionSource);
-            ast.figure_out_scope();
-            ast = ast.transform(new uglifyJS.Compressor());
+            ast.figure_out_scope({screw_ie8: false});
+            ast = ast.transform(new uglifyJS.Compressor({screw_ie8: false}));
 
             // need to figure out scope again so mangler works optimally
-            ast.figure_out_scope();
-            ast.compute_char_frequency();
-            ast.mangle_names();
+            ast.figure_out_scope({screw_ie8: false});
+            ast.compute_char_frequency({screw_ie8: false});
+            ast.mangle_names({screw_ie8: false});
 
             editionSource = ast.print_to_string({screw_ie8: false});
         }

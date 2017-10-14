@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var each = require('../util/each');
 var ExprType = require('../parser/expr-type');
 
 // #[begin] ssr
@@ -11,6 +12,7 @@ var ExprType = require('../parser/expr-type');
  * 编译源码的 helper 方法集合对象
  */
 var compileExprSource = {
+
     /**
      * 字符串字面化
      *
@@ -74,7 +76,7 @@ var compileExprSource = {
             each(filter.args, function (arg) {
                 code += ', ' + compileExprSource.expr(arg);
             });
-            code += '])' ;
+            code += '])';
         });
 
         return code;
@@ -98,7 +100,7 @@ var compileExprSource = {
                 seg = {
                     type: ExprType.INTERP,
                     expr: seg.expr,
-                    filters:[
+                    filters: [
                         {
                             type: ExprType.CALL,
                             name: 'html',

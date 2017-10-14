@@ -94,9 +94,9 @@ describe("Component", function () {
         });
 
         var myComponent = new MyComponent();
-        expect(myComponent.lifeCycle.is('inited')).toBe(true);
-        expect(myComponent.lifeCycle.is('created')).toBe(false);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('inited')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('created')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('attached')).toBe(false);
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(0);
         expect(mainAttached).toBe(0);
@@ -107,47 +107,53 @@ describe("Component", function () {
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-        expect(myComponent.lifeCycle.is('inited')).toBe(true);
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('inited')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('created')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('attached')).toBe(true);
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(1);
         expect(mainAttached).toBe(1);
+        expect(mainDetached).toBe(0);
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
         myComponent.detach();
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
-        expect(myComponent.lifeCycle.is('detached')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('created')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('detached')).toBe(true);
         expect(mainCreated).toBe(1);
         expect(mainDetached).toBe(1);
         expect(mainAttached).toBe(0);
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
         myComponent.attach(wrap);
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(true);
-        expect(myComponent.lifeCycle.is('detached')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('created')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('attached')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('detached')).toBe(false);
         expect(mainCreated).toBe(1);
         expect(mainDetached).toBe(0);
         expect(mainAttached).toBe(1);
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
 
 
         myComponent.dispose();
-        expect(myComponent.lifeCycle.is('inited')).toBe(false);
-        expect(myComponent.lifeCycle.is('created')).toBe(false);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
-        expect(myComponent.lifeCycle.is('detached')).toBe(false);
-        expect(myComponent.lifeCycle.is('disposed')).toBe(true);
+        expect(!!myComponent.lifeCycle.is('inited')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('created')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('detached')).toBe(false);
+        expect(!!myComponent.lifeCycle.is('disposed')).toBe(true);
         expect(mainDisposed).toBe(1);
         expect(labelDisposed).toBe(1);
+        expect(mainDetached).toBe(1);
+        expect(labelDetached).toBe(1);
 
         document.body.removeChild(wrap);
     });
@@ -370,6 +376,47 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("data set in inited should not update view", function (done) {
+        var up = false;
+        var MyComponent = san.defineComponent({
+
+            template: '<a><span title="{{name}}-{{email}}">{{name}}</span></a>',
+
+            inited: function () {
+                this.data.set('name', 'errorrik');
+            },
+
+            initData: function () {
+                return {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                }
+            },
+
+            updated: function () {
+                up = true;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('errorrik-errorrik@gmail.com');
+        expect(up).toBeFalsy();
+
+        san.nextTick(function () {
+            expect(up).toBeFalsy();
+            expect(span.title).toBe('errorrik-errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("template as static property", function () {
         var MyComponent = san.defineComponent({});
         MyComponent.template = '<span title="{{color}}">{{color}}</span>';
@@ -408,6 +455,59 @@ describe("Component", function () {
         expect(wrap.getElementsByTagName('u').length).toBe(1);
 
         b.dispose();
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("template trim whitespace, default none", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  \n    <span>san</span>\n  </a>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.firstChild.nodeType).toBe(3);
+        expect(myComponent.el.lastChild.nodeType).toBe(3);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("template trim whitespace, trim blank", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  \n    <span>san</span>\n  </a>',
+            trimWhitespace: 'blank'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.firstChild.nodeType).toBe(1);
+        expect(myComponent.el.lastChild).toBe(myComponent.el.firstChild);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("template trim whitespace, trim all", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a>  begin\n    <span>san</span>\nend  </a>'
+        });
+        MyComponent.trimWhitespace = 'all';
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(/^begin</.test(myComponent.el.innerHTML)).toBeTruthy();
+        expect(/>end$/.test(myComponent.el.innerHTML)).toBeTruthy();
+
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
@@ -853,7 +953,7 @@ describe("Component", function () {
                 'UI:select-item-detached': function () {
                     expect(false).toBeTruthy();
                 }
-            },
+            }
         });
 
         var myComponent = new MyComponent();

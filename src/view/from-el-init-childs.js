@@ -58,4 +58,5 @@ function fromElInitChilds(element) {
     }
 }
 // #[end]
+
 exports = module.exports = fromElInitChilds;

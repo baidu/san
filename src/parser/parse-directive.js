@@ -46,7 +46,13 @@ var directiveParsers = {
         };
     },
 
-    'else': function () {
+    'elif': function (value) {
+        return {
+            value: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
+        };
+    },
+
+    'else': function (value) {
         return {
             value: 1
         };
@@ -62,17 +68,19 @@ var directiveParsers = {
 /**
  * 解析指令
  *
+ * @param {ANode} aNode 抽象节点
  * @param {string} name 指令名称
  * @param {string} value 指令值
- * @return {Object?}
  */
-function parseDirective(name, value) {
+function parseDirective(aNode, name, value) {
     var parser = directiveParsers[name];
+
     if (parser) {
         var result = parser(value);
         result.name = name;
         result.raw = value;
-        return result;
+
+        aNode.directives.push(result);
     }
 }
 

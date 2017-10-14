@@ -16,3 +16,4 @@ errorShots/
 /test/index-ssr.html
 /test/ssr/ssr.spec.js
 /test/pref/tti.html
+*.vscode

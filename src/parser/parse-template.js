@@ -6,17 +6,23 @@
 
 var createANode = require('./create-a-node');
 var Walker = require('./walker');
-var ExprType = require('./expr-type');
 var integrateAttr = require('./integrate-attr');
 var autoCloseTags = require('../browser/auto-close-tags');
+
+/* eslint-disable fecs-max-statements */
 
 /**
  * 解析 template
  *
- * @param {string} source template 源码
+ * @param {string} source template源码
+ * @param {Object?} options 解析参数
+ * @param {string?} options.trimWhitespace 空白文本的处理策略。none|blank|all
  * @return {ANode}
  */
-function parseTemplate(source) {
+function parseTemplate(source, options) {
+    options = options || {};
+    options.trimWhitespace = options.trimWhitespace || 'none';
+
     var rootNode = createANode();
 
     if (typeof source !== 'string') {
@@ -95,36 +101,44 @@ function parseTemplate(source) {
                 }
             }
 
-            // match if directive for else directive
-            var elseDirective = aElement.directives.get('else');
+            // match if directive for else/elif directive
+            var elseDirective = aElement.directives.get('else') || aElement.directives.get('elif');
             if (elseDirective) {
                 var parentChildsLen = currentNode.childs.length;
 
                 while (parentChildsLen--) {
                     var parentChild = currentNode.childs[parentChildsLen];
                     if (parentChild.isText) {
-                        continue
+                        currentNode.childs.splice(parentChildsLen, 1);
+                        continue;
                     }
 
-                    var childIfDirective = parentChild.directives.get('if');
-
                     // #[begin] error
-                    if (!childIfDirective) {
+                    if (!parentChild.directives.get('if')) {
                         throw new Error('[SAN FATEL] else not match if.');
                     }
                     // #[end]
 
-                    parentChild['else'] = aElement;
-                    elseDirective.value = {
-                        type: ExprType.UNARY,
-                        expr: childIfDirective.value
-                    };
+                    parentChild.elses = parentChild.elses || [];
+                    parentChild.elses.push(aElement);
 
                     break;
                 }
             }
+            else {
+                if (aElement.tagName === 'tr' && currentNode.tagName === 'table') {
+                    var tbodyNode = createANode({
+                        tagName: 'tbody',
+                        parent: currentNode
+                    });
+                    currentNode.childs.push(tbodyNode);
+                    currentNode = tbodyNode;
+                    aElement.parent = tbodyNode;
+                }
 
-            currentNode.childs.push(aElement);
+                currentNode.childs.push(aElement);
+            }
+
             if (!tagClose) {
                 currentNode = aElement;
             }
@@ -144,6 +158,18 @@ function parseTemplate(source) {
      * @param {string} text 文本内容
      */
     function pushTextNode(text) {
+        switch (options.trimWhitespace) {
+            case 'blank':
+                if (/^\s+$/.test(text)) {
+                    text = null;
+                }
+                break;
+
+            case 'all':
+                text = text.replace(/(^\s+|\s+$)/g, '');
+                break;
+        }
+
         if (text) {
             currentNode.childs.push(createANode({
                 isText: 1,
@@ -153,5 +179,7 @@ function parseTemplate(source) {
         }
     }
 }
+
+/* eslint-enable fecs-max-statements */
 
 exports = module.exports = parseTemplate;

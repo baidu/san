@@ -3,14 +3,17 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var ExprType = require('../parser/expr-type');
+
+var each = require('../util/each');
+var camel2kebab = require('../util/camel2kebab');
+var IndexedList = require('../util/indexed-list');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
+var escapeHTML = require('../runtime/escape-html');
+var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
-var each = require('../util/each');
-var camel2kebab = require('../util/camel2kebab');
 var serializeANode = require('./serialize-a-node');
 
 // #[begin] ssr
@@ -37,292 +40,13 @@ function serializeStumpEnd(type) {
 }
 
 /**
- * ANode 的编译方法集合对象
- *
- * @inner
- */
-var aNodeCompiler = {
-    /**
-     * 编译节点
-     *
-     * @param {ANode} aNode 抽象节点
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     */
-    compile: function (aNode, sourceBuffer, owner, extra) {
-        extra = extra || {};
-        var compileMethod = 'compileElement';
-
-        if (aNode.isText) {
-            compileMethod = 'compileText';
-        }
-        else if (aNode.directives.get('if')) {
-            compileMethod = 'compileIf';
-        }
-        else if (aNode.directives.get('else')) {
-            compileMethod = 'compileElse';
-        }
-        else if (aNode.directives.get('for')) {
-            compileMethod = 'compileFor';
-        }
-        else if (aNode.tagName === 'slot') {
-            compileMethod = 'compileSlot';
-        }
-        else {
-            var ComponentType = owner.components[aNode.tagName];
-            if (ComponentType) {
-                compileMethod = 'compileComponent';
-                extra.ComponentClass = ComponentType;
-            }
-        }
-
-        aNodeCompiler[compileMethod](aNode, sourceBuffer, owner, extra);
-    },
-
-    /**
-     * 编译文本节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     */
-    compileText: function (aNode, sourceBuffer) {
-        var value = aNode.textExpr.value;
-
-        if (value == null) {
-            sourceBuffer.joinString('<!--s-text:' + aNode.text + '-->');
-            sourceBuffer.joinExpr(aNode.textExpr);
-            sourceBuffer.joinString('<!--/s-text-->');
-        }
-        else {
-            sourceBuffer.joinString(value);
-        }
-    },
-
-    /**
-     * 编译 if 节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     */
-    compileIf: function (aNode, sourceBuffer, owner) {
-        var ifElementANode = createANode({
-            childs: aNode.childs,
-            props: aNode.props,
-            events: aNode.events,
-            tagName: aNode.tagName,
-            directives: (new IndexedList()).concat(aNode.directives)
-        });
-        ifElementANode.directives.remove('if');
-
-        var ifDirective = aNode.directives.get('if');
-        var elseANode = aNode['else'];
-
-        // for condition true content
-        sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
-        sourceBuffer.addRaw(
-            aNodeCompiler.compile(
-                ifElementANode,
-                sourceBuffer,
-                owner,
-                {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
-            )
-        );
-        if (elseANode) {
-            sourceBuffer.joinString(serializeStump('else', serializeANode(elseANode)));
-        }
-
-        // for condition false content
-        sourceBuffer.addRaw('} else {');
-        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
-
-        if (elseANode) {
-            var elseElementANode = createANode({
-                childs: elseANode.childs,
-                props: elseANode.props,
-                events: elseANode.events,
-                tagName: elseANode.tagName,
-                directives: (new IndexedList()).concat(elseANode.directives)
-            });
-            elseElementANode.directives.remove('else');
-            sourceBuffer.addRaw(
-                aNodeCompiler.compile(
-                    elseElementANode,
-                    sourceBuffer,
-                    owner,
-                    {prop: ' s-else'}
-                )
-            );
-        }
-
-        sourceBuffer.addRaw('}');
-    },
-
-    /**
-     * 编译 else 节点
-     *
-     * @param {ANode} aNode 节点对象
-     */
-    compileElse: function (aNode) {
-        // 啥都不干，交给 compileIf 了
-    },
-
-    /**
-     * 编译 for 节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     */
-    compileFor: function (aNode, sourceBuffer, owner) {
-        var forElementANode = createANode({
-            childs: aNode.childs,
-            props: aNode.props,
-            events: aNode.events,
-            tagName: aNode.tagName,
-            directives: (new IndexedList()).concat(aNode.directives)
-        });
-        forElementANode.directives.remove('for');
-
-        var forDirective = aNode.directives.get('for');
-        var itemName = forDirective.item.raw;
-        var indexName = forDirective.index.raw;
-        var listName = compileExprSource.dataAccess(forDirective.list);
-
-        // start stump
-        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
-
-        sourceBuffer.addRaw('for ('
-            + 'var ' + indexName + ' = 0; '
-            + indexName + ' < ' + listName + '.length; '
-            + indexName + '++) {'
-        );
-        sourceBuffer.addRaw('componentCtx.data.' + indexName + '=' + indexName + ';');
-        sourceBuffer.addRaw('componentCtx.data.' + itemName + '= ' + listName + '[' + indexName + '];');
-        sourceBuffer.addRaw(
-            aNodeCompiler.compile(
-                forElementANode,
-                sourceBuffer,
-                owner
-            )
-        );
-        sourceBuffer.addRaw('}');
-
-        // stop stump
-        sourceBuffer.joinString(serializeStumpEnd('for'));
-    },
-
-    /**
-     * 编译 slot 节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     */
-    compileSlot: function (aNode, sourceBuffer, owner) {
-        var nameProp = aNode.props.get('name');
-        var name = nameProp ? nameProp.raw : '____';
-        var isGivenContent = 0;
-        var childs = aNode.childs;
-
-        if (owner.aNode.givenSlots[name]) {
-            isGivenContent = 1;
-            childs = owner.aNode.givenSlots[name];
-        }
-
-        var stumpText = (!isGivenContent ? '!' : '')
-            + (nameProp ? nameProp.raw : '');
-        sourceBuffer.joinString(serializeStump('slot', stumpText));
-
-        if (isGivenContent) {
-            sourceBuffer.addRaw('(function (componentCtx) {');
-        }
-
-        each(childs, function (aNodeChild) {
-            sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
-        });
-
-        if (isGivenContent) {
-            sourceBuffer.addRaw('})(componentCtx.owner);');
-        }
-
-        sourceBuffer.joinString(serializeStumpEnd('slot'));
-    },
-
-    /**
-     * 编译普通节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     */
-    compileElement: function (aNode, sourceBuffer, owner, extra) {
-        extra = extra || {};
-        if (aNode.tagName === 'option'
-            && !aNode.props.get('value')
-            && aNode.childs[0]
-        ) {
-            aNode.props.push({
-                name: 'value',
-                expr: aNode.childs[0].textExpr
-            });
-        }
-
-        elementSourceCompiler.tagStart(
-            sourceBuffer,
-            aNode.tagName,
-            aNode.props,
-            aNode.props,
-            aNode.events,
-            aNode,
-            extra.prop
-        );
-
-        elementSourceCompiler.inner(sourceBuffer, aNode, owner);
-        elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
-    },
-
-    /**
-     * 编译组件节点
-     *
-     * @param {ANode} aNode 节点对象
-     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {Component} owner 所属组件实例环境
-     * @param {Function} extra.ComponentClass 对应组件类
-     */
-    compileComponent: function (aNode, sourceBuffer, owner, extra) {
-        var ComponentClass = extra.ComponentClass;
-        var component = new ComponentClass({
-            aNode: aNode,
-            owner: owner,
-            subTag: aNode.tagName
-        });
-
-        var givenData = [];
-
-        postComponentBinds(aNode.props);
-        component.binds.each(function (prop) {
-            givenData.push(
-                compileExprSource.stringLiteralize(prop.name)
-                + ':'
-                + compileExprSource.expr(prop.expr)
-            );
-        });
-
-        sourceBuffer.addRaw('html += (');
-        sourceBuffer.addRendererStart();
-        compileComponentSource(sourceBuffer, component, extra && extra.prop);
-        sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
-    }
-};
-
-/**
  * element 的编译方法集合对象
  *
  * @inner
  */
 var elementSourceCompiler = {
+
+    /* eslint-disable max-params */
     /**
      * 编译元素标签头
      *
@@ -331,6 +55,7 @@ var elementSourceCompiler = {
      * @param {IndexedList} props 属性列表
      * @param {IndexedList} binds 绑定信息列表
      * @param {Array} events 绑定事件列表
+     * @param {Object} aNode 对应的抽象节点对象
      * @param {string?} extraProp 额外的属性串
      * @param {boolean?} isComponent 是否组件
      */
@@ -421,7 +146,8 @@ var elementSourceCompiler = {
                                         + compileExprSource.expr(prop.expr)
                                         + ', '
                                         + valueCode
-                                        +')) {');
+                                        + ')) {'
+                                    );
                                     sourceBuffer.joinString(' checked');
                                     sourceBuffer.addRaw('}');
                                     break;
@@ -431,7 +157,8 @@ var elementSourceCompiler = {
                                         + compileExprSource.expr(prop.expr)
                                         + ' === '
                                         + valueCode
-                                        +') {');
+                                        + ') {'
+                                    );
                                     sourceBuffer.joinString(' checked');
                                     sourceBuffer.addRaw('}');
                                     break;
@@ -456,6 +183,7 @@ var elementSourceCompiler = {
 
         sourceBuffer.joinString('>');
     },
+    /* eslint-enable max-params */
 
     /**
      * 编译元素闭合
@@ -503,12 +231,315 @@ var elementSourceCompiler = {
             sourceBuffer.joinExpr(htmlDirective.value);
         }
         else {
+            /* eslint-disable no-use-before-define */
             each(aNode.childs, function (aNodeChild) {
                 sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
             });
+            /* eslint-enable no-use-before-define */
         }
     }
 };
+
+/**
+ * ANode 的编译方法集合对象
+ *
+ * @inner
+ */
+var aNodeCompiler = {
+
+    /**
+     * 编译节点
+     *
+     * @param {ANode} aNode 抽象节点
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
+     */
+    compile: function (aNode, sourceBuffer, owner, extra) {
+        extra = extra || {};
+        var compileMethod = 'compileElement';
+
+        if (aNode.isText) {
+            compileMethod = 'compileText';
+        }
+        else if (aNode.directives.get('if')) {
+            compileMethod = 'compileIf';
+        }
+        else if (aNode.directives.get('for')) {
+            compileMethod = 'compileFor';
+        }
+        else if (aNode.tagName === 'slot') {
+            compileMethod = 'compileSlot';
+        }
+        else {
+            var ComponentType = owner.components[aNode.tagName];
+            if (ComponentType) {
+                compileMethod = 'compileComponent';
+                extra.ComponentClass = ComponentType;
+            }
+        }
+
+        aNodeCompiler[compileMethod](aNode, sourceBuffer, owner, extra);
+    },
+
+    /**
+     * 编译文本节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     */
+    compileText: function (aNode, sourceBuffer) {
+        var value = aNode.textExpr.value;
+
+        if (value == null) {
+            sourceBuffer.joinString('<!--s-text:' + aNode.text + '-->');
+            sourceBuffer.joinExpr(aNode.textExpr);
+            sourceBuffer.joinString('<!--/s-text-->');
+        }
+        else {
+            sourceBuffer.joinString(value);
+        }
+    },
+
+    /**
+     * 编译 if 节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     */
+    compileIf: function (aNode, sourceBuffer, owner) {
+        sourceBuffer.addRaw('(function () {');
+        sourceBuffer.addRaw('var ifIndex = null;');
+
+        // for ifIndex
+        var ifDirective = aNode.directives.get('if');
+        sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
+        sourceBuffer.addRaw('    ifIndex = -1;');
+        sourceBuffer.addRaw('}');
+        each(aNode.elses, function (elseANode, index) {
+            var elifDirective = elseANode.directives.get('elif');
+            if (elifDirective) {
+                sourceBuffer.addRaw('else if (' + compileExprSource.expr(elifDirective.value) + ') {');
+            }
+            else {
+                sourceBuffer.addRaw('else {');
+            }
+
+            sourceBuffer.addRaw('    ifIndex = ' + index + ';');
+            sourceBuffer.addRaw('}');
+        });
+
+        // for output main if html
+        sourceBuffer.addRaw('if (ifIndex === -1) {');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                rinseANode(aNode),
+                sourceBuffer,
+                owner,
+                {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
+            )
+        );
+        sourceBuffer.addRaw('} else {');
+        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
+        sourceBuffer.addRaw('}');
+
+        // for output else html
+        each(aNode.elses, function (elseANode, index) {
+            var elifDirective = elseANode.directives.get('elif');
+            sourceBuffer.addRaw('if (ifIndex === ' + index + ') {');
+            sourceBuffer.addRaw(
+                aNodeCompiler.compile(
+                    rinseANode(elseANode),
+                    sourceBuffer,
+                    owner,
+                    {
+                        prop: elifDirective ? ' s-elif="' + escapeHTML(elifDirective.raw) + '"' : ' s-else'
+                    }
+                )
+            );
+            sourceBuffer.addRaw('} else {');
+            sourceBuffer.joinString(serializeStump(elifDirective ? 'elif' : 'else', serializeANode(elseANode)));
+            sourceBuffer.addRaw('}');
+        });
+
+        sourceBuffer.addRaw('})();');
+
+        /**
+         * 清洗 if aNode，返回纯净无 if 指令的 aNode
+         *
+         * @param {ANode} ifANode 节点对象
+         * @return {ANode}
+         */
+        function rinseANode(ifANode) {
+            var result = createANode({
+                childs: ifANode.childs,
+                props: ifANode.props,
+                events: ifANode.events,
+                tagName: ifANode.tagName,
+                directives: (new IndexedList()).concat(ifANode.directives)
+            });
+            result.directives.remove('if');
+            result.directives.remove('elif');
+            result.directives.remove('else');
+
+            return result;
+        }
+    },
+
+    /**
+     * 编译 for 节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     */
+    compileFor: function (aNode, sourceBuffer, owner) {
+        var forElementANode = createANode({
+            childs: aNode.childs,
+            props: aNode.props,
+            events: aNode.events,
+            tagName: aNode.tagName,
+            directives: (new IndexedList()).concat(aNode.directives)
+        });
+        forElementANode.directives.remove('for');
+
+        var forDirective = aNode.directives.get('for');
+        var itemName = forDirective.item.raw;
+        var indexName = forDirective.index.raw;
+        var listName = compileExprSource.dataAccess(forDirective.list);
+
+        // start stump
+        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
+
+        sourceBuffer.addRaw('for ('
+            + 'var ' + indexName + ' = 0; '
+            + indexName + ' < ' + listName + '.length; '
+            + indexName + '++) {'
+        );
+        sourceBuffer.addRaw('componentCtx.data.' + indexName + '=' + indexName + ';');
+        sourceBuffer.addRaw('componentCtx.data.' + itemName + '= ' + listName + '[' + indexName + '];');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                forElementANode,
+                sourceBuffer,
+                owner
+            )
+        );
+        sourceBuffer.addRaw('}');
+
+        // stop stump
+        sourceBuffer.joinString(serializeStumpEnd('for'));
+    },
+
+    /**
+     * 编译 slot 节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     */
+    compileSlot: function (aNode, sourceBuffer, owner) {
+        var nameProp = aNode.props.get('name');
+        var name = nameProp ? nameProp.raw : '____';
+        var isGivenContent = 0;
+        var childs = aNode.childs;
+
+        if (owner.aNode.givenSlots[name]) {
+            isGivenContent = 1;
+            childs = owner.aNode.givenSlots[name];
+        }
+
+        var stumpText = (!isGivenContent ? '!' : '')
+            + (nameProp ? nameProp.raw : '');
+        sourceBuffer.joinString(serializeStump('slot', stumpText));
+
+        if (isGivenContent) {
+            sourceBuffer.addRaw('(function (componentCtx) {');
+        }
+
+        each(childs, function (aNodeChild) {
+            sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
+        });
+
+        if (isGivenContent) {
+            sourceBuffer.addRaw('})(componentCtx.owner);');
+        }
+
+        sourceBuffer.joinString(serializeStumpEnd('slot'));
+    },
+
+    /**
+     * 编译普通节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
+     */
+    compileElement: function (aNode, sourceBuffer, owner, extra) {
+        extra = extra || {};
+        if (aNode.tagName === 'option'
+            && !aNode.props.get('value')
+            && aNode.childs[0]
+        ) {
+            aNode.props.push({
+                name: 'value',
+                expr: aNode.childs[0].textExpr
+            });
+        }
+
+        elementSourceCompiler.tagStart(
+            sourceBuffer,
+            aNode.tagName,
+            aNode.props,
+            aNode.props,
+            aNode.events,
+            aNode,
+            extra.prop
+        );
+
+        elementSourceCompiler.inner(sourceBuffer, aNode, owner);
+        elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
+    },
+
+    /**
+     * 编译组件节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
+     * @param {Function} extra.ComponentClass 对应组件类
+     */
+    compileComponent: function (aNode, sourceBuffer, owner, extra) {
+        var ComponentClass = extra.ComponentClass;
+        var component = new ComponentClass({
+            aNode: aNode,
+            owner: owner,
+            subTag: aNode.tagName
+        });
+
+        var givenData = [];
+
+        postComponentBinds(aNode.props);
+        component.binds.each(function (prop) {
+            givenData.push(
+                compileExprSource.stringLiteralize(prop.name)
+                + ':'
+                + compileExprSource.expr(prop.expr)
+            );
+        });
+
+        sourceBuffer.addRaw('html += (');
+        sourceBuffer.addRendererStart();
+        compileComponentSource(sourceBuffer, component, extra && extra.prop);
+        sourceBuffer.addRendererEnd();
+        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
+    }
+};
+
+/* eslint-disable guard-for-in */
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
@@ -519,8 +550,6 @@ var elementSourceCompiler = {
  * @param {string?} extraProp 额外的属性串
  */
 function compileComponentSource(sourceBuffer, component, extraProp) {
-    var tagName = component.tagName;
-
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
@@ -576,7 +605,7 @@ var stringifier = {
 
         for (var key in source) {
             if (prefixComma) {
-                result += ','
+                result += ',';
             }
             prefixComma = 1;
 
@@ -592,7 +621,7 @@ var stringifier = {
 
         each(source, function (value) {
             if (prefixComma) {
-                result += ','
+                result += ',';
             }
             prefixComma = 1;
 
@@ -607,7 +636,7 @@ var stringifier = {
     },
 
     date: function (source) {
-        return 'new Date(' + source.getTime() + ')'
+        return 'new Date(' + source.getTime() + ')';
     },
 
     any: function (source) {
@@ -673,6 +702,7 @@ function genComponentContextCode(component) {
         '},'
     );
 
+    /* eslint-disable no-redeclare */
     // computed obj
     code.push('computed: {');
     var computedCode = [];
@@ -684,7 +714,7 @@ function genComponentContextCode(component) {
                 + computed.toString().replace(
                     /this.data.get\(([^\)]+)\)/g,
                     function (match, exprLiteral) {
-                        var exprStr = (new Function("return " + exprLiteral))();
+                        var exprStr = (new Function('return ' + exprLiteral))();
                         var expr = parseExpr(exprStr);
 
                         return compileExprSource.expr(expr);
@@ -707,6 +737,7 @@ function genComponentContextCode(component) {
     }
     code.push(computedCode.join(','));
     code.push('],');
+    /* eslint-enable no-redeclare */
 
     // data
     code.push('data: ' + stringifier.any(component.data.get()) + ',');
@@ -717,6 +748,11 @@ function genComponentContextCode(component) {
 
     return code.join('\n');
 }
+
+/* eslint-enable guard-for-in */
+
+/* eslint-disable no-unused-vars */
+/* eslint-disable fecs-camelcase */
 
 /**
  * 组件编译的模板函数
@@ -736,12 +772,8 @@ function componentCompilePreCode() {
         return target;
     }
 
-    function each(array, iterator, thisArg) {
+    function each(array, iterator) {
         if (array && array.length > 0) {
-            if (thisArg) {
-                iterator = bind(iterator, thisArg);
-            }
-
             for (var i = 0, l = array.length; i < l; i++) {
                 if (iterator(array[i], i) === false) {
                     break;
@@ -850,7 +882,7 @@ function componentCompilePreCode() {
 
             Object.keys(source).forEach(function (key) {
                 if (prefixComma) {
-                    result += ','
+                    result += ',';
                 }
                 prefixComma = 1;
 
@@ -866,7 +898,7 @@ function componentCompilePreCode() {
 
             each(source, function (value) {
                 if (prefixComma) {
-                    result += ','
+                    result += ',';
                 }
                 prefixComma = 1;
 
@@ -881,7 +913,7 @@ function componentCompilePreCode() {
         },
 
         date: function (source) {
-            return 'new Date(' + source.getTime() + ')'
+            return 'new Date(' + source.getTime() + ')';
         },
 
         any: function (source) {
@@ -915,6 +947,8 @@ function componentCompilePreCode() {
         }
     };
 }
+/* eslint-enable no-unused-vars */
+/* eslint-enable fecs-camelcase */
 
 /**
  * 将组件编译成 render 方法的 js 源码
