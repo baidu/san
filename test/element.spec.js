@@ -59,7 +59,7 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
-    it("bind prop, which has xxx- prefix", function () {
+    it("bind prop, which has xxx- prefix", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a data-name="{{name}}"><span data-name="{{name}}">{{name}}</span></a>'
         });
@@ -75,8 +75,16 @@ describe("Element", function () {
         expect(span.getAttribute('data-name')).toBe('errorrik');
         expect(a.getAttribute('data-name')).toBe('errorrik');
 
-        myComponent.dispose();
-        document.body.removeChild(wrap);
+
+        myComponent.data.set('name', 'erik');
+
+        san.nextTick(function () {
+            expect(span.getAttribute('data-name')).toBe('erik');
+            expect(a.getAttribute('data-name')).toBe('erik');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
 
