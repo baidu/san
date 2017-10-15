@@ -45,13 +45,24 @@ var defaultElementPropHandler = {
     },
 
     prop: function (element, name, value) {
-        name = HTML_ATTR_PROP_MAP[name] || name;
-        if (svgTags[element.tagName]) {
-            element.el.setAttribute(name, value);
+        var propName = HTML_ATTR_PROP_MAP[name] || name;
+        var el = element.el;
+
+        // input 的 type 是个特殊属性，其实也应该用 setAttribute
+        // 但是 type 不应该运行时动态改变，否则会有兼容性问题
+        // 所以这里直接就不管了
+        if (svgTags[element.tagName] || !(propName in el)) {
+            el.setAttribute(name, value);
         }
         else {
-            element.el[name] = value;
+            el[propName] = value;
         }
+
+        // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
+        // 换句话来说，san 是做不到 attribute 时有时无的
+        // if (value == null) {
+        //     el.removeAttribute(name);
+        // }
     },
 
     output: function (element, bindInfo, data) {
