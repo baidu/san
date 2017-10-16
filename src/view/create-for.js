@@ -247,11 +247,12 @@ function forOwnAttach(parentEl, beforeEl) {
     }
 
     // paint list
-    var el = this._getEl() || parentEl.firstChild;
+    var el = this.el || parentEl.firstChild;
     var prevEl = el && el.previousSibling;
     var buf = createStrBuffer();
 
     prev: while (prevEl) {
+        var nextPrev = prevEl.previousSibling;
         switch (prevEl.nodeType) {
             case 1:
                 break prev;
@@ -266,7 +267,7 @@ function forOwnAttach(parentEl, beforeEl) {
 
         }
 
-        prevEl = prevEl.previousSibling;
+        prevEl = nextPrev;
     }
 
     if (!prevEl) {

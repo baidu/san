@@ -443,6 +443,80 @@ describe("IfDirective", function () {
         });
     });
 
+    it("render list which template gap whitespace, init true, update soon", function (done) {
+
+        var Panel = san.defineComponent({
+            template:
+                '<div>\n'
+                    + '<h3>{{title}}</h3>\n'
+                    + '<slot/>\n'
+                + '</div>\n'
+        });
+
+        var Row = san.defineComponent({
+            template: '<p><slot/></p>\n'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel,
+                'x-row': Row
+            },
+            template:
+                '<div>\n'
+                    + '<x-panel title="title">\n'
+                        + '<x-row s-if="cond" s-for="item in list">{{item.title}}</x-row>\n'
+                    + '</x-panel>\n'
+                + '</div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                cond: true,
+                list: [
+                    {value:'1', title:'one'},
+                    {value:'2', title:'two'},
+                    {value:'3', title:'three'}
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(3);
+        expect(ps[0].innerHTML).toBe('one');
+        expect(ps[1].innerHTML).toBe('two');
+        expect(ps[2].innerHTML).toBe('three');
+
+        var wrapHTML = wrap.innerHTML.toLowerCase();
+        expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
+        myComponent.data.set('cond', false);
+
+        san.nextTick(function () {
+            var ps = wrap.getElementsByTagName('p');
+            expect(ps.length).toBe(0);
+
+            myComponent.data.set('cond', true);
+
+            san.nextTick(function () {
+                var ps = wrap.getElementsByTagName('p');
+                expect(ps.length).toBe(3);
+                expect(ps[0].innerHTML).toBe('one');
+                expect(ps[1].innerHTML).toBe('two');
+                expect(ps[2].innerHTML).toBe('three');
+
+                var wrapHTML = wrap.innerHTML.toLowerCase();
+                expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("render list, init true, render data use as condition", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><ul san-if="persons"><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul></div>'
