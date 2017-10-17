@@ -359,6 +359,38 @@ describe("IfDirective", function () {
         });
     });
 
+    it("and else with disabled", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="radio"s-if="cond" disabled="{{true}}">'
+                + '<input type="checkbox" s-else disabled="{{true}}"></div>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('cond', true);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs.length).toBe(1);
+        expect(inputs[0].type).toBe('radio');
+        expect(inputs[0].disabled).toBeTruthy();
+
+        myComponent.data.set('cond', false);
+
+        san.nextTick(function () {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs.length).toBe(1);
+            expect(inputs[0].type).toBe('checkbox');
+            expect(inputs[0].disabled).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("render list, init false, update soon", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-if="cond" san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
