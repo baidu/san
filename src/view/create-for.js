@@ -416,6 +416,12 @@ function forOwnUpdate(changes) {
                         value: newList[i]
                     }
                 ];
+
+                // 对list更上级数据的直接设置
+                if (relation < 2) {
+                    childsChanges[i].push(change);
+                }
+
                 if (this.childs[i]) {
                     Data.prototype.set.call(
                         this.childs[i].scope,
