@@ -469,7 +469,11 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(myComponent.el.firstChild.nodeType).toBe(3);
+        // ie会自己干掉第一个空白文本节点，妈蛋
+        // 其实它会干掉它认为没意义的节点，包括空白文本节点、注释、空白script
+        if (!/msie/i.test(navigator.userAgent)) {
+            expect(myComponent.el.firstChild.nodeType).toBe(3);
+        }
         expect(myComponent.el.lastChild.nodeType).toBe(3);
 
         myComponent.dispose();
