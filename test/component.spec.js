@@ -873,6 +873,69 @@ describe("Component", function () {
 
     });
 
+    it("dynamic create component", function (done) {
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+
+        var Panel = san.defineComponent({
+            template: '<div>panel</div>',
+            attached: function () {
+                var layer = new Layer({
+                    data: {
+                        content: this.data.get('content')
+                    }
+                });
+
+                this.layer = layer;
+                layer.attach(wrap);
+
+                this.watch('content', function (value) {
+                    layer.data.set('content', value)
+                });
+            },
+
+            disposed: function () {
+                this.layer.dispose();
+                this.layer = null;
+            }
+        });
+        var Layer = san.defineComponent({
+            template: '<b>{{content}}</b>',
+
+            updated: function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('title');
+                expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('subtitle');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<div><x-panel content="{{layerContent}}"></x-panel><u>{{title}}</u></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                layerContent: 'layer',
+                title: 'main'
+            }
+        });
+
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('main');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('layer');
+
+        myComponent.data.set('title', 'title');
+        myComponent.data.set('layerContent', 'subtitle');
+    });
+
     it("dispatch should pass message up, util the first component which recieve it", function (done) {
         var Select = san.defineComponent({
             template: '<ul><slot></slot></ul>',
