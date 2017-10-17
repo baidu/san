@@ -246,17 +246,16 @@ var elementPropHandlers = {
  * @return {Object}
  */
 function genBoolPropHandler(attrName) {
-    var attrLiteral = ' ' + attrName;
-
     return {
         attr: function (element, name, value) {
             // 因为元素的attr值必须经过html escape，否则可能有漏洞
             // 所以这里直接对假值字符串形式进行处理
             // NaN之类非主流的就先不考虑了
-            if (element.props.get(name).raw === ''
+            var prop = element.props.get(name);
+            if (prop && prop.raw === ''
                 || value && value !== 'false' && value !== '0'
             ) {
-                return attrLiteral;
+                return ' ' + attrName;
             }
         },
 
