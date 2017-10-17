@@ -42,6 +42,10 @@ CDN:
 - [API](https://ecomfe.github.io/san/doc/api/)
 - [ANode](https://github.com/ecomfe/san/blob/master/doc/anode.md)
 
+## DevTool
+
+[DevTool](https://github.com/ecomfe/san-devtool/blob/master/README.md)
+
 ## ChangeLog
 
 [ChangeLog](https://github.com/ecomfe/san/blob/master/CHANGELOG.md)
