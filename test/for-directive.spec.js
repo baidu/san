@@ -793,14 +793,26 @@ describe("ForDirective", function () {
 
     it("update not item data", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li san-for="p in persons" title="{{dep.name}}-{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+            template: '<ul>\n'
+                + '    <li san-for="item in winner.winUsers">\n'
+                + '        <b>{{winner.issueNo}}</b>\n'
+                + '        <u>{{item.luckyNo}}</u>\n'
+                + '    </li>\n'
+                + '</ul>'
         });
         var myComponent = new MyComponent({
             data: {
-                dep: {name: 'SSG'},
-                persons: [
-                    {name: 'otakustay', email: 'otakustay@gmail.com'}
-                ]
+                winner: {
+                    issueNo: 'one',
+                    winUsers: [
+                        {
+                            luckyNo: '123'
+                        },
+                        {
+                            luckyNo: '456'
+                        }
+                    ]
+                }
             }
         });
         var wrap = document.createElement('div');
@@ -808,57 +820,36 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(1);
-        expect(lis[0].title).toBe('SSG-otakustay');
+        expect(lis.length).toBe(2);
+        expect(lis[0].getElementsByTagName('b')[0].innerHTML).toBe('one');
+        expect(lis[0].getElementsByTagName('u')[0].innerHTML).toBe('123');
+        expect(lis[1].getElementsByTagName('b')[0].innerHTML).toBe('one');
+        expect(lis[1].getElementsByTagName('u')[0].innerHTML).toBe('456');
 
-        myComponent.data.set('dep.name', 'TG');
-
+        myComponent.data.set('winner', {
+            issueNo: 'two',
+            winUsers: [
+                {
+                    luckyNo: '789'
+                },
+                {
+                    luckyNo: '890'
+                },
+                {
+                    luckyNo: 'abc'
+                }
+            ]
+        });
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(1);
-            expect(lis[0].title).toBe('TG-otakustay');
-
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
-    });
-
-    it("update not item data in slot", function (done) {
-        var Item = san.defineComponent({
-            template: '<li><slot/></li>'
-        });
-        var MyComponent = san.defineComponent({
-            components: {
-                'm-item': Item
-            },
-            template: '<ul><m-item san-for="p in persons">{{dep.name}}-{{p.name}}</m-item></ul>'
-        });
-        var myComponent = new MyComponent({
-            data: {
-                dep: {name: 'SSG'},
-                persons: [
-                    {name: 'otakustay'}
-                ]
-            }
-        });
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
-        var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(1);
-        expect(lis[0].innerHTML.indexOf('SSG-otakustay')).toBe(0);
-
-
-        myComponent.data.set('dep.name', 'TG');
-
-
-        san.nextTick(function () {
-            var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(1);
-            expect(lis[0].innerHTML.indexOf('TG-otakustay')).toBe(0);
+            expect(lis.length).toBe(3);
+            expect(lis[0].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[0].getElementsByTagName('u')[0].innerHTML).toBe('789');
+            expect(lis[1].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[1].getElementsByTagName('u')[0].innerHTML).toBe('890');
+            expect(lis[2].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[2].getElementsByTagName('u')[0].innerHTML).toBe('abc');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
