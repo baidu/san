@@ -44,7 +44,7 @@ CDN:
 
 ## DevTool
 
-[DevTool](https://github.com/ecomfe/san-devtool/blob/master/README.md)
+[DevTool](https://github.com/ecomfe/san-devtool)
 
 ## ChangeLog
 
