@@ -2666,5 +2666,49 @@ describe("Component", function () {
             done();
         })
     });
+
+    it("main element not in declare position, need remove when dispose call", function () {
+        var Dialog = san.defineComponent({
+            template: '<div class="ui-dialog">HI Dialog</div>',
+            attached: function() {
+                if (this.el.parentNode !== document.body) {
+                    document.body.appendChild(this.el);
+                }
+            },
+
+            detached: function () {
+                if (this.el.parentNode === document.body) {
+                    document.body.removeChild(this.el);
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-dialog': Dialog
+            },
+
+            template: '<div><span>Hi Component</span><x-dialog s-ref="dialog"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var el = myComponent.el;
+        var spanEl = el.firstChild;
+        var dialogEl = myComponent.ref('dialog').el;
+        expect(dialogEl.parentNode).toBe(document.body);
+        expect(spanEl.parentNode).toBe(el);
+
+        myComponent.dispose();
+
+        // ie又变态了，removeChild后element还有parentNode，变成document了。妈蛋的东西
+        expect(dialogEl.parentNode == null || dialogEl.parentNode.tagName == null).toBeTruthy();
+        expect(el.parentNode == null || el.parentNode.tagName == null).toBeTruthy();
+        document.body.removeChild(wrap);
+    });
 });
 
