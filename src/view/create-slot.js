@@ -132,8 +132,8 @@ function slotOwnGetEl() {
 /**
  * 销毁释放 slot
  */
-function slotOwnDispose() {
-    elementDisposeChilds(this);
+function slotOwnDispose(dontDetach) {
+    elementDisposeChilds(this, dontDetach);
     nodeDispose(this);
 }
 

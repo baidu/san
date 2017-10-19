@@ -2710,5 +2710,59 @@ describe("Component", function () {
         expect(el.parentNode == null || el.parentNode.tagName == null).toBeTruthy();
         document.body.removeChild(wrap);
     });
+
+    it("dynamic component attach to inner element", function () {
+
+        var UnderlinePanel = san.defineComponent({
+            template: '<div><u><slot></slot></u></div>'
+        });
+
+        var Strong = san.defineComponent({
+            template: '<strong><slot></slot></strong>'
+        });
+
+        var Biz = san.defineComponent({
+            components: {
+                'x-panel': UnderlinePanel,
+                'x-strong': Strong
+            },
+
+            template: '<div>'
+                + '<x-panel><x-strong item="{{item}}" s-if="strongShow">{{item}}</x-strong></x-panel></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><span>hello</span></div>',
+
+            attached: function () {
+                this.biz = new Biz({
+                    data: {
+                        strongShow: true
+                    }
+                });
+                this.biz.attach(this.el);
+            },
+
+            disposed: function () {
+                this.biz.dispose();
+                this.biz = null;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(1);
+
+        myComponent.dispose();
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(0);
+
+        document.body.removeChild(wrap);
+    });
 });
 
