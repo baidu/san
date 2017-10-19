@@ -343,6 +343,7 @@ function forOwnUpdate(changes) {
             && parentLastChild === this.el
 
     var ignoreSplice = false;
+    
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
