@@ -1184,4 +1184,35 @@ describe("ForDirective", function () {
 
     });
 
+    it("merge different kinds of changes in the same tick", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul>'
+                + '<li s-for="item, index in items">{{item}}</li>'
+            + '</ul>',
+            attached: function () {
+                this.data.set('items', ['errorrik', 'otakustay']);
+                this.data.push('items', 'dafrok');
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            expect(lis.length).toBe(3);
+            expect(lis[0].innerHTML).toBe('errorrik');
+            expect(lis[1].innerHTML).toBe('otakustay');
+            expect(lis[2].innerHTML).toBe('dafrok');
+            expect(lis[3]).toBe(undefined);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });

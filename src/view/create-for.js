@@ -342,7 +342,8 @@ function forOwnUpdate(changes) {
             && parentFirstChild === this.el
             && parentLastChild === this.el
 
-
+    var ignoreSplice = false;
+    
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
@@ -391,6 +392,7 @@ function forOwnUpdate(changes) {
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
+            ignoreSplice = true;
             var oldLen = this.childs.length;
             var newList = nodeEvalExpr(this, forDirective.list);
             var newLen = newList && newList.length || 0;
@@ -435,7 +437,7 @@ function forOwnUpdate(changes) {
                 }
             }
         }
-        else if (relation === 2 && change.type === DataChangeType.SPLICE) {
+        else if (relation === 2 && change.type === DataChangeType.SPLICE && !ignoreSplice) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
