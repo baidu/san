@@ -106,6 +106,8 @@ Reloaded before every execution run.
 
 <div id="wrap-cmpt47"><div><!--s-data:{"num":30}--><!--s-if:<span s-if="num > 10000" title="biiig">biiig</span>--><!--s-elif:<span s-elif="num > 1000" title="biig">biig</span>--><!--s-elif:<span s-elif="num > 100" title="big">big</span>--><b s-else prop-title="small" title="small">small</b></div></div>
 
+<div id="wrap-cmpt48"><div><!--s-data:{"searchValue":"er"}--><b prop-title="{{searchValue}}" title="er"><!--s-text:{{searchValue}}-->er<!--/s-text--></b><a s-component="x-panel"><!--s-slot--><div s-component="x-search" prop-value="{=searchValue=}"><input prop-type="text" prop-value="{=value=}" type="text" value="er"><button>search</button></div><!--/s-slot--></a></div></div>
+
 
 
   <!-- The scripts need to be in the body DOM element, as some test running frameworks need the body

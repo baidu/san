@@ -182,7 +182,8 @@ let componentDatas = [
     {},
     {num: 300},
     {num: 30000},
-    {num: 30}
+    {num: 30},
+    {searchValue: 'er'}
 ];
 
 

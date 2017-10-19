@@ -448,6 +448,7 @@ var aNodeCompiler = {
         if (owner.aNode.givenSlots[name]) {
             isGivenContent = 1;
             childs = owner.aNode.givenSlots[name];
+            owner = owner.owner;
         }
 
         var stumpText = (!isGivenContent ? '!' : '')
