@@ -30,7 +30,7 @@ function elementDispose(element, dontDetach) {
     /* eslint-enable guard-for-in */
 
 
-    if (!dontDetach) {
+    if (!dontDetach || !element.parent) {
         element.detach();
     }
     else if (element._toPhase) {
