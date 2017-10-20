@@ -575,6 +575,12 @@ Component.prototype._dataChanger = function (change) {
     if (this.lifeCycle.is('painting') || this.lifeCycle.is('created')) {
         var len = this.dataChanges.length;
 
+        // 判断 change 类型是否是 SET，如果是则打一个标记，在后续 SPLICE 操作时不将这个 change 入栈
+        this.dataChanges.isChildsRebuild = this.dataChanges.isChildsRebuild || change.type === DataChangeType.SET;
+        if (change.type === DataChangeType.SPLICE && this.dataChanges.isChildsRebuild) {
+            return;
+        }
+
         if (!len) {
             nextTick(this._update, this);
         }
