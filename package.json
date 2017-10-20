@@ -27,12 +27,13 @@
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
+    "pretest": "npm run build && node ./test/ssr/build-test.js",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
-    "build": "node ./tool/build.js && node ./test/ssr/build-test.js"
+    "build": "node ./tool/build.js"
   },
   "main": "dist/san.ssr.js",
   "browser": "dist/san.dev.js",
