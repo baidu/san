@@ -1373,4 +1373,49 @@ describe("ForDirective", function () {
         });
     });
 
+    it("render list, set list and set other data soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in persons" title="in {{dep}}">{{p.name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: [
+                    {name: 'otakustay'}
+                ],
+                dep: 'tg'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].title).toBe('in tg');
+        expect(lis[0].innerHTML).toBe('otakustay');
+
+
+        myComponent.data.set('persons',
+            [
+                {name: 'Justineo'},
+                {name: 'errorrik'}
+            ]
+        );
+        myComponent.data.set('dep', 'ssg');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].title).toBe('in ssg');
+            expect(lis[0].innerHTML).toBe('Justineo');
+            expect(lis[1].title).toBe('in ssg');
+            expect(lis[1].innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });
