@@ -342,8 +342,6 @@ function forOwnUpdate(changes) {
             && parentFirstChild === this.el
             && parentLastChild === this.el
 
-    var isChildsRebuild;
-
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
@@ -434,10 +432,8 @@ function forOwnUpdate(changes) {
                     this.childs[i] = createForDirectiveChild(this, newList[i], i);
                 }
             }
-
-            isChildsRebuild = 1;
         }
-        else if (relation === 2 && change.type === DataChangeType.SPLICE && !isChildsRebuild) {
+        else if (relation === 2 && change.type === DataChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
