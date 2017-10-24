@@ -18,6 +18,40 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("empty custom string prop", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span data-name="">test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.getAttribute('data-name')).toBe('');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("empty custom string prop, unvalue", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span data-name>test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.getAttribute('data-name')).toBe('');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("line-break attribute", function () {
         var MyComponent = san.defineComponent({
             template: '<a title="line1\r\nline2"><span title="line1\r\nline2">test</span><span class="test2">test2</span></a>'

@@ -39,7 +39,7 @@ var HTML_ATTR_PROP_MAP = {
  */
 var defaultElementPropHandler = {
     attr: function (element, name, value) {
-        if (value) {
+        if (value != null) {
             return ' ' + name + '="' + value + '"';
         }
     },
@@ -84,7 +84,7 @@ var defaultElementPropHandler = {
 var defaultElementPropHandlers = {
     style: {
         attr: function (element, name, value) {
-            if (value) {
+            if (value != null) {
                 return ' style="' + value + '"';
             }
         },

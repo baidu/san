@@ -189,6 +189,7 @@ describe("IfDirective", function () {
         san.nextTick(function () {
             var span = wrap.getElementsByTagName('span')[0];
             expect(span.title).toBe('errorrik');
+            expect(span.getAttribute('title')).toBe('errorrik');
 
             myComponent.data.set('name', 'erik');
             san.nextTick(function () {
