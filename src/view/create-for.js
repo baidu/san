@@ -405,17 +405,16 @@ function forOwnUpdate(changes) {
 
             // 整项变更
             for (var i = 0; i < newLen; i++) {
-                childsChanges[i] = [
-                    {
-                        type: DataChangeType.SET,
-                        option: change.option,
-                        expr: {
-                            type: ExprType.ACCESSOR,
-                            paths: forDirective.item.paths.slice(0)
-                        },
-                        value: newList[i]
-                    }
-                ];
+                childsChanges[i] = childsChanges[i] || [];
+                childsChanges[i].push({
+                    type: DataChangeType.SET,
+                    option: change.option,
+                    expr: {
+                        type: ExprType.ACCESSOR,
+                        paths: forDirective.item.paths.slice(0)
+                    },
+                    value: newList[i]
+                });
 
                 // 对list更上级数据的直接设置
                 if (relation < 2) {
