@@ -60,7 +60,6 @@ function Component(options) {
     elementInitProps(this);
     options = options || {};
 
-    this.dataChanges = [];
     this.listeners = {};
     this.ownSlotChilds = [];
 
@@ -507,8 +506,8 @@ Component.prototype._update = function (changes) {
 
 
     var dataChanges = me.dataChanges;
-    if (dataChanges.length) {
-        me.dataChanges = [];
+    if (dataChanges) {
+        me.dataChanges = null;
         me.props.each(function (prop) {
             each(dataChanges, function (change) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)
@@ -574,12 +573,12 @@ Component.prototype._update = function (changes) {
  */
 Component.prototype._dataChanger = function (change) {
     if (this.lifeCycle.painting || this.lifeCycle.created) {
-        var len = this.dataChanges.length;
-
-        if (!len) {
+        if (!this.dataChanges) {
             nextTick(this._update, this);
+            this.dataChanges = [];
         }
 
+        var len = this.dataChanges.length;
         while (len--) {
             switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
                 case 1:
