@@ -23,6 +23,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var defineComponent = require('./define-component');
 var attachings = require('./attachings');
 var isComponent = require('./is-component');
+var LifeCycle = require('./life-cycle');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var fromElInitChilds = require('./from-el-init-childs');
@@ -204,11 +205,11 @@ Component.prototype._type = NodeType.CMPT;
  */
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
-    if (this.lifeCycle.is(name)) {
+    if (this.lifeCycle[name]) {
         return;
     }
 
-    this.lifeCycle.set(name);
+    this.lifeCycle = LifeCycle[name] || this.lifeCycle;
 
     if (typeof this[name] === 'function') {
         this[name](this);
@@ -463,7 +464,7 @@ Component.prototype._compile = function () {
  * @param {Array?} changes 数据变化信息
  */
 Component.prototype._update = function (changes) {
-    if (this.lifeCycle.is('disposed')) {
+    if (this.lifeCycle.disposed) {
         return;
     }
 
@@ -572,7 +573,7 @@ Component.prototype._update = function (changes) {
  * @param {Object} change 数据变化信息
  */
 Component.prototype._dataChanger = function (change) {
-    if (this.lifeCycle.is('painting') || this.lifeCycle.is('created')) {
+    if (this.lifeCycle.painting || this.lifeCycle.created) {
         var len = this.dataChanges.length;
 
         if (!len) {
@@ -616,7 +617,7 @@ Component.prototype.watch = function (dataName, listener) {
  * @param {boolean} dontDetach 是否不要将节点从DOM移除
  */
 Component.prototype.dispose = function (dontDetach) {
-    if (!this.lifeCycle.is('disposed')) {
+    if (!this.lifeCycle.disposed) {
         elementDispose(this, dontDetach);
 
         this.ownSlotChilds = null;

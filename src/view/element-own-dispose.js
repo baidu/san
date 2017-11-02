@@ -11,7 +11,7 @@ var elementDispose = require('./element-dispose');
  * @param {boolean} dontDetach 是否不要将节点移除
  */
 function elementOwnDispose(dontDetach) {
-    if (!this.lifeCycle.is('disposed')) {
+    if (!this.lifeCycle.disposed) {
         elementDispose(this, dontDetach);
         this._toPhase('disposed');
     }

@@ -11,6 +11,7 @@ var attachings = require('./attachings');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 var fromElInitChilds = require('./from-el-init-childs');
 var isDataChangeByElement = require('./is-data-change-by-element');
+var LifeCycle = require('./life-cycle');
 var nodeInit = require('./node-init');
 var nodeEvalExpr = require('./node-eval-expr');
 var elementUpdateChilds = require('./element-update-childs');
@@ -141,7 +142,7 @@ function elementOwnAttached() {
  * @param {string} name 生命周期名称
  */
 function elementOwnToPhase(name) {
-    this.lifeCycle.set(name);
+    this.lifeCycle = LifeCycle[name];
 }
 
 

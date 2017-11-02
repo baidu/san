@@ -14,7 +14,7 @@ var attachings = require('./attachings');
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function elementOwnAttach(parentEl, beforeEl) {
-    if (!this.lifeCycle.is('attached')) {
+    if (!this.lifeCycle.attached) {
         elementAttach(this, parentEl, beforeEl);
         attachings.add(this);
         attachings.done();

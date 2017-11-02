@@ -9,7 +9,7 @@ var removeEl = require('../browser/remove-el');
  * 将元素从页面上移除
  */
 function elementOwnDetach() {
-    if (this.lifeCycle.is('attached')) {
+    if (this.lifeCycle.attached) {
         removeEl(this._getEl());
         this._toPhase('detached');
     }

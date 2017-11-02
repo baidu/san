@@ -3,6 +3,10 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+function lifeCycleOwnIs(name) {
+    return this[name];
+}
+
 /* eslint-disable fecs-valid-var-jsdoc */
 /**
  * 节点生命周期信息
@@ -10,78 +14,56 @@
  * @inner
  * @type {Object}
  */
-var LifeCycles = {
+var LifeCycle = {
+    start: {},
+
     compiled: {
-        compiled: 1
+        is: lifeCycleOwnIs,
+        compiled: true
     },
 
     inited: {
-        compiled: 1,
-        inited: 1
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true
     },
 
     painting: {
-        compiled: 1,
-        inited: 1,
-        painting: 1
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true,
+        painting: true
     },
 
     created: {
-        compiled: 1,
-        inited: 1,
-        created: 1
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true,
+        created: true
     },
 
     attached: {
-        compiled: 1,
-        inited: 1,
-        created: 1,
-        attached: 1
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true,
+        created: true,
+        attached: true
     },
 
     detached: {
-        compiled: 1,
-        inited: 1,
-        created: 1,
-        detached: 1
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true,
+        created: true,
+        detached: true
     },
 
     disposed: {
-        disposed: 1
+        is: lifeCycleOwnIs,
+        disposed: true
     }
 };
 /* eslint-enable fecs-valid-var-jsdoc */
 
-/**
- * 生命周期类
- *
- * @class
- */
-function LifeCycle() {
-    this.raw = {};
-}
-
-/**
- * 设置生命周期
- *
- * @param {string} name 生命周期名称
- */
-LifeCycle.prototype.set = function (name) {
-    var phase = LifeCycles[name];
-
-    if (phase) {
-        this.raw = phase;
-    }
-};
-
-/**
- * 是否位于生命周期
- *
- * @param {string} name 生命周期名称
- * @return {boolean}
- */
-LifeCycle.prototype.is = function (name) {
-    return this.raw[name];
-};
 
 exports = module.exports = LifeCycle;

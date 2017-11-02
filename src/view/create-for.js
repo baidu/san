@@ -19,6 +19,7 @@ var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
 var removeEl = require('../browser/remove-el');
 
+var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
 var genStumpHTML = require('./gen-stump-html');
 var nodeInit = require('./node-init');
@@ -304,10 +305,10 @@ function forOwnAttach(parentEl, beforeEl) {
  * 将元素从页面上移除的行为
  */
 function forOwnDetach() {
-    if (this.lifeCycle.is('attached')) {
+    if (this.lifeCycle.attached) {
         elementDisposeChilds(this, true);
         removeEl(this._getEl());
-        this.lifeCycle.set('detached');
+        this.lifeCycle = LifeCycle.detached;
     }
 }
 
@@ -340,7 +341,7 @@ function forOwnUpdate(changes) {
             && (parentLastChild === this.el || parentLastChild === this.childs[oldChildsLen - 1]._getEl())
         || oldChildsLen === 0 // 无孩子时
             && parentFirstChild === this.el
-            && parentLastChild === this.el
+            && parentLastChild === this.el;
 
     var isChildsRebuild;
 
@@ -532,7 +533,7 @@ function forOwnUpdate(changes) {
 
         // while (newChildsLen--) {
         //     var child = this.childs[newChildsLen];
-        //     if (child.lifeCycle.is('attached')) {
+        //     if (child.lifeCycle.attached) {
         //         childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
         //     }
         //     else {
@@ -547,7 +548,7 @@ function forOwnUpdate(changes) {
         for (var i = 0; i < newChildsLen; i++) {
             var child = this.childs[i];
 
-            if (child.lifeCycle.is('attached')) {
+            if (child.lifeCycle.attached) {
                 childsChanges[i].length && child._update(childsChanges[i]);
             }
             else {
@@ -556,7 +557,7 @@ function forOwnUpdate(changes) {
 
                 // flush new childs html
                 var nextChild = this.childs[i + 1];
-                if (!nextChild || nextChild.lifeCycle.is('attached')) {
+                if (!nextChild || nextChild.lifeCycle.attached) {
                     var beforeEl = nextChild && nextChild._getEl();
                     if (!beforeEl) {
                         beforeEl = document.createElement('script');

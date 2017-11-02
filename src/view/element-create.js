@@ -8,6 +8,7 @@ var evalExpr = require('../runtime/eval-expr');
 var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 var elementSetElProp = require('./element-set-el-prop');
+var LifeCycle = require('./life-cycle');
 
 /**
  * 创建节点对应的 HTMLElement 主元素
@@ -15,7 +16,7 @@ var elementSetElProp = require('./element-set-el-prop');
  * @param {Object} element 元素节点
  */
 function elementCreate(element) {
-    element.lifeCycle.set('painting');
+    element.lifeCycle = LifeCycle.painting;
     element.el = createEl(element.tagName);
     element.el.id = element.id;
 

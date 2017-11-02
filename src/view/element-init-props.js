@@ -12,7 +12,7 @@ var IndexedList = require('../util/indexed-list');
  * @param {Object} element 节点对象
  */
 function elementInitProps(element) {
-    element.lifeCycle = new LifeCycle();
+    element.lifeCycle = LifeCycle.start;
     element.childs = [];
     element.slotChilds = [];
     element._elFns = {};

@@ -154,7 +154,7 @@
         ExprType: ExprType,
 
         /**
-         * 生命周期类
+         * 生命周期
          *
          * @class
          */
