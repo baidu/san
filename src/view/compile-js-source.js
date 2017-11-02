@@ -232,7 +232,7 @@ var elementSourceCompiler = {
         }
         else {
             /* eslint-disable no-use-before-define */
-            each(aNode.childs, function (aNodeChild) {
+            each(aNode.children, function (aNodeChild) {
                 sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
             });
             /* eslint-enable no-use-before-define */
@@ -373,7 +373,7 @@ var aNodeCompiler = {
          */
         function rinseANode(ifANode) {
             var result = createANode({
-                childs: ifANode.childs,
+                children: ifANode.children,
                 props: ifANode.props,
                 events: ifANode.events,
                 tagName: ifANode.tagName,
@@ -396,7 +396,7 @@ var aNodeCompiler = {
      */
     compileFor: function (aNode, sourceBuffer, owner) {
         var forElementANode = createANode({
-            childs: aNode.childs,
+            children: aNode.children,
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
@@ -443,11 +443,11 @@ var aNodeCompiler = {
         var nameProp = aNode.props.get('name');
         var name = nameProp ? nameProp.raw : '____';
         var isGivenContent = 0;
-        var childs = aNode.childs;
+        var children = aNode.children;
 
         if (owner.aNode.givenSlots[name]) {
             isGivenContent = 1;
-            childs = owner.aNode.givenSlots[name];
+            children = owner.aNode.givenSlots[name];
             owner = owner.owner;
         }
 
@@ -459,7 +459,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('(function (componentCtx) {');
         }
 
-        each(childs, function (aNodeChild) {
+        each(children, function (aNodeChild) {
             sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
         });
 
@@ -482,11 +482,11 @@ var aNodeCompiler = {
         extra = extra || {};
         if (aNode.tagName === 'option'
             && !aNode.props.get('value')
-            && aNode.childs[0]
+            && aNode.children[0]
         ) {
             aNode.props.push({
                 name: 'value',
-                expr: aNode.childs[0].textExpr
+                expr: aNode.children[0].textExpr
             });
         }
 

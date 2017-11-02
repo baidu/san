@@ -21,11 +21,11 @@ function elementInitTagName(node) {
     // 所以没有设置 value 时，默认把 option 的内容作为 value
     if (node.tagName === 'option'
         && !node.aNode.props.get('value')
-        && node.aNode.childs[0]
+        && node.aNode.children[0]
     ) {
         node.aNode.props.push({
             name: 'value',
-            expr: node.aNode.childs[0].textExpr
+            expr: node.aNode.children[0].textExpr
         });
     }
 }

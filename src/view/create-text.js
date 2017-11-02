@@ -103,9 +103,9 @@ function textOwnUpdate(changes) {
 
                 // 无 stump 元素，所以需要根据组件结构定位
                 if (!this._located) {
-                    each(this.parent.childs, function (child, i) {
+                    each(this.parent.children, function (child, i) {
                         if (child === me) {
-                            me._prev = me.parent.childs[i - 1];
+                            me._prev = me.parent.children[i - 1];
                             return false;
                         }
                     });

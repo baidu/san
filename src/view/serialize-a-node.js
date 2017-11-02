@@ -55,8 +55,8 @@ function serializeANode(aNode) {
     else {
         str += '>';
 
-        // for childs
-        each(aNode.childs, function (child) {
+        // for children
+        each(aNode.children, function (child) {
             str += serializeANode(child);
         });
 

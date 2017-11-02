@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var elementDisposeChilds = require('./element-dispose-childs');
+var elementDisposeChildren = require('./element-dispose-children');
 var nodeDispose = require('./node-dispose');
 var un = require('../browser/un');
 
@@ -14,7 +14,7 @@ var un = require('../browser/un');
  * @param {boolean} dontDetach 是否不要将节点从DOM移除
  */
 function elementDispose(element, dontDetach) {
-    elementDisposeChilds(element, true);
+    elementDisposeChildren(element, true);
 
     /* eslint-disable guard-for-in */
     // el 事件解绑
@@ -42,8 +42,8 @@ function elementDispose(element, dontDetach) {
     element.binds = null;
     element._propVals = null;
 
-    // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
-    element.slotChilds = null;
+    // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+    element.slotChildren = null;
 
     nodeDispose(element);
 }

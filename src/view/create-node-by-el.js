@@ -20,7 +20,7 @@ var createSlot = require('./create-slot');
  *
  * @param {HTMLElement} el 页面中存在的元素
  * @param {Node} parent 父亲节点
- * @param {DOMChildsWalker} elWalker 遍历元素的功能对象
+ * @param {DOMChildrenWalker} elWalker 遍历元素的功能对象
  * @param {Model=} scope 所属数据环境
  * @return {Node}
  */
@@ -122,11 +122,11 @@ function createNodeByEl(el, parent, elWalker, scope) {
 }
 
 function createNodeByElseEl(option, type) {
-    var parentChilds = option.parent.childs;
-    var len = parentChilds.length;
+    var parentChildren = option.parent.children;
+    var len = parentChildren.length;
 
     matchif: while (len--) {
-        var ifNode = parentChilds[len];
+        var ifNode = parentChildren[len];
         switch (ifNode._type) {
             case NodeType.TEXT:
                 continue matchif;
@@ -142,8 +142,8 @@ function createNodeByElseEl(option, type) {
                 option.el.removeAttribute('s-' + type);
 
                 var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
-                ifNode.childs[0] = elseChild;
-                option.aNode.childs = option.aNode.childs.slice(0);
+                ifNode.children[0] = elseChild;
+                option.aNode.children = option.aNode.children.slice(0);
                 break matchif;
         }
 
@@ -152,11 +152,11 @@ function createNodeByElseEl(option, type) {
 }
 
 function createNodeByElseStump(option, type) {
-    var parentChilds = option.parent.childs;
-    var len = parentChilds.length;
+    var parentChildren = option.parent.children;
+    var len = parentChildren.length;
 
     matchif: while (len--) {
-        var ifNode = parentChilds[len];
+        var ifNode = parentChildren[len];
         switch (ifNode._type) {
             case NodeType.TEXT:
                 continue matchif;
@@ -171,7 +171,7 @@ function createNodeByElseStump(option, type) {
                     case 'else':
                         elseANode = parseTemplate(
                             option.stumpText.replace('san-else', '').replace('s-else', '')
-                        ).childs[0];
+                        ).children[0];
                         elseANode.directives.push({
                             value: 1,
                             name: type
@@ -182,7 +182,7 @@ function createNodeByElseStump(option, type) {
                     case 'elif':
                         elseANode = parseTemplate(
                             option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
-                        ).childs[0];
+                        ).children[0];
 
                         var ifDirective = elseANode.directives.get('if');
                         elseANode.directives.remove('if');

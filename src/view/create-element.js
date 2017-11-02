@@ -9,12 +9,12 @@ var IndexedList = require('../util/indexed-list');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var attachings = require('./attachings');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
-var fromElInitChilds = require('./from-el-init-childs');
+var fromElInitChildren = require('./from-el-init-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var LifeCycle = require('./life-cycle');
 var nodeInit = require('./node-init');
 var nodeEvalExpr = require('./node-eval-expr');
-var elementUpdateChilds = require('./element-update-childs');
+var elementUpdateChildren = require('./element-update-children');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
@@ -63,7 +63,7 @@ function createElement(options) {
         node.tagName = node.aNode.tagName;
 
         if (!node.aNode.directives.get('html')) {
-            fromElInitChilds(node);
+            fromElInitChildren(node);
         }
         node.el.id = node.id;
 
@@ -125,7 +125,7 @@ function elementOwnUpdate(changes) {
         });
     }
     else {
-        elementUpdateChilds(this, changes);
+        elementUpdateChildren(this, changes);
     }
 }
 

@@ -11,7 +11,7 @@
  * @param {ANode} aNode 抽象节点对象
  */
 function elementOwnPushChildANode(aNode) {
-    this.aNode.childs.push(aNode);
+    this.aNode.children.push(aNode);
 }
 // #[end]
 

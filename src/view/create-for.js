@@ -32,7 +32,7 @@ var getNodeStumpParent = require('./get-node-stump-parent');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
-var elementDisposeChilds = require('./element-dispose-childs');
+var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
 
 
@@ -145,7 +145,7 @@ function createForDirectiveChild(forElement, item, index) {
  */
 function createFor(options) {
     var node = nodeInit(options);
-    node.childs = [];
+    node.children = [];
     node._type = NodeType.FOR;
 
     node.attach = forOwnAttach;
@@ -165,7 +165,7 @@ function createFor(options) {
 
     // #[begin] reverse
     if (options.el) {
-        aNode = parseTemplate(options.stumpText).childs[0];
+        aNode = parseTemplate(options.stumpText).children[0];
         node.aNode = aNode;
 
         var index = 0;
@@ -185,7 +185,7 @@ function createFor(options) {
 
             var itemScope = new ForItemData(node, listData[index], index);
             var child = createNodeByEl(next, node, options.elWalker, itemScope);
-            node.childs.push(child);
+            node.children.push(child);
 
             index++;
             options.elWalker.goNext();
@@ -196,7 +196,7 @@ function createFor(options) {
     // #[end]
 
     node.itemANode = createANode({
-        childs: aNode.childs,
+        children: aNode.children,
         props: aNode.props,
         events: aNode.events,
         tagName: aNode.tagName,
@@ -211,20 +211,20 @@ function createFor(options) {
  * attach元素的html
  *
  * @param {Object} buf html串存储对象
- * @param {boolean} onlyChilds 是否只attach列表本身html，不包括stump部分
+ * @param {boolean} onlyChildren 是否只attach列表本身html，不包括stump部分
  */
-function forOwnAttachHTML(buf, onlyChilds) {
+function forOwnAttachHTML(buf, onlyChildren) {
     var me = this;
     each(
         nodeEvalExpr(me, me.aNode.directives.get('for').list),
         function (item, i) {
             var child = createForDirectiveChild(me, item, i);
-            me.childs.push(child);
+            me.children.push(child);
             child._attachHTML(buf);
         }
     );
 
-    if (!onlyChilds) {
+    if (!onlyChildren) {
         genStumpHTML(me, buf);
     }
 }
@@ -290,7 +290,7 @@ function forOwnAttach(parentEl, beforeEl) {
             nodeEvalExpr(this, this.aNode.directives.get('for').list),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
-                this.childs.push(child);
+                this.children.push(child);
                 child.attach(parentEl, el);
             },
             this
@@ -306,7 +306,7 @@ function forOwnAttach(parentEl, beforeEl) {
  */
 function forOwnDetach() {
     if (this.lifeCycle.attached) {
-        elementDisposeChilds(this, true);
+        elementDisposeChildren(this, true);
         removeEl(this._getEl());
         this.lifeCycle = LifeCycle.detached;
     }
@@ -320,14 +320,14 @@ function forOwnDetach() {
  * @param {Array} changes 数据变化信息
  */
 function forOwnUpdate(changes) {
-    var childsChanges = [];
-    var oldChildsLen = this.childs.length;
-    each(this.childs, function () {
-        childsChanges.push([]);
+    var childrenChanges = [];
+    var oldChildrenLen = this.children.length;
+    each(this.children, function () {
+        childrenChanges.push([]);
     });
 
 
-    var disposeChilds = [];
+    var disposeChildren = [];
     var forDirective = this.aNode.directives.get('for');
 
     this._getEl();
@@ -336,21 +336,21 @@ function forOwnUpdate(changes) {
     var parentLastChild = parentEl.lastChild;
 
     var isOnlyParentChild =
-        oldChildsLen > 0 // 有孩子时
-            && parentFirstChild === this.childs[0]._getEl()
-            && (parentLastChild === this.el || parentLastChild === this.childs[oldChildsLen - 1]._getEl())
-        || oldChildsLen === 0 // 无孩子时
+        oldChildrenLen > 0 // 有孩子时
+            && parentFirstChild === this.children[0]._getEl()
+            && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1]._getEl())
+        || oldChildrenLen === 0 // 无孩子时
             && parentFirstChild === this.el
             && parentLastChild === this.el;
 
-    var isChildsRebuild;
+    var isChildrenRebuild;
 
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
-            each(childsChanges, function (childChanges) {
+            each(childrenChanges, function (childChanges) {
                 childChanges.push(change);
             });
         }
@@ -367,12 +367,12 @@ function forOwnUpdate(changes) {
             };
 
             var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
-            childsChanges[changeIndex].push(change);
+            childrenChanges[changeIndex].push(change);
 
             switch (change.type) {
                 case DataChangeType.SET:
                     Data.prototype.set.call(
-                        this.childs[changeIndex].scope,
+                        this.children[changeIndex].scope,
                         change.expr,
                         change.value,
                         {silence: 1}
@@ -382,7 +382,7 @@ function forOwnUpdate(changes) {
 
                 case DataChangeType.SPLICE:
                     Data.prototype.splice.call(
-                        this.childs[changeIndex].scope,
+                        this.children[changeIndex].scope,
                         change.expr,
                         [].concat(change.index, change.deleteCount, change.insertions),
                         {silence: 1}
@@ -397,17 +397,17 @@ function forOwnUpdate(changes) {
             var newLen = newList && newList.length || 0;
 
             // 老的比新的多的部分，标记需要dispose
-            if (oldChildsLen > newLen) {
-                disposeChilds = disposeChilds.concat(this.childs.slice(newLen));
+            if (oldChildrenLen > newLen) {
+                disposeChildren = disposeChildren.concat(this.children.slice(newLen));
 
-                childsChanges.length = newLen;
-                this.childs.length = newLen;
+                childrenChanges.length = newLen;
+                this.children.length = newLen;
             }
 
             // 整项变更
             for (var i = 0; i < newLen; i++) {
-                childsChanges[i] = childsChanges[i] || [];
-                childsChanges[i].push({
+                childrenChanges[i] = childrenChanges[i] || [];
+                childrenChanges[i].push({
                     type: DataChangeType.SET,
                     option: change.option,
                     expr: {
@@ -419,25 +419,25 @@ function forOwnUpdate(changes) {
 
                 // 对list更上级数据的直接设置
                 if (relation < 2) {
-                    childsChanges[i].push(change);
+                    childrenChanges[i].push(change);
                 }
 
-                if (this.childs[i]) {
+                if (this.children[i]) {
                     Data.prototype.set.call(
-                        this.childs[i].scope,
+                        this.children[i].scope,
                         forDirective.item,
                         newList[i],
                         {silence: 1}
                     );
                 }
                 else {
-                    this.childs[i] = createForDirectiveChild(this, newList[i], i);
+                    this.children[i] = createForDirectiveChild(this, newList[i], i);
                 }
             }
 
-            isChildsRebuild = 1;
+            isChildrenRebuild = 1;
         }
-        else if (relation === 2 && change.type === DataChangeType.SPLICE && !isChildsRebuild) {
+        else if (relation === 2 && change.type === DataChangeType.SPLICE && !isChildrenRebuild) {
             // 变更表达式是list绑定表达式本身数组的SPLICE操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
@@ -451,10 +451,10 @@ function forOwnUpdate(changes) {
 
             var insertionsLen = change.insertions.length;
             if (insertionsLen !== deleteCount) {
-                each(this.childs, function (child, index) {
+                each(this.children, function (child, index) {
                     // update child index
                     if (index >= changeStart + deleteCount) {
-                        childsChanges[index].push(indexChange);
+                        childrenChanges[index].push(indexChange);
                         Data.prototype.set.call(
                             child.scope,
                             indexChange.expr,
@@ -466,21 +466,21 @@ function forOwnUpdate(changes) {
             }
 
             var spliceArgs = [changeStart, deleteCount];
-            var childsChangesSpliceArgs = [changeStart, deleteCount];
+            var childrenChangesSpliceArgs = [changeStart, deleteCount];
             each(change.insertions, function (insertion, index) {
                 spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
-                childsChangesSpliceArgs.push([]);
+                childrenChangesSpliceArgs.push([]);
             }, this);
 
-            disposeChilds = disposeChilds.concat(this.childs.splice.apply(this.childs, spliceArgs));
-            childsChanges.splice.apply(childsChanges, childsChangesSpliceArgs);
+            disposeChildren = disposeChildren.concat(this.children.splice.apply(this.children, spliceArgs));
+            childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);
         }
     }, this);
 
-    var newChildsLen = this.childs.length;
+    var newChildrenLen = this.children.length;
 
     // 标记 length 是否发生变化
-    if (newChildsLen !== oldChildsLen) {
+    if (newChildrenLen !== oldChildrenLen) {
         var lengthChange = {
             type: DataChangeType.SET,
             option: {},
@@ -492,16 +492,16 @@ function forOwnUpdate(changes) {
                 })
             }
         };
-        each(childsChanges, function (childChanges) {
+        each(childrenChanges, function (childChanges) {
             childChanges.push(lengthChange);
         });
     }
 
 
     // 清除应该干掉的 child
-    var violentClear = isOnlyParentChild && newChildsLen === 0;
+    var violentClear = isOnlyParentChild && newChildrenLen === 0;
 
-    each(disposeChilds, function (child) {
+    each(disposeChildren, function (child) {
         child.dispose(violentClear);
     });
 
@@ -514,10 +514,10 @@ function forOwnUpdate(changes) {
 
 
     // 对相应的项进行更新
-    if (oldChildsLen === 0 && isOnlyParentChild) {
+    if (oldChildrenLen === 0 && isOnlyParentChild) {
         var buf = createStrBuffer();
         each(
-            this.childs,
+            this.children,
             function (child) {
                 child._attachHTML(buf);
             }
@@ -531,10 +531,10 @@ function forOwnUpdate(changes) {
 
         // var attachStump = this;
 
-        // while (newChildsLen--) {
-        //     var child = this.childs[newChildsLen];
+        // while (newChildrenLen--) {
+        //     var child = this.children[newChildrenLen];
         //     if (child.lifeCycle.attached) {
-        //         childsChanges[newChildsLen].length && child._update(childsChanges[newChildsLen]);
+        //         childrenChanges[newChildrenLen].length && child._update(childrenChanges[newChildrenLen]);
         //     }
         //     else {
         //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
@@ -545,18 +545,18 @@ function forOwnUpdate(changes) {
 
         var newChildBuf;
 
-        for (var i = 0; i < newChildsLen; i++) {
-            var child = this.childs[i];
+        for (var i = 0; i < newChildrenLen; i++) {
+            var child = this.children[i];
 
             if (child.lifeCycle.attached) {
-                childsChanges[i].length && child._update(childsChanges[i]);
+                childrenChanges[i].length && child._update(childrenChanges[i]);
             }
             else {
                 newChildBuf = newChildBuf || createStrBuffer();
                 child._attachHTML(newChildBuf);
 
-                // flush new childs html
-                var nextChild = this.childs[i + 1];
+                // flush new children html
+                var nextChild = this.children[i + 1];
                 if (!nextChild || nextChild.lifeCycle.attached) {
                     var beforeEl = nextChild && nextChild._getEl();
                     if (!beforeEl) {

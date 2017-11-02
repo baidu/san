@@ -26,7 +26,7 @@ var isComponent = require('./is-component');
 var LifeCycle = require('./life-cycle');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
-var fromElInitChilds = require('./from-el-init-childs');
+var fromElInitChildren = require('./from-el-init-children');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -36,7 +36,7 @@ var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
-var elementUpdateChilds = require('./element-update-childs');
+var elementUpdateChildren = require('./element-update-children');
 var elementSetElProp = require('./element-set-el-prop');
 var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -61,7 +61,7 @@ function Component(options) {
     options = options || {};
 
     this.listeners = {};
-    this.ownSlotChilds = [];
+    this.ownSlotChildren = [];
 
 
     this.filters = this.filters || this.constructor.filters || {};
@@ -80,7 +80,7 @@ function Component(options) {
     if (givenANode) {
         // 组件运行时传入的结构，做slot解析
         var givenSlots = {};
-        each(givenANode.childs, function (child) {
+        each(givenANode.children, function (child) {
             var slotName = '____';
             var slotBind = !child.isText && child.props.get('slot');
             if (slotBind) {
@@ -99,7 +99,7 @@ function Component(options) {
             givenSlots: givenSlots,
 
             // 组件的实际结构应为template编译的结构
-            childs: protoANode.childs,
+            children: protoANode.children,
 
             // 合并运行时的一些绑定和事件声明
             props: protoANode.props,
@@ -138,7 +138,7 @@ function Component(options) {
         this.parent && this.parent._pushChildANode(this.aNode);
         this.tagName = this.aNode.tagName;
 
-        fromElInitChilds(this);
+        fromElInitChildren(this);
         attachings.add(this);
     }
     // #[end]
@@ -340,17 +340,17 @@ Component.prototype.ref = function (name) {
     var refComponent;
     var owner = this;
 
-    function slotChildsTraversal(childs) {
-        each(childs, function (slotChild) {
-            childsTraversal(slotChild);
+    function slotChildrenTraversal(children) {
+        each(children, function (slotChild) {
+            childrenTraversal(slotChild);
             return !refComponent;
         });
     }
 
-    function childsTraversal(element) {
-        slotChildsTraversal(element.slotChilds);
+    function childrenTraversal(element) {
+        slotChildrenTraversal(element.slotChildren);
 
-        each(element.childs, function (child) {
+        each(element.children, function (child) {
             if (isComponent(child)) {
                 var refDirective = child.aNode.directives.get('ref');
                 if (refDirective
@@ -359,19 +359,19 @@ Component.prototype.ref = function (name) {
                     refComponent = child;
                 }
 
-                slotChildsTraversal(child.slotChilds);
+                slotChildrenTraversal(child.slotChildren);
             }
 
             if (!refComponent && child._type !== NodeType.TEXT) {
-                childsTraversal(child);
+                childrenTraversal(child);
             }
 
             return !refComponent;
         });
     }
 
-    childsTraversal(this);
-    slotChildsTraversal(this.ownSlotChilds);
+    childrenTraversal(this);
+    slotChildrenTraversal(this.ownSlotChildren);
 
     return refComponent;
 };
@@ -422,10 +422,10 @@ Component.prototype._compile = function () {
             var aNode = parseTemplate(tpl, {
                 trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace
             });
-            var firstChild = aNode.childs[0];
+            var firstChild = aNode.children[0];
 
             // #[begin] error
-            if (aNode.childs.length !== 1 || firstChild.isText) {
+            if (aNode.children.length !== 1 || firstChild.isText) {
                 throw new Error('[SAN FATAL] template must have a root element.');
             }
             // #[end]
@@ -500,8 +500,8 @@ Component.prototype._update = function (changes) {
         });
     });
 
-    each(this.slotChilds, function (child) {
-        elementUpdateChilds(child, changes);
+    each(this.slotChildren, function (child) {
+        elementUpdateChildren(child, changes);
     });
 
 
@@ -524,7 +524,7 @@ Component.prototype._update = function (changes) {
             });
         });
 
-        elementUpdateChilds(this, dataChanges, 'ownSlotChilds');
+        elementUpdateChildren(this, dataChanges, 'ownSlotChildren');
 
         this._toPhase('updated');
 
@@ -619,7 +619,7 @@ Component.prototype.dispose = function (dontDetach) {
     if (!this.lifeCycle.disposed) {
         elementDispose(this, dontDetach);
 
-        this.ownSlotChilds = null;
+        this.ownSlotChildren = null;
 
         this.data.unlisten();
         this.dataChanger = null;

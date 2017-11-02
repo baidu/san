@@ -47,10 +47,10 @@
     // require('./view/event-declaration-listener');
     // require('./view/gen-element-start-html');
     // require('./view/gen-element-end-html');
-    // require('./view/gen-element-childs-html');
+    // require('./view/gen-element-children-html');
     // require('./view/create-node');
     // require('./parser/parse-anode-from-el');
-    // require('./view/from-el-init-childs');
+    // require('./view/from-el-init-children');
 
 
     // #[main-dependencies]

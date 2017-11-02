@@ -362,9 +362,9 @@ template 的 parse 直接返回一个 ANode 类的实例。实例上不包含任
 
 文本节点的表达式信息对象。当 isText 为 true 时有效，一定是一个 TEXT 表达式
 
-#### {Array.<ANode>} childs
+#### {Array.<ANode>} children
 
-ANode 的结构与 HTML 一样，是一个树状结构。childs 是当前节点的子节点列表。文本节点该属性无效
+ANode 的结构与 HTML 一样，是一个树状结构。children 是当前节点的子节点列表。文本节点该属性无效
 
 #### {IndexedList} props
 
@@ -455,7 +455,7 @@ ANode 的 props、events、directives 属性因为需要较频繁的根据 name 
 模板解析结果
 ----------
 
-模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `childs` 包含节点结构、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
+模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `children` 包含节点结构、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
 
 本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 实例结构请参考 [ANode 与相关类型结构](#user-content-anode-与相关类型结构) 章节。
 
@@ -474,7 +474,7 @@ aNode = {
     "directives": [],
     "props": [],
     "events": [],
-    "childs": [
+    "children": [
         {
             "isText": true,
             "text": "Hello {{name}}!",
@@ -551,7 +551,7 @@ aNode = {
         }
     ],
     "events": [],
-    "childs": [
+    "children": [
         {
             "isText": true,
             "text": "click here",
@@ -614,7 +614,7 @@ aNode = {
         }
     ],
     "events": [],
-    "childs": [],
+    "children": [],
     "tagName": "input"
 }
 ```
@@ -723,7 +723,7 @@ aNode = {
         }
     ],
     "events": [],
-    "childs": [],
+    "children": [],
     "tagName": "p"
 }
 ```
@@ -769,7 +769,7 @@ aNode = {
             }
         }
     ],
-    "childs": [
+    "children": [
         {
             "isText": true,
             "text": "click here",
@@ -801,7 +801,7 @@ aNode = {
     "directives": [],
     "props": [],
     "events": [],
-    "childs": [
+    "children": [
         {
             "directives": [
                 {
@@ -816,7 +816,7 @@ aNode = {
             ],
             "props": [],
             "events": [],
-            "childs": [
+            "children": [
                 {
                     "isText": true,
                     "text": "Hello!",
@@ -839,7 +839,7 @@ aNode = {
             ],
             "props": [],
             "events": [],
-            "childs": [
+            "children": [
                 {
                     "isText": true,
                     "text": "Offline",
@@ -878,7 +878,7 @@ aNode = {
     "directives": [],
     "props": [],
     "events": [],
-    "childs": [
+    "children": [
         {
             "isText": true,
             "text": "\n    "
@@ -909,7 +909,7 @@ aNode = {
             ],
             "props": [],
             "events": [],
-            "childs": [
+            "children": [
                 {
                     "isText": true,
                     "text": "{{p.name}} - {{p.email}}",

@@ -16,7 +16,7 @@ function nodeDispose(node) {
     node.aNode = null;
     node.parent = null;
     node.parentComponent = null;
-    node.childs = null;
+    node.children = null;
 }
 
 exports = module.exports = nodeDispose;

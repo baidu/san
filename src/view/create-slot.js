@@ -7,11 +7,11 @@ var empty = require('../util/empty');
 var createANode = require('../parser/create-a-node');
 var NodeType = require('./node-type');
 var isEndStump = require('./is-end-stump');
-var genElementChildsHTML = require('./gen-element-childs-html');
+var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var createNodeByEl = require('./create-node-by-el');
-var elementDisposeChilds = require('./element-dispose-childs');
+var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
 
 /**
@@ -40,10 +40,10 @@ function createSlot(options) {
         this.name = nameBind ? nameBind.raw : '____';
 
         var givenSlots = literalOwner.aNode.givenSlots;
-        var givenChilds = givenSlots && givenSlots[this.name];
-        aNode.childs = givenChilds || options.aNode.childs.slice(0);
+        var givenChildren = givenSlots && givenSlots[this.name];
+        aNode.children = givenChildren || options.aNode.children.slice(0);
 
-        if (givenChilds) {
+        if (givenChildren) {
             options.owner = literalOwner.owner;
             options.scope = literalOwner.scope;
         }
@@ -57,7 +57,7 @@ function createSlot(options) {
 
 
     var node = nodeInit(options);
-    node.childs = [];
+    node.children = [];
     node._type = NodeType.SLOT;
     node.dispose = slotOwnDispose;
 
@@ -72,12 +72,12 @@ function createSlot(options) {
     var parent = node.parent;
     while (parent) {
         if (parent === node.owner) {
-            parent.ownSlotChilds.push(node);
+            parent.ownSlotChildren.push(node);
             break;
         }
 
         if (parent._type !== NodeType.SLOT && parent.owner === node.owner) {
-            parent.slotChilds.push(node);
+            parent.slotChildren.push(node);
             break;
         }
 
@@ -96,7 +96,7 @@ function createSlot(options) {
             }
 
             var child = createNodeByEl(next, node, options.elWalker);
-            node.childs.push(child);
+            node.children.push(child);
             options.elWalker.goNext();
         }
 
@@ -116,7 +116,7 @@ function createSlot(options) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
-    genElementChildsHTML(this, buf);
+    genElementChildrenHTML(this, buf);
 }
 
 /**
@@ -133,7 +133,7 @@ function slotOwnGetEl() {
  * 销毁释放 slot
  */
 function slotOwnDispose(dontDetach) {
-    elementDisposeChilds(this, dontDetach);
+    elementDisposeChildren(this, dontDetach);
     nodeDispose(this);
 }
 

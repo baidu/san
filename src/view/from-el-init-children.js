@@ -13,7 +13,7 @@ var createNodeByEl = require('./create-node-by-el');
  * @class
  * @param {HTMLElement} el 要遍历的元素
  */
-function DOMChildsWalker(el) {
+function DOMChildrenWalker(el) {
     this.raw = [];
     this.index = 0;
 
@@ -35,7 +35,7 @@ function DOMChildsWalker(el) {
 /**
  * 往下走一个元素
  */
-DOMChildsWalker.prototype.goNext = function () {
+DOMChildrenWalker.prototype.goNext = function () {
     this.current = this.raw[++this.index];
     this.next = this.raw[this.index + 1];
 };
@@ -45,13 +45,13 @@ DOMChildsWalker.prototype.goNext = function () {
  *
  * @param {HTMLElement} element 已有元素
  */
-function fromElInitChilds(element) {
-    var walker = new DOMChildsWalker(element.el);
+function fromElInitChildren(element) {
+    var walker = new DOMChildrenWalker(element.el);
     var current;
     while ((current = walker.current)) {
         var child = createNodeByEl(current, element, walker);
         if (child && !child._static) {
-            element.childs.push(child);
+            element.children.push(child);
         }
 
         walker.goNext();
@@ -59,4 +59,4 @@ function fromElInitChilds(element) {
 }
 // #[end]
 
-exports = module.exports = fromElInitChilds;
+exports = module.exports = fromElInitChildren;

@@ -15,8 +15,8 @@ var nodeEvalExpr = require('./node-eval-expr');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var getNodeStumpParent = require('./get-node-stump-parent');
-var elementUpdateChilds = require('./element-update-childs');
-var elementDisposeChilds = require('./element-dispose-childs');
+var elementUpdateChildren = require('./element-update-children');
+var elementDisposeChildren = require('./element-dispose-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
@@ -28,7 +28,7 @@ var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
  */
 function createIf(options) {
     var node = nodeInit(options);
-    node.childs = [];
+    node.children = [];
     node._type = NodeType.IF;
 
     node.dispose = nodeOwnSimpleDispose;
@@ -44,7 +44,7 @@ function createIf(options) {
     // #[begin] reverse
     if (options.el) {
         if (options.el.nodeType === 8) {
-            var aNode = parseTemplate(options.stumpText).childs[0];
+            var aNode = parseTemplate(options.stumpText).children[0];
             node.aNode = aNode;
         }
         else {
@@ -57,8 +57,8 @@ function createIf(options) {
             options.el.removeAttribute('s-if');
 
             var child = createNodeByEl(options.el, node, options.elWalker);
-            node.childs[0] = child;
-            node.aNode.childs = child.aNode.childs.slice(0);
+            node.children[0] = child;
+            node.aNode.children = child.aNode.children.slice(0);
 
             node.el = el;
         }
@@ -82,7 +82,7 @@ function createIf(options) {
  */
 function createIfDirectiveChild(directiveANode, mainIf) {
     var childANode = createANode({
-        childs: directiveANode.childs,
+        children: directiveANode.children,
         props: directiveANode.props,
         events: directiveANode.events,
         tagName: directiveANode.tagName,
@@ -124,7 +124,7 @@ function ifOwnAttachHTML(buf) {
     }
 
     if (child) {
-        me.childs[0] = child;
+        me.children[0] = child;
         child._attachHTML(buf);
         me.elseIndex = elseIndex;
     }
@@ -158,17 +158,17 @@ function ifOwnUpdate(changes) {
     }
 
     if (elseIndex === me.elseIndex) {
-        elementUpdateChilds(me, changes);
+        elementUpdateChildren(me, changes);
     }
     else {
-        elementDisposeChilds(me);
+        elementDisposeChildren(me);
 
         if (typeof elseIndex !== 'undefined') {
             var child = createIfDirectiveChild(childANode, me);
             var parentEl = getNodeStumpParent(me);
             child.attach(parentEl, me._getEl() || parentEl.firstChild);
 
-            me.childs[0] = child;
+            me.children[0] = child;
         }
 
         me.elseIndex = elseIndex;

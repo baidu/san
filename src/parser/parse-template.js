@@ -104,12 +104,12 @@ function parseTemplate(source, options) {
             // match if directive for else/elif directive
             var elseDirective = aElement.directives.get('else') || aElement.directives.get('elif');
             if (elseDirective) {
-                var parentChildsLen = currentNode.childs.length;
+                var parentChildrenLen = currentNode.children.length;
 
-                while (parentChildsLen--) {
-                    var parentChild = currentNode.childs[parentChildsLen];
+                while (parentChildrenLen--) {
+                    var parentChild = currentNode.children[parentChildrenLen];
                     if (parentChild.isText) {
-                        currentNode.childs.splice(parentChildsLen, 1);
+                        currentNode.children.splice(parentChildrenLen, 1);
                         continue;
                     }
 
@@ -131,12 +131,12 @@ function parseTemplate(source, options) {
                         tagName: 'tbody',
                         parent: currentNode
                     });
-                    currentNode.childs.push(tbodyNode);
+                    currentNode.children.push(tbodyNode);
                     currentNode = tbodyNode;
                     aElement.parent = tbodyNode;
                 }
 
-                currentNode.childs.push(aElement);
+                currentNode.children.push(aElement);
             }
 
             if (!tagClose) {
@@ -171,7 +171,7 @@ function parseTemplate(source, options) {
         }
 
         if (text) {
-            currentNode.childs.push(createANode({
+            currentNode.children.push(createANode({
                 isText: 1,
                 text: text,
                 parent: currentNode
