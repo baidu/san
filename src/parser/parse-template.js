@@ -37,6 +37,8 @@ function parseTemplate(source, options) {
 
     var tagMatch;
     var currentNode = rootNode;
+    var stack = [rootNode];
+    var stackIndex = 0;
     var beforeLastIndex = 0;
 
     while ((tagMatch = walker.match(tagReg)) != null) {
@@ -53,18 +55,22 @@ function parseTemplate(source, options) {
         if (tagEnd && walker.currentCode() === 62) {
             // 满足关闭标签的条件时，关闭标签
             // 向上查找到对应标签，找不到时忽略关闭
-            var closeTargetNode = currentNode;
-            while (closeTargetNode && closeTargetNode.tagName !== tagName) {
-                closeTargetNode = closeTargetNode.parent;
+            var closeIndex = stackIndex;
+            while (closeIndex > 0 && stack[closeIndex].tagName !== tagName) {
+                closeIndex--;
             }
 
-            closeTargetNode && (currentNode = closeTargetNode.parent);
+            if (closeIndex > 0) {
+                stack.length = closeIndex;
+                stackIndex = closeIndex - 1;
+                currentNode = stack[stackIndex];
+            }
+
             walker.go(1);
         }
         else if (!tagEnd) {
             var aElement = createANode({
-                tagName: tagName,
-                parent: currentNode
+                tagName: tagName
             });
             var tagClose = autoCloseTags[tagName];
 
@@ -128,12 +134,11 @@ function parseTemplate(source, options) {
             else {
                 if (aElement.tagName === 'tr' && currentNode.tagName === 'table') {
                     var tbodyNode = createANode({
-                        tagName: 'tbody',
-                        parent: currentNode
+                        tagName: 'tbody'
                     });
                     currentNode.children.push(tbodyNode);
                     currentNode = tbodyNode;
-                    aElement.parent = tbodyNode;
+                    stack[++stackIndex] = tbodyNode;
                 }
 
                 currentNode.children.push(aElement);
@@ -141,6 +146,7 @@ function parseTemplate(source, options) {
 
             if (!tagClose) {
                 currentNode = aElement;
+                stack[++stackIndex] = aElement;
             }
         }
 
@@ -173,8 +179,7 @@ function parseTemplate(source, options) {
         if (text) {
             currentNode.children.push(createANode({
                 isText: 1,
-                text: text,
-                parent: currentNode
+                text: text
             }));
         }
     }
