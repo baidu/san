@@ -119,6 +119,8 @@ describe("Component", function () {
         expect(labelAttached).toBe(1);
         expect(labelDetached).toBe(0);
 
+        expect(myComponent.nextTick).toBe(san.nextTick);
+
         myComponent.detach();
         expect(!!myComponent.lifeCycle.is('created')).toBe(true);
         expect(!!myComponent.lifeCycle.is('attached')).toBe(false);
