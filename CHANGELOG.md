@@ -2,6 +2,15 @@
 ChangeLog
 ========
 
+
+3.3.0
+-------
+
++ 【变更】- parseTemplate 的 ANode 去除 parent 的引用。消除循环引用后可以 JSON.stringify
++ 【变更】- ANode 上子节点命名由 childs 变更为 children
++ 【优化】- 组件 LifeCycle 对象静态化
+
+
 3.2.9
 -------
 
