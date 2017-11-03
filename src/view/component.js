@@ -195,6 +195,13 @@ function Component(options) {
  */
 Component.prototype._type = NodeType.CMPT;
 
+/**
+ * 在下一个更新周期运行函数
+ *
+ * @param {Function} fn 要运行的函数
+ */
+Component.prototype.nextTick = nextTick;
+
 /* eslint-disable operator-linebreak */
 /**
  * 使节点到达相应的生命周期
