@@ -1464,9 +1464,9 @@ describe("ForDirective", function () {
         });
     });
 
-    it("list data (Array) has string property directly", function (done) {
+    it("list data (Array) has string property directly, dont throw error", function (done) {
         var MyComponent = san.defineComponent({
-            template: `<div><h3>{{list.page.title}}</h3><p s-for="item in list">{{item}}</p></div>`
+            template: `<div><p s-for="item in list">{{item}}</p></div>`
         });
 
         var data = {
@@ -1487,12 +1487,9 @@ describe("ForDirective", function () {
         expect(ps[0].innerHTML).toBe('otakustay');
 
 
-        var h3 = wrap.getElementsByTagName('h3')[0];
-        expect(h3.innerHTML).toBe('super');
-
 
         myComponent.data.push('list', 'errorrik');
-        myComponent.data.set('list.title', 'supers');
+        myComponent.data.set('list.title', 'good');
 
         san.nextTick(function () {
             var ps = wrap.getElementsByTagName('p');
@@ -1500,9 +1497,6 @@ describe("ForDirective", function () {
             expect(ps[0].innerHTML).toBe('otakustay');
             expect(ps[1].innerHTML).toBe('errorrik');
 
-
-            var h3 = wrap.getElementsByTagName('h3')[0];
-            expect(h3.innerHTML).toBe('supers');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
