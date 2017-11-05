@@ -145,12 +145,10 @@ function immutableSet(source, exprPaths, value, data) {
     if (source instanceof Array) {
         var index = +prop;
 
-        if (!isNaN(index)) {
-            result = source.slice(0);
-            result[index] = immutableSet(result[index], exprPaths.slice(1), value, data);
+        result = source.slice(0);
+        result[isNaN(index) ? prop : index] = immutableSet(source[index], exprPaths.slice(1), value, data);
 
-            return result;
-        }
+        return result;
     }
     else if (typeof source === 'object') {
         result = {};

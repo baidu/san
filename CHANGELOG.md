@@ -8,6 +8,7 @@ ChangeLog
 
 + 【变更】- parseTemplate 的 ANode 去除 parent 的引用。消除循环引用后可以 JSON.stringify
 + 【变更】- ANode 上子节点命名由 childs 变更为 children
++ 【优化】- 当数组上有非数字索引的成员并发生变更时，添加判断使视图更新时不报错，增加健壮性
 + 【优化】- 组件 LifeCycle 对象静态化
 
 

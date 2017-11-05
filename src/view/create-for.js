@@ -359,35 +359,42 @@ function forOwnUpdate(changes) {
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
             var forLen = forDirective.list.paths.length;
-
-            change = extend({}, change);
-            change.expr = {
-                type: ExprType.ACCESSOR,
-                paths: forDirective.item.paths.concat(changePaths.slice(forLen + 1))
-            };
-
             var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
-            childrenChanges[changeIndex].push(change);
 
-            switch (change.type) {
-                case DataChangeType.SET:
-                    Data.prototype.set.call(
-                        this.children[changeIndex].scope,
-                        change.expr,
-                        change.value,
-                        {silence: 1}
-                    );
-                    break;
+            if (isNaN(changeIndex)) {
+                 each(childrenChanges, function (childChanges) {
+                    childChanges.push(change);
+                });
+            }
+            else {
+                change = extend({}, change);
+                change.expr = {
+                    type: ExprType.ACCESSOR,
+                    paths: forDirective.item.paths.concat(changePaths.slice(forLen + 1))
+                };
+
+                childrenChanges[changeIndex].push(change);
+
+                switch (change.type) {
+                    case DataChangeType.SET:
+                        Data.prototype.set.call(
+                            this.children[changeIndex].scope,
+                            change.expr,
+                            change.value,
+                            {silence: 1}
+                        );
+                        break;
 
 
-                case DataChangeType.SPLICE:
-                    Data.prototype.splice.call(
-                        this.children[changeIndex].scope,
-                        change.expr,
-                        [].concat(change.index, change.deleteCount, change.insertions),
-                        {silence: 1}
-                    );
-                    break;
+                    case DataChangeType.SPLICE:
+                        Data.prototype.splice.call(
+                            this.children[changeIndex].scope,
+                            change.expr,
+                            [].concat(change.index, change.deleteCount, change.insertions),
+                            {silence: 1}
+                        );
+                        break;
+                }
             }
         }
         else if (change.type === DataChangeType.SET) {
