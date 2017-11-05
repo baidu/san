@@ -1464,4 +1464,50 @@ describe("ForDirective", function () {
         });
     });
 
+    it("list data (Array) has string property directly", function (done) {
+        var MyComponent = san.defineComponent({
+            template: `<div><h3>{{list.page.title}}</h3><p s-for="item in list">{{item}}</p></div>`
+        });
+
+        var data = {
+            list: ['otakustay']
+        };
+        data.list.title = "super";
+
+        var myComponent = new MyComponent({
+            data: data
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(1);
+        expect(ps[0].innerHTML).toBe('otakustay');
+
+
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        expect(h3.innerHTML).toBe('super');
+
+
+        myComponent.data.push('list', 'errorrik');
+        myComponent.data.set('list.title', 'supers');
+
+        san.nextTick(function () {
+            var ps = wrap.getElementsByTagName('p');
+            expect(ps.length).toBe(2);
+            expect(ps[0].innerHTML).toBe('otakustay');
+            expect(ps[1].innerHTML).toBe('errorrik');
+
+
+            var h3 = wrap.getElementsByTagName('h3')[0];
+            expect(h3.innerHTML).toBe('supers');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });
