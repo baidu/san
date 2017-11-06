@@ -37,10 +37,23 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
 
     switch (prefix) {
         case 'on':
-            aNode.events.push({
-                name: realName,
-                expr: parseCall(value)
-            });
+            var event = {
+                name: realName
+            };
+            aNode.events.push(event);
+
+            var colonIndex = value.indexOf(':');
+            if (colonIndex > 0) {
+                var modifier = value.slice(0, colonIndex);
+
+                // eventHandler("dd:aa") 这种情况不能算modifier，需要辨识
+                if (/^[a-z]+$/i.test(modifier)) {
+                    event.modifier = modifier;
+                    value = value.slice(colonIndex + 1);
+                }
+            }
+
+            event.expr = parseCall(value);
             break;
 
         case 'san':
