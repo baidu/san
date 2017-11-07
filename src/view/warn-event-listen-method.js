@@ -9,11 +9,11 @@
  *
  * @param {string} name 事件名
  * @param {Component} owner 所属的组件对象
- * @param {Function} listener 监听器
+ * @param {string} listener 事件监听方法名
  */
-function warnEventBind(name, owner, listener) {
-    if (typeof owner[listener] === 'undefined') {
-        var message = '[SAN WARNING] on ' + name + ' event listener "' + listener + '" may not defined';
+function warnEventListenMethod(name, owner, listener) {
+    if (owner[listener] == null) {
+        var message = '[SAN WARNING] ' + name + ' listen fail,"' + listener + '" not exist';
 
         /* eslint-disable no-console */
         if (typeof console === 'object' && console.warn) {
@@ -27,4 +27,4 @@ function warnEventBind(name, owner, listener) {
 }
 // #[end]
 
-exports = module.exports = warnEventBind;
+exports = module.exports = warnEventListenMethod;

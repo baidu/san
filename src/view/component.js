@@ -45,7 +45,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
-var warnEventBind = require('./warn-event-bind');
+var warnEventListenMethod = require('./warn-event-listen-method');
 
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
@@ -110,7 +110,7 @@ function Component(options) {
         });
         each(givenANode.events, function (eventBind) {
             // #[begin] error
-            warnEventBind(eventBind.name, options.owner, eventBind.expr.name);
+            warnEventListenMethod(eventBind.name, options.owner, eventBind.expr.name);
             // #[end]
 
             me.on(
