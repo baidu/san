@@ -12,7 +12,7 @@ var isBrowser = require('../browser/is-browser');
 var eventDeclarationListener = require('./event-declaration-listener');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
-
+var warnEventListenMethod = require('./warn-event-listen-method');
 
 /**
  * 完成元素 attached 后的行为
@@ -87,11 +87,16 @@ function elementAttached(element) {
 
     // bind events
     each(element.aNode.events, function (eventBind) {
+        var owner = isComponent(element) ? element : element.owner;
+        // #[begin] error
+        warnEventListenMethod(eventBind.name, owner, eventBind.expr.name);
+        // #[end]
+
         element._onEl(
             eventBind.name,
             bind(
                 eventDeclarationListener,
-                isComponent(element) ? element : element.owner,
+                owner,
                 eventBind,
                 0,
                 element.data || element.scope

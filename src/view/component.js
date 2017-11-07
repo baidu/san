@@ -45,6 +45,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
+var warnEventListenMethod = require('./warn-event-listen-method');
 
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
@@ -108,6 +109,10 @@ function Component(options) {
             directives: givenANode.directives
         });
         each(givenANode.events, function (eventBind) {
+            // #[begin] error
+            warnEventListenMethod(eventBind.name, options.owner, eventBind.expr.name);
+            // #[end]
+
             me.on(
                 eventBind.name,
                 bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
