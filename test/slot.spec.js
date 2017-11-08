@@ -1,6 +1,7 @@
 describe("Slot", function () {
 
     it("text only", function (done) {
+
         var Block = san.defineComponent({
             template: '<u class="x-block"><slot/></u>'
         });
@@ -81,6 +82,51 @@ describe("Slot", function () {
             done();
         })
     });
+
+
+
+    it("named", function (done) {
+        var Tab = san.defineComponent({
+            template: '<div>'
+                +   '<div class="head"><slot name="title"></slot></div>'
+                +   '<div>content</div>'
+                + '</div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-tab': Tab
+            },
+
+            template: '<div><ui-tab>'
+                + '<h3 slot="title" title="1">1</h3>'
+                + '</ui-tab></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var head = wrap.firstChild.firstChild.firstChild;
+            var main = head.nextSibling;
+
+            var h3 = head.getElementsByTagName('h3')[0];
+
+            expect(h3.title).toBe('1');
+
+            if (typeof window === 'object') {
+                expect(window.name).not.toBe('title');
+            }
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
 
     it("default and named", function (done) {
         var Tab = san.defineComponent({

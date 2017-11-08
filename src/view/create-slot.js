@@ -31,16 +31,16 @@ function createSlot(options) {
             options.scope = literalOwner.scope;
             options.stumpText = options.stumpText.slice(1);
         }
-        this.name = options.stumpText || '____';
+        options.name = options.stumpText || '____';
     }
     else {
     // #[end]
 
         var nameBind = options.aNode.props.get('name');
-        this.name = nameBind ? nameBind.raw : '____';
+        options.name = nameBind ? nameBind.raw : '____';
 
         var givenSlots = literalOwner.aNode.givenSlots;
-        var givenChilds = givenSlots && givenSlots[this.name];
+        var givenChilds = givenSlots && givenSlots[options.name];
         aNode.childs = givenChilds || options.aNode.childs.slice(0);
 
         if (givenChilds) {
