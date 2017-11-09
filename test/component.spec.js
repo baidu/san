@@ -678,6 +678,54 @@ describe("Component", function () {
 
     });
 
+    it("custom event default arg $event", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span on-click="clicker" style="cursor:pointer">click here to fire change event with no arg</span></a>',
+
+            clicker: function () {
+                this.fire('change', "Hello");
+            }
+        });
+
+        var changed = false;
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label on-change="labelChange"></ui-label></div>',
+
+            labelChange: function (event) {
+                expect(event).toBe("Hello");
+                changed = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+            if (changed) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        var span = wrap.getElementsByTagName('span')[0];
+        triggerEvent('#' + span.id, 'click');
+
+        doneSpec();
+    });
+
     it("custom event should not pass DOM Event object, when fire with no arg", function (done) {
         var Label = san.defineComponent({
             template: '<a><span on-click="clicker" id="component-custom-event1" style="cursor:pointer">click here to fire change event with no arg</span></a>',
