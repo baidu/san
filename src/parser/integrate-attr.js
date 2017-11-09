@@ -53,7 +53,17 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
                 }
             }
 
-            event.expr = parseCall(value);
+            var expr = parseCall(value);
+            if (expr.args.length === 0) {
+                expr.args.push({
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: '$event'}
+                    ]
+                });
+            }
+
+            event.expr = expr;
             break;
 
         case 'san':
