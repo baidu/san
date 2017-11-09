@@ -18,15 +18,21 @@ var ExprType = require('../parser/expr-type');
 function eventDeclarationListener(eventBind, isComponentEvent, model, e) {
     var args = [];
     var expr = eventBind.expr;
-
-    each(expr.args, function (argExpr) {
-        args.push(argExpr.type === ExprType.ACCESSOR
-                && argExpr.paths.length === 1
-                && argExpr.paths[0].value === '$event'
-            ? (isComponentEvent ? e : e || window.event)
-            : evalExpr(argExpr, model)
-        );
-    });
+    if (!expr.args.length) {
+        if (!isComponentEvent) {
+            args.push(e || window.event);
+        }
+    }
+    else {
+        each(expr.args, function (argExpr) {
+            args.push(argExpr.type === ExprType.ACCESSOR
+                    && argExpr.paths.length === 1
+                    && argExpr.paths[0].value === '$event'
+                ? (isComponentEvent ? e : e || window.event)
+                : evalExpr(argExpr, model)
+            );
+        });
+    }
 
     var method = this[expr.name];
     if (typeof method === 'function') {
