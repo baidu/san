@@ -40,9 +40,8 @@ function createSlot(options) {
         options.name = nameBind ? nameBind.raw : '____';
 
         var givenSlots = literalOwner.aNode.givenSlots;
-        var givenChilds = givenSlots && givenSlots[options.name];
-        aNode.childs = givenChilds || options.aNode.childs.slice(0);
-
+        var givenChildren = givenSlots && givenSlots[options.name];
+        aNode.children = givenChildren || options.aNode.children.slice(0);
 
         if (givenChildren) {
             options.owner = literalOwner.owner;
