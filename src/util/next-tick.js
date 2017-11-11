@@ -49,17 +49,14 @@ function nextTick(fn, thisArg) {
         });
     };
 
-    if (typeof MutationObserver === 'function') {
-        var num = 1;
-        var observer = new MutationObserver(nextHandler);
-        var text = document.createTextNode(num);
-        observer.observe(text, {
-            characterData: true
-        });
-        text.data = ++num;
-    }
-    else if (typeof setImmediate === 'function') {
+    if (typeof setImmediate === 'function') {
         setImmediate(nextHandler);
+    }
+    else if (typeof MessageChannel === 'function') {
+        var channel = new MessageChannel();
+        var port = channel.port2;
+        channel.port1.onmessage = nextHandler;
+        port.postMessage(1);
     }
     else {
         setTimeout(nextHandler, 0);
