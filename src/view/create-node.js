@@ -10,6 +10,7 @@ var createElement = require('./create-element');
 var createSlot = require('./create-slot');
 var createFor = require('./create-for');
 var createIf = require('./create-if');
+var createTemplate = require('create-template');
 
 
 /**
@@ -48,8 +49,12 @@ function createNode(aNode, parent, scope) {
         return new ComponentType(options);
     }
 
-    if (aNode.tagName === 'slot') {
-        return createSlot(options);
+    switch (aNode.tagName) {
+        case 'slot':
+            return createSlot(options);
+
+        case 'template':
+            return createTemplate(options);
     }
 
     return createElement(options);

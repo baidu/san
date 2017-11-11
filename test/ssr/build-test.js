@@ -183,7 +183,24 @@ let componentDatas = [
     {num: 300},
     {num: 30000},
     {num: 30},
-    {searchValue: 'er'}
+    {searchValue: 'er'},
+    {persons: []},
+    {
+        cond: false,
+        persons: [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]
+    },
+    {
+        persons: [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]
+    },
+    {
+        num: 300
+    }
 ];
 
 

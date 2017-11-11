@@ -43,24 +43,25 @@ function createIf(options) {
 
     // #[begin] reverse
     if (options.el) {
-        if (options.el.nodeType === 8) {
-            var aNode = parseTemplate(options.stumpText).children[0];
-            node.aNode = aNode;
-        }
-        else {
-            node.elseIndex = -1;
-            var el = document.createComment('san:' + this.id);
-            options.el.parentNode.insertBefore(el, options.el.nextSibling);
+        var aNode = parseTemplate(options.stumpText).children[0];
+        node.aNode = aNode;
+
+        //node.elseIndex = -1;
+        while (1) {
+        /* eslint-enable no-constant-condition */
+            var next = options.elWalker.next;
+            if (isEndStump(next, 'if')) {
+                options.elWalker.goNext();
+                removeEl(options.el);
+                node.el = next;
+                break;
+            }
 
 
-            options.el.removeAttribute('san-if');
-            options.el.removeAttribute('s-if');
-
-            var child = createNodeByEl(options.el, node, options.elWalker);
+            options.elWalker.goNext();
+            var child = createNodeByEl(next, node, options.elWalker);
+            node.elseIndex = +child.aNode.directives.get('ifindex');
             node.children[0] = child;
-            node.aNode.children = child.aNode.children.slice(0);
-
-            node.el = el;
         }
 
         node.parent._pushChildANode(node.aNode);

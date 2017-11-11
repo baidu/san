@@ -41,9 +41,10 @@ function createNodeByEl(el, parent, elWalker, scope) {
         var stumpMatch = el.data.match(/^\s*s-([a-z]+)(:[\s\S]+)?$/);
 
         if (stumpMatch) {
+            option.stumpType = stumpMatch[1];
             option.stumpText = stumpMatch[2] ? stumpMatch[2].slice(1) : '';
 
-            switch (stumpMatch[1]) {
+            switch (option.stumpType) {
                 case 'text':
                     return createText(option);
 
@@ -56,11 +57,8 @@ function createNodeByEl(el, parent, elWalker, scope) {
                 case 'if':
                     return createIf(option);
 
-
-                case 'else':
-                case 'elif':
-                    createNodeByElseStump(option, stumpMatch[1]);
-                    return;
+                case 'tpl':
+                    return createTemplate(option);
 
                 case 'data':
                     // fill component data
@@ -99,19 +97,6 @@ function createNodeByEl(el, parent, elWalker, scope) {
     }
 
 
-    if (childANode.directives.get('if')) {
-        return createIf(option);
-    }
-
-    if (childANode.directives.get('else')) {
-        return createNodeByElseEl(option, 'else');
-    }
-
-    if (childANode.directives.get('elif')) {
-        return createNodeByElseEl(option, 'elif');
-    }
-
-
     // as Component
     if (ComponentClass) {
         return new ComponentClass(option);
@@ -121,84 +106,6 @@ function createNodeByEl(el, parent, elWalker, scope) {
     return createElement(option);
 }
 
-function createNodeByElseEl(option, type) {
-    var parentChildren = option.parent.children;
-    var len = parentChildren.length;
-
-    matchif: while (len--) {
-        var ifNode = parentChildren[len];
-        switch (ifNode._type) {
-            case NodeType.TEXT:
-                continue matchif;
-
-            case NodeType.IF:
-                if (!ifNode.aNode.elses) {
-                    ifNode.aNode.elses = [];
-                }
-                ifNode.aNode.elses.push(option.aNode);
-                ifNode.elseIndex = ifNode.aNode.elses.length - 1;
-
-                option.el.removeAttribute('san-' + type);
-                option.el.removeAttribute('s-' + type);
-
-                var elseChild = createNodeByEl(option.el, ifNode, option.elWalker);
-                ifNode.children[0] = elseChild;
-                option.aNode.children = option.aNode.children.slice(0);
-                break matchif;
-        }
-
-        throw new Error('[SAN FATEL] ' + type + ' not match if.');
-    }
-}
-
-function createNodeByElseStump(option, type) {
-    var parentChildren = option.parent.children;
-    var len = parentChildren.length;
-
-    matchif: while (len--) {
-        var ifNode = parentChildren[len];
-        switch (ifNode._type) {
-            case NodeType.TEXT:
-                continue matchif;
-
-            case NodeType.IF:
-                if (!ifNode.aNode.elses) {
-                    ifNode.aNode.elses = [];
-                }
-
-                var elseANode;
-                switch (type) {
-                    case 'else':
-                        elseANode = parseTemplate(
-                            option.stumpText.replace('san-else', '').replace('s-else', '')
-                        ).children[0];
-                        elseANode.directives.push({
-                            value: 1,
-                            name: type
-                        });
-
-                        break;
-
-                    case 'elif':
-                        elseANode = parseTemplate(
-                            option.stumpText.replace('san-elif', 's-if').replace('s-elif', 's-if')
-                        ).children[0];
-
-                        var ifDirective = elseANode.directives.get('if');
-                        elseANode.directives.remove('if');
-                        ifDirective.name = 'elif';
-                        elseANode.directives.push(ifDirective);
-
-                        break;
-                }
-
-                ifNode.aNode.elses.push(elseANode);
-                break matchif;
-        }
-
-        throw new Error('[SAN FATEL] ' + type + ' not match if.');
-    }
-}
 // #[end]
 
 exports = module.exports = createNodeByEl;

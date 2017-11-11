@@ -64,6 +64,12 @@ function serializeANode(aNode) {
         str += '</' + tagName + '>';
     }
 
+    if (aNode.directives.get('if')) {
+        each(aNode.elses, function (elseANode) {
+            str += serializeANode(elseANode);
+        });
+    }
+
     return str;
 }
 // #[end]

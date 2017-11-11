@@ -18,6 +18,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
 var removeEl = require('../browser/remove-el');
+var insertHTMLBefore = require('../browser/insert-html-before');
 
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
@@ -177,18 +178,19 @@ function createFor(options) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
             if (isEndStump(next, 'for')) {
+                options.elWalker.goNext();
                 removeEl(options.el);
                 node.el = next;
-                options.elWalker.goNext();
                 break;
             }
 
+
+            options.elWalker.goNext();
             var itemScope = new ForItemData(node, listData[index], index);
             var child = createNodeByEl(next, node, options.elWalker, itemScope);
             node.children.push(child);
 
             index++;
-            options.elWalker.goNext();
         }
 
         node.parent._pushChildANode(node.aNode);
@@ -362,7 +364,7 @@ function forOwnUpdate(changes) {
             var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
 
             if (isNaN(changeIndex)) {
-                 each(childrenChanges, function (childChanges) {
+                each(childrenChanges, function (childChanges) {
                     childChanges.push(change);
                 });
             }
@@ -565,17 +567,14 @@ function forOwnUpdate(changes) {
                 // flush new children html
                 var nextChild = this.children[i + 1];
                 if (!nextChild || nextChild.lifeCycle.attached) {
-                    var beforeEl = nextChild && nextChild._getEl();
-                    if (!beforeEl) {
-                        beforeEl = document.createElement('script');
-                        parentEl.insertBefore(beforeEl, this.el || parentEl.firstChild);
-                    }
-                    beforeEl.insertAdjacentHTML('beforebegin', stringifyStrBuffer(newChildBuf));
+                    var beforeEl = nextChild && (nextChild._getEl() || nextChild.children[0]._getEl());
+                    insertHTMLBefore(
+                        stringifyStrBuffer(newChildBuf),
+                        parentEl,
+                        beforeEl || this.el || parentEl.firstChild
+                    );
 
                     newChildBuf = null;
-                    if (!nextChild) {
-                        parentEl.removeChild(beforeEl);
-                    }
                 }
             }
         }

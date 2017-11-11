@@ -5,6 +5,7 @@
 
 var each = require('../util/each');
 var removeEl = require('../browser/remove-el');
+var insertHTMLBefore = require('../browser/insert-html-before');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var pushStrBuffer = require('../runtime/push-str-buffer');
@@ -27,6 +28,7 @@ function createText(options) {
     var node = nodeInit(options);
     node._type = NodeType.TEXT;
 
+    node.attach = textOwnAttach;
     node.dispose = textOwnDispose;
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
@@ -61,8 +63,31 @@ function createText(options) {
 
     node._static = node.aNode.textExpr.value;
 
+    // 两种 update 模式
+    // 1. 单纯的 text node
+    // 2. 可能是复杂的 html 结构
+    node.updateMode = 1;
+    each(node.aNode.textExpr.segs, function (seg) {
+        if (seg.type === ExprType.INTERP) {
+            each(seg.filters, function (filter) {
+                switch (filter.name) {
+                    case 'html':
+                    case 'url':
+                        return;
+                }
+
+                node.updateMode = 2;
+                return false;
+            });
+        }
+
+        return node.updateMode < 2;
+    });
+
     return node;
 }
+
+
 
 /**
  * 销毁 text 节点
@@ -83,6 +108,36 @@ function textOwnAttachHTML(buf) {
     pushStrBuffer(buf, this.content);
 }
 
+/**
+ * 定位text节点在父元素中的位置
+ *
+ * @param {Object} node text节点元素
+ */
+function textLocatePrevNode(node) {
+    if (!node._located) {
+        var parentChildren = node.parent.children;
+        var len = parentChildren.length;
+
+        while (len--) {
+            if (node === parentChildren[len]) {
+                node._prev = parentChildren[len - 1];
+            }
+        }
+        node._located = 1;
+    }
+}
+
+/**
+ * 将text attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
+function textOwnAttach(parentEl, beforeEl) {
+    this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
+
+    insertHTMLBefore(this.content, parentEl, beforeEl);
+}
 
 /* eslint-disable max-depth */
 
@@ -102,39 +157,7 @@ function textOwnUpdate(changes) {
                 this.content = text;
 
                 // 无 stump 元素，所以需要根据组件结构定位
-                if (!this._located) {
-                    each(this.parent.children, function (child, i) {
-                        if (child === me) {
-                            me._prev = me.parent.children[i - 1];
-                            return false;
-                        }
-                    });
-
-                    this._located = 1;
-                }
-
-                // 两种 update 模式
-                // 1. 单纯的 text node
-                // 2. 可能是复杂的 html 结构
-                if (!me.updateMode) {
-                    me.updateMode = 1;
-                    each(this.aNode.textExpr.segs, function (seg) {
-                        if (seg.type === ExprType.INTERP) {
-                            each(seg.filters, function (filter) {
-                                switch (filter.name) {
-                                    case 'html':
-                                    case 'url':
-                                        return;
-                                }
-
-                                me.updateMode = 2;
-                                return false;
-                            });
-                        }
-
-                        return me.updateMode < 2;
-                    });
-                }
+                textLocatePrevNode(me);
 
                 var parentEl = this.parent._getEl();
                 if (me.updateMode === 1) {
@@ -176,16 +199,7 @@ function textOwnUpdate(changes) {
                     warnSetHTML(parentEl);
                     // #[end]
 
-
-                    if (insertBeforeEl) {
-                        insertBeforeEl.insertAdjacentHTML('beforebegin', text);
-                    }
-                    else if (me._prev) {
-                        me._prev._getEl().insertAdjacentHTML('afterend', text);
-                    }
-                    else {
-                        parentEl.innerHTML = text;
-                    }
+                    insertHTMLBefore(text, parentEl, insertBeforeEl);
                 }
             }
 

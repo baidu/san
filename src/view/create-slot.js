@@ -95,9 +95,9 @@ function createSlot(options) {
                 break;
             }
 
+            options.elWalker.goNext();
             var child = createNodeByEl(next, node, options.elWalker);
             node.children.push(child);
-            options.elWalker.goNext();
         }
 
         if (literalOwner !== node.owner) {

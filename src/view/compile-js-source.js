@@ -58,8 +58,9 @@ var elementSourceCompiler = {
      * @param {Object} aNode 对应的抽象节点对象
      * @param {string?} extraProp 额外的属性串
      * @param {boolean?} isComponent 是否组件
+     * @param {boolean?} isClose 是否闭合
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent) {
+    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent, isClose) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
@@ -181,7 +182,7 @@ var elementSourceCompiler = {
             }
         });
 
-        sourceBuffer.joinString('>');
+        sourceBuffer.joinString(isClose ? '/>' : '>');
     },
     /* eslint-enable max-params */
 
@@ -271,6 +272,9 @@ var aNodeCompiler = {
         else if (aNode.tagName === 'slot') {
             compileMethod = 'compileSlot';
         }
+        else if (aNode.tagName === 'template') {
+            compileMethod = 'compileTemplate';
+        }
         else {
             var ComponentType = owner.components[aNode.tagName];
             if (ComponentType) {
@@ -302,6 +306,19 @@ var aNodeCompiler = {
     },
 
     /**
+     * 编译template节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     */
+    compileTemplate: function (aNode, sourceBuffer, owner, extra) {
+        sourceBuffer.joinString(serializeStump('tpl'));
+        elementSourceCompiler.inner(sourceBuffer, aNode, owner);
+        sourceBuffer.joinString(serializeStumpEnd('tpl'));
+    },
+
+    /**
      * 编译 if 节点
      *
      * @param {ANode} aNode 节点对象
@@ -310,6 +327,9 @@ var aNodeCompiler = {
      */
     compileIf: function (aNode, sourceBuffer, owner) {
         sourceBuffer.addRaw('(function () {');
+
+        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
+
         sourceBuffer.addRaw('var ifIndex = null;');
 
         // for ifIndex
@@ -337,33 +357,29 @@ var aNodeCompiler = {
                 rinseANode(aNode),
                 sourceBuffer,
                 owner,
-                {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
+                {prop: ' s-ifindex="-1"'}
             )
         );
-        sourceBuffer.addRaw('} else {');
-        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
         sourceBuffer.addRaw('}');
 
         // for output else html
         each(aNode.elses, function (elseANode, index) {
             var elifDirective = elseANode.directives.get('elif');
-            sourceBuffer.addRaw('if (ifIndex === ' + index + ') {');
+            sourceBuffer.addRaw(elifDirective ? 'else if (ifIndex === ' + index + ') {' : 'else {');
             sourceBuffer.addRaw(
                 aNodeCompiler.compile(
                     rinseANode(elseANode),
                     sourceBuffer,
                     owner,
-                    {
-                        prop: elifDirective ? ' s-elif="' + escapeHTML(elifDirective.raw) + '"' : ' s-else'
-                    }
+                    {prop: ' s-ifindex="' + index + '"'}
                 )
             );
-            sourceBuffer.addRaw('} else {');
-            sourceBuffer.joinString(serializeStump(elifDirective ? 'elif' : 'else', serializeANode(elseANode)));
             sourceBuffer.addRaw('}');
         });
 
+        sourceBuffer.joinString(serializeStumpEnd('if'));
         sourceBuffer.addRaw('})();');
+
 
         /**
          * 清洗 if aNode，返回纯净无 if 指令的 aNode

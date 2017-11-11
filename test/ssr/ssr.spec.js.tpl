@@ -1119,4 +1119,160 @@ describe("Component serialize from compiled renderer and reverse", function () {
             done();
         });
     });
+
+    it("render list with template, template has no sibling, no data, set soon", function (done) {
+        ##cmpt49##
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(0);
+        expect(ps.length).toBe(0);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(2);
+            expect(ps.length).toBe(2);
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+            expect(h4s[1].innerHTML).toBe('errorrik');
+            expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list with template, init false, update soon", function (done) {
+        ##cmpt50##
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+        expect(h4s.length).toBe(0);
+        expect(ps.length).toBe(0);
+        myComponent.data.set('cond', true);
+
+        san.nextTick(function () {
+
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(2);
+            expect(ps.length).toBe(2);
+            expect(h4s[0].innerHTML).toBe('errorrik');
+            expect(h4s[1].innerHTML).toBe('varsha');
+            expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+            expect(ps[1].innerHTML).toBe('wangshuonpu@163.com');
+
+            myComponent.data.unshift('persons', {name: 'otakustay', email: 'otakustay@gmail.com'});
+
+            san.nextTick(function () {
+                var h4s = wrap.getElementsByTagName('h4');
+                var ps = wrap.getElementsByTagName('p');
+                expect(h4s.length).toBe(3);
+                expect(ps.length).toBe(3);
+                expect(h4s[0].innerHTML).toBe('otakustay');
+                expect(h4s[1].innerHTML).toBe('errorrik');
+                expect(h4s[2].innerHTML).toBe('varsha');
+                expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+                expect(ps[2].innerHTML).toBe('wangshuonpu@163.com');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("render list with template, template has no sibling, pop and unshift soon", function (done) {
+        ##cmpt51##
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("multi elif with template", function (done) {
+        ##cmpt52##
+
+        var ps = wrap.getElementsByTagName('p');
+        var h2s = wrap.getElementsByTagName('h2');
+        var h3s = wrap.getElementsByTagName('h3');
+        var h4s = wrap.getElementsByTagName('h4');
+        var h5s = wrap.getElementsByTagName('h5');
+
+        expect(ps[0].innerHTML).toBe('300');
+        expect(h2s.length).toBe(0);
+        expect(h3s.length).toBe(0);
+        expect(h4s.length).toBe(1);
+        expect(h5s.length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+
+            expect(ps[0].innerHTML).toBe('30000');
+            expect(h2s.length).toBe(1);
+            expect(h3s.length).toBe(0);
+            expect(h4s.length).toBe(0);
+            expect(h5s.length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+
+                expect(ps[0].innerHTML).toBe('10');
+                expect(h2s.length).toBe(0);
+                expect(h3s.length).toBe(0);
+                expect(h4s.length).toBe(0);
+                expect(h5s.length).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
 });

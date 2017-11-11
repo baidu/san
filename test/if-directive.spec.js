@@ -166,6 +166,64 @@ describe("IfDirective", function () {
         });
     });
 
+    it("render template when true, and update soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>   <template s-if="cond">   <u>errorrik</u>   <b>errorrik</b>   </template>   </div>'
+        });
+        var myComponent = new MyComponent({data: {cond: true}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(u.parentNode.tagName).toBe('DIV');
+        expect(b.parentNode.tagName).toBe('DIV');
+
+        myComponent.data.set('cond', false);
+
+        san.nextTick(function () {
+            var us = wrap.getElementsByTagName('u');
+            var bs = wrap.getElementsByTagName('b');
+            expect(us.length).toBe(0);
+            expect(bs.length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render template when false, and update soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>   <template s-if="!cond">   <u>errorrik</u>   <b>errorrik</b>   </template>   </div>'
+        });
+        var myComponent = new MyComponent({data: {cond: true}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        var bs = wrap.getElementsByTagName('b');
+        expect(us.length).toBe(0);
+        expect(bs.length).toBe(0);
+
+        myComponent.data.set('cond', false);
+
+        san.nextTick(function () {
+            var u = wrap.getElementsByTagName('u')[0];
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(u.parentNode.tagName).toBe('DIV');
+            expect(b.parentNode.tagName).toBe('DIV');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("render when false, and update soon， interp compat", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span san-if="{{!cond}}" title="{{name}}">errorrik</span></div>'
@@ -360,6 +418,62 @@ describe("IfDirective", function () {
         });
     });
 
+    it("multi elif with template", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><template s-if="num > 10000"><h2>biiig</h2><p>{{num}}</p></template>  \n'
+            + '<template s-elif="num > 1000"><h3>biig</h3><p>{{num}}</p></template>  \n'
+            + '<template s-elif="num > 100"><h4>big</h4><p>{{num}}</p></template>  \n'
+            + ' <template s-else><h5>small</h5><p>{{num}}</p></template></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 300
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var ps = wrap.getElementsByTagName('p');
+        var h2s = wrap.getElementsByTagName('h2');
+        var h3s = wrap.getElementsByTagName('h3');
+        var h4s = wrap.getElementsByTagName('h4');
+        var h5s = wrap.getElementsByTagName('h5');
+
+        expect(ps[0].innerHTML).toBe('300');
+        expect(h2s.length).toBe(0);
+        expect(h3s.length).toBe(0);
+        expect(h4s.length).toBe(1);
+        expect(h5s.length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+
+            expect(ps[0].innerHTML).toBe('30000');
+            expect(h2s.length).toBe(1);
+            expect(h3s.length).toBe(0);
+            expect(h4s.length).toBe(0);
+            expect(h5s.length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+
+                expect(ps[0].innerHTML).toBe('10');
+                expect(h2s.length).toBe(0);
+                expect(h3s.length).toBe(0);
+                expect(h4s.length).toBe(0);
+                expect(h5s.length).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("and else with disabled", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><input type="radio"s-if="cond" disabled="{{true}}">'
@@ -469,6 +583,58 @@ describe("IfDirective", function () {
                 expect(lis[1].getAttribute('title')).toBe('otakustay');
                 expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
 
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("render list with template, init false, update soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><template san-if="cond" san-for="p in persons">   <h4>{{p.name}}</h4>   <p>{{p.email}}</p>   </template></div>'
+        });
+        var myComponent = new MyComponent();
+
+        myComponent.data.set('cond', false);
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+        expect(h4s.length).toBe(0);
+        expect(ps.length).toBe(0);
+        myComponent.data.set('cond', true);
+
+        san.nextTick(function () {
+
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(2);
+            expect(ps.length).toBe(2);
+            expect(h4s[0].innerHTML).toBe('errorrik');
+            expect(h4s[1].innerHTML).toBe('varsha');
+            expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+            expect(ps[1].innerHTML).toBe('wangshuonpu@163.com');
+
+            myComponent.data.unshift('persons', {name: 'otakustay', email: 'otakustay@gmail.com'});
+
+            san.nextTick(function () {
+                var h4s = wrap.getElementsByTagName('h4');
+                var ps = wrap.getElementsByTagName('p');
+                expect(h4s.length).toBe(3);
+                expect(ps.length).toBe(3);
+                expect(h4s[0].innerHTML).toBe('otakustay');
+                expect(h4s[1].innerHTML).toBe('errorrik');
+                expect(h4s[2].innerHTML).toBe('varsha');
+                expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+                expect(ps[2].innerHTML).toBe('wangshuonpu@163.com');
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();
