@@ -1,10 +1,13 @@
 /**
  * @file 在下一个时间周期运行任务
+ * @description 该方法参照了vue2.5.0的实现，感谢vue团队
+ *     https://github.com/vuejs/vue/blob/0948d999f2fddf9f90991956493f976273c5da1f/src/core/util/env.js#L68
  * @author errorrik(errorrik@gmail.com)
  */
 
 var bind = require('./bind');
 var each = require('./each');
+var isNative = require('./is-native');
 
 /**
  * 下一个周期要执行的任务列表
@@ -49,17 +52,22 @@ function nextTick(fn, thisArg) {
         });
     };
 
-    if (typeof MutationObserver === 'function') {
-        var num = 1;
-        var observer = new MutationObserver(nextHandler);
-        var text = document.createTextNode(num);
-        observer.observe(text, {
-            characterData: true
-        });
-        text.data = ++num;
-    }
-    else if (typeof setImmediate === 'function') {
+    // 非标准方法，但是此方法非常吻合要求。
+    if (typeof setImmediate === 'function') {
         setImmediate(nextHandler);
+    }
+    // 用MessageChannel去做setImmediate的polyfill
+    // 原理是将新的message事件加入到原有的dom events之后
+    else if (typeof MessageChannel === 'function') {
+        var channel = new MessageChannel();
+        var port = channel.port2;
+        channel.port1.onmessage = nextHandler;
+        port.postMessage(1);
+    }
+    // for native app
+    // 这里使用isNative做判断，是为了禁用一些不严谨的Promise的polyfill
+    else if (isNative(Promise)) {
+        Promise.resolve().then(nextHandler);
     }
     else {
         setTimeout(nextHandler, 0);
