@@ -1,7 +1,7 @@
 /**
  * @file 在下一个时间周期运行任务
  * @description 该方法参照了vue2.5.0的实现，感谢vue团队
- *    https://github.com/vuejs/vue/blob/master/src/core/util/env.js#L68
+ *     https://github.com/vuejs/vue/blob/0948d999f2fddf9f90991956493f976273c5da1f/src/core/util/env.js#L68
  * @author errorrik(errorrik@gmail.com)
  */
 
