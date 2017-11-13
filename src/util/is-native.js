@@ -10,7 +10,7 @@
  * @return {boolean}
  */
 function isNative(method) {
-  return typeof method === 'function' && /native code/.test(method.toString())
+    return typeof method === 'function' && /native code/.test(method.toString());
 }
 
 exports = module.exports = isNative;
