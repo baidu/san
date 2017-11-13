@@ -6,6 +6,7 @@ ChangeLog
 3.3.0
 -------
 
++ 【新特性】- 支持 template tag 声明自身不渲染元素只渲染内容。
 + 【新特性】- 事件声明参数为空时，默认 $event
 + 【新特性】- 组件实例上添加 nextTick 方法，避免组件实现需要 nextTick 必须显式依赖 san
 + 【变更】- parseTemplate 的 ANode 去除 parent 的引用。消除循环引用后可以 JSON.stringify
