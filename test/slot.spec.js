@@ -925,4 +925,648 @@ describe("Slot", function () {
             done();
         })
     });
+
+    it("description apply if, init false", function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                folderHidden: true,
+                desc: 'MVVM component framework',
+                name: 'San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('p').length).toBe(0);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('folderHidden', false);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p').length).toBe(1);
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("description apply if, init true", function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.getElementsByTagName('p').length).toBe(1);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('folderHidden', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p').length).toBe(0);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("description apply for, init true", function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden" s-for="i in repeat"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            },
+            initData: function () {
+                return {repeat: [1,2]}
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.getElementsByTagName('p').length).toBe(2);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('p')[1].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('folderHidden', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p').length).toBe(0);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("insert element apply for", function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><div san-for="p,i in persons"><h4>{{p.name}}</h4><p>{{p.email}}</p></div></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San',
+                persons: [
+                    {name: 'otakustay', email: 'otakustay@gmail.com'},
+                    {name: 'errorrik', email: 'errorrik@gmail.com'}
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it('insert element "template" apply for', function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot name="content"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><template san-for="p,i in persons" slot="content">  <h4>{{p.name}}</h4><p>{{p.email}}</p>  </template></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San',
+                persons: [
+                    {name: 'otakustay', email: 'otakustay@gmail.com'},
+                    {name: 'errorrik', email: 'errorrik@gmail.com'}
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it('insert element apply if', function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h1 on-click="toggle"><slot name="title"/></h1><slot name="content"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><span slot="content" s-if="num > 10000" title="biiig">biiig</span>  \n'
+            + '<span s-elif="num > 1000" title="biig">biig</span>  \n'
+            + '<span s-elif="num > 100" title="big">big</span>  \n'
+            + ' <b s-else title="small">small</b></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San',
+                num: 300
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(1);
+        expect(spans[0].title).toBe('big');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+            var spans = wrap.getElementsByTagName('span');
+            expect(spans.length).toBe(1);
+            expect(spans[0].title).toBe('biiig');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(0);
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].title).toBe('small');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it('insert element "template" apply if', function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><h1 on-click="toggle"><slot name="title"/></h1><slot name="content"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-folder': Folder
+            },
+
+            template: ''
+                + '<div>'
+                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><template s-if="num > 10000" slot="content"><h2>biiig</h2><p>{{num}}</p></template>  \n'
+                    + '<template s-elif="num > 1000"><h3>biig</h3><p>{{num}}</p></template>  \n'
+                    + '<template s-elif="num > 100"><h4>big</h4><p>{{num}}</p></template>  \n'
+                    + ' <template s-else><h5>small</h5><p>{{num}}</p></template></x-folder>'
+                + '</div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                desc: 'MVVM component framework',
+                name: 'San',
+                num: 300
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        var h2s = wrap.getElementsByTagName('h2');
+        var h3s = wrap.getElementsByTagName('h3');
+        var h4s = wrap.getElementsByTagName('h4');
+        var h5s = wrap.getElementsByTagName('h5');
+
+        expect(ps[0].innerHTML).toBe('300');
+        expect(h2s.length).toBe(0);
+        expect(h3s.length).toBe(0);
+        expect(h4s.length).toBe(1);
+        expect(h5s.length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+
+            expect(ps[0].innerHTML).toBe('30000');
+            expect(h2s.length).toBe(1);
+            expect(h3s.length).toBe(0);
+            expect(h4s.length).toBe(0);
+            expect(h5s.length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+
+                expect(ps[0].innerHTML).toBe('10');
+                expect(h2s.length).toBe(0);
+                expect(h3s.length).toBe(0);
+                expect(h4s.length).toBe(0);
+                expect(h5s.length).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("scoped by default content", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot n="data.name" email="data.email" sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="man"/></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("scoped by given content", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" n="data.name" email="data.email" sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="man"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+
+    it("scoped apply s-for by default, has init data", function (done) {
+        var Mans = san.defineComponent({
+            template: '<div><slot/><slot name="test" n="item.name" email="item.email" sex="item.sex ? \'male\' : \'female\'" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="mans"><h2>{{title}}</h2></x-man></div>',
+
+            initData: function () {
+                return {
+                    title: 'contributors',
+                    mans: [
+                        {name: 'errorrik', sex: 1, email: 'errorrik@gmail.com'},
+                        {name: 'varsha', sex: 0, email: 'wangshuonpu@163.com'},
+                        {name: 'otakustay', email: 'otakustay@gmail.com', sex: 1}
+                    ]
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h2')[0].innerHTML).toBe('contributors');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(ps.length).toBe(3);
+
+        expect(ps[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
+        expect(ps[1].innerHTML).toBe('varsha,female,wangshuonpu@163.com');
+        expect(ps[2].innerHTML).toBe('otakustay,male,otakustay@gmail.com');
+        myComponent.data.pop('mans');
+        myComponent.data.set('mans[0].email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(ps.length).toBe(2);
+
+            expect(ps[0].innerHTML).toBe('errorrik,male,erik168@163.com');
+            expect(ps[1].innerHTML).toBe('varsha,female,wangshuonpu@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("scoped apply s-for by default, has init data", function (done) {
+        var Mans = san.defineComponent({
+            template: '<div><slot/><slot name="test" n="item.name" email="item.email" sex="item.sex ? \'male\' : \'female\'" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="mans"><h2>{{title}}</h2><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    title: 'contributors'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.getElementsByTagName('h2')[0].innerHTML).toBe('contributors');
+        var h3s = wrap.getElementsByTagName('h3');
+        expect(h3s.length).toBe(0);
+
+        myComponent.data.set('mans', [
+            {name: 'errorrik', sex: 1, email: 'errorrik@gmail.com'},
+            {name: 'varsha', sex: 0, email: 'wangshuonpu@163.com'},
+            {name: 'otakustay', email: 'otakustay@gmail.com', sex: 1}
+        ]);
+        myComponent.data.set('title', 'members');
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('h2')[0].innerHTML).toBe('members');
+            var h3s = wrap.getElementsByTagName('h3');
+            var us = wrap.getElementsByTagName('u');
+            var bs = wrap.getElementsByTagName('b');
+
+            expect(h3s.length).toBe(3);
+            expect(h3s[0].innerHTML).toBe('errorrik');
+            expect(h3s[1].innerHTML).toBe('varsha');
+            expect(h3s[2].innerHTML).toBe('otakustay');
+            expect(us[0].innerHTML).toBe('errorrik@gmail.com');
+            expect(us[1].innerHTML).toBe('wangshuonpu@163.com');
+            expect(us[2].innerHTML).toBe('otakustay@gmail.com');
+            expect(ps[0].innerHTML).toBe('male');
+            expect(ps[1].innerHTML).toBe('female');
+            expect(ps[2].innerHTML).toBe('male');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });
