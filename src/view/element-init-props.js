@@ -14,7 +14,6 @@ var IndexedList = require('../util/indexed-list');
 function elementInitProps(element) {
     element.lifeCycle = LifeCycle.start;
     element.children = [];
-    element.slotChildren = [];
     element._elFns = {};
     element._propVals = {};
     element.dynamicProps = new IndexedList();

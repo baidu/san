@@ -12,7 +12,10 @@ var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var createNodeByEl = require('./create-node-by-el');
 var elementDisposeChildren = require('./element-dispose-children');
+var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
+var nodeOwnSimpleAttached = require('./node-own-simple-attached');
+var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 /**
  * 创建 slot 元素
@@ -27,8 +30,7 @@ function createSlot(options) {
     // #[begin] reverse
     if (options.el) {
         if (options.stumpText.indexOf('!') !== 0) {
-            options.owner = literalOwner.owner;
-            options.scope = literalOwner.scope;
+            options.isInserted = true;
             options.stumpText = options.stumpText.slice(1);
         }
         options.name = options.stumpText || '____';
@@ -44,44 +46,64 @@ function createSlot(options) {
         aNode.children = givenChildren || options.aNode.children.slice(0);
 
         if (givenChildren) {
-            options.owner = literalOwner.owner;
-            options.scope = literalOwner.scope;
+            options.isInserted = true;
         }
 
     // #[begin] reverse
     }
     // #[end]
 
+    var initData = {};
+    options.scopedProps = [];
+    options.aNode.props.each(function (prop) {
+        if (prop.name !== 'name') {
+            options.isScoped = true;
+            options.scopedProps.push(prop);
+            initData[prop.name] = evalExpr(prop.expr, options.scope, literalOwner);
+        }
+    });
+
+    if (options.isScoped) {
+        options.realScope = new Data(initData);
+        options.literalOwner = literalOwner;
+        options.owner = literalOwner.owner;
+    }
+    else if (options.isInserted) {
+        options.owner = literalOwner.owner;
+        options.scope = literalOwner.scope;
+    }
+
 
     options.aNode = aNode;
 
 
     var node = nodeInit(options);
+    node.lifeCycle = LifeCycle.start;
     node.children = [];
     node._type = NodeType.SLOT;
     node.dispose = slotOwnDispose;
+    node.attach = nodeOwnOnlyChildrenAttach;
 
+    node._toPhase = elementOwnToPhase;
     node._getEl = slotOwnGetEl;
     node._attachHTML = slotOwnAttachHTML;
-    node._update = empty;
+    node._attached = nodeOwnSimpleAttached;
+    node._update = slotOwnUpdate;
 
     // #[begin] reverse
     node._pushChildANode = elementOwnPushChildANode;
     // #[end]
 
-    var parent = node.parent;
-    while (parent) {
-        if (parent === node.owner) {
-            parent.ownSlotChildren.push(node);
-            break;
-        }
+    if (options.isInserted && !options.isScoped) {
+        var parent = node.parent;
+        while (parent) {
+            if (isComponent(parent) && parent.owner === node.owner) {
+                parent.slotChildren.push(node);
+                break;
+            }
 
-        if (parent._type !== NodeType.SLOT && parent.owner === node.owner) {
-            parent.slotChildren.push(node);
-            break;
+            parent = parent.parent;
         }
-
-        parent = parent.parent;
     }
 
     // #[begin] reverse
@@ -109,6 +131,63 @@ function createSlot(options) {
     return node;
 }
 
+/**
+ * 视图更新函数
+ *
+ * @param {Array} changes 数据变化信息
+ * @param {boolean=} isFromOuter 变化信息是否来源于父组件之外的组件
+ */
+function slotOwnUpdate(changes, isFromOuter) {
+    var me = this;
+    if (me.isScoped) {
+        each(me.scopedProps, function (prop) {
+            me.realScope.set(prop.name, evalExpr(prop.expr, me.scope, me.literalOwner))
+        });
+
+
+        var scopedChanges = [];
+        each(changes, function (change) {
+            each(me.scopedProps, function (prop) {
+                var relation = changeExprCompare(change.expr, prop.expr, me.scopeParent);
+
+                if (relation < 1) {
+                    return;
+                }
+
+                if (change.type === DataChangeType.SET) {
+                    scopedChanges.push({
+                        type: DataChangeType.SET,
+                        expr: {
+                            type: ExprType.ACCESSOR,
+                            paths: [{type: ExprType.STRING, value:prop.name}]
+                        },
+                        value: me.realScope.get(prop.name),
+                        option: change.option
+                    });
+                }
+                else if (relation === 2) {
+                    scopedChanges.push({
+                        expr: {
+                            type: ExprType.ACCESSOR,
+                            paths: [{type: ExprType.STRING, value:prop.name}]
+                        },
+                        type: DataChangeType.SPLICE,
+                        index: change.index,
+                        deleteCount: change.deleteCount,
+                        value: change.value,
+                        insertions: change.insertions,
+                        option: change.option
+                    });
+                }
+            });
+        });
+
+        elementUpdateChildren(me, scopedChanges);
+    }
+    else if (me.isInserted && isFromOuter || !me.isInserted) {
+        elementUpdateChildren(me, changes);
+    }
+}
 
 /**
  * attach元素的html
@@ -116,7 +195,8 @@ function createSlot(options) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
-    genElementChildrenHTML(this, buf);
+    genElementChildrenHTML(this, buf, this.realScope);
+    attachings.add(this);
 }
 
 /**
@@ -133,8 +213,14 @@ function slotOwnGetEl() {
  * 销毁释放 slot
  */
 function slotOwnDispose(dontDetach) {
+    this.realScope = null;
+    this.literalOwner = null;
+
     elementDisposeChildren(this, dontDetach);
     nodeDispose(this);
+
+    this._toPhase('disposed');
 }
+
 
 exports = module.exports = createSlot;

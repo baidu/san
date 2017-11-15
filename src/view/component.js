@@ -62,7 +62,7 @@ function Component(options) {
     options = options || {};
 
     this.listeners = {};
-    this.ownSlotChildren = [];
+    this.slotChildren = [];
 
 
     this.filters = this.filters || this.constructor.filters || {};
@@ -352,38 +352,35 @@ Component.prototype.ref = function (name) {
     var refComponent;
     var owner = this;
 
-    function slotChildrenTraversal(children) {
-        each(children, function (slotChild) {
-            childrenTraversal(slotChild);
+    function childrenTraversal(children) {
+        each(children, function (child) {
+            elementTraversal(child);
             return !refComponent;
         });
     }
 
-    function childrenTraversal(element) {
-        slotChildrenTraversal(element.slotChildren);
-
-        each(element.children, function (child) {
-            if (isComponent(child)) {
-                var refDirective = child.aNode.directives.get('ref');
-                if (refDirective
-                    && evalExpr(refDirective.value, child.scope || owner.data, owner) === name
-                ) {
-                    refComponent = child;
-                }
-
-                slotChildrenTraversal(child.slotChildren);
+    function elementTraversal(element) {
+        if (isComponent(element)) {
+            var refDirective = element.aNode.directives.get('ref');
+            if (refDirective
+                && evalExpr(refDirective.value, element.scope || owner.data, owner) === name
+            ) {
+                refComponent = element;
             }
 
-            if (!refComponent && child._type !== NodeType.TEXT) {
-                childrenTraversal(child);
+            !refComponent && childrenTraversal(element.slotChildren);
+        }
+
+        !refComponent && each(element.children, function (child) {
+            if (child._type !== NodeType.TEXT) {
+                elementTraversal(child);
             }
 
             return !refComponent;
         });
     }
 
-    childrenTraversal(this);
-    slotChildrenTraversal(this.ownSlotChildren);
+    childrenTraversal(this.children);
 
     return refComponent;
 };
@@ -513,9 +510,8 @@ Component.prototype._update = function (changes) {
     });
 
     each(this.slotChildren, function (child) {
-        elementUpdateChildren(child, changes);
+        child._update(changes, 1);
     });
-
 
     var dataChanges = me.dataChanges;
     if (dataChanges) {
@@ -536,7 +532,7 @@ Component.prototype._update = function (changes) {
             });
         });
 
-        elementUpdateChildren(this, dataChanges, 'ownSlotChildren');
+        elementUpdateChildren(this, dataChanges);
 
         this._toPhase('updated');
 
@@ -631,7 +627,8 @@ Component.prototype.dispose = function (dontDetach) {
     if (!this.lifeCycle.disposed) {
         elementDispose(this, dontDetach);
 
-        this.ownSlotChildren = null;
+        // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+        this.slotChildren = null;
 
         this.data.unlisten();
         this.dataChanger = null;

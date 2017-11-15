@@ -10,15 +10,10 @@ var each = require('../util/each');
  *
  * @param {Object} element 要更新的元素
  * @param {Array} changes 数据变化信息
- * @param {string} slotChildrenName 子slot名称
  */
-function elementUpdateChildren(element, changes, slotChildrenName) {
+function elementUpdateChildren(element, changes) {
     each(element.children, function (child) {
         child._update(changes);
-    });
-
-    each(element[slotChildrenName || 'slotChildren'], function (child) {
-        elementUpdateChildren(child, changes);
     });
 }
 

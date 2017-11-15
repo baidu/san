@@ -42,9 +42,6 @@ function elementDispose(element, dontDetach) {
     element.binds = null;
     element._propVals = null;
 
-    // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
-    element.slotChildren = null;
-
     nodeDispose(element);
 }
 

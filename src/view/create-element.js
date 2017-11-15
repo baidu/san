@@ -22,6 +22,7 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
+var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
 var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
@@ -136,14 +137,6 @@ function elementOwnAttached() {
     elementAttached(this);
 }
 
-/**
- * 使节点到达相应的生命周期
- *
- * @param {string} name 生命周期名称
- */
-function elementOwnToPhase(name) {
-    this.lifeCycle = LifeCycle[name];
-}
 
 
 exports = module.exports = createElement;

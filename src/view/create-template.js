@@ -14,9 +14,12 @@ var isEndStump = require('./is-end-stump');
 var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var elementDisposeChildren = require('./element-dispose-children');
+var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
+var nodeOwnSimpleAttached = require('./node-own-simple-attached');
+var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 var LifeCycle = require('./life-cycle');
 
 /**
@@ -33,14 +36,14 @@ function createTemplate(options) {
 
     node._type = NodeType.TEMPLATE;
 
-    node.attach = templateOwnAttach;
+    node.attach = nodeOwnOnlyChildrenAttach;
     node.dispose = templateOwnDispose;
 
 
     node._toPhase = elementOwnToPhase;
     node._getEl = empty;
     node._attachHTML = templateOwnAttachHTML;
-    node._attached = templateOwnAttached;
+    node._attached = nodeOwnSimpleAttached;
     node._update = templateOwnUpdate;
 
     // #[begin] reverse
@@ -103,32 +106,6 @@ function templateOwnUpdate(changes) {
 }
 
 /**
- * 将元素attach到页面
- *
- * @param {HTMLElement} parentEl 要添加到的父元素
- * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
- */
-function templateOwnAttach(parentEl, beforeEl) {
-    var me = this;
-    each(this.aNode.children, function (aNodeChild) {
-        var child = createNode(aNodeChild, me);
-        if (!child._static) {
-            me.children.push(child);
-        }
-        child.attach(parentEl, beforeEl);
-    });
-
-    attachings.done();
-}
-
-/**
- * 执行完成attached状态的行为
- */
-function templateOwnAttached() {
-    this._toPhase('attached');
-}
-
-/**
  * attach 元素的 html
  *
  * @param {Object} buf html串存储对象
@@ -144,6 +121,7 @@ function templateOwnAttachHTML(buf) {
 function templateOwnDispose(dontDetach) {
     elementDisposeChildren(this, dontDetach);
     nodeDispose(this);
+    this._toPhase('disposed');
 }
 
 exports = module.exports = createTemplate;

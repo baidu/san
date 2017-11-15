@@ -723,7 +723,6 @@ describe("Slot", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-
         var aEls = wrap.getElementsByTagName('a');
 
         var a1 = aEls[0];
@@ -928,7 +927,7 @@ describe("Slot", function () {
 
     it("description apply if, init false", function (done) {
         var Folder = san.defineComponent({
-            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden"/></div>',
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="!hidden"/></div>',
             toggle: function () {
                 var hidden = this.data.get('hidden');
                 this.data.set('hidden', !hidden);
@@ -976,7 +975,7 @@ describe("Slot", function () {
 
     it("description apply if, init true", function (done) {
         var Folder = san.defineComponent({
-            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden"/></div>',
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="!hidden"/></div>',
             toggle: function () {
                 var hidden = this.data.get('hidden');
                 this.data.set('hidden', !hidden);
@@ -1024,7 +1023,7 @@ describe("Slot", function () {
 
     it("description apply for, init true", function (done) {
         var Folder = san.defineComponent({
-            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="hidden" s-for="i in repeat"/></div>',
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="!hidden" s-for="i in repeat"/></div>',
             toggle: function () {
                 var hidden = this.data.get('hidden');
                 this.data.set('hidden', !hidden);
@@ -1253,7 +1252,7 @@ describe("Slot", function () {
                   + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><span slot="content" s-if="num > 10000" title="biiig">biiig</span>  \n'
             + '<span s-elif="num > 1000" title="biig">biig</span>  \n'
             + '<span s-elif="num > 100" title="big">big</span>  \n'
-            + ' <b s-else title="small">small</b></x-folder>'
+            + ' <u s-else title="small">small</u></x-folder>'
                 + '</div>'
         });
 
@@ -1273,7 +1272,7 @@ describe("Slot", function () {
         var spans = wrap.getElementsByTagName('span');
         expect(spans.length).toBe(1);
         expect(spans[0].title).toBe('big');
-        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
 
         myComponent.data.set('num', 30000);
 
@@ -1281,14 +1280,14 @@ describe("Slot", function () {
             var spans = wrap.getElementsByTagName('span');
             expect(spans.length).toBe(1);
             expect(spans[0].title).toBe('biiig');
-            expect(wrap.getElementsByTagName('b').length).toBe(0);
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
 
             myComponent.data.set('num', 10);
             san.nextTick(function () {
                 var spans = wrap.getElementsByTagName('span');
                 expect(spans.length).toBe(0);
-                var bs = wrap.getElementsByTagName('b');
-                expect(bs[0].title).toBe('small');
+                var us = wrap.getElementsByTagName('u');
+                expect(us[0].title).toBe('small');
 
                 myComponent.dispose();
                 document.body.removeChild(wrap);
@@ -1373,7 +1372,7 @@ describe("Slot", function () {
 
     it("scoped by default content", function (done) {
         var Man = san.defineComponent({
-            template: '<div><slot n="data.name" email="data.email" sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1381,7 +1380,7 @@ describe("Slot", function () {
                 'x-man': Man
             },
 
-            template: '<div><x-man data="man"/></div>',
+            template: '<div><x-man data="{{man}}"/></div>',
 
             initData: function () {
                 return {
@@ -1408,12 +1407,12 @@ describe("Slot", function () {
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
-        })
+        });
     });
 
     it("scoped by given content", function (done) {
         var Man = san.defineComponent({
-            template: '<div><slot name="test" n="data.name" email="data.email" sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1421,7 +1420,7 @@ describe("Slot", function () {
                 'x-man': Man
             },
 
-            template: '<div><x-man data="man"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
 
             initData: function () {
                 return {
@@ -1459,15 +1458,15 @@ describe("Slot", function () {
 
     it("scoped apply s-for by default, has init data", function (done) {
         var Mans = san.defineComponent({
-            template: '<div><slot/><slot name="test" n="item.name" email="item.email" sex="item.sex ? \'male\' : \'female\'" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot/><slot name="test" n="{{item.name}}" email="{{item.email}}" sex="{{item.sex ? \'male\' : \'female\'}}" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
             components: {
-                'x-man': Man
+                'x-mans': Mans
             },
 
-            template: '<div><x-man data="mans"><h2>{{title}}</h2></x-man></div>',
+            template: '<div><x-mans data="{{mans}}"><h2>{{title}}</h2></x-mans></div>',
 
             initData: function () {
                 return {
@@ -1510,17 +1509,17 @@ describe("Slot", function () {
         })
     });
 
-    it("scoped apply s-for by default, has init data", function (done) {
+    it("scoped apply s-for by default, has no init data", function (done) {
         var Mans = san.defineComponent({
-            template: '<div><slot/><slot name="test" n="item.name" email="item.email" sex="item.sex ? \'male\' : \'female\'" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot/><slot name="test" n="{{item.name}}" email="{{item.email}}" sex="{{item.sex ? \'male\' : \'female\'}}" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
             components: {
-                'x-man': Man
+                'x-mans': Mans
             },
 
-            template: '<div><x-man data="mans"><h2>{{title}}</h2><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
+            template: '<div><x-mans data="{{mans}}"><h2>{{title}}</h2><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-mans></div>',
 
             initData: function () {
                 return {
@@ -1560,9 +1559,9 @@ describe("Slot", function () {
             expect(us[0].innerHTML).toBe('errorrik@gmail.com');
             expect(us[1].innerHTML).toBe('wangshuonpu@163.com');
             expect(us[2].innerHTML).toBe('otakustay@gmail.com');
-            expect(ps[0].innerHTML).toBe('male');
-            expect(ps[1].innerHTML).toBe('female');
-            expect(ps[2].innerHTML).toBe('male');
+            expect(bs[0].innerHTML).toBe('male');
+            expect(bs[1].innerHTML).toBe('female');
+            expect(bs[2].innerHTML).toBe('male');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
