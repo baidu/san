@@ -1410,6 +1410,57 @@ describe("Slot", function () {
         });
     });
 
+    it("scoped by default content which has filter", function (done) {
+        var Man = san.defineComponent({
+            filters: {
+                upper: function (source) {
+                    return source.charAt(0).toUpperCase() + source.slice(1);
+                }
+            },
+            template: '<div><slot n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n|upper}},{{sex|upper}},{{email|upper}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            filters: {
+                upper: function (source) {
+                    return source.toUpperCase();
+                }
+            },
+
+            template: '<div><x-man data="{{man}}"/></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("scoped by given content", function (done) {
         var Man = san.defineComponent({
             template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
@@ -1448,6 +1499,63 @@ describe("Slot", function () {
             expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
             expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
             expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("scoped by given content which has filter", function (done) {
+        var Man = san.defineComponent({
+            filters: {
+                upper: function (source) {
+                    return source.charAt(0).toUpperCase() + source.slice(1);
+                }
+            },
+
+            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            filters: {
+                upper: function (source) {
+                    return source.toUpperCase();
+                }
+            },
+
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{n|upper}}</h3><b slot="test">{{sex|upper}}</b><u slot="test">{{email|upper}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERRORRIK@GMAIL.COM');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERIK168@163.COM');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1566,6 +1674,200 @@ describe("Slot", function () {
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
+        })
+    });
+
+    it("scoped by default content has event listen", function (done) {
+        var clickInfo = {};
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p on-click="emailClick(email)">{{n}},{{sex}},{{email}}</p></slot></div>',
+            emailClick: function (email) {
+                clickInfo.email = email;
+                clickInfo.outer = false;
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            },
+
+            emailClick: function (email) {
+                clickInfo.email = 'fail';
+                clickInfo.outer = true;
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com');
+
+            triggerEvent('#' + wrap.getElementsByTagName('p')[0].id, 'click');
+            setTimeout(function () {
+                expect(clickInfo.email).toBe('erik168@163.com');
+                expect(clickInfo.outer).toBeFalsy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 500);
+        })
+    });
+
+    it("scoped by given content has event listen", function (done) {
+        var clickInfo = {};
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>',
+            emailClick: function (email) {
+                clickInfo.email = 'fail';
+                clickInfo.outer = false;
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test" on-click="emailClick(email)">{{email}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            },
+
+            emailClick: function (email) {
+                clickInfo.email = email;
+                clickInfo.outer = true;
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            triggerEvent('#' + wrap.getElementsByTagName('u')[0].id, 'click');
+            setTimeout(function () {
+                expect(clickInfo.email).toBe('erik168@163.com');
+                expect(clickInfo.outer).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 500);
+        })
+    });
+
+    it("deep", function (done) {
+        var Panel = san.defineComponent({
+            template: '<div><slot/></div>'
+        });
+
+        var Button = san.defineComponent({
+            template: '<a><slot/></a>'
+        });
+
+        var Folder = san.defineComponent({
+            template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="!hidden"/></div>',
+            toggle: function () {
+                var hidden = this.data.get('hidden');
+                this.data.set('hidden', !hidden);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel,
+                'x-folder': Folder,
+                'x-button': Button
+            },
+
+            template: '<div>'
+                + '<x-folder hidden="{{folderHidden}}">'
+                + '<b slot="title">{{title}}</b>'
+                + '<x-panel><u>{{name}}</u><x-button>{{closeText}}</x-button></x-panel>'
+                + '</x-folder>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    title: 'contributor',
+                    name: 'errorrik',
+                    closeText: 'X'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('contributor');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('X');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik');
+
+        myComponent.data.set('closeText', 'close');
+        myComponent.data.set('title', 'member');
+        myComponent.data.set('name', 'otakustay');
+
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('member');
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('close');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('otakustay');
+
+
+            myComponent.data.set('folderHidden', true);
+
+            san.nextTick(function () {
+
+                expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('member');
+                expect(wrap.getElementsByTagName('a').length).toBe(0);
+                expect(wrap.getElementsByTagName('u').length).toBe(0);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         })
     });
 });

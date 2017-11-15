@@ -66,11 +66,11 @@ function createSlot(options) {
     if (options.isScoped) {
         options.realScope = new Data(initData);
         options.literalOwner = literalOwner;
-        options.owner = literalOwner.owner;
     }
-    else if (options.isInserted) {
+
+    if (options.isInserted) {
         options.owner = literalOwner.owner;
-        options.scope = literalOwner.scope;
+        !options.isScoped && (options.scope = literalOwner.scope);
     }
 
 
@@ -195,7 +195,7 @@ function slotOwnUpdate(changes, isFromOuter) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
-    genElementChildrenHTML(this, buf, this.realScope);
+    genElementChildrenHTML(this, buf, this.realScope || this.scope);
     attachings.add(this);
 }
 
