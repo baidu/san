@@ -81,6 +81,8 @@ function Component(options) {
     if (givenANode) {
         // 组件运行时传入的结构，做slot解析
         var givenSlots = {};
+        // native事件数组
+        var nativeEvents = [];
         each(givenANode.children, function (child) {
             var slotName = '____';
             var slotBind = !child.isText && child.props.get('slot');
@@ -95,6 +97,21 @@ function Component(options) {
             givenSlots[slotName].push(child);
         });
 
+        each(givenANode.events, function (eventBind) {
+            // 保存当前实例的native事件，下面创建aNode时候做合并
+            if (eventBind.modifier === 'native') {
+                nativeEvents.push(eventBind);
+            }
+            // #[begin] error
+            warnEventListenMethod(eventBind.name, options.owner, eventBind.expr.name);
+            // #[end]
+
+            me.on(
+                eventBind.name,
+                bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
+                eventBind
+            );
+        });
         this.aNode = createANode({
             tagName: protoANode.tagName || givenANode.tagName,
             givenSlots: givenSlots,
@@ -105,19 +122,8 @@ function Component(options) {
             // 合并运行时的一些绑定和事件声明
             props: protoANode.props,
             binds: camelComponentBinds(givenANode.props),
-            events: protoANode.events,
+            events: protoANode.events.concat(nativeEvents),
             directives: givenANode.directives
-        });
-        each(givenANode.events, function (eventBind) {
-            // #[begin] error
-            warnEventListenMethod(eventBind.name, options.owner, eventBind.expr.name);
-            // #[end]
-
-            me.on(
-                eventBind.name,
-                bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
-                eventBind
-            );
         });
     }
 
