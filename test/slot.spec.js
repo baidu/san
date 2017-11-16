@@ -1372,7 +1372,7 @@ describe("Slot", function () {
 
     it("scoped by default content", function (done) {
         var Man = san.defineComponent({
-            template: '<div><slot n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1417,7 +1417,7 @@ describe("Slot", function () {
                     return source.charAt(0).toUpperCase() + source.slice(1);
                 }
             },
-            template: '<div><slot n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n|upper}},{{sex|upper}},{{email|upper}}</p></slot></div>'
+            template: '<div><slot var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n|upper}},{{sex|upper}},{{email|upper}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1463,7 +1463,7 @@ describe("Slot", function () {
 
     it("scoped by given content", function (done) {
         var Man = san.defineComponent({
-            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot name="test" var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1514,7 +1514,7 @@ describe("Slot", function () {
                 }
             },
 
-            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot name="test" var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1566,7 +1566,7 @@ describe("Slot", function () {
 
     it("scoped apply s-for by default, has init data", function (done) {
         var Mans = san.defineComponent({
-            template: '<div><slot/><slot name="test" n="{{item.name}}" email="{{item.email}}" sex="{{item.sex ? \'male\' : \'female\'}}" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot/><slot name="test" var-n="item.name" var-email="item.email" var-sex="item.sex ? \'male\' : \'female\'" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1619,7 +1619,7 @@ describe("Slot", function () {
 
     it("scoped apply s-for by default, has no init data", function (done) {
         var Mans = san.defineComponent({
-            template: '<div><slot/><slot name="test" n="{{item.name}}" email="{{item.email}}" sex="{{item.sex ? \'male\' : \'female\'}}" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+            template: '<div><slot/><slot name="test" var-n="{{item.name}}" var-email="{{item.email}}" var-sex="{{item.sex ? \'male\' : \'female\'}}" s-for="item in data"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
         });
 
         var MyComponent = san.defineComponent({
@@ -1680,7 +1680,7 @@ describe("Slot", function () {
     it("scoped by default content has event listen", function (done) {
         var clickInfo = {};
         var Man = san.defineComponent({
-            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p on-click="emailClick(email)">{{n}},{{sex}},{{email}}</p></slot></div>',
+            template: '<div><slot name="test" var-n="{{data.name}}" var-email="{{data.email}}" var-sex="{{data.sex ? \'male\' : \'female\'}}"><p on-click="emailClick(email)">{{n}},{{sex}},{{email}}</p></slot></div>',
             emailClick: function (email) {
                 clickInfo.email = email;
                 clickInfo.outer = false;
@@ -1736,7 +1736,7 @@ describe("Slot", function () {
     it("scoped by given content has event listen", function (done) {
         var clickInfo = {};
         var Man = san.defineComponent({
-            template: '<div><slot name="test" n="{{data.name}}" email="{{data.email}}" sex="{{data.sex ? \'male\' : \'female\'}}"><p>{{n}},{{sex}},{{email}}</p></slot></div>',
+            template: '<div><slot name="test" var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>',
             emailClick: function (email) {
                 clickInfo.email = 'fail';
                 clickInfo.outer = false;

@@ -75,6 +75,17 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
             integrateProp(aNode, realName, value);
             break;
 
+        case 'var':
+            if (!aNode.vars) {
+                aNode.vars = [];
+            }
+
+            aNode.vars.push({
+                name: realName,
+                expr: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
+            });
+            break;
+
         default:
             if (!ignoreNormal) {
                 integrateProp(aNode, name, value);

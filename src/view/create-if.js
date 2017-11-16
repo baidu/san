@@ -87,6 +87,7 @@ function createIfDirectiveChild(directiveANode, mainIf) {
         props: directiveANode.props,
         events: directiveANode.events,
         tagName: directiveANode.tagName,
+        vars: directiveANode.vars,
         directives: (new IndexedList()).concat(directiveANode.directives)
     });
 

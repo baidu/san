@@ -49,18 +49,16 @@ function createSlot(options) {
             options.isInserted = true;
         }
 
+        aNode.vars = options.aNode.vars;
+
     // #[begin] reverse
     }
     // #[end]
 
     var initData = {};
-    options.scopedProps = [];
-    options.aNode.props.each(function (prop) {
-        if (prop.name !== 'name') {
-            options.isScoped = true;
-            options.scopedProps.push(prop);
-            initData[prop.name] = evalExpr(prop.expr, options.scope, literalOwner);
-        }
+    each(aNode.vars, function (varItem) {
+        options.isScoped = true;
+        initData[varItem.name] = evalExpr(varItem.expr, options.scope, literalOwner);
     });
 
     if (options.isScoped) {
@@ -140,15 +138,16 @@ function createSlot(options) {
 function slotOwnUpdate(changes, isFromOuter) {
     var me = this;
     if (me.isScoped) {
-        each(me.scopedProps, function (prop) {
-            me.realScope.set(prop.name, evalExpr(prop.expr, me.scope, me.literalOwner))
+        each(me.aNode.vars, function (varItem) {
+            me.realScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.literalOwner))
         });
 
 
         var scopedChanges = [];
         each(changes, function (change) {
-            each(me.scopedProps, function (prop) {
-                var relation = changeExprCompare(change.expr, prop.expr, me.scopeParent);
+            each(me.aNode.vars, function (varItem) {
+                var name = varItem.name;
+                var relation = changeExprCompare(change.expr, varItem.expr, me.scopeParent);
 
                 if (relation < 1) {
                     return;
@@ -159,9 +158,9 @@ function slotOwnUpdate(changes, isFromOuter) {
                         type: DataChangeType.SET,
                         expr: {
                             type: ExprType.ACCESSOR,
-                            paths: [{type: ExprType.STRING, value:prop.name}]
+                            paths: [{type: ExprType.STRING, value:name}]
                         },
-                        value: me.realScope.get(prop.name),
+                        value: me.realScope.get(name),
                         option: change.option
                     });
                 }
@@ -169,7 +168,7 @@ function slotOwnUpdate(changes, isFromOuter) {
                     scopedChanges.push({
                         expr: {
                             type: ExprType.ACCESSOR,
-                            paths: [{type: ExprType.STRING, value:prop.name}]
+                            paths: [{type: ExprType.STRING, value:name}]
                         },
                         type: DataChangeType.SPLICE,
                         index: change.index,

@@ -202,6 +202,7 @@ function createFor(options) {
         props: aNode.props,
         events: aNode.events,
         tagName: aNode.tagName,
+        vars: aNode.vars,
         directives: (new IndexedList()).concat(aNode.directives)
     });
     node.itemANode.directives.remove('for');
