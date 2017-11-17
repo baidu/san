@@ -121,7 +121,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
     it("update for, init with empty data", function (done) {
         ##cmpt6##
-        myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(2);
@@ -1359,12 +1358,6 @@ describe("Component serialize from compiled renderer and reverse", function () {
     it("scoped slot by given content which has filter", function (done) {
         ##cmpt56##
 
-        var myComponent = new MyComponent();
-
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
         expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERRORRIK@GMAIL.COM');
@@ -1485,7 +1478,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             document.body.removeChild(wrap);
             done();
         });
-    });
+    });1
 
     it("slot description apply for, init true", function (done) {
         ##cmpt60##
@@ -1499,6 +1492,20 @@ describe("Component serialize from compiled renderer and reverse", function () {
         san.nextTick(function () {
             expect(wrap.getElementsByTagName('p').length).toBe(0);
             expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("scoped slot by default content which has filter", function (done) {
+        ##cmpt61##
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Erik168@163.com');
 
             myComponent.dispose();
             document.body.removeChild(wrap);

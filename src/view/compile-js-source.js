@@ -458,30 +458,52 @@ var aNodeCompiler = {
     compileSlot: function (aNode, sourceBuffer, owner) {
         var nameProp = aNode.props.get('name');
         var name = nameProp ? nameProp.raw : '____';
-        var isGivenContent = 0;
+        var isInserted = 0;
+        var isScoped = 0;
         var children = aNode.children;
 
         if (owner.aNode.givenSlots[name]) {
-            isGivenContent = 1;
+            isInserted = 1;
             children = owner.aNode.givenSlots[name];
             owner = owner.owner;
         }
 
-        var stumpText = (!isGivenContent ? '!' : '')
-            + (nameProp ? nameProp.raw : '');
+        var stumpText = (!isInserted ? '!' : '')
+            + serializeANode({
+                tagName: aNode.tagName,
+                vars: aNode.vars,
+                props:aNode.props,
+                directives: aNode.directives
+            });
+
+
+
         sourceBuffer.joinString(serializeStump('slot', stumpText));
 
-        if (isGivenContent) {
-            sourceBuffer.addRaw('(function (componentCtx) {');
+        if (isInserted) {
+            sourceBuffer.addRaw('var _slotCtx = componentCtx.owner;');
         }
+        else {
+            sourceBuffer.addRaw('var _slotCtx = componentCtx;');
+        }
+
+        if (aNode.vars) {
+            sourceBuffer.addRaw('_slotCtx = {data: {}, filters: _slotCtx.filters, callFilter: _slotCtx.callFilter};');
+            each(aNode.vars, function (varItem) {
+                sourceBuffer.addRaw('_slotCtx.data["' + varItem.name + '"] = ' + compileExprSource.expr(varItem.expr) + ';');
+            });
+        }
+
+        sourceBuffer.addRaw('(function (componentCtx) {');
+
 
         each(children, function (aNodeChild) {
             sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
         });
 
-        if (isGivenContent) {
-            sourceBuffer.addRaw('})(componentCtx.owner);');
-        }
+
+        sourceBuffer.addRaw('})(_slotCtx);');
+        sourceBuffer.addRaw('_slotCtx = null;');
 
         sourceBuffer.joinString(serializeStumpEnd('slot'));
     },

@@ -49,6 +49,11 @@ function serializeANode(aNode) {
         str += ' ' + prop.name + '="' + prop.raw + '"';
     });
 
+    // for vars
+    each(aNode.vars, function (varItem) {
+        str += ' var-' + varItem.name + '="' + varItem.expr.raw + '"';
+    });
+
     if (autoCloseTags[tagName]) {
         str += ' />';
     }

@@ -31,9 +31,14 @@ function createSlot(options) {
     if (options.el) {
         if (options.stumpText.indexOf('!') !== 0) {
             options.isInserted = true;
+        }
+        else {
             options.stumpText = options.stumpText.slice(1);
         }
-        options.name = options.stumpText || '____';
+
+        aNode = parseTemplate(options.stumpText).children[0];
+        var nameBind = aNode.props.get('name');
+        options.name = nameBind ? nameBind.raw : '____';
     }
     else {
     // #[end]
@@ -106,17 +111,26 @@ function createSlot(options) {
 
     // #[begin] reverse
     if (options.el) {
+        removeEl(options.el);
         /* eslint-disable no-constant-condition */
         while (1) {
         /* eslint-enable no-constant-condition */
             var next = options.elWalker.next;
             if (!next || isEndStump(next, 'slot')) {
-                next && options.elWalker.goNext();
+                if (next) {
+                    options.elWalker.goNext();
+                    removeEl(next);
+                }
                 break;
             }
 
             options.elWalker.goNext();
-            var child = createNodeByEl(next, node, options.elWalker);
+            var child = createNodeByEl(
+                next,
+                node,
+                options.elWalker,
+                node.realScope || node.scope
+            );
             node.children.push(child);
         }
 
