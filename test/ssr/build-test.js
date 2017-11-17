@@ -200,6 +200,53 @@ let componentDatas = [
     },
     {
         num: 300
+    },
+    {
+        title: 'contributor',
+        name: 'errorrik',
+        closeText: 'X'
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San',
+        persons: [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San',
+        num: 300
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San'
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San'
     }
 ];
 

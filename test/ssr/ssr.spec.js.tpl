@@ -1275,4 +1275,234 @@ describe("Component serialize from compiled renderer and reverse", function () {
             });
         });
     });
+
+    it("deep slot", function (done) {
+        ##cmpt53##
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('contributor');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('X');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik');
+
+        myComponent.data.set('closeText', 'close');
+        myComponent.data.set('title', 'member');
+        myComponent.data.set('name', 'otakustay');
+
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('member');
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('close');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('otakustay');
+
+
+            myComponent.data.set('folderHidden', true);
+
+            san.nextTick(function () {
+
+                expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('member');
+                expect(wrap.getElementsByTagName('a').length).toBe(0);
+                expect(wrap.getElementsByTagName('u').length).toBe(0);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        })
+    });
+
+    it("scoped slot by default content has event listen", function (done) {
+        var clickInfo = {};
+        ##cmpt54##
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com');
+
+            triggerEvent('#' + wrap.getElementsByTagName('p')[0].id, 'click');
+            setTimeout(function () {
+                expect(clickInfo.email).toBe('erik168@163.com');
+                expect(clickInfo.outer).toBeFalsy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 500);
+        })
+    });
+
+    it("scoped slot by given content has event listen", function (done) {
+        var clickInfo = {};
+        ##cmpt55##
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            triggerEvent('#' + wrap.getElementsByTagName('u')[0].id, 'click');
+            setTimeout(function () {
+                expect(clickInfo.email).toBe('erik168@163.com');
+                expect(clickInfo.outer).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 500);
+        })
+    });
+
+    it("scoped slot by given content which has filter", function (done) {
+        ##cmpt56##
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERRORRIK@GMAIL.COM');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERIK168@163.COM');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it('slot insert element "template" apply for', function (done) {
+        ##cmpt57##
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it('slot insert element "template" apply if', function (done) {
+        ##cmpt58##
+
+        var ps = wrap.getElementsByTagName('p');
+        var h2s = wrap.getElementsByTagName('h2');
+        var h3s = wrap.getElementsByTagName('h3');
+        var h4s = wrap.getElementsByTagName('h4');
+        var h5s = wrap.getElementsByTagName('h5');
+
+        expect(ps[0].innerHTML).toBe('300');
+        expect(h2s.length).toBe(0);
+        expect(h3s.length).toBe(0);
+        expect(h4s.length).toBe(1);
+        expect(h5s.length).toBe(0);
+
+        myComponent.data.set('num', 30000);
+
+        san.nextTick(function () {
+
+            expect(ps[0].innerHTML).toBe('30000');
+            expect(h2s.length).toBe(1);
+            expect(h3s.length).toBe(0);
+            expect(h4s.length).toBe(0);
+            expect(h5s.length).toBe(0);
+
+            myComponent.data.set('num', 10);
+            san.nextTick(function () {
+
+                expect(ps[0].innerHTML).toBe('10');
+                expect(h2s.length).toBe(0);
+                expect(h3s.length).toBe(0);
+                expect(h4s.length).toBe(0);
+                expect(h5s.length).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("slot description apply if, init true", function (done) {
+        ##cmpt59##
+
+        expect(wrap.getElementsByTagName('p').length).toBe(1);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('folderHidden', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p').length).toBe(0);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("slot description apply for, init true", function (done) {
+        ##cmpt60##
+
+        expect(wrap.getElementsByTagName('p').length).toBe(2);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('p')[1].innerHTML).toBe('MVVM component framework');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('folderHidden', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p').length).toBe(0);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

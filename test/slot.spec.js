@@ -1800,7 +1800,7 @@ describe("Slot", function () {
         });
 
         var Button = san.defineComponent({
-            template: '<a><slot/></a>'
+            template: '<div><a><slot/></a></div>'
         });
 
         var Folder = san.defineComponent({
