@@ -17,7 +17,7 @@ var MyComponent = san.defineComponent({
 
     template: ''
         + '<div>'
-          + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><template san-for="p,i in persons" slot="content">  <h4>{{p.name}}</h4><p>{{p.email}}</p>  </template></x-folder>'
+          + '<x-folder hidden="{{folderHidden}}" s-ref="folder"><b slot="title">{{name}}</b><template san-for="p,i in persons" slot="content">  <h4>{{p.name}}</h4><p>{{p.email}}</p>  </template></x-folder>'
         + '</div>'
 });
 

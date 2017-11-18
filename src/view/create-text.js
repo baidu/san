@@ -26,7 +26,7 @@ var isEndStump = require('./is-end-stump');
  */
 function createText(options) {
     var node = nodeInit(options);
-    node._type = NodeType.TEXT;
+    node.nodeType = NodeType.TEXT;
 
     node.attach = textOwnAttach;
     node.dispose = textOwnDispose;

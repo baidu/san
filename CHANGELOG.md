@@ -6,17 +6,21 @@ ChangeLog
 3.3.0
 -------
 
+
 + 【新特性】- 支持 template tag 声明自身不渲染元素只渲染内容
 + 【新特性】- 事件声明参数为空时，默认 $event
 + 【新特性】- 支持通过 native modifier，直接为组件的根元素绑定事件
 + 【新特性】- 支持 scoped slot
 + 【新特性】- slot 支持 if 和 for 指令
++ 【新特性】- 组件实例上添加 slot 方法，可以获取组件内部 slot 插入的内容
 + 【新特性】- 组件实例上添加 nextTick 方法，避免组件实现需要 nextTick 必须显式依赖 san
++ 【新特性】- main 上暴露 NodeType 枚举对象
 + 【变更】- parseTemplate 的 ANode 去除 parent 的引用。消除循环引用后可以 JSON.stringify
 + 【变更】- ANode 上子节点命名由 childs 变更为 children
++ 【变更】- 组件 LifeCycle 对象静态化，main 上不再暴露 LifeCycle 类
 + 【优化】- 增加事件绑定到不存在方法时的错误提示
 + 【优化】- 当数组上有非数字索引的成员并发生变更时，添加判断使视图更新时不报错，增加健壮性
-+ 【优化】- 组件 LifeCycle 对象静态化
+
 
 
 3.2.10

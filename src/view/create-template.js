@@ -34,7 +34,7 @@ function createTemplate(options) {
     node.lifeCycle = LifeCycle.start;
     node.children = [];
 
-    node._type = NodeType.TEMPLATE;
+    node.nodeType = NodeType.TPL;
 
     node.attach = nodeOwnOnlyChildrenAttach;
     node.dispose = templateOwnDispose;

@@ -1391,6 +1391,11 @@ describe("Component serialize from compiled renderer and reverse", function () {
 
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
 
+        var contentSlot = myComponent.ref('folder').slot('content');
+        expect(contentSlot.length).toBe(1);
+        expect(contentSlot[0].children[0].children.length).toBe(2);
+        expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
+
         myComponent.data.pop('persons');
         san.nextTick(function () {
             var h4s = wrap.getElementsByTagName('h4');
@@ -1402,9 +1407,18 @@ describe("Component serialize from compiled renderer and reverse", function () {
             expect(h4s[0].innerHTML).toBe('otakustay');
             expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
 
+            var contentSlot = myComponent.ref('folder').slot('content');
+            expect(contentSlot.length).toBe(1);
+            expect(contentSlot[0].children[0].children.length).toBe(1);
+            expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
 
             myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
             san.nextTick(function () {
+                var contentSlot = myComponent.ref('folder').slot('content');
+                expect(contentSlot.length).toBe(1);
+                expect(contentSlot[0].children[0].children.length).toBe(2);
+                expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
+
                 expect(h4s[0].innerHTML).toBe('errorrik');
                 expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
 
@@ -1469,11 +1483,16 @@ describe("Component serialize from compiled renderer and reverse", function () {
         expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
 
+        var contentSlots = myComponent.ref('folder').slot();
+        expect(contentSlots.length).toBe(1);
+
         myComponent.data.set('folderHidden', true);
         san.nextTick(function () {
             expect(wrap.getElementsByTagName('p').length).toBe(0);
             expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
 
+            var contentSlots = myComponent.ref('folder').slot();
+            expect(contentSlots.length).toBe(0);
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();

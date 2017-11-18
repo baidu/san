@@ -40,6 +40,7 @@
     // require('./runtime/binary-op');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
+    // require('./view/node-type');
     // require('./view/gen-stump-html');
     // require('./view/create-text');
     // require('./view/get-prop-handler');
@@ -61,6 +62,7 @@
     var parseExpr = require('./parser/parse-expr');
     var ExprType = require('./parser/expr-type');
     var LifeCycle = require('./view/life-cycle');
+    var NodeType = require('./view/node-type');
     var Component = require('./view/component');
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
@@ -155,10 +157,16 @@
 
         /**
          * 生命周期
-         *
-         * @class
          */
         LifeCycle: LifeCycle,
+
+        /**
+         * 节点类型
+         *
+         * @const
+         * @type {Object}
+         */
+        NodeType: NodeType,
 
         /**
          * 在下一个更新周期运行函数

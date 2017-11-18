@@ -12,7 +12,7 @@ var NodeType = require('./node-type');
  * @return {boolean}
  */
 function isComponent(node) {
-    return node && node._type === NodeType.CMPT;
+    return node && node.nodeType === NodeType.CMPT;
 }
 
 exports = module.exports = isComponent;

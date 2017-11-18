@@ -147,7 +147,7 @@ function createForDirectiveChild(forElement, item, index) {
 function createFor(options) {
     var node = nodeInit(options);
     node.children = [];
-    node._type = NodeType.FOR;
+    node.nodeType = NodeType.FOR;
 
     node.attach = forOwnAttach;
     node.detach = forOwnDetach;

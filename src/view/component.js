@@ -201,10 +201,9 @@ function Component(options) {
 /**
  * 类型标识
  *
- * @protected
  * @type {string}
  */
-Component.prototype._type = NodeType.CMPT;
+Component.prototype.nodeType = NodeType.CMPT;
 
 /**
  * 在下一个更新周期运行函数
@@ -349,6 +348,33 @@ Component.prototype.dispatch = function (name, value) {
 };
 
 /**
+ * 获取组件内部的 slot
+ *
+ * @param {string=} name slot名称，空为default slot
+ * @return {Array}
+ */
+Component.prototype.slot = function (name) {
+    name = name || '____';
+    var result = [];
+
+    function childrenTraversal(children) {
+        each(children, function (child) {
+            if (child.nodeType === NodeType.SLOT) {
+                if (child.name === name) {
+                    result.push(child);
+                }
+            }
+            else if (!isComponent(child)) {
+                childrenTraversal(child.children);
+            }
+        });
+    }
+
+    childrenTraversal(this.children);
+    return result;
+};
+
+/**
  * 获取带有 san-ref 指令的子组件引用
  *
  * @param {string} name 子组件的引用名
@@ -378,7 +404,7 @@ Component.prototype.ref = function (name) {
         }
 
         !refComponent && each(element.children, function (child) {
-            if (child._type !== NodeType.TEXT) {
+            if (child.nodeType !== NodeType.TEXT) {
                 elementTraversal(child);
             }
 

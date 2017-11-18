@@ -18,7 +18,7 @@ var MyComponent = san.defineComponent({
 
     template: ''
         + '<div>'
-          + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
+          + '<x-folder hidden="{{folderHidden}}" s-ref="folder"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
         + '</div>'
 });
 

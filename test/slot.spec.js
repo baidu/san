@@ -989,7 +989,7 @@ describe("Slot", function () {
 
             template: ''
                 + '<div>'
-                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
+                  + '<x-folder hidden="{{folderHidden}}" s-ref="folder"><b slot="title">{{name}}</b><p>{{desc}}</p></x-folder>'
                 + '</div>'
         });
 
@@ -1010,10 +1010,16 @@ describe("Slot", function () {
         expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('MVVM component framework');
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
 
+        var contentSlots = myComponent.ref('folder').slot();
+        expect(contentSlots.length).toBe(1);
+
         myComponent.data.set('folderHidden', true);
         san.nextTick(function () {
             expect(wrap.getElementsByTagName('p').length).toBe(0);
             expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
+
+            var contentSlots = myComponent.ref('folder').slot();
+            expect(contentSlots.length).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1089,7 +1095,7 @@ describe("Slot", function () {
 
             template: ''
                 + '<div>'
-                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><div san-for="p,i in persons"><h4>{{p.name}}</h4><p>{{p.email}}</p></div></x-folder>'
+                  + '<x-folder hidden="{{folderHidden}}" s-ref="folder"><b slot="title">{{name}}</b><div san-for="p,i in persons"><h4>{{p.name}}</h4><p>{{p.email}}</p></div></x-folder>'
                 + '</div>'
         });
 
@@ -1123,6 +1129,11 @@ describe("Slot", function () {
 
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('San');
 
+        var contentSlot = myComponent.ref('folder').slot();
+        expect(contentSlot.length).toBe(1);
+        expect(contentSlot[0].children[0].children.length).toBe(2);
+        expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
+
         myComponent.data.pop('persons');
         san.nextTick(function () {
             var h4s = wrap.getElementsByTagName('h4');
@@ -1134,9 +1145,19 @@ describe("Slot", function () {
             expect(h4s[0].innerHTML).toBe('otakustay');
             expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
 
+            var contentSlot = myComponent.ref('folder').slot();
+            expect(contentSlot.length).toBe(1);
+            expect(contentSlot[0].children[0].children.length).toBe(1);
+            expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
+
 
             myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
             san.nextTick(function () {
+                var contentSlot = myComponent.ref('folder').slot();
+                expect(contentSlot.length).toBe(1);
+                expect(contentSlot[0].children[0].children.length).toBe(2);
+                expect(contentSlot[0].children[0].nodeType).toBe(san.NodeType.FOR);
+
                 expect(h4s[0].innerHTML).toBe('errorrik');
                 expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
 
@@ -1249,7 +1270,7 @@ describe("Slot", function () {
 
             template: ''
                 + '<div>'
-                  + '<x-folder hidden="{{folderHidden}}"><b slot="title">{{name}}</b><span slot="content" s-if="num > 10000" title="biiig">biiig</span>  \n'
+                  + '<x-folder hidden="{{folderHidden}}" s-ref="folder"><b slot="title">{{name}}</b><span slot="content" s-if="num > 10000" title="biiig">biiig</span>  \n'
             + '<span s-elif="num > 1000" title="biig">biig</span>  \n'
             + '<span s-elif="num > 100" title="big">big</span>  \n'
             + ' <u s-else title="small">small</u></x-folder>'
@@ -1273,6 +1294,9 @@ describe("Slot", function () {
         expect(spans.length).toBe(1);
         expect(spans[0].title).toBe('big');
         expect(wrap.getElementsByTagName('u').length).toBe(0);
+
+        var contentSlot = myComponent.ref('folder').slot('content');
+        expect(contentSlot.length).toBe(1);
 
         myComponent.data.set('num', 30000);
 
@@ -1574,7 +1598,7 @@ describe("Slot", function () {
                 'x-mans': Mans
             },
 
-            template: '<div><x-mans data="{{mans}}"><h2>{{title}}</h2></x-mans></div>',
+            template: '<div><x-mans data="{{mans}}" s-ref="mans"><h2>{{title}}</h2></x-mans></div>',
 
             initData: function () {
                 return {
@@ -1602,9 +1626,22 @@ describe("Slot", function () {
         expect(ps[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
         expect(ps[1].innerHTML).toBe('varsha,female,wangshuonpu@163.com');
         expect(ps[2].innerHTML).toBe('otakustay,male,otakustay@gmail.com');
+
+        var mans = myComponent.ref('mans');
+        var testSlots = mans.slot('test');
+        expect(testSlots.length).toBe(3);
+
+        expect(testSlots[0].isScoped).toBeTruthy();
+        expect(testSlots[0].isInserted).toBeFalsy();
+
+
         myComponent.data.pop('mans');
         myComponent.data.set('mans[0].email', 'erik168@163.com');
         san.nextTick(function () {
+
+            var mans = myComponent.ref('mans');
+            var testSlots = mans.slot('test');
+            expect(testSlots.length).toBe(2);
 
             expect(ps.length).toBe(2);
 
@@ -1627,7 +1664,7 @@ describe("Slot", function () {
                 'x-mans': Mans
             },
 
-            template: '<div><x-mans data="{{mans}}"><h2>{{title}}</h2><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-mans></div>',
+            template: '<div><x-mans data="{{mans}}" s-ref="mans"><h2>{{title}}</h2><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-mans></div>',
 
             initData: function () {
                 return {
@@ -1646,6 +1683,11 @@ describe("Slot", function () {
         expect(wrap.getElementsByTagName('h2')[0].innerHTML).toBe('contributors');
         var h3s = wrap.getElementsByTagName('h3');
         expect(h3s.length).toBe(0);
+
+        var mans = myComponent.ref('mans');
+        var testSlots = mans.slot('test');
+        expect(testSlots.length).toBe(0);
+
 
         myComponent.data.set('mans', [
             {name: 'errorrik', sex: 1, email: 'errorrik@gmail.com'},
@@ -1670,6 +1712,12 @@ describe("Slot", function () {
             expect(bs[0].innerHTML).toBe('male');
             expect(bs[1].innerHTML).toBe('female');
             expect(bs[2].innerHTML).toBe('male');
+
+            var mans = myComponent.ref('mans');
+            var testSlots = mans.slot('test');
+            expect(testSlots.length).toBe(3);
+            expect(testSlots[0].isScoped).toBeTruthy();
+            expect(testSlots[0].isInserted).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1819,7 +1867,7 @@ describe("Slot", function () {
             },
 
             template: '<div>'
-                + '<x-folder hidden="{{folderHidden}}">'
+                + '<x-folder hidden="{{folderHidden}}" s-ref="folder">'
                 + '<b slot="title">{{title}}</b>'
                 + '<x-panel><u>{{name}}</u><x-button>{{closeText}}</x-button></x-panel>'
                 + '</x-folder>'
@@ -1840,7 +1888,14 @@ describe("Slot", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
+        var folder = myComponent.ref('folder');
+        expect(folder.slot().length).toBe(1);
+        expect(folder.slot('title').length).toBe(1);
 
+        expect(!!folder.slot('title')[0].isInserted).toBeTruthy();
+        expect(!!folder.slot('title')[0].isScoped).toBeFalsy();
+        expect(!!folder.slot()[0].isInserted).toBeTruthy();
+        expect(!!folder.slot()[0].isScoped).toBeFalsy();
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('contributor');
         expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('X');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik');

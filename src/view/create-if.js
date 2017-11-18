@@ -29,7 +29,7 @@ var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 function createIf(options) {
     var node = nodeInit(options);
     node.children = [];
-    node._type = NodeType.IF;
+    node.nodeType = NodeType.IF;
 
     node.dispose = nodeOwnSimpleDispose;
 

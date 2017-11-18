@@ -83,7 +83,7 @@ function createSlot(options) {
     var node = nodeInit(options);
     node.lifeCycle = LifeCycle.start;
     node.children = [];
-    node._type = NodeType.SLOT;
+    node.nodeType = NodeType.SLOT;
     node.dispose = slotOwnDispose;
     node.attach = nodeOwnOnlyChildrenAttach;
 
