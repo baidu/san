@@ -254,6 +254,22 @@ let componentDatas = [
             sex: 1,
             email: 'errorrik@gmail.com'
         }
+    },
+    {
+        cates: [
+            'foo',
+            'bar'
+        ],
+        forms: {
+            foo: [1, 2, 3],
+            bar: [4, 5, 6]
+        }
+    },
+    {
+        cates: [
+            'foo',
+            'bar'
+        ]
     }
 ];
 

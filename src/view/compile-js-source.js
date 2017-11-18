@@ -7,6 +7,7 @@
 var each = require('../util/each');
 var camel2kebab = require('../util/camel2kebab');
 var IndexedList = require('../util/indexed-list');
+var guid = require('../util/guid');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
 var escapeHTML = require('../runtime/escape-html');
@@ -424,6 +425,10 @@ var aNodeCompiler = {
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
         var listName = compileExprSource.dataAccess(forDirective.list);
+
+        if (indexName === '$index') {
+            indexName = guid();
+        }
 
         // start stump
         sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
