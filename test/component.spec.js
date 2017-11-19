@@ -419,6 +419,30 @@ describe("Component", function () {
         });
     });
 
+    it("compile before new", function () {
+        var MyComponent = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        expect(MyComponent.prototype.aNode == null).toBeTruthy();
+        san.compileComponent(MyComponent);
+
+        expect(MyComponent.prototype.aNode != null).toBeTruthy();
+
+
+        var myComponent = new MyComponent({data: {text: 'Hello San!'}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('Hello San!');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("template as static property", function () {
         var MyComponent = san.defineComponent({});
         MyComponent.template = '<span title="{{color}}">{{color}}</span>';

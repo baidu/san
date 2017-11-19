@@ -64,6 +64,7 @@
     var LifeCycle = require('./view/life-cycle');
     var NodeType = require('./view/node-type');
     var Component = require('./view/component');
+    var compileComponent = require('./view/compile-component');
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
@@ -129,6 +130,13 @@
          * @return {Function}
          */
         defineComponent: defineComponent,
+
+        /**
+         * 编译组件类。预解析template和components
+         *
+         * @param {Function} ComponentClass 组件类
+         */
+        compileComponent: compileComponent,
 
         /**
          * 解析 template
