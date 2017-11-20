@@ -317,8 +317,11 @@ Data.prototype.shift = function (expr, option) {
  */
 Data.prototype.unshift = function (expr, item, option) {
     var target = this.get(expr);
-    this.splice(expr, [0, 0, item], option);
-    return target.length + 1;
+
+    if (target instanceof Array) {
+        this.splice(expr, [0, 0, item], option);
+        return target.length + 1;
+    }
 };
 
 /**
