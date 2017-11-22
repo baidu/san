@@ -124,7 +124,7 @@ var elementSourceCompiler = {
                 case 'draggable':
                 case 'readonly':
                 case 'disabled':
-                case 'mutiple':
+                case 'multiple':
                     if (prop.raw === '') {
                         sourceBuffer.joinString(' ' + prop.name);
                     }

@@ -141,7 +141,7 @@ function analInputCheckedState(element, value, oper) {
 
 var elementPropHandlers = {
     input: {
-        mutiple: genBoolPropHandler('mutiple'),
+        multiple: genBoolPropHandler('multiple'),
         checked: {
             attr: function (element, name, value) {
                 return analInputCheckedState(element, value, 'attr');
