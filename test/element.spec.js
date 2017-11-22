@@ -311,6 +311,33 @@ describe("Element", function () {
         });
     });
 
+    it("bind multiple", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="file" multiple="{{ed}}"></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.multiple).toBeFalsy();
+
+        myComponent.data.set('ed', true);
+
+
+        san.nextTick(function () {
+            expect(input.multiple).toBeTruthy();
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind disabled", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><input type="text" disabled="{{ed}}"><textarea disabled="{{ed}}"></textarea><button disabled="{{ed}}">btn</button></div>'
