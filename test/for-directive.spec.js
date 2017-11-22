@@ -90,9 +90,10 @@ describe("ForDirective", function () {
 
         expect(lis.length).toBe(0);
 
-        myComponent.data.push('persons',
+        var newLen = myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
+        expect(newLen).toBe(1);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
@@ -505,9 +506,10 @@ describe("ForDirective", function () {
         expect(lis[0].parentNode.offsetHeight).toBe(itemHeight);
 
 
-        myComponent.data.push('persons',
+        var newLen = myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
+        expect(newLen).toBe(2);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
@@ -648,9 +650,10 @@ describe("ForDirective", function () {
         expect(lis[1].getAttribute('title')).toBe('one 1/2');
         expect(lis[1].innerHTML.indexOf('one - one@gmail.com')).toBe(0);
 
-        myComponent.data.unshift('persons',
+        var newLen = myComponent.data.unshift('persons',
             {name: 'three', email: 'three@gmail.com'}
         );
+        expect(newLen).toBe(3);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
