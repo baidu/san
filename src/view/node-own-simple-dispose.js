@@ -20,6 +20,9 @@ function nodeOwnSimpleDispose(options) {
     }
 
     nodeDispose(this);
+    if (this._ondisposed) {
+        this._ondisposed();
+    }
 }
 
 exports = module.exports = nodeOwnSimpleDispose;

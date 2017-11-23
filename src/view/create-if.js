@@ -163,9 +163,11 @@ function ifOwnUpdate(changes) {
         elementUpdateChildren(me, changes);
     }
     else {
-        if (me.children[0]) {
-            me.children[0]._ondisposed = newChild;
-            me.children[0].dispose();
+        var child = me.children[0];
+        me.children.length = 0;
+        if (child) {
+            child._ondisposed = newChild;
+            child.dispose();
         }
         else {
             newChild();
