@@ -323,6 +323,8 @@ function forOwnDetach() {
  * @param {Array} changes 数据变化信息
  */
 function forOwnUpdate(changes) {
+    var me = this;
+
     var childrenChanges = [];
     var oldChildrenLen = this.children.length;
     each(this.children, function () {
@@ -510,78 +512,95 @@ function forOwnUpdate(changes) {
 
     // 清除应该干掉的 child
     var violentClear = isOnlyParentChild && newChildrenLen === 0;
-
+    var disposeChildCount = disposeChildren.length;
+    var disposedChildCount = 0;
     each(disposeChildren, function (child) {
-        child.dispose(violentClear);
+        child._ondisposed = childDisposed;
+        child.dispose({dontDetach:violentClear, noTransition: violentClear});
     });
 
     if (violentClear) {
         parentEl.innerHTML = '';
         this.el = document.createComment('san:' + this.id);
         parentEl.appendChild(this.el);
-        return;
     }
 
-
-    // 对相应的项进行更新
-    if (oldChildrenLen === 0 && isOnlyParentChild) {
-        var buf = createStrBuffer();
-        each(
-            this.children,
-            function (child) {
-                child._attachHTML(buf);
-            }
-        );
-        parentEl.innerHTML = stringifyStrBuffer(buf);
-        this.el = document.createComment('san:' + this.id);
-        parentEl.appendChild(this.el);
+    if (disposeChildCount === 0) {
+        doCreateAndUpdate();
     }
-    else {
-        // 如果不attached则直接创建，如果存在则调用更新函数
 
-        // var attachStump = this;
-
-        // while (newChildrenLen--) {
-        //     var child = this.children[newChildrenLen];
-        //     if (child.lifeCycle.attached) {
-        //         childrenChanges[newChildrenLen].length && child._update(childrenChanges[newChildrenLen]);
-        //     }
-        //     else {
-        //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
-        //     }
-
-        //     attachStump = child;
-        // }
-
-        var newChildBuf;
-
-        for (var i = 0; i < newChildrenLen; i++) {
-            var child = this.children[i];
-
-            if (child.lifeCycle.attached) {
-                childrenChanges[i].length && child._update(childrenChanges[i]);
-            }
-            else {
-                newChildBuf = newChildBuf || createStrBuffer();
-                child._attachHTML(newChildBuf);
-
-                // flush new children html
-                var nextChild = this.children[i + 1];
-                if (!nextChild || nextChild.lifeCycle.attached) {
-                    var beforeEl = nextChild && (nextChild._getEl() || nextChild.children[0]._getEl());
-                    insertHTMLBefore(
-                        stringifyStrBuffer(newChildBuf),
-                        parentEl,
-                        beforeEl || this.el || parentEl.firstChild
-                    );
-
-                    newChildBuf = null;
-                }
-            }
+    function childDisposed() {
+        disposedChildCount++;
+        if (disposedChildCount === disposeChildCount) {
+            doCreateAndUpdate();
         }
     }
 
-    attachings.done();
+    function doCreateAndUpdate() {
+        if (violentClear) {
+            return;
+        }
+
+        // 对相应的项进行更新
+        if (oldChildrenLen === 0 && isOnlyParentChild) {
+            var buf = createStrBuffer();
+            each(
+                me.children,
+                function (child) {
+                    child._attachHTML(buf);
+                }
+            );
+            parentEl.innerHTML = stringifyStrBuffer(buf);
+            me.el = document.createComment('san:' + me.id);
+            parentEl.appendChild(me.el);
+        }
+        else {
+            // 如果不attached则直接创建，如果存在则调用更新函数
+
+            // var attachStump = this;
+
+            // while (newChildrenLen--) {
+            //     var child = me.children[newChildrenLen];
+            //     if (child.lifeCycle.attached) {
+            //         childrenChanges[newChildrenLen].length && child._update(childrenChanges[newChildrenLen]);
+            //     }
+            //     else {
+            //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
+            //     }
+
+            //     attachStump = child;
+            // }
+
+            var newChildBuf;
+
+            for (var i = 0; i < newChildrenLen; i++) {
+                var child = me.children[i];
+
+                if (child.lifeCycle.attached) {
+                    childrenChanges[i].length && child._update(childrenChanges[i]);
+                }
+                else {
+                    newChildBuf = newChildBuf || createStrBuffer();
+                    child._attachHTML(newChildBuf);
+
+                    // flush new children html
+                    var nextChild = me.children[i + 1];
+                    if (!nextChild || nextChild.lifeCycle.attached) {
+                        var beforeEl = nextChild && (nextChild._getEl() || nextChild.children[0]._getEl());
+                        insertHTMLBefore(
+                            stringifyStrBuffer(newChildBuf),
+                            parentEl,
+                            beforeEl || me.el || parentEl.firstChild
+                        );
+
+                        newChildBuf = null;
+                    }
+                }
+            }
+        }
+
+        attachings.done();
+    }
 }
 
 

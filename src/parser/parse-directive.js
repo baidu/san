@@ -62,6 +62,12 @@ var directiveParsers = {
         return {
             value: parseInterp(value)
         };
+    },
+
+    'transition': function (value) {
+        return {
+            value: value
+        };
     }
 };
 

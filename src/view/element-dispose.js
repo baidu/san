@@ -4,6 +4,7 @@
  */
 
 var elementDisposeChildren = require('./element-dispose-children');
+var elementGetTransition = require('./element-get-transition');
 var nodeDispose = require('./node-dispose');
 var un = require('../browser/un');
 
@@ -11,10 +12,10 @@ var un = require('../browser/un');
  * 销毁元素节点
  *
  * @param {Object} element 要销毁的元素节点
- * @param {boolean} dontDetach 是否不要将节点从DOM移除
+ * @param {Object=} options 销毁行为的参数
  */
-function elementDispose(element, dontDetach) {
-    elementDisposeChildren(element, true);
+function elementDispose(element, options) {
+    elementDisposeChildren(element, {dontDetach: true, noTransition: true});
 
     /* eslint-disable guard-for-in */
     // el 事件解绑
@@ -30,10 +31,11 @@ function elementDispose(element, dontDetach) {
     /* eslint-enable guard-for-in */
 
 
-    if (!dontDetach || !element.parent) {
-        element.detach();
+    if (!options || !options.dontDetach || !element.parent) {
+        removeEl(element._getEl());
     }
-    else if (element._toPhase) {
+
+    if (element._toPhase) {
         element._toPhase('detached');
     }
 

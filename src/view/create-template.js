@@ -118,8 +118,8 @@ function templateOwnAttachHTML(buf) {
 /**
  * 销毁释放
  */
-function templateOwnDispose(dontDetach) {
-    elementDisposeChildren(this, dontDetach);
+function templateOwnDispose(options) {
+    elementDisposeChildren(this, options);
     nodeDispose(this);
     this._toPhase('disposed');
 }

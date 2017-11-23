@@ -50,6 +50,15 @@ var LifeCycle = {
         attached: true
     },
 
+    leaving: {
+        is: lifeCycleOwnIs,
+        compiled: true,
+        inited: true,
+        created: true,
+        attached: true,
+        leaving: true
+    },
+
     detached: {
         is: lifeCycleOwnIs,
         compiled: true,

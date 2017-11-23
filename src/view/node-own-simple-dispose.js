@@ -10,12 +10,12 @@ var elementDisposeChildren = require('./element-dispose-children');
 /**
  * 简单执行销毁节点的行为
  *
- * @param {boolean} dontDetach 是否不要将节点移除
+ * @param {Object=} options dispose行为参数
  */
-function nodeOwnSimpleDispose(dontDetach) {
-    elementDisposeChildren(this, dontDetach);
+function nodeOwnSimpleDispose(options) {
+    elementDisposeChildren(this, options);
 
-    if (!dontDetach) {
+    if (!options || !options.dontDetach) {
         removeEl(this._getEl());
     }
 

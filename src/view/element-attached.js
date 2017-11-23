@@ -9,6 +9,7 @@ var each = require('../util/each');
 var bind = require('../util/bind');
 var isBrowser = require('../browser/is-browser');
 
+var elementGetTransition = require('./element-get-transition');
 var eventDeclarationListener = require('./event-declaration-listener');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
@@ -116,6 +117,12 @@ function elementAttached(element) {
     });
 
     element._toPhase('attached');
+
+
+    var transition = elementGetTransition(element);
+    if (transition) {
+        transition.enter(element._getEl(), empty);
+    }
 }
 
 exports = module.exports = elementAttached;

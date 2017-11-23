@@ -163,8 +163,18 @@ function ifOwnUpdate(changes) {
         elementUpdateChildren(me, changes);
     }
     else {
-        elementDisposeChildren(me);
+        if (me.children[0]) {
+            me.children[0]._ondisposed = newChild;
+            me.children[0].dispose();
+        }
+        else {
+            newChild();
+        }
 
+        me.elseIndex = elseIndex;
+    }
+
+    function newChild() {
         if (typeof elseIndex !== 'undefined') {
             var child = createIfDirectiveChild(childANode, me);
             var parentEl = getNodeStumpParent(me);
@@ -172,8 +182,6 @@ function ifOwnUpdate(changes) {
 
             me.children[0] = child;
         }
-
-        me.elseIndex = elseIndex;
     }
 }
 

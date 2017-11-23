@@ -7,14 +7,14 @@
  * 销毁释放元素的子元素
  *
  * @param {Object} element 元素节点
- * @param {boolean} dontDetach 是否不要将节点从DOM移除
+ * @param {Object} options 销毁节点的参数
  */
-function elementDisposeChildren(element, dontDetach) {
+function elementDisposeChildren(element, options) {
     var children = element.children;
     if (children instanceof Array) {
         var len = children.length;
         while (len--) {
-            children[len].dispose(dontDetach);
+            children[len].dispose(options);
         }
 
         children.length = 0;

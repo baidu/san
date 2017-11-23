@@ -225,11 +225,11 @@ function slotOwnGetEl() {
 /**
  * 销毁释放 slot
  */
-function slotOwnDispose(dontDetach) {
+function slotOwnDispose(options) {
     this.realScope = null;
     this.literalOwner = null;
 
-    elementDisposeChildren(this, dontDetach);
+    elementDisposeChildren(this, options);
     nodeDispose(this);
 
     this._toPhase('disposed');

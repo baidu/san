@@ -46,7 +46,8 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnEventListenMethod = require('./warn-event-listen-method');
-
+var elementLeaveTo = require('./element-leave-to');
+var elementToPhase = require('./element-to-phase');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -221,20 +222,12 @@ Component.prototype.nextTick = nextTick;
  */
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
-    if (this.lifeCycle[name]) {
-        return;
+    if (elementToPhase(this, name)) {
+        // 通知devtool
+        // #[begin] devtool
+        emitDevtool('comp-' + name, this);
+        // #[end]
     }
-
-    this.lifeCycle = LifeCycle[name] || this.lifeCycle;
-
-    if (typeof this[name] === 'function') {
-        this[name](this);
-    }
-
-    // 通知devtool
-    // #[begin] devtool
-    emitDevtool('comp-' + name, this);
-    // #[end]
 };
 /* eslint-enable operator-linebreak */
 
@@ -580,24 +573,31 @@ Component.prototype.watch = function (dataName, listener) {
 /**
  * 组件销毁的行为
  *
- * @param {boolean} dontDetach 是否不要将节点从DOM移除
+ * @param {Object} options 销毁行为的参数
  */
-Component.prototype.dispose = function (dontDetach) {
-    if (!this.lifeCycle.disposed) {
-        elementDispose(this, dontDetach);
+Component.prototype.dispose = function (options) {
+    var me = this;
+    me._doneLeave = function () {
+        if (!me.lifeCycle.disposed) {
+            elementDispose(me, options);
 
-        // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
-        this.slotChildren = null;
+            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+            me.slotChildren = null;
 
-        this.data.unlisten();
-        this.dataChanger = null;
-        this.dataChanges = null;
+            me.data.unlisten();
+            me.dataChanger = null;
+            me.dataChanges = null;
 
-        this.listeners = null;
+            me.listeners = null;
 
-        this._toPhase('disposed');
-    }
+            me._toPhase('disposed');
+        }
+    };
+
+    elementLeaveTo(this, options);
 };
+
+
 
 /**
  * 完成组件 attached 后的行为
