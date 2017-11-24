@@ -11,6 +11,7 @@ ChangeLog
 + 【新特性】- 事件声明参数为空时，默认 $event
 + 【新特性】- 支持通过 native modifier，直接为组件的根元素绑定事件
 + 【新特性】- 支持 scoped slot
++ 【新特性】- 支持 transition 机制
 + 【新特性】- slot 支持 if 和 for 指令
 + 【新特性】- 组件实例上添加 slot 方法，可以获取组件内部 slot 插入的内容
 + 【新特性】- 组件实例上添加 nextTick 方法，避免组件实现需要 nextTick 必须显式依赖 san
@@ -23,6 +24,7 @@ ChangeLog
 + 【优化】- 当数组上有非数字索引的成员并发生变更时，添加判断使视图更新时不报错，增加健壮性
 + 【bug修复】- ssr 在多重循环下可能渲染不完整
 + 【bug修复】- input[type=file] 的 multiple 属性由于低级的拼写问题导致不支持
++ 【bug修复】- input value 使用双向绑定时，如果绑定值为 undefined，表单内容未自动转为空串
 
 
 
