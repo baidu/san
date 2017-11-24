@@ -121,7 +121,7 @@ function elementAttached(element) {
 
 
     var transition = elementGetTransition(element);
-    if (transition) {
+    if (transition && transition.enter) {
         transition.enter(element._getEl(), empty);
     }
 }

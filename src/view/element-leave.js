@@ -25,7 +25,7 @@ function elementLeave(element, options) {
     }
     else {
         var transition = elementGetTransition(element);
-        if (transition) {
+        if (transition && transition.leave) {
             element._toPhase('leaving');
             transition.leave(element._getEl(), function () {
                 element._doneLeave();
