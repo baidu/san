@@ -300,8 +300,8 @@ describe("Element", function () {
 
             san.nextTick(function () {
                 expect(input.value).toBe('');
-                // myComponent.dispose();
-                // document.body.removeChild(wrap);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
 
                 done();
             });
