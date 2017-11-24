@@ -36,7 +36,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @return {Object}
  */
 function createSlot(options) {
-    var literalOwner = options.owner;
+    options.literalOwner = options.owner;
     var aNode = createANode();
 
     // #[begin] reverse
@@ -58,7 +58,7 @@ function createSlot(options) {
         var nameBind = options.aNode.props.get('name');
         options.name = nameBind ? nameBind.raw : '____';
 
-        var givenSlots = literalOwner.aNode.givenSlots;
+        var givenSlots = options.literalOwner.aNode.givenSlots;
         var givenChildren = givenSlots && givenSlots[options.name];
         aNode.children = givenChildren || options.aNode.children.slice(0);
 
@@ -75,17 +75,16 @@ function createSlot(options) {
     var initData = {};
     each(aNode.vars, function (varItem) {
         options.isScoped = true;
-        initData[varItem.name] = evalExpr(varItem.expr, options.scope, literalOwner);
+        initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.literalOwner);
     });
 
     if (options.isScoped) {
         options.realScope = new Data(initData);
-        options.literalOwner = literalOwner;
     }
 
     if (options.isInserted) {
-        options.owner = literalOwner.owner;
-        !options.isScoped && (options.scope = literalOwner.scope);
+        options.owner = options.literalOwner.owner;
+        !options.isScoped && (options.scope = options.literalOwner.scope);
     }
 
 
@@ -146,8 +145,8 @@ function createSlot(options) {
             node.children.push(child);
         }
 
-        if (literalOwner !== node.owner) {
-            literalOwner.aNode.givenSlots[node.name] = node.aNode;
+        if (options.isInserted) {
+            options.literalOwner.aNode.givenSlots[node.name] = node.aNode;
         }
     }
     // #[end]

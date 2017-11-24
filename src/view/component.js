@@ -348,15 +348,16 @@ Component.prototype.dispatch = function (name, value) {
 Component.prototype.slot = function (name) {
     name = name || '____';
     var result = [];
+    var me = this;
 
     function childrenTraversal(children) {
         each(children, function (child) {
-            if (child.nodeType === NodeType.SLOT) {
+            if (child.nodeType === NodeType.SLOT && child.literalOwner === me) {
                 if (child.name === name) {
                     result.push(child);
                 }
             }
-            else if (!isComponent(child)) {
+            else {
                 childrenTraversal(child.children);
             }
         });

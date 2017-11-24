@@ -1925,4 +1925,85 @@ describe("Slot", function () {
             });
         })
     });
+
+    it("deep nest slot and slot()", function (done) {
+        var Head = san.defineComponent({
+            template: '<h3><slot/></h3>'
+        });
+
+        var Content = san.defineComponent({
+            template: '<p><slot/></p>'
+        });
+
+        var Folder = san.defineComponent({
+            components: {
+                'x-head': Head,
+                'x-content': Content
+            },
+
+            template:
+                '<div>'
+                    + '<x-head on-click="native:toggle"><slot name="head">head</slot></x-head>'
+                    + '<x-content style="{{isShow ? \'\' : \'display:none\'}}"><slot>content</slot></x-content>'
+                    + '<p style="{{isShow ? \'\' : \'display:none\'}}"><slot name="foot">foot</slot></p>'
+                + '</div>',
+
+            toggle: function () {
+                this.data.set('isShow', !this.data.get('isShow'));
+            }
+
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-folder': Folder
+            },
+            template:
+                '<div>'
+                    + '<x-folder isShow="true" s-ref="folder">'
+                        + '<b slot="head">{{head}}</b>'
+                        + '<strong slot="foot">{{foot}}</strong>'
+                        + '<u>{{content}}</u>'
+                    + '</x-folder>'
+                + '</div>'
+
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                head: 'Hello',
+                content: 'San',
+                foot: 'Bye ER'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var folder = myComponent.ref('folder');
+        expect(folder.slot().length).toBe(1);
+        expect(folder.slot('head').length).toBe(1);
+        expect(folder.slot('foot').length).toBe(1);
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('Hello');
+        expect(wrap.getElementsByTagName('strong')[0].innerHTML).toBe('Bye ER');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('San');
+
+        myComponent.data.set('head', 'Bye');
+        myComponent.data.set('content', 'ER');
+        myComponent.data.set('foot', 'Hello San');
+
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('Bye');
+            expect(wrap.getElementsByTagName('strong')[0].innerHTML).toBe('Hello San');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ER');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });
