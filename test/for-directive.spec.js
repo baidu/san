@@ -1685,7 +1685,7 @@ describe("ForDirective", function () {
 
     it("list data (Array) has string property directly, dont throw error", function (done) {
         var MyComponent = san.defineComponent({
-            template: `<div><h3>{{list.title}}</h3><p s-for="item in list">{{list.title}} {{item}}</p></div>`
+            template: '<div><h3>{{list.title}}</h3><p s-for="item in list">{{list.title}} {{item}}</p></div>'
         });
 
         var data = {
