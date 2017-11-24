@@ -8,7 +8,7 @@ var MyComponent = san.defineComponent({
       + '</fieldset>'
     + '</form>',
 
-    initData() {
+    initData: function() {
         return {
             formLen: 3
         };
