@@ -262,7 +262,7 @@ Data.prototype.splice = function (expr, args, option) {
  * @param {*} item 要push的值
  * @param {Object=} option 设置参数
  * @param {boolean} option.silence 静默设置，不触发变更事件
- * @returns {number} 新数组的length属性
+ * @return {number} 新数组的length属性
  */
 Data.prototype.push = function (expr, item, option) {
     var target = this.get(expr);
@@ -311,7 +311,7 @@ Data.prototype.shift = function (expr, option) {
  * @param {*} item 要unshift的值
  * @param {Object=} option 设置参数
  * @param {boolean} option.silence 静默设置，不触发变更事件
- * @returns {number} 新数组的length属性
+ * @return {number} 新数组的length属性
  */
 Data.prototype.unshift = function (expr, item, option) {
     var target = this.get(expr);

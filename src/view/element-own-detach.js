@@ -4,12 +4,12 @@
  */
 
 var removeEl = require('../browser/remove-el');
-var elementLeaveTo = require('./element-leave-to');
+var elementLeave = require('./element-leave');
 
 /**
  * 将元素从页面上移除
  */
-function elementOwnDetach(options) {
+function elementOwnDetach() {
     var me = this;
     me._doneLeave = me._doneLeave || function () {
         if (me.lifeCycle.attached) {
@@ -18,7 +18,7 @@ function elementOwnDetach(options) {
         }
     };
 
-    elementLeaveTo(this, options);
+    elementLeave(this);
 }
 
 

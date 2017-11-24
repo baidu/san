@@ -7,6 +7,7 @@
 
 var each = require('../util/each');
 var bind = require('../util/bind');
+var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
 
 var elementGetTransition = require('./element-get-transition');

@@ -3,10 +3,11 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var elementDisposeChildren = require('./element-dispose-children');
-var elementGetTransition = require('./element-get-transition');
-var nodeDispose = require('./node-dispose');
+
 var un = require('../browser/un');
+var removeEl = require('../browser/remove-el');
+var elementDisposeChildren = require('./element-dispose-children');
+var nodeDispose = require('./node-dispose');
 
 /**
  * 销毁元素节点

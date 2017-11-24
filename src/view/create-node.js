@@ -10,7 +10,7 @@ var createElement = require('./create-element');
 var createSlot = require('./create-slot');
 var createFor = require('./create-for');
 var createIf = require('./create-if');
-var createTemplate = require('create-template');
+var createTemplate = require('./create-template');
 
 
 /**

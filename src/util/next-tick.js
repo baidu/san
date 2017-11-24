@@ -34,7 +34,7 @@ var nextHandler;
  * @inner
  * @type {boolean}
  */
-var promiseIsNative = typeof Promise === 'function' && /native code/.test(Promise.toString());
+var isNativePromise = typeof Promise === 'function' && /native code/.test(Promise.toString());
 
 /**
  * 在下一个时间周期运行任务
@@ -76,7 +76,7 @@ function nextTick(fn, thisArg) {
         port.postMessage(1);
     }
     // for native app
-    else if (promiseIsNative) {
+    else if (isNativePromise) {
         Promise.resolve().then(nextHandler);
     }
     else {

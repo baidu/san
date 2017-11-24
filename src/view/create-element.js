@@ -11,7 +11,6 @@ var attachings = require('./attachings');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 var fromElInitChildren = require('./from-el-init-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var LifeCycle = require('./life-cycle');
 var nodeInit = require('./node-init');
 var nodeEvalExpr = require('./node-eval-expr');
 var elementUpdateChildren = require('./element-update-children');

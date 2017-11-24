@@ -8,22 +8,17 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
-var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
-var parseText = require('../parser/parse-text');
-var parseTemplate = require('../parser/parse-template');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
-var defineComponent = require('./define-component');
 var attachings = require('./attachings');
 var isComponent = require('./is-component');
-var LifeCycle = require('./life-cycle');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var fromElInitChildren = require('./from-el-init-children');
@@ -46,7 +41,7 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnEventListenMethod = require('./warn-event-listen-method');
-var elementLeaveTo = require('./element-leave-to');
+var elementLeave = require('./element-leave');
 var elementToPhase = require('./element-to-phase');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
@@ -223,6 +218,10 @@ Component.prototype.nextTick = nextTick;
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
     if (elementToPhase(this, name)) {
+        if (typeof this[name] === 'function') {
+            this[name]();
+        }
+
         // 通知devtool
         // #[begin] devtool
         emitDevtool('comp-' + name, this);
@@ -410,13 +409,6 @@ Component.prototype.ref = function (name) {
     return refComponent;
 };
 
-/* eslint-disable quotes */
-var componentPropExtra = [
-    {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
-    {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
-];
-/* eslint-enable quotes */
-
 
 /**
  * 视图更新函数
@@ -579,8 +571,6 @@ Component.prototype.dispose = function (options) {
     var me = this;
     me._doneLeave = function () {
         if (!me.lifeCycle.disposed) {
-            elementDispose(me, options);
-
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
             me.slotChildren = null;
 
@@ -588,13 +578,12 @@ Component.prototype.dispose = function (options) {
             me.dataChanger = null;
             me.dataChanges = null;
 
+            elementDispose(me, options);
             me.listeners = null;
-
-            me._toPhase('disposed');
         }
     };
 
-    elementLeaveTo(this, options);
+    elementLeave(this, options);
 };
 
 

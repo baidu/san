@@ -340,8 +340,7 @@ function forOwnUpdate(changes) {
     var parentFirstChild = parentEl.firstChild;
     var parentLastChild = parentEl.lastChild;
 
-    var isOnlyParentChild =
-        oldChildrenLen > 0 // 有孩子时
+    var isOnlyParentChild = oldChildrenLen > 0 // 有孩子时
             && parentFirstChild === this.children[0]._getEl()
             && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1]._getEl())
         || oldChildrenLen === 0 // 无孩子时
@@ -516,7 +515,7 @@ function forOwnUpdate(changes) {
     var disposedChildCount = 0;
     each(disposeChildren, function (child) {
         child._ondisposed = childDisposed;
-        child.dispose({dontDetach:violentClear, noTransition: violentClear});
+        child.dispose({dontDetach: violentClear, noTransition: violentClear});
     });
 
     if (violentClear) {

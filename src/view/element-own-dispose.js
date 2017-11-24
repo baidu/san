@@ -4,6 +4,7 @@
  */
 
 var elementDispose = require('./element-dispose');
+var elementLeave = require('./element-leave');
 
 /**
  * 销毁释放元素
@@ -15,11 +16,10 @@ function elementOwnDispose(options) {
     me._doneLeave = function () {
         if (!me.lifeCycle.disposed) {
             elementDispose(me, options);
-            me._toPhase('disposed');
         }
     };
 
-    elementLeaveTo(this, options);
+    elementLeave(this, options);
 }
 
 exports = module.exports = elementOwnDispose;

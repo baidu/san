@@ -10,7 +10,6 @@ var IndexedList = require('../util/indexed-list');
 var guid = require('../util/guid');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
-var escapeHTML = require('../runtime/escape-html');
 var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
@@ -313,7 +312,7 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {Component} owner 所属组件实例环境
      */
-    compileTemplate: function (aNode, sourceBuffer, owner, extra) {
+    compileTemplate: function (aNode, sourceBuffer, owner) {
         sourceBuffer.joinString(serializeStump('tpl'));
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
         sourceBuffer.joinString(serializeStumpEnd('tpl'));
@@ -351,14 +350,17 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('}');
         });
 
+        sourceBuffer.addRaw('if (ifIndex != null) {');
+        sourceBuffer.joinRaw('\"<!--\" + ifIndex + \"-->\"');
+        sourceBuffer.addRaw('}');
+
         // for output main if html
         sourceBuffer.addRaw('if (ifIndex === -1) {');
         sourceBuffer.addRaw(
             aNodeCompiler.compile(
                 rinseANode(aNode),
                 sourceBuffer,
-                owner,
-                {prop: ' s-ifindex="-1"'}
+                owner
             )
         );
         sourceBuffer.addRaw('}');
@@ -371,8 +373,7 @@ var aNodeCompiler = {
                 aNodeCompiler.compile(
                     rinseANode(elseANode),
                     sourceBuffer,
-                    owner,
-                    {prop: ' s-ifindex="' + index + '"'}
+                    owner
                 )
             );
             sourceBuffer.addRaw('}');
@@ -464,7 +465,6 @@ var aNodeCompiler = {
         var nameProp = aNode.props.get('name');
         var name = nameProp ? nameProp.raw : '____';
         var isInserted = 0;
-        var isScoped = 0;
         var children = aNode.children;
 
         if (owner.aNode.givenSlots[name]) {
@@ -477,7 +477,7 @@ var aNodeCompiler = {
             + serializeANode({
                 tagName: aNode.tagName,
                 vars: aNode.vars,
-                props:aNode.props,
+                props: aNode.props,
                 directives: aNode.directives
             });
 
@@ -495,7 +495,11 @@ var aNodeCompiler = {
         if (aNode.vars) {
             sourceBuffer.addRaw('_slotCtx = {data: {}, filters: _slotCtx.filters, callFilter: _slotCtx.callFilter};');
             each(aNode.vars, function (varItem) {
-                sourceBuffer.addRaw('_slotCtx.data["' + varItem.name + '"] = ' + compileExprSource.expr(varItem.expr) + ';');
+                sourceBuffer.addRaw(
+                    '_slotCtx.data["' + varItem.name + '"] = '
+                    + compileExprSource.expr(varItem.expr)
+                    + ';'
+                );
             });
         }
 

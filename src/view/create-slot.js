@@ -3,15 +3,27 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var empty = require('../util/empty');
+
+var each = require('../util/each');
 var createANode = require('../parser/create-a-node');
+var ExprType = require('../parser/expr-type');
+var parseTemplate = require('../parser/parse-template');
+var evalExpr = require('../runtime/eval-expr');
+var Data = require('../runtime/data');
+var DataChangeType = require('../runtime/data-change-type');
+var changeExprCompare = require('../runtime/change-expr-compare');
+var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
+var attachings = require('./attachings');
 var isEndStump = require('./is-end-stump');
+var LifeCycle = require('./life-cycle');
+var isComponent = require('./is-component');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var createNodeByEl = require('./create-node-by-el');
 var elementDisposeChildren = require('./element-dispose-children');
+var elementUpdateChildren = require('./element-update-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
@@ -153,7 +165,7 @@ function slotOwnUpdate(changes, isFromOuter) {
     var me = this;
     if (me.isScoped) {
         each(me.aNode.vars, function (varItem) {
-            me.realScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.literalOwner))
+            me.realScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.literalOwner));
         });
 
 
@@ -172,7 +184,9 @@ function slotOwnUpdate(changes, isFromOuter) {
                         type: DataChangeType.SET,
                         expr: {
                             type: ExprType.ACCESSOR,
-                            paths: [{type: ExprType.STRING, value:name}]
+                            paths: [
+                                {type: ExprType.STRING, value: name}
+                            ]
                         },
                         value: me.realScope.get(name),
                         option: change.option
@@ -182,7 +196,9 @@ function slotOwnUpdate(changes, isFromOuter) {
                     scopedChanges.push({
                         expr: {
                             type: ExprType.ACCESSOR,
-                            paths: [{type: ExprType.STRING, value:name}]
+                            paths: [
+                                {type: ExprType.STRING, value: name}
+                            ]
                         },
                         type: DataChangeType.SPLICE,
                         index: change.index,
@@ -224,6 +240,8 @@ function slotOwnGetEl() {
 
 /**
  * 销毁释放 slot
+ *
+ * @param {Object=} options dispose行为参数
  */
 function slotOwnDispose(options) {
     this.realScope = null;
@@ -231,8 +249,6 @@ function slotOwnDispose(options) {
 
     elementDisposeChildren(this, options);
     nodeDispose(this);
-
-    this._toPhase('disposed');
 }
 
 

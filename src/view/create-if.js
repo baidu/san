@@ -8,7 +8,9 @@ var empty = require('../util/empty');
 var IndexedList = require('../util/indexed-list');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
+var removeEl = require('../browser/remove-el');
 var genStumpHTML = require('./gen-stump-html');
+var isEndStump = require('./is-end-stump');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -16,7 +18,6 @@ var createNode = require('./create-node');
 var createNodeByEl = require('./create-node-by-el');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var elementUpdateChildren = require('./element-update-children');
-var elementDisposeChildren = require('./element-dispose-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
@@ -46,10 +47,17 @@ function createIf(options) {
         var aNode = parseTemplate(options.stumpText).children[0];
         node.aNode = aNode;
 
-        //node.elseIndex = -1;
+        var next = options.elWalker.next;
+        if (next.nodeType === 8 && !isEndStump(next, 'if')) {
+            node.elseIndex = +next.data;
+            options.elWalker.goNext();
+            removeEl(next);
+        }
+
+        /* eslint-disable no-constant-condition */
         while (1) {
         /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
+            next = options.elWalker.next;
             if (isEndStump(next, 'if')) {
                 options.elWalker.goNext();
                 removeEl(options.el);
@@ -60,7 +68,6 @@ function createIf(options) {
 
             options.elWalker.goNext();
             var child = createNodeByEl(next, node, options.elWalker);
-            node.elseIndex = +child.aNode.directives.get('ifindex');
             node.children[0] = child;
         }
 

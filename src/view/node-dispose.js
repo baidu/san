@@ -17,6 +17,14 @@ function nodeDispose(node) {
     node.parent = null;
     node.parentComponent = null;
     node.children = null;
+
+    if (node._toPhase) {
+        node._toPhase('disposed');
+    }
+
+    if (node._ondisposed) {
+        node._ondisposed();
+    }
 }
 
 exports = module.exports = nodeDispose;

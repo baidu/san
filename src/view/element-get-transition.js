@@ -1,3 +1,15 @@
+/**
+ * @file 获取 element 的 transition 控制对象
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+
+/**
+ * 获取 element 的 transition 控制对象
+ *
+ * @param {Object} element 元素
+ * @return {Object?}
+ */
 function elementGetTransition(element) {
     var transitionDirective = element.aNode.directives.get('transition');
 
@@ -9,4 +21,4 @@ function elementGetTransition(element) {
     return transition;
 }
 
-exports = module.exports = elementInitProps;
+exports = module.exports = elementGetTransition;

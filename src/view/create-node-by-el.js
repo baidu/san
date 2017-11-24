@@ -3,16 +3,17 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var parseTemplate = require('../parser/parse-template');
+
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 
-var NodeType = require('./node-type');
+
 var isComponent = require('./is-component');
 var createText = require('./create-text');
 var createElement = require('./create-element');
 var createIf = require('./create-if');
 var createFor = require('./create-for');
 var createSlot = require('./create-slot');
+var createTemplate = require('./create-template');
 
 // #[begin] reverse
 /**

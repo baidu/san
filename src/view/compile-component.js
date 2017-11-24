@@ -4,6 +4,21 @@
  */
 
 
+var each = require('../util/each');
+var IndexedList = require('../util/indexed-list');
+var createANode = require('../parser/create-a-node');
+var parseTemplate = require('../parser/parse-template');
+var parseText = require('../parser/parse-text');
+var defineComponent = require('./define-component');
+
+
+/* eslint-disable quotes */
+var componentPropExtra = [
+    {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
+    {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
+];
+/* eslint-enable quotes */
+
 /**
  * 编译组件类。预解析template和components
  *
