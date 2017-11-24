@@ -55,7 +55,7 @@ var defaultElementPropHandler = {
             el.setAttribute(name, value);
         }
         else {
-            el[propName] = value;
+            el[propName] = value == null ? '' : value;
         }
 
         // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理

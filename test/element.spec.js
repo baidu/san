@@ -277,6 +277,37 @@ describe("Element", function () {
         });
     });
 
+    it("bind input valued undefined", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="text" value="{=info.value=}"></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.value).toBe('');
+
+        myComponent.data.set('info', {value: 'true'});
+
+
+        san.nextTick(function () {
+            expect(input.value).toBe('true');
+
+            myComponent.data.set('info', {});
+
+            san.nextTick(function () {
+                expect(input.value).toBe('');
+                // myComponent.dispose();
+                // document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
     it("bind draggable", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><div draggable="{{draggable}}"></div></a>'
