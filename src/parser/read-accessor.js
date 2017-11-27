@@ -26,12 +26,12 @@ function readAccessor(walker) {
 
     var result = {
         type: ExprType.ACCESSOR,
-        paths: [
+        paths: firstSeg ? [
             {
                 type: ExprType.STRING,
                 value: firstSeg
             }
-        ]
+        ] : []
     };
 
     /* eslint-disable no-constant-condition */

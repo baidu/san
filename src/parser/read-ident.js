@@ -12,7 +12,7 @@
  */
 function readIdent(walker) {
     var match = walker.match(/\s*([\$0-9a-z_]+)/ig);
-    return match[1];
+    return match && match[1];
 }
 
 exports = module.exports = readIdent;
