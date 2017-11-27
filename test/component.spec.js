@@ -2838,5 +2838,25 @@ describe("Component", function () {
 
         document.body.removeChild(wrap);
     });
+
+    it("set entire data object", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><span class="text">hello {{name}}</span></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.data.set('', {name: 'San'});
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByClassName('text');
+            expect(span[0].innerHTML).toBe('hello San');
+            document.body.removeChild(wrap);
+        });
+
+    });
 });
 
