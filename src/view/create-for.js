@@ -385,7 +385,7 @@ function forOwnUpdate(changes) {
                             this.children[changeIndex].scope,
                             change.expr,
                             change.value,
-                            {silence: 1}
+                            {silent: 1}
                         );
                         break;
 
@@ -395,7 +395,7 @@ function forOwnUpdate(changes) {
                             this.children[changeIndex].scope,
                             change.expr,
                             [].concat(change.index, change.deleteCount, change.insertions),
-                            {silence: 1}
+                            {silent: 1}
                         );
                         break;
                 }
@@ -438,7 +438,7 @@ function forOwnUpdate(changes) {
                         this.children[i].scope,
                         forDirective.item,
                         newList[i],
-                        {silence: 1}
+                        {silent: 1}
                     );
                 }
                 else {
@@ -470,7 +470,7 @@ function forOwnUpdate(changes) {
                             child.scope,
                             indexChange.expr,
                             index - deleteCount + insertionsLen,
-                            {silence: 1}
+                            {silent: 1}
                         );
                     }
                 }, this);
