@@ -95,7 +95,7 @@ function Component(options) {
 
         each(givenANode.events, function (eventBind) {
             // 保存当前实例的native事件，下面创建aNode时候做合并
-            if (eventBind.modifier === 'native') {
+            if (eventBind.modifier.native) {
                 nativeEvents.push(eventBind);
             }
             // #[begin] error

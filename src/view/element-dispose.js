@@ -25,7 +25,8 @@ function elementDispose(element, options) {
         var len = nameListeners && nameListeners.length;
 
         while (len--) {
-            un(element._getEl(), key, nameListeners[len]);
+            var fn = nameListeners[len];
+            un(element._getEl(), key, fn[0], fn[1]);
         }
     }
     element._elFns = null;

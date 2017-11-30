@@ -38,18 +38,22 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
     switch (prefix) {
         case 'on':
             var event = {
-                name: realName
+                name: realName,
+                modifier: {}
             };
             aNode.events.push(event);
 
-            var colonIndex = value.indexOf(':');
-            if (colonIndex > 0) {
+            var colonIndex;
+            while ((colonIndex = value.indexOf(':')) > 0) {
                 var modifier = value.slice(0, colonIndex);
 
                 // eventHandler("dd:aa") 这种情况不能算modifier，需要辨识
                 if (/^[a-z]+$/i.test(modifier)) {
-                    event.modifier = modifier;
+                    event.modifier[modifier] = true;
                     value = value.slice(colonIndex + 1);
+                }
+                else {
+                    break;
                 }
             }
 

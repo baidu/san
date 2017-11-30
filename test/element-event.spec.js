@@ -4,14 +4,21 @@ describe("Element-Event", function () {
         var clicked = 0;
 
         var MyComponent = san.defineComponent({
-            template: '<a><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
+            template: '<a on-click="mainClicker"><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
+
+            mainClicker: function () {
+                expect(clicked).toBe(1);
+                clicked++;
+            },
 
             clicker: function (name, email, event) {
                 expect(name).toBe('errorrik');
                 expect(email).toBe('errorrik@gmail.com');
                 expect(event.target || event.srcElement).toBe(span);
 
-                clicked = 1;
+
+                expect(clicked).toBe(0);
+                clicked++;
             }
         });
         var myComponent = new MyComponent();
@@ -124,5 +131,59 @@ describe("Element-Event", function () {
         triggerEvent('#' + nativeChildEl.id, 'click');
         triggerEvent('#' + childEl.id, 'click');
         doneSpec();
+    });
+
+    it("capture modifier", function (done) {
+        if (!document.addEventListener) {
+            done();
+            return;
+        }
+        
+        var clicked = 0;
+
+        var MyComponent = san.defineComponent({
+            template: '<a on-click="capture:mainClicker"><span title="{{name}}" on-click="capture:clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
+
+            mainClicker: function () {
+                clicked++;
+            },
+
+            clicker: function (name, email, event) {
+                expect(name).toBe('errorrik');
+                expect(email).toBe('errorrik@gmail.com');
+                expect(event.target || event.srcElement).toBe(span);
+
+                expect(clicked).toBe(1);
+                clicked++;
+            }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('email', 'errorrik@gmail.com');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.getAttribute('title')).toBe('errorrik');
+
+        function doneSpec() {
+
+            if (clicked) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + span.id, 'click');
+
+        doneSpec();
+
     });
 });

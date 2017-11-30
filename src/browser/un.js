@@ -11,9 +11,9 @@
  * @param {string} eventName 事件名
  * @param {Function} listener 监听函数
  */
-function un(el, eventName, listener) {
+function un(el, eventName, listener, capture) {
     if (el.addEventListener) {
-        el.removeEventListener(eventName, listener, false);
+        el.removeEventListener(eventName, listener, capture);
     }
     else {
         el.detachEvent('on' + eventName, listener);

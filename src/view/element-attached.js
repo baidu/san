@@ -93,7 +93,7 @@ function elementAttached(element) {
 
         // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
         // 依此指定eventBind.expr.name位于owner还是owner.owner上
-        if (eventBind.modifier === 'native') {
+        if (eventBind.modifier.native) {
             owner = owner.owner;
         }
 
@@ -109,7 +109,8 @@ function elementAttached(element) {
                 eventBind,
                 0,
                 element.data || element.scope
-            )
+            ),
+            eventBind.modifier.capture
         );
     });
 

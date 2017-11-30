@@ -11,14 +11,16 @@ var on = require('../browser/on');
  * @param {string} name 事件名
  * @param {Function} listener 监听器
  */
-function elementOwnOnEl(name, listener) {
+function elementOwnOnEl(name, listener, capture) {
     if (typeof listener === 'function') {
+        capture = !!capture;
+
         if (!this._elFns[name]) {
             this._elFns[name] = [];
         }
-        this._elFns[name].push(listener);
-
-        on(this._getEl(), name, listener);
+        this._elFns[name].push([listener, capture]);
+        
+        on(this._getEl(), name, listener, capture);
     }
 }
 
