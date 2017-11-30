@@ -217,7 +217,12 @@ exprInfo = {
     filters: [
         {
             type: ExprType.CALL,
-            name: 'comma',
+            name: {
+                type: ExprType.ACCESSOR,
+                paths: [
+                    {type: ExprType.STRING, value: 'comma'}
+                ]
+            },
             args: [
                 {type: ExprType.NUMBER, literal: '3'}
             ]
@@ -236,7 +241,12 @@ exprInfo = {
 // args - 调用参数列表。数组，其中每一项是一个表达式对象
 exprInfo = {
     type: ExprType.CALL,
-    name: 'comma',
+    name: {
+        type: ExprType.ACCESSOR,
+        paths: [
+            {type: ExprType.STRING, value: 'comma'}
+        ]
+    },
     args: [
         {type: ExprType.NUMBER, literal: '3'}
     ]
@@ -692,7 +702,12 @@ aNode = {
                         "filters": [
                             {
                                 "type": ExprType.CALL,
-                                "name": "comma",
+                                "name": {
+                                    type: ExprType.ACCESSOR,
+                                    paths: [
+                                        {type: ExprType.STRING, value: "comma"}
+                                    ]
+                                },
                                 "args": [
                                     {
                                         "type": ExprType.BINARY,
@@ -754,7 +769,12 @@ aNode = {
             "name": "click",
             "expr": {
                 "type": ExprType.CALL,
-                "name": "clicker",
+                "name": {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: "clicker"}
+                    ]
+                },
                 "args": [
                     {
                         "type": ExprType.ACCESSOR,
