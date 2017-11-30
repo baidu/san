@@ -116,9 +116,14 @@ function elementAttached(element) {
     element._toPhase('attached');
 
 
-    var transition = elementGetTransition(element);
-    if (transition && transition.enter) {
-        transition.enter(element._getEl(), empty);
+    if (element._isInitFromEl) {
+        element._isInitFromEl = false;
+    }
+    else {
+        var transition = elementGetTransition(element);
+        if (transition && transition.enter) {
+            transition.enter(element._getEl(), empty);
+        }
     }
 }
 

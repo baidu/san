@@ -58,6 +58,7 @@ function createElement(options) {
     node._pushChildANode = elementOwnPushChildANode;
 
     if (node.el) {
+        node._isInitFromEl = true;
         node.aNode = parseANodeFromEl(node.el);
         node.parent && node.parent._pushChildANode(node.aNode);
         node.tagName = node.aNode.tagName;

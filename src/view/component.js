@@ -137,6 +137,7 @@ function Component(options) {
 
     // #[begin] reverse
     if (this.el) {
+        this._isInitFromEl = true;
         this.aNode = parseANodeFromEl(this.el);
         this.aNode.givenSlots = {};
         this.aNode.binds = camelComponentBinds(this.aNode.props);
