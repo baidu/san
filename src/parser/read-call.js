@@ -4,7 +4,7 @@
  */
 
 var ExprType = require('./expr-type');
-var readIdent = require('./read-ident');
+var readAccessor = require('./read-accessor');
 var readTertiaryExpr = require('./read-tertiary-expr');
 
 /**
@@ -15,7 +15,7 @@ var readTertiaryExpr = require('./read-tertiary-expr');
  */
 function readCall(walker) {
     walker.goUntil();
-    var ident = readIdent(walker);
+    var ident = readAccessor(walker);
     var args = [];
 
     if (walker.goUntil(40)) { // (

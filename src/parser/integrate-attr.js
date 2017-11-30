@@ -141,7 +141,15 @@ function integrateProp(aNode, name, value) {
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
-                        name: '_' + prop.name,
+                        name: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {
+                                    type: ExprType.STRING,
+                                    value: '_' + prop.name
+                                }
+                            ]
+                        },
                         args: []
                     });
                 }

@@ -98,11 +98,7 @@ function elementAttached(element) {
         }
 
         // #[begin] error
-        warnEventListenMethod(
-            eventBind.name,
-            owner,
-            eventBind.expr.name
-        );
+        warnEventListenMethod(eventBind, owner);
         // #[end]
 
         element._onEl(

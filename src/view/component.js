@@ -99,7 +99,7 @@ function Component(options) {
                 nativeEvents.push(eventBind);
             }
             // #[begin] error
-            warnEventListenMethod(eventBind.name, options.owner, eventBind.expr.name);
+            warnEventListenMethod(eventBind, options.owner);
             // #[end]
 
             me.on(
