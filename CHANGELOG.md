@@ -10,6 +10,7 @@ ChangeLog
 + 【新特性】- 支持 template tag 声明自身不渲染元素只渲染内容
 + 【新特性】- 事件声明参数为空时，默认 $event
 + 【新特性】- 支持通过 native modifier，直接为组件的根元素绑定事件
++ 【新特性】- 支持通过 capture modifier，在捕获阶段绑定事件
 + 【新特性】- 支持 scoped slot
 + 【新特性】- 支持 transition 机制
 + 【新特性】- slot 支持 if 和 for 指令
