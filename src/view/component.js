@@ -327,10 +327,11 @@ Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
 
     while (parentComponent) {
-        if (typeof parentComponent.messages[name] === 'function') {
-            parentComponent.messages[name].call(
+        var receiver = parentComponent.messages[name] || parentComponent.messages['*'];
+        if (typeof receiver === 'function') {
+            receiver.call(
                 parentComponent,
-                {target: this, value: value}
+                {target: this, value: value, name: name}
             );
             break;
         }
