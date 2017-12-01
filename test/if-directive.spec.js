@@ -1012,7 +1012,7 @@ describe("IfDirective", function () {
                     list: ['one', 'two']
                 };
             },
-            template: '<div><div san-if="condition"><u san-for="item,index in list" title="{{index}}{{item}}">{{index}}{{item}}</u></span></div>'
+            template: '<div><div san-if="condition"><u san-for="item,index in list" title="{{index}}{{item}}">{{index}}{{item}}</u></div></div>'
         });
 
         var myComponent = new MyComponent();
