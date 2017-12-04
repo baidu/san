@@ -35,6 +35,7 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
+var elementGetTransition = require('./element-get-transition')
 
 
 /**
@@ -510,7 +511,7 @@ function forOwnUpdate(changes) {
 
 
     // 清除应该干掉的 child
-    var violentClear = isOnlyParentChild && newChildrenLen === 0;
+    var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
     var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
     each(disposeChildren, function (child) {
@@ -574,6 +575,11 @@ function forOwnUpdate(changes) {
 
             for (var i = 0; i < newChildrenLen; i++) {
                 var child = me.children[i];
+
+                // 防止 transition 钩子的 done 函数被执行两次时抛出异常
+                if (!child) {
+                    continue;
+                }
 
                 if (child.lifeCycle.attached) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);
