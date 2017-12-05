@@ -12,6 +12,15 @@ var ExprType = require('./expr-type');
 var postProp = require('./post-prop');
 var getPropHandler = require('../view/get-prop-handler');
 
+var DEFAULT_EVENT_ARGS = [
+    {
+        type: ExprType.ACCESSOR,
+        paths: [
+            {type: ExprType.STRING, value: '$event'}
+        ]
+    }
+];
+
 /**
  * 解析抽象节点属性
  *
@@ -57,17 +66,7 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
                 }
             }
 
-            var expr = parseCall(value);
-            if (expr.args.length === 0) {
-                expr.args.push({
-                    type: ExprType.ACCESSOR,
-                    paths: [
-                        {type: ExprType.STRING, value: '$event'}
-                    ]
-                });
-            }
-
-            event.expr = expr;
+            event.expr = parseCall(value, DEFAULT_EVENT_ARGS);
             break;
 
         case 'san':

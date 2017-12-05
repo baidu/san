@@ -51,14 +51,14 @@ describe("Element-Event", function () {
 
     });
 
-    it("bind click fire default event", function (done) {
+    it("bind click fire default event when no args description, empty args description dont add default arg", function (done) {
         var clicked = 0;
 
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}" on-click="clicker()" style="color: red; cursor: pointer">please click here!</span><span title="{{name}}" on-click="clickerNoArgs" style="color: red; cursor: pointer">please click here!</span></a>',
 
             clicker: function (event) {
-                expect(event.target || event.srcElement).toBe(span);
+                expect(event == null).toBeTruthy();
                 clicked += 1;
             },
             clickerNoArgs: function (event) {
@@ -87,6 +87,7 @@ describe("Element-Event", function () {
         triggerEvent('#' + spanNoArgs.id, 'click');
         doneSpec();
     });
+
 
     it("native bind click", function (done) {
         var clicked = 0;
@@ -138,7 +139,7 @@ describe("Element-Event", function () {
             done();
             return;
         }
-        
+
         var clicked = 0;
 
         var MyComponent = san.defineComponent({
