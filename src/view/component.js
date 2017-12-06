@@ -74,23 +74,33 @@ function Component(options) {
     var givenANode = options.aNode;
     var protoANode = this.constructor.prototype.aNode;
 
+
     if (givenANode) {
         // 组件运行时传入的结构，做slot解析
-        var givenSlots = {};
+        var givenSlots = {
+            named: {}
+        };
         // native事件数组
         var nativeEvents = [];
         each(givenANode.children, function (child) {
-            var slotName = '____';
+            var target;
+
             var slotBind = !child.isText && child.props.get('slot');
             if (slotBind) {
-                slotName = slotBind.raw;
+                var slotName = slotBind.raw;
+                target = givenSlots.named[slotName];
+                if (!target) {
+                    target = givenSlots.named[slotName] = [];
+                }
+            }
+            else {
+                target = givenSlots.noname;
+                if (!target) {
+                    target = givenSlots.noname = [];
+                }
             }
 
-            if (!givenSlots[slotName]) {
-                givenSlots[slotName] = [];
-            }
-
-            givenSlots[slotName].push(child);
+            target.push(child);
         });
 
         each(givenANode.events, function (eventBind) {
@@ -348,14 +358,15 @@ Component.prototype.dispatch = function (name, value) {
  * @return {Array}
  */
 Component.prototype.slot = function (name) {
-    name = name || '____';
     var result = [];
     var me = this;
 
     function childrenTraversal(children) {
         each(children, function (child) {
             if (child.nodeType === NodeType.SLOT && child.owner === me) {
-                if (child.name === name) {
+                if (child.isNamed && child.name === name
+                    || !child.isNamed && !name
+                ) {
                     result.push(child);
                 }
             }

@@ -38,6 +38,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 function createSlot(options) {
     // options.literalOwner = options.owner;
     var aNode = createANode();
+    var nameBind;
 
     // #[begin] reverse
     if (options.el) {
@@ -49,28 +50,34 @@ function createSlot(options) {
         }
 
         aNode = parseTemplate(options.stumpText).children[0];
-        var nameBind = aNode.props.get('name');
-        options.name = nameBind ? nameBind.raw : '____';
+        nameBind = aNode.props.get('name');
     }
     else {
     // #[end]
-
-        var nameBind = options.aNode.props.get('name');
-        options.name = nameBind ? nameBind.raw : '____';
-
+        nameBind = options.aNode.props.get('name');
         var givenSlots = options.owner.aNode.givenSlots;
-        var givenChildren = givenSlots && givenSlots[options.name];
-        aNode.children = givenChildren || options.aNode.children.slice(0);
+        var givenChildren;
+        if (givenSlots) {
+            givenChildren = nameBind ? givenSlots.named[nameBind.raw] : givenSlots.noname;
+        }
 
         if (givenChildren) {
             options.isInserted = true;
         }
+
+        aNode.children = givenChildren || options.aNode.children.slice(0);
+
 
         aNode.vars = options.aNode.vars;
 
     // #[begin] reverse
     }
     // #[end]
+
+    if (nameBind) {
+        options.isNamed = true;
+        options.name = nameBind.raw;
+    }
 
     var initData = {};
     each(aNode.vars, function (varItem) {
@@ -145,7 +152,10 @@ function createSlot(options) {
         }
 
         if (options.isInserted) {
-            options.owner.aNode.givenSlots[node.name] = node.aNode;
+            // TODO: component中aNode的生成要处理，aNode中必须包含givenSlot
+            // nameBind
+            //     ? (options.owner.aNode.givenSlots.named[node.name] = node.aNode)
+            //     : (options.owner.aNode.givenSlots.noname = node.aNode);
         }
     }
     // #[end]

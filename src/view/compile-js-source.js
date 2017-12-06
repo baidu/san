@@ -463,13 +463,19 @@ var aNodeCompiler = {
      */
     compileSlot: function (aNode, sourceBuffer, owner) {
         var nameProp = aNode.props.get('name');
-        var name = nameProp ? nameProp.raw : '____';
+        var givenSlots = owner.aNode.givenSlots;
+        var givenChildren;
+        if (givenSlots) {
+            givenChildren = nameProp 
+                ? givenSlots.named[nameProp.raw] 
+                : givenSlots.noname;
+        }
+        
         var isInserted = 0;
         var children = aNode.children;
-
-        if (owner.aNode.givenSlots[name]) {
+        if (givenChildren) {
             isInserted = 1;
-            children = owner.aNode.givenSlots[name];
+            children = givenChildren;
             owner = owner.owner;
         }
 
