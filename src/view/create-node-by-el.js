@@ -26,8 +26,8 @@ var createTemplate = require('./create-template');
  * @return {Node}
  */
 function createNodeByEl(el, parent, elWalker, scope) {
-    var owner = isComponent(parent) ? parent : parent.owner;
-    scope = scope || (isComponent(parent) ? parent.data : parent.scope);
+    var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
+    scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
 
     var option = {
         owner: owner,

@@ -36,7 +36,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @return {Object}
  */
 function createSlot(options) {
-    options.literalOwner = options.owner;
+    // options.literalOwner = options.owner;
     var aNode = createANode();
 
     // #[begin] reverse
@@ -58,7 +58,7 @@ function createSlot(options) {
         var nameBind = options.aNode.props.get('name');
         options.name = nameBind ? nameBind.raw : '____';
 
-        var givenSlots = options.literalOwner.aNode.givenSlots;
+        var givenSlots = options.owner.aNode.givenSlots;
         var givenChildren = givenSlots && givenSlots[options.name];
         aNode.children = givenChildren || options.aNode.children.slice(0);
 
@@ -75,16 +75,16 @@ function createSlot(options) {
     var initData = {};
     each(aNode.vars, function (varItem) {
         options.isScoped = true;
-        initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.literalOwner);
+        initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.owner);
     });
 
     if (options.isScoped) {
-        options.realScope = new Data(initData);
+        options.childScope = new Data(initData);
     }
 
     if (options.isInserted) {
-        options.owner = options.literalOwner.owner;
-        !options.isScoped && (options.scope = options.literalOwner.scope);
+        options.childOwner = options.owner.owner;
+        options.childScope = options.childScope || options.owner.scope;
     }
 
 
@@ -111,7 +111,7 @@ function createSlot(options) {
     if (options.isInserted && !options.isScoped) {
         var parent = node.parent;
         while (parent) {
-            if (isComponent(parent) && parent.owner === node.owner) {
+            if (isComponent(parent) && parent.owner === node.childOwner) {
                 parent.slotChildren.push(node);
                 break;
             }
@@ -139,14 +139,13 @@ function createSlot(options) {
             var child = createNodeByEl(
                 next,
                 node,
-                options.elWalker,
-                node.realScope || node.scope
+                options.elWalker
             );
             node.children.push(child);
         }
 
         if (options.isInserted) {
-            options.literalOwner.aNode.givenSlots[node.name] = node.aNode;
+            options.owner.aNode.givenSlots[node.name] = node.aNode;
         }
     }
     // #[end]
@@ -164,7 +163,7 @@ function slotOwnUpdate(changes, isFromOuter) {
     var me = this;
     if (me.isScoped) {
         each(me.aNode.vars, function (varItem) {
-            me.realScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.literalOwner));
+            me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
         });
 
 
@@ -172,7 +171,7 @@ function slotOwnUpdate(changes, isFromOuter) {
         each(changes, function (change) {
             each(me.aNode.vars, function (varItem) {
                 var name = varItem.name;
-                var relation = changeExprCompare(change.expr, varItem.expr, me.scopeParent);
+                var relation = changeExprCompare(change.expr, varItem.expr, me.scope);
 
                 if (relation < 1) {
                     return;
@@ -187,7 +186,7 @@ function slotOwnUpdate(changes, isFromOuter) {
                                 {type: ExprType.STRING, value: name}
                             ]
                         },
-                        value: me.realScope.get(name),
+                        value: me.childScope.get(name),
                         option: change.option
                     });
                 }
@@ -223,7 +222,7 @@ function slotOwnUpdate(changes, isFromOuter) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
-    genElementChildrenHTML(this, buf, this.realScope || this.scope);
+    genElementChildrenHTML(this, buf);
     attachings.add(this);
 }
 
@@ -243,8 +242,8 @@ function slotOwnGetEl() {
  * @param {Object=} options dispose行为参数
  */
 function slotOwnDispose(options) {
-    this.realScope = null;
-    this.literalOwner = null;
+    this.childOwner = null;
+    this.childScope = null;
 
     elementDisposeChildren(this, options);
     nodeDispose(this);

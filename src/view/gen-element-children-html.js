@@ -14,9 +14,8 @@ var nodeEvalExpr = require('./node-eval-expr');
  *
  * @param {Element} element 元素
  * @param {Object} buf html串存储对象
- * @param {Model=} scope 所属数据环境
  */
-function genElementChildrenHTML(element, buf, scope) {
+function genElementChildrenHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
@@ -31,7 +30,7 @@ function genElementChildrenHTML(element, buf, scope) {
         }
         else {
             each(element.aNode.children, function (aNodeChild) {
-                var child = createNode(aNodeChild, element, scope);
+                var child = createNode(aNodeChild, element);
                 if (!child._static) {
                     element.children.push(child);
                 }

@@ -354,7 +354,7 @@ Component.prototype.slot = function (name) {
 
     function childrenTraversal(children) {
         each(children, function (child) {
-            if (child.nodeType === NodeType.SLOT && child.literalOwner === me) {
+            if (child.nodeType === NodeType.SLOT && child.owner === me) {
                 if (child.name === name) {
                     result.push(child);
                 }
