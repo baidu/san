@@ -35,7 +35,6 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
-var elementGetTransition = require('./element-get-transition')
 
 
 /**
@@ -511,7 +510,12 @@ function forOwnUpdate(changes) {
 
 
     // 清除应该干掉的 child
-    var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
+    me._doCreateAndUpdate = doCreateAndUpdate;
+    var violentClear = isOnlyParentChild && newChildrenLen === 0 
+        && !me.aNode.directives.get('transition');
+    // 这里不用getTransition，getTransition和scope相关，for和forItem的scope是不同的
+    // 所以getTransition结果本身也是不一致的。不如直接判断指令是否存在，如果存在就不进入暴力清除模式
+    // var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
     var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
     each(disposeChildren, function (child) {
@@ -531,12 +535,15 @@ function forOwnUpdate(changes) {
 
     function childDisposed() {
         disposedChildCount++;
-        if (disposedChildCount === disposeChildCount) {
+        if (disposedChildCount === disposeChildCount 
+            && doCreateAndUpdate === me._doCreateAndUpdate
+        ) {
             doCreateAndUpdate();
         }
     }
 
     function doCreateAndUpdate() {
+        me._doCreateAndUpdate = null;
         if (violentClear) {
             return;
         }
@@ -575,11 +582,6 @@ function forOwnUpdate(changes) {
 
             for (var i = 0; i < newChildrenLen; i++) {
                 var child = me.children[i];
-
-                // 防止 transition 钩子的 done 函数被执行两次时抛出异常
-                if (!child) {
-                    continue;
-                }
 
                 if (child.lifeCycle.attached) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);

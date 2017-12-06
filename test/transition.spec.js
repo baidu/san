@@ -1345,5 +1345,103 @@ describe("Transition", function () {
             setTimeout(whenLeaveFinish, 50);
         }
     });
+
+    it("directive apply for and fast change many times", function (done) {
+        var leaveFinish = 0;
+        var MyComponent = san.defineComponent({
+            template: '<div style="height:110px;line-height:110px"><span s-for="item in list" s-transition="trans">{{item}}</span></div>',
+
+            trans: {
+                enter: function (el, enterDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '110px';
+                            enterDone();
+                            return;
+                        }
+
+                        el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, leaveDone) {
+                    var steps = 50;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '10px';
+                            leaveFinish++;
+                            leaveDone();
+
+                            expect(wrap.getElementsByTagName('span').length).toBe(5-leaveFinish)
+                            return;
+                        }
+
+                        el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [1,2,3,4]
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(4);
+
+        setTimeout(function () {
+            myComponent.data.pop('list');
+            san.nextTick(function () {
+                myComponent.data.pop('list');
+                san.nextTick(function () {
+                    myComponent.data.unshift('list', 5);
+                    san.nextTick(function () {
+                        myComponent.data.splice('list', [1,1]);
+
+                        san.nextTick(function () {
+                            var spans = wrap.getElementsByTagName('span');
+                            expect(spans.length).toBe(5);
+
+                            whenFinish();
+                        });
+                    });
+                })
+            })
+        }, 500);
+
+        function whenFinish() {
+            if (leaveFinish === 3) {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(2);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+
+                return;
+            }
+
+            setTimeout(whenFinish, 100);
+        }
+    });
 });
 
