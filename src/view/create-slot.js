@@ -115,17 +115,8 @@ function createSlot(options) {
     node._pushChildANode = elementOwnPushChildANode;
     // #[end]
 
-    if (options.isInserted && !options.isScoped) {
-        var parent = node.parent;
-        while (parent) {
-            if (isComponent(parent) && parent.owner === node.childOwner) {
-                parent.slotChildren.push(node);
-                break;
-            }
 
-            parent = parent.parent;
-        }
-    }
+    node.owner.slotChildren.push(node);
 
     // #[begin] reverse
     if (options.el) {

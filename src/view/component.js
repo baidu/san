@@ -468,7 +468,9 @@ Component.prototype._update = function (changes) {
     });
 
     each(this.slotChildren, function (child) {
-        child._update(changes, 1);
+        if (!child.isScoped && child.isInserted) {
+            child._update(changes, 1);
+        }
     });
 
     var dataChanges = me.dataChanges;
