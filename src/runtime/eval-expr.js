@@ -47,7 +47,11 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
             );
 
         case ExprType.ACCESSOR:
-            return data.get(expr);
+            var value = data.get(expr);
+            if (escapeInterpHtml && typeof value === 'string') {
+                value = escapeHTML(value);
+            }
+            return value;
 
         case ExprType.INTERP:
             var value = evalExpr(expr.expr, data, owner);
