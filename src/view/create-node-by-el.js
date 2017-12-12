@@ -61,19 +61,6 @@ function createNodeByEl(el, parent, elWalker, scope) {
                 case 'tpl':
                     return createTemplate(option);
 
-                case 'data':
-                    // fill component data
-                    var data = (new Function(
-                        'return ' + option.stumpText.replace(/^[\s\n]*/, '')
-                    ))();
-
-                    /* eslint-disable guard-for-in */
-                    for (var key in data) {
-                        owner.data.set(key, data[key]);
-                    }
-                    /* eslint-enable guard-for-in */
-
-                    return;
             }
         }
 

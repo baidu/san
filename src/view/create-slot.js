@@ -38,7 +38,6 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 function createSlot(options) {
     // options.literalOwner = options.owner;
     var aNode = createANode();
-    var nameBind;
 
     // #[begin] reverse
     if (options.el) {
@@ -50,15 +49,25 @@ function createSlot(options) {
         }
 
         aNode = parseTemplate(options.stumpText).children[0];
-        nameBind = aNode.props.get('name');
+        options.nameBind = aNode.props.get('name');
+        if (options.nameBind) {
+            options.isNamed = true;
+            options.name = nodeEvalExpr(options, options.nameBind.expr);
+        }
     }
     else {
     // #[end]
-        nameBind = options.aNode.props.get('name');
-        var givenSlots = options.owner.aNode.givenSlots;
+
+        options.nameBind = options.aNode.props.get('name');
+        if (options.nameBind) {
+            options.isNamed = true;
+            options.name = nodeEvalExpr(options, options.nameBind.expr);
+        }
+
+        var givenSlots = options.owner.givenSlots;
         var givenChildren;
         if (givenSlots) {
-            givenChildren = nameBind ? givenSlots.named[nameBind.raw] : givenSlots.noname;
+            givenChildren = options.isNamed ? givenSlots.named[options.name] : givenSlots.noname;
         }
 
         if (givenChildren) {
@@ -74,10 +83,7 @@ function createSlot(options) {
     }
     // #[end]
 
-    if (nameBind) {
-        options.isNamed = true;
-        options.name = nameBind.raw;
-    }
+    
 
     var initData = {};
     each(aNode.vars, function (varItem) {
@@ -141,13 +147,6 @@ function createSlot(options) {
             );
             node.children.push(child);
         }
-
-        if (options.isInserted) {
-            // TODO: component中aNode的生成要处理，aNode中必须包含givenSlot
-            // nameBind
-            //     ? (options.owner.aNode.givenSlots.named[node.name] = node.aNode)
-            //     : (options.owner.aNode.givenSlots.noname = node.aNode);
-        }
     }
     // #[end]
 
@@ -162,6 +161,12 @@ function createSlot(options) {
  */
 function slotOwnUpdate(changes, isFromOuter) {
     var me = this;
+    if (me.nameBind && nodeEvalExpr(me, me.nameBind.expr) !== me.name) {
+        me.owner._notifyNeedReload();
+        return false;
+    }
+
+
     if (me.isScoped) {
         each(me.aNode.vars, function (varItem) {
             me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));

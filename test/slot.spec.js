@@ -2006,4 +2006,230 @@ describe("Slot", function () {
             done();
         })
     });
+
+    it("dynamic slot name description", function (done) {
+        var Table = san.defineComponent({
+            template: ''
+                + '<table width="100%" cellpadding="0" cellspacing="0">'
+                + '  <thead>'
+                + '    <tr><th s-for="col in columns">{{col.label}}</th></tr>'
+                + '  </thead>'
+                + '  <tbody>'
+                + '    <tr s-for="row in datasource">'
+                + '      <td s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></td>'
+                + '    </tr>'
+                + '  </tbody>'
+                + '</table>'
+          });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-table': Table
+            },
+            template:
+                '<div>'
+                    + '<x-table columns="{{columns}}" datasource="{{list}}">'
+                        + '<b slot="col-name">{{row.name}}</b>'
+                    + '</x-table>'
+                + '</div>'
+
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                columns: [
+                    {name: 'name', label: '名'},
+                    {name: 'email', label: '邮'}
+                ],
+                list: [
+                    {name: 'errorrik', email: 'errorrik@gmail.com'},
+                    {name: 'leeight', email: 'leeight@gmail.com'}
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(2);
+        expect(bs[0].innerHTML).toBe('errorrik');
+        expect(bs[1].innerHTML).toBe('leeight');
+
+        var tds = wrap.getElementsByTagName('td');
+        expect(tds.length).toBe(4);
+        expect(tds[1].innerHTML).toBe('errorrik@gmail.com');
+        expect(tds[3].innerHTML).toBe('leeight@gmail.com');
+
+        myComponent.data.push('list', {name: 'otakustay', email: 'otakustay@gmail.com'});
+        myComponent.data.set('list[0].email', 'erik168@163.com');
+
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(3);
+            expect(bs[2].innerHTML).toBe('otakustay');
+
+            var tds = wrap.getElementsByTagName('td');
+            expect(tds.length).toBe(6);
+            expect(tds[1].innerHTML).toBe('erik168@163.com');
+            expect(tds[5].innerHTML).toBe('otakustay@gmail.com');
+
+            myComponent.data.set('columns', [
+                {name: 'email', label: '邮'},
+                {name: 'name', label: '名'}
+            ]);
+
+            myComponent.nextTick(function () {
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs.length).toBe(3);
+                expect(bs[0].innerHTML).toBe('errorrik');
+                expect(bs[1].innerHTML).toBe('leeight');
+        
+                var tds = wrap.getElementsByTagName('td');
+                expect(tds.length).toBe(6);
+                expect(tds[2].innerHTML).toBe('leeight@gmail.com');
+                expect(tds[0].innerHTML).toBe('erik168@163.com');
+                expect(tds[4].innerHTML).toBe('otakustay@gmail.com');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+            
+        });
+    });
+
+    it("dynamic slot name description and dynamic name in given slot element", function (done) {
+        var Table = san.defineComponent({
+            template: ''
+                + '<table width="100%" cellpadding="0" cellspacing="0">'
+                + '  <thead>'
+                + '    <tr><th s-for="col in columns">{{col.label}}</th></tr>'
+                + '  </thead>'
+                + '  <tbody>'
+                + '    <tr s-for="row in datasource">'
+                + '      <td s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></td>'
+                + '    </tr>'
+                + '  </tbody>'
+                + '</table>'
+          });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-table': Table
+            },
+            template:
+                '<div>'
+                    + '<x-table columns="{{dep.columns}}" datasource="{{dep.members}}" s-for="dep in deps">'
+                        + '<b slot="col-{{dep.strong}}">{{row[col.name]}}</b>'
+                    + '</x-table>'
+                + '</div>'
+
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                deps: [
+                    {
+                        strong: 'name',
+                        columns: [
+                            {name: 'name', label: '名'},
+                            {name: 'email', label: '邮'}
+                        ],
+                        members: [
+                            {name: 'Justineo', email: 'justineo@gmail.com'},
+                            {name: 'errorrik', email: 'errorrik@gmail.com'}
+                        ]
+                    },
+                    {
+                        strong: 'email',
+                        columns: [
+                            {name: 'name', label: '名'},
+                            {name: 'email', label: '邮'}
+                        ],
+                        members: [
+                            {name: 'otakustay', email: 'otakustay@gmail.com'},
+                            {name: 'leeight', email: 'leeight@gmail.com'}
+                        ]
+                    }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(4);
+        expect(bs[0].innerHTML).toBe('Justineo');
+        expect(bs[1].innerHTML).toBe('errorrik');
+        expect(bs[2].innerHTML).toBe('otakustay@gmail.com');
+        expect(bs[3].innerHTML).toBe('leeight@gmail.com');
+
+        var tds = wrap.getElementsByTagName('td');
+        expect(tds.length).toBe(8);
+        expect(tds[1].innerHTML).toBe('justineo@gmail.com');
+        expect(tds[3].innerHTML).toBe('errorrik@gmail.com');
+        expect(tds[4].innerHTML).toBe('otakustay');
+        expect(tds[6].innerHTML).toBe('leeight');
+
+
+        myComponent.data.set('deps[0].strong', 'email');
+        myComponent.data.pop('deps[0].members');
+        myComponent.data.push('deps[1].members', {name: 'who', email: 'areyou@gmail.com'});
+
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(4);
+            expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+            expect(bs[1].innerHTML).toBe('otakustay@gmail.com');
+            expect(bs[2].innerHTML).toBe('leeight@gmail.com');
+            expect(bs[3].innerHTML).toBe('areyou@gmail.com');
+
+            var tds = wrap.getElementsByTagName('td');
+            expect(tds.length).toBe(8);
+            expect(tds[0].innerHTML).toBe('Justineo');
+            expect(tds[2].innerHTML).toBe('otakustay');
+            expect(tds[4].innerHTML).toBe('leeight');
+            expect(tds[6].innerHTML).toBe('who');
+
+            myComponent.data.set('deps[1].columns', [
+                {name: 'email', label: '邮'},
+                {name: 'name', label: '名'}
+            ]);
+
+            myComponent.nextTick(function () {
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs.length).toBe(4);
+                expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+                expect(bs[1].innerHTML).toBe('otakustay@gmail.com');
+                expect(bs[2].innerHTML).toBe('leeight@gmail.com');
+                expect(bs[3].innerHTML).toBe('areyou@gmail.com');
+
+                var tds = wrap.getElementsByTagName('td');
+                expect(tds.length).toBe(8);
+                expect(tds[0].innerHTML).toBe('Justineo');
+                expect(tds[3].innerHTML).toBe('otakustay');
+                expect(tds[5].innerHTML).toBe('leeight');
+                expect(tds[7].innerHTML).toBe('who');
+
+                myComponent.data.set('deps[1].strong', 'name');
+
+                myComponent.nextTick(function () {
+                    var bs = wrap.getElementsByTagName('b');
+                    expect(bs.length).toBe(4);
+                    expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+                    expect(bs[1].innerHTML).toBe('otakustay');
+                    expect(bs[2].innerHTML).toBe('leeight');
+                    expect(bs[3].innerHTML).toBe('who');
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+            });
+        });
+    });
 });

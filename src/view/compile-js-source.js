@@ -89,6 +89,10 @@ var elementSourceCompiler = {
         });
 
         props.each(function (prop) {
+            if (prop.name === 'slot') {
+                return;
+            }
+
             if (prop.name === 'value') {
                 switch (tagName) {
                     case 'textarea':
@@ -462,65 +466,68 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileSlot: function (aNode, sourceBuffer, owner) {
+        sourceBuffer.addRaw('(function () {');
+
+        sourceBuffer.addRaw('function $defaultSlotRender(componentCtx) {');
+        sourceBuffer.addRaw('  var html = "";');
+        each(aNode.children, function (aNodeChild) {
+            sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
+        });
+        sourceBuffer.addRaw('  return html;');
+        sourceBuffer.addRaw('}');
+
+        sourceBuffer.addRaw('  var $givenSlot = [];');
+
         var nameProp = aNode.props.get('name');
-        var givenSlots = owner.aNode.givenSlots;
-        var givenChildren;
-        if (givenSlots) {
-            givenChildren = nameProp 
-                ? givenSlots.named[nameProp.raw] 
-                : givenSlots.noname;
-        }
-        
-        var isInserted = 0;
-        var children = aNode.children;
-        if (givenChildren) {
-            isInserted = 1;
-            children = givenChildren;
-            owner = owner.owner;
-        }
-
-        var stumpText = (!isInserted ? '!' : '')
-            + serializeANode({
-                tagName: aNode.tagName,
-                vars: aNode.vars,
-                props: aNode.props,
-                directives: aNode.directives
-            });
-
-
-
-        sourceBuffer.joinString(serializeStump('slot', stumpText));
-
-        if (isInserted) {
-            sourceBuffer.addRaw('var _slotCtx = componentCtx.owner;');
+        if (nameProp) {
+            sourceBuffer.addRaw('var $slotName = ' + compileExprSource.expr(nameProp.expr) + ';');
         }
         else {
-            sourceBuffer.addRaw('var _slotCtx = componentCtx;');
+            sourceBuffer.addRaw('var $slotName = null;');
         }
 
+        sourceBuffer.addRaw('var $ctxGivenSlots = componentCtx.givenSlots;');
+        sourceBuffer.addRaw('for (var $i = 0; $i < $ctxGivenSlots.length; $i++) {');
+        sourceBuffer.addRaw('  if ($ctxGivenSlots[$i][1] == $slotName) {');
+        sourceBuffer.addRaw('    $givenSlot.push($ctxGivenSlots[$i][0]);');
+        sourceBuffer.addRaw('  }');
+        sourceBuffer.addRaw('}');
+
+
+        sourceBuffer.addRaw('var $isInserted = $givenSlot.length > 0;');
+        sourceBuffer.addRaw('if (!$isInserted) { $givenSlot.push($defaultSlotRender); }');
+
+        sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
         if (aNode.vars) {
-            sourceBuffer.addRaw('_slotCtx = {data: {}, filters: _slotCtx.filters, callFilter: _slotCtx.callFilter};');
+            sourceBuffer.addRaw('$slotCtx = {data: {}, filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};');
             each(aNode.vars, function (varItem) {
                 sourceBuffer.addRaw(
-                    '_slotCtx.data["' + varItem.name + '"] = '
+                    '$slotCtx.data["' + varItem.name + '"] = '
                     + compileExprSource.expr(varItem.expr)
                     + ';'
                 );
             });
         }
 
-        sourceBuffer.addRaw('(function (componentCtx) {');
+        sourceBuffer.addRaw('html += "<!--s-slot:" + ($isInserted ? "" : "!") + ' 
+            + compileExprSource.stringLiteralize(
+                serializeANode({
+                    tagName: aNode.tagName,
+                    vars: aNode.vars,
+                    props: aNode.props,
+                    directives: aNode.directives
+                })
+                + '-->'
+            )
+        );
 
-
-        each(children, function (aNodeChild) {
-            sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
-        });
-
-
-        sourceBuffer.addRaw('})(_slotCtx);');
-        sourceBuffer.addRaw('_slotCtx = null;');
+        sourceBuffer.addRaw('for (var $renderIndex = 0; $renderIndex < $givenSlot.length; $renderIndex++) {');
+        sourceBuffer.addRaw('  html += $givenSlot[$renderIndex]($slotCtx);');
+        sourceBuffer.addRaw('}');
 
         sourceBuffer.joinString(serializeStumpEnd('slot'));
+        sourceBuffer.addRaw('})();');
+
     },
 
     /**
@@ -567,6 +574,29 @@ var aNodeCompiler = {
      * @param {Function} extra.ComponentClass 对应组件类
      */
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
+        if (aNode) {
+            sourceBuffer.addRaw('var $slotName = null;');
+            sourceBuffer.addRaw('var $givenSlots = [];');
+            each(aNode.children, function (child) {
+                var slotBind = !child.isText && child.props.get('slot');
+                if (slotBind) {
+                    sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
+                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('  var html = "";');
+                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                    sourceBuffer.addRaw('  return html;');
+                    sourceBuffer.addRaw('}, $slotName]);');
+                }
+                else {
+                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('  var html = "";');
+                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                    sourceBuffer.addRaw('  return html;');
+                    sourceBuffer.addRaw('}]);');
+                }
+            });
+        }
+
         var ComponentClass = extra.ComponentClass;
         var component = new ComponentClass({
             aNode: aNode,
@@ -589,10 +619,10 @@ var aNodeCompiler = {
         sourceBuffer.addRendererStart();
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
         sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
+        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx, $givenSlots);');
+        sourceBuffer.addRaw('$givenSlots = null;');
     }
 };
-
 /* eslint-disable guard-for-in */
 
 /**
@@ -606,11 +636,16 @@ var aNodeCompiler = {
 function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
+    sourceBuffer.addRaw('componentCtx.givenSlots = givenSlots;');
+
+    
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
     sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
-    sourceBuffer.addRaw('var $computedName = componentCtx.computedNames[$i];');
-    sourceBuffer.addRaw('data[$computedName] = componentCtx.computed[$computedName]();');
+    sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
+    sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
+
+    
 
     extraProp = extraProp || '';
     if (component.subTag) {
@@ -647,6 +682,15 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer.joinDataStringify();
         sourceBuffer.joinString('-->');
     }
+    else if (component.givenANode) {
+        sourceBuffer.joinString('<!--s-anode:');
+        each(component.givenANode.children, function (child) {
+            sourceBuffer.joinString(serializeANode(child));
+        });
+        sourceBuffer.joinString('-->');
+    }
+
+    
 
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
@@ -658,6 +702,10 @@ var stringifier = {
         var result = '{';
 
         for (var key in source) {
+            if (typeof source[key] === 'undefined') {
+                continue;
+            }
+
             if (prefixComma) {
                 result += ',';
             }
@@ -733,6 +781,9 @@ var stringifier = {
  */
 function genComponentContextCode(component) {
     var code = ['var componentCtx = {'];
+
+    // given anode
+    code.push('givenSlots: [],');
 
     // filters
     code.push('filters: {');
@@ -935,6 +986,10 @@ function componentCompilePreCode() {
             var result = '{';
 
             Object.keys(source).forEach(function (key) {
+                if (typeof source[key] === 'undefined') {
+                    return;
+                }
+
                 if (prefixComma) {
                     result += ',';
                 }
