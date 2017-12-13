@@ -709,7 +709,7 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var ul = document.getElementById('test');
-        // expect(ul.tagName).toBe('UL');
+        expect(ul.tagName).toBe('UL');
 
         expect(document.getElementById('it-errorrik').innerHTML).toBe('errorrik');
         expect(document.getElementById('it-leeight').innerHTML).toBe('leeight');
