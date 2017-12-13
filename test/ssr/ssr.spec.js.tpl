@@ -1601,6 +1601,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
             var bs = wrap.getElementsByTagName('b');
             expect(bs.length).toBe(4);
             expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+            expect(bs[0].getAttribute('slot') == null).toBeTruthy();
             expect(bs[1].innerHTML).toBe('otakustay@gmail.com');
             expect(bs[2].innerHTML).toBe('leeight@gmail.com');
             expect(bs[3].innerHTML).toBe('areyou@gmail.com');
@@ -1621,6 +1622,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 var bs = wrap.getElementsByTagName('b');
                 expect(bs.length).toBe(4);
                 expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+                expect(bs[0].getAttribute('slot') == null).toBeTruthy();
                 expect(bs[1].innerHTML).toBe('otakustay@gmail.com');
                 expect(bs[2].innerHTML).toBe('leeight@gmail.com');
                 expect(bs[3].innerHTML).toBe('areyou@gmail.com');
@@ -1638,6 +1640,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
                     var bs = wrap.getElementsByTagName('b');
                     expect(bs.length).toBe(4);
                     expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+                    expect(bs[0].getAttribute('slot') == null).toBeTruthy();
                     expect(bs[1].innerHTML).toBe('otakustay');
                     expect(bs[2].innerHTML).toBe('leeight');
                     expect(bs[3].innerHTML).toBe('who');

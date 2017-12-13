@@ -93,6 +93,11 @@ var defaultElementPropHandlers = {
             element.el.style.cssText = value;
         }
     },
+    
+    slot: {
+        attr: empty,
+        prop: empty
+    },
 
     draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
