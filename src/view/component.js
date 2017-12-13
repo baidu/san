@@ -434,40 +434,43 @@ Component.prototype.slot = function (name) {
  * @return {Component}
  */
 Component.prototype.ref = function (name) {
-    var refComponent;
+    var refTarget;
     var owner = this;
 
     function childrenTraversal(children) {
         each(children, function (child) {
             elementTraversal(child);
-            return !refComponent;
+            return !refTarget;
         });
     }
 
     function elementTraversal(element) {
-        if (isComponent(element)) {
-            var refDirective = element.aNode.directives.get('ref');
-            if (refDirective
-                && evalExpr(refDirective.value, element.scope || owner.data, owner) === name
-            ) {
-                refComponent = element;
+        if (element.owner === owner) {
+            switch (element.nodeType) {
+                case NodeType.ELEM:
+                case NodeType.CMPT:
+                    var ref = element.aNode.directives.get('ref');
+                    if (ref && evalExpr(ref.value, element.scope, owner) === name) {
+                        refTarget = NodeType.ELEM === element.nodeType 
+                            ? element._getEl() : element;
+                    }
             }
 
-            !refComponent && childrenTraversal(element.slotChildren);
+            !refTarget && childrenTraversal(element.slotChildren);
         }
 
-        !refComponent && each(element.children, function (child) {
+        !refTarget && each(element.children, function (child) {
             if (child.nodeType !== NodeType.TEXT) {
                 elementTraversal(child);
             }
 
-            return !refComponent;
+            return !refTarget;
         });
     }
 
     childrenTraversal(this.children);
 
-    return refComponent;
+    return refTarget;
 };
 
 

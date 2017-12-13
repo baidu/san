@@ -2056,6 +2056,37 @@ describe("Component", function () {
         })
     });
 
+    it("ref in element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="name in list" s-ref="it-{{name}}">{{name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                list: ['errorrik', 'leeight']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.ref('it-errorrik').innerHTML).toBe('errorrik');
+        expect(myComponent.ref('it-leeight').innerHTML).toBe('leeight');
+
+        myComponent.data.set('list[0]', '2b');
+
+        san.nextTick(function () {
+            expect(myComponent.ref('it-errorrik') == null).toBeTruthy();
+            expect(myComponent.ref('it-2b').innerHTML).toBe('2b');
+            expect(myComponent.ref('it-leeight').innerHTML).toBe('leeight');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
 
     it("update prop", function (done) {
         var MyComponent = san.defineComponent({

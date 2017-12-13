@@ -39,6 +39,7 @@ var warnSetHTML = require('./warn-set-html');
  */
 function createElement(options) {
     var node = nodeInit(options);
+    node.nodeType = NodeType.ELEM;
 
     // init methods
     node.attach = elementOwnAttach;
