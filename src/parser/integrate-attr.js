@@ -30,11 +30,6 @@ var DEFAULT_EVENT_ARGS = [
  * @param {boolean=} ignoreNormal 是否忽略无前缀的普通属性
  */
 function integrateAttr(aNode, name, value, ignoreNormal) {
-    if (name === 'id') {
-        aNode.id = value;
-        return;
-    }
-
     var prefixIndex = name.indexOf('-');
     var realName;
     var prefix;

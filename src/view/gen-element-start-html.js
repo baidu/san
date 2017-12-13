@@ -20,15 +20,16 @@ function genElementStartHTML(element, buf) {
         return;
     }
 
-    pushStrBuffer(buf, '<' + element.tagName + ' id="' + element.id + '"');
+    pushStrBuffer(buf, '<' + element.tagName);
 
     element.props.each(function (prop) {
         var attr = prop.attr;
+        var value;
 
         if (!attr) {
             element.dynamicProps.push(prop);
 
-            var value = isComponent(element)
+            value = isComponent(element)
                 ? evalExpr(prop.expr, element.data, element)
                 : nodeEvalExpr(element, prop.expr, 1);
 
@@ -38,7 +39,14 @@ function genElementStartHTML(element, buf) {
         pushStrBuffer(buf, attr || '');
     });
 
-    pushStrBuffer(buf, '>');
+    var idProp = element.props.get('id');
+    if (idProp) {
+        element._elId = isComponent(element)
+            ? evalExpr(idProp.expr, element.data, element)
+            : nodeEvalExpr(element, idProp.expr, 1);
+    }
+
+    pushStrBuffer(buf, ' id="' + (element._elId || element.id) + '"' + '>');
 }
 
 exports = module.exports = genElementStartHTML;

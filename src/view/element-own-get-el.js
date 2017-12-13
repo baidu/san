@@ -10,7 +10,7 @@
  */
 function elementOwnGetEl() {
     if (!this.el) {
-        this.el = document.getElementById(this.id);
+        this.el = document.getElementById(this._elId || this.id);
     }
 
     return this.el;

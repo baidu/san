@@ -18,8 +18,8 @@ var LifeCycle = require('./life-cycle');
 function elementCreate(element) {
     element.lifeCycle = LifeCycle.painting;
     element.el = createEl(element.tagName);
-    element.el.id = element.id;
-
+    
+    var hasIdDeclaration;
     element.props.each(function (prop) {
         var attr = prop.attr;
 
@@ -32,7 +32,14 @@ function elementCreate(element) {
             : nodeEvalExpr(element, prop.expr, 1);
 
         elementSetElProp(element, prop.name, value);
+
+        if (prop.name === 'id') {
+            element._elId = value;
+            hasIdDeclaration = true;
+        }
     });
+
+    hasIdDeclaration || (element.el.id = element.id);
 }
 
 exports = module.exports = elementCreate;

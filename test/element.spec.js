@@ -692,4 +692,39 @@ describe("Element", function () {
             done();
         });
     });
+
+
+    it("id prop compatibility", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul id="test"><li s-for="name in list" id="it-{{name}}">{{name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                list: ['errorrik', 'leeight']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ul = document.getElementById('test');
+        // expect(ul.tagName).toBe('UL');
+
+        expect(document.getElementById('it-errorrik').innerHTML).toBe('errorrik');
+        expect(document.getElementById('it-leeight').innerHTML).toBe('leeight');
+
+        myComponent.data.set('list[0]', '2b');
+
+        san.nextTick(function () {
+            expect(document.getElementById('it-errorrik') == null).toBeTruthy();
+            expect(document.getElementById('it-2b').innerHTML).toBe('2b');
+            expect(document.getElementById('it-leeight').innerHTML).toBe('leeight');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });

@@ -30,9 +30,7 @@ function nodeInit(options, node) {
             ? options.parent
             : options.parent && options.parent.parentComponent,
 
-    node.id = (options.el && options.el.id)
-            || (options.aNode && options.aNode.id)
-            || guid();
+    node.id = guid();
 
     return node;
 }
