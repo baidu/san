@@ -9,6 +9,14 @@ var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 var nodeEvalExpr = require('./node-eval-expr');
 
+var BOOL_ATTRIBUTES = {};
+each(
+    'checked,readonly,selected,multiple,draggable,disabled'.split(','),
+    function (key) {
+        BOOL_ATTRIBUTES[key] = 1;
+    }
+);
+
 /**
  * 生成元素标签起始的html
  *
@@ -32,6 +40,10 @@ function genElementStartHTML(element, buf) {
             value = isComponent(element)
                 ? evalExpr(prop.expr, element.data, element)
                 : nodeEvalExpr(element, prop.expr, 1);
+
+            if (!BOOL_ATTRIBUTES[prop.name] && prop.x) {
+                value = escapeHTML(value);
+            }
 
             attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
         }

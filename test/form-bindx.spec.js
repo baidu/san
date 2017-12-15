@@ -81,6 +81,32 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("text value init data has xss char", function () {
+        var initValue = 'ddd"/><a href="aaa">aaa</a>'
+        var MyComponent = san.defineComponent({
+            template: '<div><span>{{name}}</span> <input value="{=name=}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: initValue
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var inputs = wrap.getElementsByTagName('input');
+        expect(span.innerHTML.indexOf('&lt;a href=') > 0).toBeTruthy();
+        expect(inputs[0].value).toBe(initValue);
+        expect(wrap.getElementsByTagName('a').length).toBe(0);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
     it("text input as component root element", function (done) {
         var defName = 'text value';
 

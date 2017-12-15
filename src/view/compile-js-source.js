@@ -173,12 +173,14 @@ var elementSourceCompiler = {
                     break;
 
                 default:
-                    if (prop.expr.value) {
-                        sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
+                    if (prop.attr) {
+                        sourceBuffer.joinString(' ' + prop.attr);
                     }
                     else {
                         sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
+                            + (prop.x ? 'escapeHTML(' : '')
                             + compileExprSource.expr(prop.expr)
+                            + (prop.x ? ')' : '')
                             + ')'
                         );
                     }

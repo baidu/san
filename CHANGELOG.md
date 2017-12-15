@@ -5,6 +5,7 @@ ChangeLog
 3.3.1
 -------
 
++ 【bug修复】- input value 在双向绑定时可能存在 xss 漏洞
 + 【bug修复】- 文本节点在更新时可能多次转义
 
 
