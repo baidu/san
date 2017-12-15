@@ -9,6 +9,19 @@ var Walker = require('./walker');
 var integrateAttr = require('./integrate-attr');
 var autoCloseTags = require('../browser/auto-close-tags');
 
+// #[begin] error
+function getXPath(stack, currentTagName) {
+    var path = ['ROOT'];
+    for (var i = 1, len = stack.length; i < len; i++) {
+        path.push(stack[i].tagName);
+    }
+    if (currentTagName) {
+        path.push(currentTagName);
+    }
+    return path.join('>');
+}
+// #[end]
+
 /* eslint-disable fecs-max-statements */
 
 /**
@@ -52,10 +65,31 @@ function parseTemplate(source, options) {
 
         // 62: >
         // 47: /
+        // 处理 </xxxx >
         if (tagEnd && walker.currentCode() === 62) {
             // 满足关闭标签的条件时，关闭标签
             // 向上查找到对应标签，找不到时忽略关闭
             var closeIndex = stackIndex;
+
+            // #[begin] error
+            // 如果正在闭合一个自闭合的标签，例如 </input>，报错
+            if (autoCloseTags[tagName]) {
+                throw new Error(''
+                    + '[SAN ERROR] ' + getXPath(stack, tagName) + ' is a `auto closed` tag, '
+                    + 'so it cannot be closed with </' + tagName + '>'
+                );
+            }
+
+            // 如果关闭的 tag 和当前打开的不一致，报错
+            if (
+                stack[closeIndex].tagName !== tagName
+                // 这里要把 table 自动添加 tbody 的情况给去掉
+                && !(tagName === 'table' && stack[closeIndex].tagName === 'tbody')
+            ) {
+                throw new Error('[SAN ERROR] ' + getXPath(stack) + ' is closed with ' + tagName);
+            }
+            // #[end]
+
             while (closeIndex > 0 && stack[closeIndex].tagName !== tagName) {
                 closeIndex--;
             }
@@ -65,9 +99,30 @@ function parseTemplate(source, options) {
                 stackIndex = closeIndex - 1;
                 currentNode = stack[stackIndex];
             }
-
             walker.go(1);
         }
+
+        // #[begin] error
+        // 处理 </xxx 非正常闭合标签
+        else if (tagEnd) {
+
+            // 如果闭合标签时，匹配后的下一个字符是 <，即下一个标签的开始，那么当前闭合标签未闭合
+            if (walker.currentCode() === 60) {
+                throw new Error(''
+                    + '[SAN ERROR] ' + getXPath(stack)
+                    + '\'s close tag not closed'
+                );
+            }
+
+            // 闭合标签有属性
+            throw new Error(''
+                + '[SAN ERROR] ' + getXPath(stack)
+                + '\'s close tag has attributes'
+            );
+
+        }
+        // #[end]
+
         else if (!tagEnd) {
             var aElement = createANode({
                 tagName: tagName
@@ -88,6 +143,7 @@ function parseTemplate(source, options) {
                     walker.go(1);
                     break;
                 }
+                // 遇到 /> 按闭合处理
                 else if (nextCharCode === 47
                     && walker.charCode(walker.index + 1) === 62
                 ) {
@@ -96,15 +152,37 @@ function parseTemplate(source, options) {
                     break;
                 }
 
+                // #[begin] error
+                // 在处理一个 open 标签时，如果遇到了 <， 即下一个标签的开始，则当前标签未能正常闭合，报错
+                if (nextCharCode === 60) {
+                    throw new Error('[SAN ERROR] ' + getXPath(stack, tagName) + ' is not closed');
+                }
+                // #[end]
+
                 // 读取 attribute
                 var attrMatch = walker.match(attrReg);
                 if (attrMatch) {
+
+                    // #[begin] error
+                    // 如果属性有 =，但没取到 value，报错
+                    if (
+                        walker.charCode(attrMatch.index + attrMatch[1].length) === 61
+                        && !attrMatch[2]
+                    ) {
+                        throw new Error(''
+                            + '[SAN ERROR] ' + getXPath(stack, tagName) + ' attribute `'
+                            + attrMatch[1] + '` is not wrapped with ""'
+                        );
+                    }
+                    // #[end]
+
                     integrateAttr(
                         aElement,
                         attrMatch[1],
                         attrMatch[2] ? attrMatch[4] : ''
                     );
                 }
+
             }
 
             // match if directive for else/elif directive
