@@ -153,8 +153,10 @@ function textOwnUpdate(changes) {
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
             var text = nodeEvalExpr(this, this.aNode.textExpr, 1);
+            
             if (text !== this.content) {
                 this.content = text;
+                var rawText = nodeEvalExpr(this, this.aNode.textExpr);
 
                 // 无 stump 元素，所以需要根据组件结构定位
                 textLocatePrevNode(me);
@@ -162,7 +164,7 @@ function textOwnUpdate(changes) {
                 var parentEl = this.parent._getEl();
                 if (me.updateMode === 1) {
                     if (me.el) {
-                        me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+                        me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                     }
                     else {
                         var el = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
@@ -170,7 +172,7 @@ function textOwnUpdate(changes) {
                             switch (el.nodeType) {
                                 case 3:
                                     me.el = el;
-                                    me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+                                    me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                                     break;
                                 case 1:
                                     el.insertAdjacentHTML('beforebegin', text);
