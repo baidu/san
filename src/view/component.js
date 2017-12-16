@@ -567,42 +567,49 @@ Component.prototype._update = function (changes) {
 
         this._toPhase('updated');
 
-        if (me.owner) {
-            each(dataChanges, function (change) {
-                me.binds.each(function (bindItem) {
-                    var changeExpr = change.expr;
-                    if (bindItem.x
-                        && !isDataChangeByElement(change, me.owner)
-                        && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
-                    ) {
-                        var updateScopeExpr = bindItem.expr;
-                        if (changeExpr.paths.length > 1) {
-                            updateScopeExpr = {
-                                type: ExprType.ACCESSOR,
-                                paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                            };
-                        }
-
-                        me.scope.set(
-                            updateScopeExpr,
-                            evalExpr(changeExpr, me.data, me),
-                            {
-                                target: {
-                                    id: me.id,
-                                    prop: bindItem.name
-                                }
-                            }
-                        );
-                    }
-                });
-            });
-
-            me.owner._update();
+        if (this.owner) {
+            this._updateBindxOwner(dataChanges);
+            this.owner._update();
         }
     }
 
     this._notifyNeedReload = null;
 };
+
+Component.prototype._updateBindxOwner = function (dataChanges) {
+    var me = this;
+
+    if (this.owner) {
+        each(dataChanges, function (change) {
+            me.binds.each(function (bindItem) {
+                var changeExpr = change.expr;
+                if (bindItem.x
+                    && !isDataChangeByElement(change, me.owner)
+                    && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
+                ) {
+                    var updateScopeExpr = bindItem.expr;
+                    if (changeExpr.paths.length > 1) {
+                        updateScopeExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+                        };
+                    }
+
+                    me.scope.set(
+                        updateScopeExpr,
+                        evalExpr(changeExpr, me.data, me),
+                        {
+                            target: {
+                                id: me.id,
+                                prop: bindItem.name
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
+}
 
 /**
  * 重新绘制组件的内容
@@ -644,6 +651,9 @@ Component.prototype._dataChanger = function (change) {
         }
 
         this.dataChanges.push(change);
+    }
+    else if (this.lifeCycle.inited && this.owner) {
+        this._updateBindxOwner([change]);
     }
 };
 
