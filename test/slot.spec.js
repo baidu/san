@@ -2244,7 +2244,7 @@ describe("Slot", function () {
                 'x-man': Man
             },
 
-            template: '<div><x-man data="{{man}}" desc="tip"/></div>',
+            template: '<div><x-man data="{{man}}" desc="{{tip}}"/></div>',
 
             initData: function () {
                 return {
@@ -2252,7 +2252,8 @@ describe("Slot", function () {
                         name: 'errorrik',
                         sex: 1,
                         email: 'errorrik@gmail.com'
-                    }
+                    },
+                    tip: 'tip'
                 };
             }
         });
@@ -2265,8 +2266,9 @@ describe("Slot", function () {
 
         expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com - tip');
         myComponent.data.set('man.email', 'erik168@163.com');
+        myComponent.data.set('tip', 'sb');
         san.nextTick(function () {
-            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com - tip');
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com - sb');
 
             myComponent.dispose();
             document.body.removeChild(wrap);

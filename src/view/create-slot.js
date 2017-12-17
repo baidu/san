@@ -91,13 +91,13 @@ function createSlot(options) {
         initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.owner);
     });
 
-    if (options.isScoped) {
-        options.childScope = new Data(initData);
-    }
-
     if (options.isInserted) {
         options.childOwner = options.owner.owner;
-        options.childScope = options.childScope || options.owner.scope;
+        options.childScope = options.owner.scope;
+    }
+
+    if (options.isScoped) {
+        options.childScope = new Data(initData, options.childScope || options.scope);
     }
 
 
@@ -166,59 +166,69 @@ function slotOwnUpdate(changes, isFromOuter) {
         return false;
     }
 
-
-    if (me.isScoped) {
-        each(me.aNode.vars, function (varItem) {
-            me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
-        });
-
-
-        var scopedChanges = [];
-        each(changes, function (change) {
-            each(me.aNode.vars, function (varItem) {
-                var name = varItem.name;
-                var relation = changeExprCompare(change.expr, varItem.expr, me.scope);
-
-                if (relation < 1) {
-                    return;
-                }
-
-                if (change.type === DataChangeType.SET) {
-                    scopedChanges.push({
-                        type: DataChangeType.SET,
-                        expr: {
-                            type: ExprType.ACCESSOR,
-                            paths: [
-                                {type: ExprType.STRING, value: name}
-                            ]
-                        },
-                        value: me.childScope.get(name),
-                        option: change.option
-                    });
-                }
-                else if (relation === 2) {
-                    scopedChanges.push({
-                        expr: {
-                            type: ExprType.ACCESSOR,
-                            paths: [
-                                {type: ExprType.STRING, value: name}
-                            ]
-                        },
-                        type: DataChangeType.SPLICE,
-                        index: change.index,
-                        deleteCount: change.deleteCount,
-                        value: change.value,
-                        insertions: change.insertions,
-                        option: change.option
-                    });
-                }
-            });
-        });
-
-        elementUpdateChildren(me, scopedChanges);
+    if (isFromOuter) {
+        if (me.isInserted) {
+            elementUpdateChildren(me, changes);
+        }
     }
-    else if (me.isInserted && isFromOuter || !me.isInserted) {
-        elementUpdateChildren(me, changes);
+    else {
+        if (me.isScoped) {
+            each(me.aNode.vars, function (varItem) {
+                me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
+            });
+    
+    
+            var scopedChanges = [];
+            each(changes, function (change) {
+                if (!me.isInserted) {
+                    scopedChanges.push(change);
+                }
+
+                each(me.aNode.vars, function (varItem) {
+                    var name = varItem.name;
+                    var relation = changeExprCompare(change.expr, varItem.expr, me.scope);
+    
+                    if (relation < 1) {
+                        return;
+                    }
+    
+                    if (change.type === DataChangeType.SET) {
+                        scopedChanges.push({
+                            type: DataChangeType.SET,
+                            expr: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: name}
+                                ]
+                            },
+                            value: me.childScope.get(name),
+                            option: change.option
+                        });
+                    }
+                    else if (relation === 2) {
+                        scopedChanges.push({
+                            expr: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: name}
+                                ]
+                            },
+                            type: DataChangeType.SPLICE,
+                            index: change.index,
+                            deleteCount: change.deleteCount,
+                            value: change.value,
+                            insertions: change.insertions,
+                            option: change.option
+                        });
+                    }
+                });
+            });
+
+            elementUpdateChildren(me, scopedChanges);
+        }
+        else if (!me.isInserted) {
+            elementUpdateChildren(me, changes);
+        }
     }
 }
 

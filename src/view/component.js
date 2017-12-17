@@ -534,7 +534,7 @@ Component.prototype._update = function (changes) {
     }
     else {
         each(this.slotChildren, function (child) {
-            if (!child.isScoped && child.isInserted) {
+            if (child.isInserted) {
                 child._update(changes, 1);
             }
         });
