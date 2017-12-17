@@ -296,6 +296,22 @@ let componentDatas = [
                 ]
             }
         ]
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        },
+        tip: 'tip'
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        },
+        desc: 'tip'
     }
 ];
 

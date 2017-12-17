@@ -1652,4 +1652,41 @@ describe("Component serialize from compiled renderer and reverse", function () {
             });
         });
     });
+
+    it("scoped by default content, access inner data", function (done) {
+        ##cmpt65##
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com - tip');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        myComponent.data.set('tip', 'sb');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com - sb');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("scoped by given content, access owner data", function (done) {
+        ##cmpt66##
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('tip');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        myComponent.data.set('desc', 'nonono');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('nonono');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });

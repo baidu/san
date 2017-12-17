@@ -501,7 +501,7 @@ var aNodeCompiler = {
 
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
         if (aNode.vars) {
-            sourceBuffer.addRaw('$slotCtx = {data: {}, filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};');
+            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};');
             each(aNode.vars, function (varItem) {
                 sourceBuffer.addRaw(
                     '$slotCtx.data["' + varItem.name + '"] = '
