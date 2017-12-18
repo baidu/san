@@ -18,14 +18,23 @@ function DOMChildrenWalker(el) {
     this.index = 0;
 
     var child = el.firstChild;
+    var next;
     while (child) {
+        next = child.nextSibling;
+
         switch (child.nodeType) {
+            case 3:
+                if (/^\s*$/.test(child.data || child.textContent)) {
+                    removeEl(child);
+                }
+                break;
+
             case 1:
             case 8:
                 this.raw.push(child);
         }
 
-        child = child.nextSibling;
+        child = next;
     }
 
     this.current = this.raw[this.index];
