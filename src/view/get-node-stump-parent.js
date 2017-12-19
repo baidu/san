@@ -16,9 +16,18 @@ function getNodeStumpParent(node) {
         return node.el.parentNode;
     }
 
-    var parentNode = node.parent._getEl();
-    while (parentNode && parentNode.nodeType !== 1) {
-        parentNode = parentNode.parentNode;
+    node = node.parent;
+    var parentNode
+    while (node) {
+        parentNode = node._getEl();
+        if (parentNode) {
+            while (parentNode && parentNode.nodeType !== 1) {
+                parentNode = parentNode.parentNode;
+            }
+            break;
+        }
+
+        node = node.parent;
     }
 
     return parentNode;

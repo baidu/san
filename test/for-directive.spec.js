@@ -1725,4 +1725,75 @@ describe("ForDirective", function () {
         });
     });
 
+    it("nest in template node", function (done) {
+        var MyComponent = san.defineComponent({
+            filters: {
+                arr: function (value) {
+                    return value.join('|')
+                }
+            },
+            template: '<div><template s-for="row in rows">'
+                + '<p s-for="subRow in row.childs">'
+                + '<b>{{subRow.channels|arr}}</b>'
+                + '<input type="checkbox" value="foo" checked="{=subRow.channels=}" />'
+                + '<input type="checkbox" value="bar" checked="{=subRow.channels=}" />'
+                + '</p>'
+            + '</template></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                rows: [
+                    {
+                        childs: [
+                            {channels: ['foo']}
+                        ]
+                    },
+                    {
+                        childs: [
+                            {channels: ['bar']}
+                        ]
+                    }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(2);
+        expect(bs[0].innerHTML).toBe('foo');
+        expect(bs[1].innerHTML).toBe('bar');
+
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeTruthy();
+        expect(inputs[1].checked).not.toBeTruthy();
+        expect(inputs[2].checked).not.toBeTruthy();
+        expect(inputs[3].checked).toBeTruthy();
+
+        myComponent.data.push('rows[1].childs[0].channels', 'foo');
+
+        san.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(2);
+            expect(bs[0].innerHTML).toBe('foo');
+            expect(bs[1].innerHTML).toBe('bar|foo');
+
+
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBeTruthy();
+            expect(inputs[1].checked).not.toBeTruthy();
+            expect(inputs[2].checked).toBeTruthy();
+            expect(inputs[3].checked).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 });
