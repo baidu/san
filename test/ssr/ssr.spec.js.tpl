@@ -1586,12 +1586,12 @@ describe("Component serialize from compiled renderer and reverse", function () {
         expect(bs[2].innerHTML).toBe('otakustay@gmail.com');
         expect(bs[3].innerHTML).toBe('leeight@gmail.com');
 
-        var tds = wrap.getElementsByTagName('td');
-        expect(tds.length).toBe(8);
-        expect(tds[1].innerHTML).toBe('justineo@gmail.com');
-        expect(tds[3].innerHTML).toBe('errorrik@gmail.com');
-        expect(tds[4].innerHTML).toBe('otakustay');
-        expect(tds[6].innerHTML).toBe('leeight');
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(8);
+        expect(lis[1].innerHTML).toBe('justineo@gmail.com');
+        expect(lis[3].innerHTML).toBe('errorrik@gmail.com');
+        expect(lis[4].innerHTML).toBe('otakustay');
+        expect(lis[6].innerHTML).toBe('leeight');
 
         myComponent.data.set('deps[0].strong', 'email');
         myComponent.data.pop('deps[0].members');
@@ -1606,12 +1606,12 @@ describe("Component serialize from compiled renderer and reverse", function () {
             expect(bs[2].innerHTML).toBe('leeight@gmail.com');
             expect(bs[3].innerHTML).toBe('areyou@gmail.com');
 
-            var tds = wrap.getElementsByTagName('td');
-            expect(tds.length).toBe(8);
-            expect(tds[0].innerHTML).toBe('Justineo');
-            expect(tds[2].innerHTML).toBe('otakustay');
-            expect(tds[4].innerHTML).toBe('leeight');
-            expect(tds[6].innerHTML).toBe('who');
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(8);
+            expect(lis[0].innerHTML).toBe('Justineo');
+            expect(lis[2].innerHTML).toBe('otakustay');
+            expect(lis[4].innerHTML).toBe('leeight');
+            expect(lis[6].innerHTML).toBe('who');
 
             myComponent.data.set('deps[1].columns', [
                 {name: 'email', label: '邮'},
@@ -1627,12 +1627,12 @@ describe("Component serialize from compiled renderer and reverse", function () {
                 expect(bs[2].innerHTML).toBe('leeight@gmail.com');
                 expect(bs[3].innerHTML).toBe('areyou@gmail.com');
 
-                var tds = wrap.getElementsByTagName('td');
-                expect(tds.length).toBe(8);
-                expect(tds[0].innerHTML).toBe('Justineo');
-                expect(tds[3].innerHTML).toBe('otakustay');
-                expect(tds[5].innerHTML).toBe('leeight');
-                expect(tds[7].innerHTML).toBe('who');
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(8);
+                expect(lis[0].innerHTML).toBe('Justineo');
+                expect(lis[3].innerHTML).toBe('otakustay');
+                expect(lis[5].innerHTML).toBe('leeight');
+                expect(lis[7].innerHTML).toBe('who');
 
                 myComponent.data.set('deps[1].strong', 'name');
 

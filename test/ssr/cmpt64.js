@@ -3,16 +3,12 @@ var san = require('../../dist/san.ssr');
 
 var Table = san.defineComponent({
     template: ''
-        + '<table width="100%" cellpadding="0" cellspacing="0">'
-        + '  <thead><tr>'
-        + '    <th s-for="col in columns">{{col.label}}</th>'
-        + '  </tr></thead>'
-        + '  <tbody>'
-        + '    <tr s-for="row in datasource">'
-        + '      <td s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></td>'
-        + '    </tr>'
-        + '  </tbody>'
-        + '</table>'
+        + '<div>'
+        + '    <h3 s-for="col in columns">{{col.label}}</h3>'
+        + '    <ul s-for="row in datasource">'
+        + '      <li s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></li>'
+        + '    </ul>'
+        + '</div>'
   });
 
 var MyComponent = san.defineComponent({

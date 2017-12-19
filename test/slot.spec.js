@@ -2011,16 +2011,12 @@ describe("Slot", function () {
     it("dynamic slot name description", function (done) {
         var Table = san.defineComponent({
             template: ''
-                + '<table width="100%" cellpadding="0" cellspacing="0">'
-                + '  <thead>'
-                + '    <tr><th s-for="col in columns">{{col.label}}</th></tr>'
-                + '  </thead>'
-                + '  <tbody>'
-                + '    <tr s-for="row in datasource">'
-                + '      <td s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></td>'
-                + '    </tr>'
-                + '  </tbody>'
-                + '</table>'
+                + '<div>'
+                + '    <h3 s-for="col in columns">{{col.label}}</h3>'
+                + '    <ul s-for="row in datasource">'
+                + '      <li s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></li>'
+                + '    </ul>'
+                + '</div>'
           });
 
         var MyComponent = san.defineComponent({
@@ -2058,10 +2054,10 @@ describe("Slot", function () {
         expect(bs[0].innerHTML).toBe('errorrik');
         expect(bs[1].innerHTML).toBe('leeight');
 
-        var tds = wrap.getElementsByTagName('td');
-        expect(tds.length).toBe(4);
-        expect(tds[1].innerHTML).toBe('errorrik@gmail.com');
-        expect(tds[3].innerHTML).toBe('leeight@gmail.com');
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toBe('errorrik@gmail.com');
+        expect(lis[3].innerHTML).toBe('leeight@gmail.com');
 
         myComponent.data.push('list', {name: 'otakustay', email: 'otakustay@gmail.com'});
         myComponent.data.set('list[0].email', 'erik168@163.com');
@@ -2071,10 +2067,10 @@ describe("Slot", function () {
             expect(bs.length).toBe(3);
             expect(bs[2].innerHTML).toBe('otakustay');
 
-            var tds = wrap.getElementsByTagName('td');
-            expect(tds.length).toBe(6);
-            expect(tds[1].innerHTML).toBe('erik168@163.com');
-            expect(tds[5].innerHTML).toBe('otakustay@gmail.com');
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toBe('erik168@163.com');
+            expect(lis[5].innerHTML).toBe('otakustay@gmail.com');
 
             myComponent.data.set('columns', [
                 {name: 'email', label: '邮'},
@@ -2086,34 +2082,30 @@ describe("Slot", function () {
                 expect(bs.length).toBe(3);
                 expect(bs[0].innerHTML).toBe('errorrik');
                 expect(bs[1].innerHTML).toBe('leeight');
-        
-                var tds = wrap.getElementsByTagName('td');
-                expect(tds.length).toBe(6);
-                expect(tds[2].innerHTML).toBe('leeight@gmail.com');
-                expect(tds[0].innerHTML).toBe('erik168@163.com');
-                expect(tds[4].innerHTML).toBe('otakustay@gmail.com');
+
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(6);
+                expect(lis[2].innerHTML).toBe('leeight@gmail.com');
+                expect(lis[0].innerHTML).toBe('erik168@163.com');
+                expect(lis[4].innerHTML).toBe('otakustay@gmail.com');
 
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();
             });
-            
+
         });
     });
 
     it("dynamic slot name description and dynamic name in given slot element", function (done) {
         var Table = san.defineComponent({
             template: ''
-                + '<table width="100%" cellpadding="0" cellspacing="0">'
-                + '  <thead>'
-                + '    <tr><th s-for="col in columns">{{col.label}}</th></tr>'
-                + '  </thead>'
-                + '  <tbody>'
-                + '    <tr s-for="row in datasource">'
-                + '      <td s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></td>'
-                + '    </tr>'
-                + '  </tbody>'
-                + '</table>'
+                + '<div>'
+                + '    <h3 s-for="col in columns">{{col.label}}</h3>'
+                + '    <ul s-for="row in datasource">'
+                + '      <li s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></li>'
+                + '    </ul>'
+                + '</div>'
           });
 
         var MyComponent = san.defineComponent({
@@ -2169,12 +2161,12 @@ describe("Slot", function () {
         expect(bs[2].innerHTML).toBe('otakustay@gmail.com');
         expect(bs[3].innerHTML).toBe('leeight@gmail.com');
 
-        var tds = wrap.getElementsByTagName('td');
-        expect(tds.length).toBe(8);
-        expect(tds[1].innerHTML).toBe('justineo@gmail.com');
-        expect(tds[3].innerHTML).toBe('errorrik@gmail.com');
-        expect(tds[4].innerHTML).toBe('otakustay');
-        expect(tds[6].innerHTML).toBe('leeight');
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(8);
+        expect(lis[1].innerHTML).toBe('justineo@gmail.com');
+        expect(lis[3].innerHTML).toBe('errorrik@gmail.com');
+        expect(lis[4].innerHTML).toBe('otakustay');
+        expect(lis[6].innerHTML).toBe('leeight');
 
 
         myComponent.data.set('deps[0].strong', 'email');
@@ -2189,12 +2181,12 @@ describe("Slot", function () {
             expect(bs[2].innerHTML).toBe('leeight@gmail.com');
             expect(bs[3].innerHTML).toBe('areyou@gmail.com');
 
-            var tds = wrap.getElementsByTagName('td');
-            expect(tds.length).toBe(8);
-            expect(tds[0].innerHTML).toBe('Justineo');
-            expect(tds[2].innerHTML).toBe('otakustay');
-            expect(tds[4].innerHTML).toBe('leeight');
-            expect(tds[6].innerHTML).toBe('who');
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(8);
+            expect(lis[0].innerHTML).toBe('Justineo');
+            expect(lis[2].innerHTML).toBe('otakustay');
+            expect(lis[4].innerHTML).toBe('leeight');
+            expect(lis[6].innerHTML).toBe('who');
 
             myComponent.data.set('deps[1].columns', [
                 {name: 'email', label: '邮'},
@@ -2209,12 +2201,12 @@ describe("Slot", function () {
                 expect(bs[2].innerHTML).toBe('leeight@gmail.com');
                 expect(bs[3].innerHTML).toBe('areyou@gmail.com');
 
-                var tds = wrap.getElementsByTagName('td');
-                expect(tds.length).toBe(8);
-                expect(tds[0].innerHTML).toBe('Justineo');
-                expect(tds[3].innerHTML).toBe('otakustay');
-                expect(tds[5].innerHTML).toBe('leeight');
-                expect(tds[7].innerHTML).toBe('who');
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(8);
+                expect(lis[0].innerHTML).toBe('Justineo');
+                expect(lis[3].innerHTML).toBe('otakustay');
+                expect(lis[5].innerHTML).toBe('leeight');
+                expect(lis[7].innerHTML).toBe('who');
 
                 myComponent.data.set('deps[1].strong', 'name');
 

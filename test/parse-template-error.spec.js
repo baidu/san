@@ -148,13 +148,13 @@ describe('parseTemplate', function () {
 
     });
 
-    it('should not throw error if tag is forbidden to be closed(aka auto close tags)', () => {
+    it('should not throw error if tag is forbidden to be closed(aka auto close tags)', function () {
         expect(function () {
 
-            let tags = [];
+            var tags = [];
 
-            for (let i = 0, len = AUTO_CLOSE_TAGS.length; i < len; i++) {
-                let tag = AUTO_CLOSE_TAGS[i];
+            for (var i = 0, len = AUTO_CLOSE_TAGS.length; i < len; i++) {
+                var tag = AUTO_CLOSE_TAGS[i];
                 tags.push('<' + tag + '><' + tag + '/>');
             }
 
