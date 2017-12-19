@@ -13,6 +13,7 @@ ChangeLog
 + 【优化】- for 元素更新行为为 clear all 时，保留 transition 效果
 + 【优化】- 事件明确声明为空参数时，不自动添加默认值 $event
 + 【优化】- 模板中声明 slot 属性的元素，DOM 视图中删除 slot attribute
++ 【优化】- 容忍组件反解中对多余的空白文本节点，自动清除
 + 【bug修复】- 带有 transition 的 for item 元素，在快速多次变更时，可能由于 child 不存在产生运行时错误
 + 【bug修复】- 双向绑定时，如果子组件在 inited 时 set data，owner data 未更新
 + 【bug修复】- input value 在双向绑定时可能存在 xss 漏洞
