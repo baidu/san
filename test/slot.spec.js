@@ -2357,4 +2357,107 @@ describe("Slot", function () {
             done();
         })
     });
+
+    it("scoped slot in for and remove more than once", function (done) {
+        var Table = san.defineComponent({
+            template: '<ul><li s-for="row, rowIndex in datasource">'
+                + '<a s-for="col, colIndex in columns">'
+                + '<slot name="c-{{col.name}}" var-row="{{row}}" var-rowIndex="{{rowIndex}}" var-col="{{col}}" var-colIndex="{{colIndex}}"></slot>'
+                + '</a>'
+                + '</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-table': Table
+            },
+
+            template: '<div><x-table datasource="{{datasource}}" columns="{{columns}}">'
+                + '<u slot="c-name">{{row.name}}</u>'
+                + '<u slot="c-age">{{row.age}}</u>'
+                + '<u slot="c-eee"><b on-click="removeRow(rowIndex)">del{{rowIndex}}</b></u>'
+                + '</x-table></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                columns: [
+                    { name: 'name' },
+                    { name: 'age' },
+                    { name: 'eee' }
+                ],
+                datasource: [
+                    { name: 'foo', age: 10 },
+                    { name: 'bar', age: 20 }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(6);
+        expect(us[0].innerHTML).toBe('foo');
+        expect(us[1].innerHTML).toBe('10');
+        expect(us[3].innerHTML).toBe('bar');
+        expect(us[4].innerHTML).toBe('20');
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(2);
+        expect(bs[0].innerHTML).toBe('del0');
+        expect(bs[1].innerHTML).toBe('del1');
+
+        myComponent.data.removeAt('datasource', 0);
+        san.nextTick(function () {
+
+            var us = wrap.getElementsByTagName('u');
+            expect(us.length).toBe(3);
+            expect(us[0].innerHTML).toBe('bar');
+            expect(us[1].innerHTML).toBe('20');
+
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(1);
+            expect(bs[0].innerHTML).toBe('del0');
+
+
+            myComponent.data.removeAt('datasource', 0);
+            san.nextTick(function () {
+                var us = wrap.getElementsByTagName('u');
+                expect(us.length).toBe(0);
+
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs.length).toBe(0);
+
+                myComponent.data.push('datasource', { name: 'bar', age: 20 });
+                myComponent.data.push('datasource', { name: 'foo', age: 10 });
+
+                san.nextTick(function () {
+                    var us = wrap.getElementsByTagName('u');
+                    expect(us.length).toBe(6);
+                    expect(us[3].innerHTML).toBe('foo');
+                    expect(us[4].innerHTML).toBe('10');
+                    expect(us[0].innerHTML).toBe('bar');
+                    expect(us[1].innerHTML).toBe('20');
+
+                    var bs = wrap.getElementsByTagName('b');
+                    expect(bs.length).toBe(2);
+                    expect(bs[0].innerHTML).toBe('del0');
+                    expect(bs[1].innerHTML).toBe('del1');
+
+
+                    myComponent.data.pop('columns');
+                    san.nextTick(function () {
+                        var bs = wrap.getElementsByTagName('b');
+                        expect(bs.length).toBe(0);
+
+                        myComponent.dispose();
+                        document.body.removeChild(wrap);
+                        done();
+                    });
+                });
+            });
+        })
+    });
 });

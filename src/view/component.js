@@ -491,56 +491,64 @@ Component.prototype._update = function (changes) {
 
 
     var needReloadForSlot = false;
-    each(changes, function (change) {
-        var changeExpr = change.expr;
-
-        me.binds.each(function (bindItem) {
-            var relation;
-            var setExpr = bindItem.name;
-            var updateExpr = bindItem.expr;
-
-            if (!isDataChangeByElement(change, me, setExpr)
-                && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
-            ) {
-                if (relation > 2) {
-                    setExpr = {
-                        type: ExprType.ACCESSOR,
-                        paths: [{
-                            type: ExprType.STRING,
-                            value: setExpr
-                        }].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                    };
-                    updateExpr = changeExpr;
-                }
-
-                me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
-                    target: {
-                        id: me.owner.id
-                    }
-                });
-            }
-        });
-
-        each(me.givenNamedSlotBinds, function (bindItem) {
-            needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
-            return !needReloadForSlot;
-        });
-    });
-
     this._notifyNeedReload = function () {
         needReloadForSlot = true;
     };
 
-    if (needReloadForSlot) {
-        this._createGivenSlots();
-        this._repaintChildren();
-    }
-    else {
-        each(this.slotChildren, function (child) {
-            if (child.isInserted) {
-                child._update(changes, 1);
-            }
+    if (changes) {
+        each(changes, function (change) {
+            var changeExpr = change.expr;
+
+            me.binds.each(function (bindItem) {
+                var relation;
+                var setExpr = bindItem.name;
+                var updateExpr = bindItem.expr;
+
+                if (!isDataChangeByElement(change, me, setExpr)
+                    && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
+                ) {
+                    if (relation > 2) {
+                        setExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: [{
+                                type: ExprType.STRING,
+                                value: setExpr
+                            }].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                        };
+                        updateExpr = changeExpr;
+                    }
+
+                    me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
+                        target: {
+                            id: me.owner.id
+                        }
+                    });
+                }
+            });
+
+            each(me.givenNamedSlotBinds, function (bindItem) {
+                needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
+                return !needReloadForSlot;
+            });
         });
+
+        if (needReloadForSlot) {
+            this._createGivenSlots();
+            this._repaintChildren();
+        }
+        else {
+            var slotChildrenLen = this.slotChildren.length;
+            while (slotChildrenLen--) {
+                var slotChild = this.slotChildren[slotChildrenLen];
+
+                if (slotChild.lifeCycle.disposed) {
+                    this.slotChildren.splice(slotChildrenLen, 1);
+                }
+                else if (slotChild.isInserted) {
+                    slotChild._update(changes, 1);
+                }
+            }
+        }
     }
 
     var dataChanges = this.dataChanges;
