@@ -90,11 +90,13 @@ function elementAttached(element) {
     // bind events
     each(element.aNode.events, function (eventBind) {
         var owner = isComponent(element) ? element : element.owner;
+        var data = element.data || element.scope;
 
         // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
         // 依此指定eventBind.expr.name位于owner还是owner.owner上
         if (eventBind.modifier.native) {
             owner = owner.owner;
+            data = element.scope || owner.data;
         }
 
         // #[begin] error
@@ -108,7 +110,7 @@ function elementAttached(element) {
                 owner,
                 eventBind,
                 0,
-                element.data || element.scope
+                data
             ),
             eventBind.modifier.capture
         );
