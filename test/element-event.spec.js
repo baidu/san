@@ -134,6 +134,61 @@ describe("Element-Event", function () {
         doneSpec();
     });
 
+    it("issue-185", function (done) {
+        var clicked = 0;
+
+        var Button = san.defineComponent({
+            template: '<button>{{text}}</button>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template:
+            '<div>' +
+                '<ui-button on-click="native:clicker(i, $event)" s-ref="btn-{{i}}" text="{{btn.text}}" s-for="btn,i in buttons" />' +
+            '</div>',
+            components: {
+                'ui-button': Button
+            },
+            initData: function () {
+                return {
+                    buttons: [
+                        {text: 'a'},
+                        {text: 'b'},
+                        {text: 'c'}
+                    ]
+                };
+            },
+            clicker: function (i, event) {
+                var btn = this.ref('btn-' + i);
+                expect(event.target || event.srcElement).toBe(btn.el);
+                clicked += i;
+            }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var aBtn = wrap.firstChild.children[0];
+        var bBtn = wrap.firstChild.children[1];
+        var cBtn = wrap.firstChild.children[2];
+
+        function doneSpec() {
+            if (clicked === (0 + 1 + 2)) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+            setTimeout(doneSpec, 500);
+        }
+        triggerEvent('#' + aBtn.id, 'click');
+        triggerEvent('#' + bBtn.id, 'click');
+        triggerEvent('#' + cBtn.id, 'click');
+        doneSpec();
+    });
+
     it("capture modifier", function (done) {
         if (!document.addEventListener) {
             done();

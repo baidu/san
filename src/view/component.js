@@ -12,13 +12,14 @@ var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
+var parseTemplate = require('../parser/parse-template');
+var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var fromElInitChildren = require('./from-el-init-children');
@@ -43,6 +44,8 @@ var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnEventListenMethod = require('./warn-event-listen-method');
 var elementLeave = require('./element-leave');
 var elementToPhase = require('./element-to-phase');
+var elementDisposeChildren = require('./element-dispose-children');
+var elementAttach = require('./element-attach');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -53,7 +56,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @class
  * @param {Object} options 初始化参数
  */
-function Component(options) {
+function Component(options) { // eslint-disable-line
     elementInitProps(this);
     options = options || {};
 
@@ -88,9 +91,9 @@ function Component(options) {
             if (stumpMatch) {
                 var stumpType = stumpMatch[1];
                 var stumpText = stumpMatch[2] ? stumpMatch[2].slice(1) : '';
-    
+
                 switch (stumpType) {
-    
+
                     case 'data':
                         // fill component data
                         options.data = (new Function(
@@ -451,7 +454,7 @@ Component.prototype.ref = function (name) {
                 case NodeType.CMPT:
                     var ref = element.aNode.directives.get('ref');
                     if (ref && evalExpr(ref.value, element.scope, owner) === name) {
-                        refTarget = NodeType.ELEM === element.nodeType 
+                        refTarget = NodeType.ELEM === element.nodeType
                             ? element._getEl() : element;
                     }
             }
@@ -609,7 +612,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
             });
         });
     }
-}
+};
 
 /**
  * 重新绘制组件的内容

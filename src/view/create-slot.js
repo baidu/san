@@ -17,10 +17,10 @@ var NodeType = require('./node-type');
 var attachings = require('./attachings');
 var isEndStump = require('./is-end-stump');
 var LifeCycle = require('./life-cycle');
-var isComponent = require('./is-component');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
+var nodeEvalExpr = require('./node-eval-expr');
 var createNodeByEl = require('./create-node-by-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementUpdateChildren = require('./element-update-children');
@@ -35,7 +35,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {Object} options 初始化参数
  * @return {Object}
  */
-function createSlot(options) {
+function createSlot(options) { // eslint-disable-line
     // options.literalOwner = options.owner;
     var aNode = createANode();
 
@@ -83,7 +83,7 @@ function createSlot(options) {
     }
     // #[end]
 
-    
+
 
     var initData = {};
     each(aNode.vars, function (varItem) {
@@ -158,6 +158,7 @@ function createSlot(options) {
  *
  * @param {Array} changes 数据变化信息
  * @param {boolean=} isFromOuter 变化信息是否来源于父组件之外的组件
+ * @return {boolean}
  */
 function slotOwnUpdate(changes, isFromOuter) {
     var me = this;
@@ -176,8 +177,8 @@ function slotOwnUpdate(changes, isFromOuter) {
             each(me.aNode.vars, function (varItem) {
                 me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
             });
-    
-    
+
+
             var scopedChanges = [];
             each(changes, function (change) {
                 if (!me.isInserted) {
@@ -187,11 +188,11 @@ function slotOwnUpdate(changes, isFromOuter) {
                 each(me.aNode.vars, function (varItem) {
                     var name = varItem.name;
                     var relation = changeExprCompare(change.expr, varItem.expr, me.scope);
-    
+
                     if (relation < 1) {
                         return;
                     }
-    
+
                     if (change.type === DataChangeType.SET) {
                         scopedChanges.push({
                             type: DataChangeType.SET,

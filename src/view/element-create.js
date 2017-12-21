@@ -18,7 +18,7 @@ var LifeCycle = require('./life-cycle');
 function elementCreate(element) {
     element.lifeCycle = LifeCycle.painting;
     element.el = createEl(element.tagName);
-    
+
     var hasIdDeclaration;
     element.props.each(function (prop) {
         var attr = prop.attr;

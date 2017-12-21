@@ -501,7 +501,7 @@ var aNodeCompiler = {
 
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
         if (aNode.vars) {
-            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};');
+            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};'); // eslint-disable-line
             each(aNode.vars, function (varItem) {
                 sourceBuffer.addRaw(
                     '$slotCtx.data["' + varItem.name + '"] = '
@@ -511,7 +511,7 @@ var aNodeCompiler = {
             });
         }
 
-        sourceBuffer.addRaw('html += "<!--s-slot:" + ($isInserted ? "" : "!") + ' 
+        sourceBuffer.addRaw('html += "<!--s-slot:" + ($isInserted ? "" : "!") + '
             + compileExprSource.stringLiteralize(
                 serializeANode({
                     tagName: aNode.tagName,
@@ -640,14 +640,14 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('componentCtx.givenSlots = givenSlots;');
 
-    
+
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
     sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
     sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
     sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
 
-    
+
 
     extraProp = extraProp || '';
     if (component.subTag) {
@@ -692,7 +692,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer.joinString('-->');
     }
 
-    
+
 
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
