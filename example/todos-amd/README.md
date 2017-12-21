@@ -1,6 +1,12 @@
+## Prepare
 
-How to open
-----------
+```
+$ npm run build
+```
+
+
+## How to open
+
 
 Use any HTTP Server to open this example. Such as:
 

@@ -22,13 +22,13 @@
 </head>
 
 <body>
-    <script src="../../../src/main.js"></script>
+    <script src="../../../dist/san.js"></script>
     <script>
     var Folder = san.defineComponent({
         template: ''
             + '<div class="folder">'
             + '    <div class="folder-title" on-click="toggle">{{title}}</div>'
-            + '    <div class="folder-main" style="{{fold | yesToBe(\'display:none\')}}"><slot></slot></div>'
+            + '    <div class="folder-main" style="{{fold ? \'display:none\' : \'\'}}"><slot></slot></div>'
             + '</div>',
 
         toggle: function () {
