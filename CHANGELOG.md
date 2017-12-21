@@ -8,6 +8,7 @@ ChangeLog
 + 【bug修复】- for 指令位于 template 下，视图更新会触发运行时错误
 + 【bug修复】- 文本节点位于 slot 或 template 中，如果父节点有 prev 兄弟元素，更新不正常
 + 【bug修复】- scoped slot 位于 for 中，列表数据删除可能导致运行错误
++ 【bug修复】- 使用 native 修饰符进行事件绑定，参数获取不到数据
 
 
 3.3.1
