@@ -29,10 +29,10 @@ function compileComponent(ComponentClass) {
 
     // pre define components class
     if (!proto.hasOwnProperty('_cmptReady')) {
-        proto.components =  ComponentClass.components || proto.components || {};
+        proto.components = ComponentClass.components || proto.components || {};
         var components = proto.components;
 
-        for (var key in components) {
+        for (var key in components) { // eslint-disable-line
             var componentClass = components[key];
 
             if (typeof componentClass === 'object') {

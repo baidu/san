@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var removeEl = require('../browser/remove-el');
 var createNodeByEl = require('./create-node-by-el');
 
 // #[begin] reverse

@@ -5,6 +5,8 @@
 
 var evalExpr = require('../runtime/eval-expr');
 var pushStrBuffer = require('../runtime/push-str-buffer');
+var escapeHTML = require('../runtime/escape-html');
+var each = require('../util/each');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 var nodeEvalExpr = require('./node-eval-expr');

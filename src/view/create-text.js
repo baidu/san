@@ -153,7 +153,7 @@ function textOwnUpdate(changes) {
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
             var text = nodeEvalExpr(this, this.aNode.textExpr, 1);
-            
+
             if (text !== this.content) {
                 this.content = text;
                 var rawText = nodeEvalExpr(this, this.aNode.textExpr);

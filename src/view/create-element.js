@@ -8,6 +8,7 @@ var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var attachings = require('./attachings');
+var NodeType = require('./node-type');
 var parseANodeFromEl = require('../parser/parse-anode-from-el');
 var fromElInitChildren = require('./from-el-init-children');
 var isDataChangeByElement = require('./is-data-change-by-element');

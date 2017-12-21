@@ -10,7 +10,7 @@ var evalExpr = require('../runtime/eval-expr');
 
 /**
  * 为函数调用计算参数数组的值
- * 
+ *
  * @param {Array} args 参数表达式列表
  * @param {Data} data 数据环境
  * @param {Component} owner 组件环境
