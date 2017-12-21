@@ -2317,4 +2317,44 @@ describe("Slot", function () {
         })
     });
 
+    it("text in slot has prev sibling", function (done) {
+        var Button = san.defineComponent({
+            template: '<a><u s-if="loading">loading</u><slot/></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-btn': Button
+            },
+
+            template: '<div><x-btn loading="{{loading}}">{{name}}</x-btn></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'HelloSan'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
+        expect(a.innerHTML.indexOf('HelloSan') > 0).toBeTruthy();
+
+        myComponent.data.set('name', 'ByeER');
+        san.nextTick(function () {
+
+            var a = wrap.getElementsByTagName('a')[0];
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
+            expect(a.innerHTML.indexOf('HelloSan') < 0).toBeTruthy();
+            expect(a.innerHTML.indexOf('ByeER') > 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });

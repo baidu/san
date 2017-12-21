@@ -114,15 +114,28 @@ function textOwnAttachHTML(buf) {
  * @param {Object} node text节点元素
  */
 function textLocatePrevNode(node) {
-    if (!node._located) {
+    function getPrev(node) {
         var parentChildren = node.parent.children;
         var len = parentChildren.length;
 
         while (len--) {
             if (node === parentChildren[len]) {
-                node._prev = parentChildren[len - 1];
+                return parentChildren[len - 1];
             }
         }
+    }
+
+    if (!node._located) {
+        var parentBase = node.parent;
+        node._prev = getPrev(node);
+        while (!node._prev && parentBase
+            && (parentBase.nodeType === NodeType.TPL
+                || parentBase.nodeType === NodeType.SLOT)
+        ) {
+            node._prev = getPrev(parentBase);
+            parentBase = parentBase.parent;
+        }
+
         node._located = 1;
     }
 }
