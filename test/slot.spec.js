@@ -1530,6 +1530,51 @@ describe("Slot", function () {
         })
     });
 
+    it("scoped var should auto camel", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" var-p-name="data.name" var-p-email="data.email" var-p-sex="data.sex ? \'male\' : \'female\'"><p>{{pName}},{{pSex}},{{pEmail}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{pName}}</h3><b slot="test">{{pSex}}</b><u slot="test">{{pEmail}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("scoped by given content which has filter", function (done) {
         var Man = san.defineComponent({
             filters: {

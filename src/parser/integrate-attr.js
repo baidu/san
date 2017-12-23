@@ -4,6 +4,7 @@
  */
 
 var each = require('../util/each');
+var kebab2camel = require('../util/kebab2camel');
 var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
@@ -78,6 +79,7 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
                 aNode.vars = [];
             }
 
+            realName = kebab2camel(realName);
             aNode.vars.push({
                 name: realName,
                 expr: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
