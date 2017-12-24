@@ -872,7 +872,10 @@ function componentCompilePreCode() {
     function extend(target, source) {
         if (source) {
             Object.keys(source).forEach(function (key) {
-                target[key] = source[key];
+                let value = source[key];
+                if (typeof value !== 'undefined') {
+                    target[key] = value;
+                }
             });
         }
 

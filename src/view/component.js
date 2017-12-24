@@ -180,7 +180,7 @@ function Component(options) { // eslint-disable-line
     postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
         var value = nodeEvalExpr(me, bind.expr);
-        if (value === undefined) {
+        if (typeof value === 'undefined') {
             // See: https://github.com/ecomfe/san/issues/191
             return;
         }

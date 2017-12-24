@@ -1256,7 +1256,7 @@ describe("Component", function () {
                         }
                     }
                 },
-                
+
                 '*': function (arg) {
                     selectMessageX = true;
                     expect(arg.name.indexOf('justtest')).toBe(0);
@@ -1313,15 +1313,15 @@ describe("Component", function () {
                 'UI:select-item-attached': function () {
                     expect(false).toBeTruthy();
                 },
-                
+
                 'UI:select-item-detached': function () {
                     expect(false).toBeTruthy();
                 },
-                
+
                 'justtest': function () {
                     justtestReceived = true;
                 },
-                
+
                 'justteststop': function () {
                     expect(false).toBeTruthy();
                 }
@@ -2943,9 +2943,9 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
-    it('issue-191', function (done) {
-        var MyComponent = san.defineComponent({
-            template: '<template>{{foo}}</template>',
+    it('given undefined data dont reset initData', function (done) {
+        var U = san.defineComponent({
+            template: '<u>{{foo}}</u>',
             initData: function () {
                 return {
                     foo: 'foo'
@@ -2953,10 +2953,10 @@ describe("Component", function () {
             }
         });
 
-        var Biz = san.defineComponent({
-            template: '<template><my-comp s-ref="my-comp" foo="{{formData.foo}}" /></template>',
+        var MyComponent = san.defineComponent({
+            template: '<div><my-u s-ref="uc" foo="{{formData.foo}}" /></div>',
             components: {
-                'my-comp': MyComponent
+                'my-u': U
             },
             initData: function () {
                 return {
@@ -2964,19 +2964,22 @@ describe("Component", function () {
                 };
             },
             getFooValue() {
-                return this.ref('my-comp').data.get('foo');
+                return this.ref('uc').data.get('foo');
             }
         });
 
-        var biz = new Biz();
+        var myComponent = new MyComponent();
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
-        biz.attach(wrap);
-        expect(biz.getFooValue()).toBe('foo');
-        biz.data.set('formData', {foo: 'bar'});
+        myComponent.attach(wrap);
+
+        expect(myComponent.getFooValue()).toBe('foo');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('foo');
+        myComponent.data.set('formData', {foo: 'bar'});
 
         san.nextTick(function () {
-            expect(biz.getFooValue()).toBe('bar');
+            expect(myComponent.getFooValue()).toBe('bar');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('bar');
             done();
             document.body.removeChild(wrap);
         });
