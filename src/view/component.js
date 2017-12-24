@@ -179,7 +179,12 @@ function Component(options) { // eslint-disable-line
 
     postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
-        me.data.set(bind.name, nodeEvalExpr(me, bind.expr));
+        var value = nodeEvalExpr(me, bind.expr);
+        if (value === undefined) {
+            // See: https://github.com/ecomfe/san/issues/191
+            return;
+        }
+        me.data.set(bind.name, value);
     });
 
     // #[begin] reverse

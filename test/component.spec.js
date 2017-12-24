@@ -2943,6 +2943,45 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it('issue-191', function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<template>{{foo}}</template>',
+            initData: function () {
+                return {
+                    foo: 'foo'
+                };
+            }
+        });
+
+        var Biz = san.defineComponent({
+            template: '<template><my-comp s-ref="my-comp" foo="{{formData.foo}}" /></template>',
+            components: {
+                'my-comp': MyComponent
+            },
+            initData: function () {
+                return {
+                    formData: {}
+                };
+            },
+            getFooValue() {
+                return this.ref('my-comp').data.get('foo');
+            }
+        });
+
+        var biz = new Biz();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        biz.attach(wrap);
+        expect(biz.getFooValue()).toBe('foo');
+        biz.data.set('formData', {foo: 'bar'});
+
+        san.nextTick(function () {
+            expect(biz.getFooValue()).toBe('bar');
+            done();
+            document.body.removeChild(wrap);
+        });
+    });
+
     it("dynamic component attach to inner element", function () {
 
         var UnderlinePanel = san.defineComponent({
