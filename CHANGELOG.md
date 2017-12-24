@@ -6,6 +6,7 @@ ChangeLog
 -------
 
 + 【优化】- scoped slot 的 数据声明，自动将 - 分割转换成 camel case
++ 【优化】- 属性值如果是 undefined 的话，不会初始化组件 data 的
 + 【bug修复】- for 指令位于 template 下，视图更新会触发运行时错误
 + 【bug修复】- 文本节点位于 slot 或 template 中，如果父节点有 prev 兄弟元素，更新不正常
 + 【bug修复】- scoped slot 位于 for 中，列表数据删除可能导致运行错误
