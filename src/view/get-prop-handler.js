@@ -101,7 +101,9 @@ var defaultElementPropHandlers = {
 
     draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
-    disabled: genBoolPropHandler('disabled')
+    disabled: genBoolPropHandler('disabled'),
+    autofocus: genBoolPropHandler('autofocus'),
+    required: genBoolPropHandler('required')
 };
 
 var checkedPropHandler = genBoolPropHandler('checked');
