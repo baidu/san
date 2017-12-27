@@ -34,6 +34,42 @@ CDN:
 
 [Dist Files](https://github.com/ecomfe/san/tree/master/dist)
 
+
+## Quick Start
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quick Start</title>
+    <script src="https://unpkg.com/san@latest"></script>
+</head>
+
+<body>
+    <script>
+        const MyApp = san.defineComponent({
+            template: `
+                <div>
+                    <input type="text" value="{=name=}">
+                    <p>Hello {{name}}!</p>
+                </div>
+            `
+        });
+
+        let myApp = new MyApp({
+            data: {
+                name: 'San'
+            }
+        });
+        myApp.attach(document.body);
+    </script>
+</body>
+
+</html>
+```
+
+
 ## Document
 
 - [Start](https://ecomfe.github.io/san/tutorial/start/)
