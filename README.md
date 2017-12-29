@@ -4,7 +4,7 @@
     </a>
 </p>
 
-<h2 align="center">SAN</h2>
+<h1 align="center">SAN</h1>
 
 <p align="center">
 An MVVM Component Framework for Web. <a href="https://ecomfe.github.io/san/" target="_blank">HomePage</a>
