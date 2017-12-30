@@ -64,6 +64,7 @@ var elementSourceCompiler = {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
+        /*
         binds.each(function (bindInfo) {
             if (isComponent) {
                 sourceBuffer.joinString(
@@ -78,15 +79,20 @@ var elementSourceCompiler = {
             }
 
         });
+        */
 
+        /*
         var htmlDirective = aNode.directives.get('html');
         if (htmlDirective) {
             sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
         }
+        */
 
+        /*
         each(events, function (event) {
             sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
         });
+        */
 
         props.each(function (prop) {
             if (prop.name === 'slot') {
