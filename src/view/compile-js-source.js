@@ -15,6 +15,7 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
 var serializeANode = require('./serialize-a-node');
+var isSimpleText = require('./is-simple-text');
 
 // #[begin] ssr
 
@@ -305,15 +306,22 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
-        var value = aNode.textExpr.value;
+        var isSimple = isSimpleText(aNode);
 
+        if (!isSimple) {
+            sourceBuffer.joinString(serializeStump('text'));
+        }
+
+        var value = aNode.textExpr.value;
         if (value == null) {
-            sourceBuffer.joinString('<!--s-text:' + aNode.text + '-->');
             sourceBuffer.joinExpr(aNode.textExpr);
-            sourceBuffer.joinString('<!--/s-text-->');
         }
         else {
             sourceBuffer.joinString(value);
+        }
+
+        if (!isSimple) {
+            sourceBuffer.joinString(serializeStumpEnd('text'));
         }
     },
 
