@@ -15,6 +15,7 @@ var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
+var isSimpleText = require('./is-simple-text');
 
 /**
  * 创建 text 节点
@@ -62,27 +63,7 @@ function createText(options) {
     // #[end]
 
     node._static = node.aNode.textExpr.value;
-
-    // 两种 update 模式
-    // 1. 单纯的 text node
-    // 2. 可能是复杂的 html 结构
-    node.updateMode = 1;
-    each(node.aNode.textExpr.segs, function (seg) {
-        if (seg.type === ExprType.INTERP) {
-            each(seg.filters, function (filter) {
-                switch (filter.name) {
-                    case 'html':
-                    case 'url':
-                        return;
-                }
-
-                node.updateMode = 2;
-                return false;
-            });
-        }
-
-        return node.updateMode < 2;
-    });
+    node._simple = isSimpleText(node.aNode);
 
     return node;
 }
@@ -175,7 +156,7 @@ function textOwnUpdate(changes) {
                 textLocatePrevNode(me);
 
                 var parentEl = this.parent._getEl();
-                if (me.updateMode === 1) {
+                if (me._simple) {
                     if (me.el) {
                         me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                     }
