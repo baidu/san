@@ -61,7 +61,7 @@ function createElement(options) {
     node._toPhase('inited');
 
     // #[begin] reverse
-    if (node.walker) {
+    if (options.walker) {
         var currentNode = options.walker.current;
         if (currentNode && currentNode.nodeType === 1) {
             node.el = currentNode;

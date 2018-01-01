@@ -698,13 +698,6 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer.joinDataStringify();
         sourceBuffer.joinString('-->');
     }
-    else if (component.givenANode) {
-        sourceBuffer.joinString('<!--s-anode:');
-        each(component.givenANode.children, function (child) {
-            sourceBuffer.joinString(serializeANode(child));
-        });
-        sourceBuffer.joinString('-->');
-    }
 
 
 

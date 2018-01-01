@@ -195,6 +195,24 @@ function Component(options) { // eslint-disable-line
         reverseElementChildren(this);
         attachings.done();
     }
+    else if (options.walker) {
+        var currentNode = options.walker.current;
+        if (currentNode && currentNode.nodeType === 1) {
+            this.el = currentNode;
+            this.el.id = this.id;
+            options.walker.goNext();
+        }
+
+        reverseElementChildren(this);
+
+        me.dynamicProps = new IndexedList();
+        me.aNode.props.each(function (prop) {
+            if (!prop.attr) {
+                me.dynamicProps.push(prop);
+            }
+        });
+        attachings.add(me);
+    }
     // #[end]
 }
 
