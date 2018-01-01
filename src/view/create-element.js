@@ -55,20 +55,22 @@ function createElement(options) {
     node._onEl = elementOwnOnEl;
 
     elementInitProps(node);
+    elementInitTagName(node);
+    node.props = node.aNode.props;
+    node.binds = node.aNode.binds || node.aNode.props;
+
+    node._toPhase('inited');
 
     // #[begin] reverse
-    node._pushChildANode = elementOwnPushChildANode;
-
-    if (node.el) {
-        node._isInitFromEl = true;
-        node.aNode = parseANodeFromEl(node.el);
-        node.parent && node.parent._pushChildANode(node.aNode);
-        node.tagName = node.aNode.tagName;
-
-        if (!node.aNode.directives.get('html')) {
-            fromElInitChildren(node);
+    if (node.walker) {
+        var currentNode = options.walker.current;
+        if (currentNode && currentNode.nodeType === 1) {
+            node.el = currentNode;
+            node.el.id = node.id;
+            options.walker.goNext();
         }
-        node.el.id = node.id;
+
+        reverseElementChildren(node);
 
         node.dynamicProps = new IndexedList();
         node.aNode.props.each(function (prop) {
@@ -80,11 +82,6 @@ function createElement(options) {
     }
     // #[end]
 
-    elementInitTagName(node);
-    node.props = node.aNode.props;
-    node.binds = node.aNode.binds || node.aNode.props;
-
-    node._toPhase('inited');
     return node;
 }
 

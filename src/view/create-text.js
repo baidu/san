@@ -34,36 +34,37 @@ function createText(options) {
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
 
-    // #[begin] reverse
-    // from el
-    if (node.el) {
-        node.aNode = createANode({
-            isText: 1,
-            text: options.stumpText
-        });
-
-        node.parent._pushChildANode(node.aNode);
-
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (isEndStump(next, 'text')) {
-                options.elWalker.goNext();
-                removeEl(next);
-                break;
-            }
-
-            options.elWalker.goNext();
-        }
-
-        removeEl(node.el);
-        node.el = null;
-    }
-    // #[end]
-
     node._static = node.aNode.textExpr.value;
     node._simple = isSimpleText(node.aNode);
+
+    // #[begin] reverse
+    // from el
+    if (options.walker) {
+        var currentNode = options.walker.current;
+        if (node._simple) {
+            if (currentNode && currentNode.nodeType === 3) {
+                node.el = currentNode;
+                options.walker.goNext();
+            }
+        }
+        else {
+            /* eslint-disable no-constant-condition */
+            while (1) {
+                /* eslint-enable no-constant-condition */
+                var next = options.elWalker.next;
+                if (isEndStump(next, 'text')) {
+                    options.elWalker.goNext();
+                    removeEl(next);
+                    break;
+                }
+
+                options.elWalker.goNext();
+            }
+
+            removeEl(currentNode);
+        }
+    }
+    // #[end]
 
     return node;
 }

@@ -87,27 +87,16 @@ function Component(options) { // eslint-disable-line
     if (this.el) {
         var firstChild = this.el.firstChild;
         if (firstChild && firstChild.nodeType === 8) {
-            var stumpMatch = firstChild.data.match(/^\s*s-([a-z]+)(:[\s\S]+)?$/);
+            var stumpMatch = firstChild.data.match(/^\s*s-data:([\s\S]+)?$/);
             if (stumpMatch) {
-                var stumpType = stumpMatch[1];
-                var stumpText = stumpMatch[2] ? stumpMatch[2].slice(1) : '';
+                var stumpText = stumpMatch[1];
 
-                switch (stumpType) {
+                // fill component data
+                options.data = (new Function(
+                    'return ' + stumpText.replace(/^[\s\n]*/, '')
+                ))();
 
-                    case 'data':
-                        // fill component data
-                        options.data = (new Function(
-                            'return ' + stumpText.replace(/^[\s\n]*/, '')
-                        ))();
-                        removeEl(firstChild);
-                        break;
-
-                    case 'anode':
-                        // fill component data
-                        me.givenANode = parseTemplate(stumpText);
-                        removeEl(firstChild);
-                        break;
-                }
+                removeEl(firstChild);
             }
         }
     }
@@ -160,19 +149,6 @@ function Component(options) { // eslint-disable-line
         )
     );
 
-
-    // #[begin] reverse
-    if (this.el) {
-        this._isInitFromEl = true;
-        this.aNode = parseANodeFromEl(this.el);
-        this.aNode.binds = camelComponentBinds(this.aNode.props);
-        this.aNode.props = this.constructor.prototype.aNode.props;
-
-        this.parent && this.parent._pushChildANode(this.aNode);
-        this.tagName = this.aNode.tagName;
-    }
-    // #[end]
-
     elementInitTagName(this);
     this.props = this.aNode.props;
     this.binds = this.aNode.binds || this.aNode.props;
@@ -186,13 +162,6 @@ function Component(options) { // eslint-disable-line
         }
         me.data.set(bind.name, value);
     });
-
-    // #[begin] reverse
-    if (this.el) {
-        fromElInitChildren(this);
-        attachings.add(this);
-    }
-    // #[end]
 
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
@@ -215,6 +184,7 @@ function Component(options) { // eslint-disable-line
         }
     }
 
+
     if (!this.dataChanger) {
         this.dataChanger = bind(this._dataChanger, this);
         this.data.listen(this.dataChanger);
@@ -222,11 +192,100 @@ function Component(options) { // eslint-disable-line
     this._toPhase('inited');
 
     // #[begin] reverse
+    if (this.el) {
+        attachings.add(this);
+        this._attachFromEl();
+        attachings.done();
+    }
+    // #[end]
+/*
+    // #[begin] reverse
+    if (this.el) {
+        this._isInitFromEl = true;
+        this.aNode = parseANodeFromEl(this.el);
+        this.aNode.binds = camelComponentBinds(this.aNode.props);
+        this.aNode.props = this.constructor.prototype.aNode.props;
+
+        this.parent && this.parent._pushChildANode(this.aNode);
+        this.tagName = this.aNode.tagName;
+    }
+    // #[end]
+
+    // #[begin] reverse
+    if (this.el) {
+        fromElInitChildren(this);
+        attachings.add(this);
+    }
+    // #[end]
+
+    // #[begin] reverse
     // 如果从el编译的，认为已经attach了，触发钩子
     if (this.el) {
         attachings.done();
     }
     // #[end]
+    */
+}
+
+Component.prototype._attachFromEl = function () {
+    reverseElementChildren(this);
+};
+
+function reverseElementChildren(element) {
+
+    var walker = new DOMChildrenWalker(element.el);
+    var htmlDirective = element.aNode.directives.get('html');
+
+    if (!htmlDirective) {
+        each(element.aNode.children, function (aNodeChild) {
+            var child = createReverseNode(aNodeChild, walker, element);
+            if (!child._static) {
+                element.children.push(child);
+            }
+        });
+    }
+}
+
+function createReverseNode(aNode, walker, parent, scope) {
+    var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
+    scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
+    var options = {
+        aNode: aNode,
+        owner: owner,
+        scope: scope,
+        parent: parent,
+        walker: walker
+    };
+
+    if (aNode.isText) {
+        return createText(options);
+    }
+
+    /*
+    if (aNode.directives.get('if')) {
+        return createIf(options);
+    }
+
+    if (aNode.directives.get('for')) {
+        return createFor(options);
+    }
+
+    var ComponentType = owner.components[aNode.tagName];
+    if (ComponentType) {
+        options.subTag = aNode.tagName;
+        return new ComponentType(options);
+    }
+
+    switch (aNode.tagName) {
+        case 'slot':
+            return createSlot(options);
+
+        case 'template':
+            return createTemplate(options);
+    }
+    */
+
+    return createElement(options);
 }
 
 Component.prototype._createGivenSlots = function () {
