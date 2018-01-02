@@ -17,6 +17,33 @@ var getPropHandler = require('./get-prop-handler');
 var warnEventListenMethod = require('./warn-event-listen-method');
 
 /**
+ * 双绑输入框CompositionEnd事件监听函数
+ *
+ * @inner
+ */
+function inputOnCompositionEnd() {
+    if (!this.composing) {
+        return;
+    }
+
+    this.composing = 0;
+
+    var event = document.createEvent('HTMLEvents');
+    event.initEvent('input', true, true);
+    this.dispatchEvent(event);
+}
+
+/**
+ * 双绑输入框CompositionStart事件监听函数
+ *
+ * @inner
+ */
+function inputOnCompositionStart() {
+    this.composing = 1;
+}
+
+
+/**
  * 完成元素 attached 后的行为
  *
  * @param {Object} element 元素节点
@@ -38,22 +65,16 @@ function elementAttached(element) {
             getPropHandler(element, bindInfo.name).output(element, bindInfo, data);
         }
 
+
         switch (bindInfo.name) {
             case 'value':
                 switch (element.tagName) {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
-                            element._onEl('compositionstart', function () {
-                                this.composing = 1;
-                            });
-                            element._onEl('compositionend', function () {
-                                this.composing = 0;
-
-                                var event = document.createEvent('HTMLEvents');
-                                event.initEvent('input', true, true);
-                                this.dispatchEvent(event);
-                            });
+                            element._onEl('change', inputOnCompositionEnd);
+                            element._onEl('compositionstart', inputOnCompositionStart);
+                            element._onEl('compositionend', inputOnCompositionEnd);
                         }
 
                         element._onEl(
