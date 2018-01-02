@@ -12,6 +12,7 @@ ChangeLog
 + 【bug修复】- 文本节点位于 slot 或 template 中，如果父节点有 prev 兄弟元素，更新不正常
 + 【bug修复】- scoped slot 位于 for 中，列表数据删除可能导致运行错误
 + 【bug修复】- 使用 native 修饰符进行事件绑定，参数获取不到数据
++ 【bug修复】- UIWebView 环境下，双向绑定的输入框在输入法打开时可能更新数据失败
 
 
 3.3.1
