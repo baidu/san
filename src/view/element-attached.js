@@ -38,22 +38,29 @@ function elementAttached(element) {
             getPropHandler(element, bindInfo.name).output(element, bindInfo, data);
         }
 
+        function onCompositionEnd() {
+            if (!this.composing) {
+                return;
+            }
+
+            this.composing = 0;
+
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('input', true, true);
+            this.dispatchEvent(event);
+        }
+
         switch (bindInfo.name) {
             case 'value':
                 switch (element.tagName) {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
+                            element._onEl('change', onCompositionEnd);
                             element._onEl('compositionstart', function () {
                                 this.composing = 1;
                             });
-                            element._onEl('compositionend', function () {
-                                this.composing = 0;
-
-                                var event = document.createEvent('HTMLEvents');
-                                event.initEvent('input', true, true);
-                                this.dispatchEvent(event);
-                            });
+                            element._onEl('compositionend', onCompositionEnd);
                         }
 
                         element._onEl(
