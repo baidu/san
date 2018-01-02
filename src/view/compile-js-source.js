@@ -14,6 +14,7 @@ var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
+var rinseCondANode = require('./rinse-cond-anode');
 var serializeANode = require('./serialize-a-node');
 var isSimpleText = require('./is-simple-text');
 
@@ -348,15 +349,21 @@ var aNodeCompiler = {
     compileIf: function (aNode, sourceBuffer, owner) {
         sourceBuffer.addRaw('(function () {');
 
-        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
-
         sourceBuffer.addRaw('var ifIndex = null;');
 
-        // for ifIndex
+        // output main if
         var ifDirective = aNode.directives.get('if');
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
-        sourceBuffer.addRaw('    ifIndex = -1;');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                rinseCondANode(aNode),
+                sourceBuffer,
+                owner
+            )
+        );
         sourceBuffer.addRaw('}');
+
+        // output elif and else
         each(aNode.elses, function (elseANode, index) {
             var elifDirective = elseANode.directives.get('elif');
             if (elifDirective) {
@@ -366,32 +373,9 @@ var aNodeCompiler = {
                 sourceBuffer.addRaw('else {');
             }
 
-            sourceBuffer.addRaw('    ifIndex = ' + index + ';');
-            sourceBuffer.addRaw('}');
-        });
-
-        sourceBuffer.addRaw('if (ifIndex != null) {');
-        sourceBuffer.joinRaw('\"<!--\" + ifIndex + \"-->\"');
-        sourceBuffer.addRaw('}');
-
-        // for output main if html
-        sourceBuffer.addRaw('if (ifIndex === -1) {');
-        sourceBuffer.addRaw(
-            aNodeCompiler.compile(
-                rinseANode(aNode),
-                sourceBuffer,
-                owner
-            )
-        );
-        sourceBuffer.addRaw('}');
-
-        // for output else html
-        each(aNode.elses, function (elseANode, index) {
-            var elifDirective = elseANode.directives.get('elif');
-            sourceBuffer.addRaw(elifDirective ? 'else if (ifIndex === ' + index + ') {' : 'else {');
             sourceBuffer.addRaw(
                 aNodeCompiler.compile(
-                    rinseANode(elseANode),
+                    rinseCondANode(elseANode),
                     sourceBuffer,
                     owner
                 )
@@ -399,30 +383,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('}');
         });
 
-        sourceBuffer.joinString(serializeStumpEnd('if'));
         sourceBuffer.addRaw('})();');
-
-
-        /**
-         * 清洗 if aNode，返回纯净无 if 指令的 aNode
-         *
-         * @param {ANode} ifANode 节点对象
-         * @return {ANode}
-         */
-        function rinseANode(ifANode) {
-            var result = createANode({
-                children: ifANode.children,
-                props: ifANode.props,
-                events: ifANode.events,
-                tagName: ifANode.tagName,
-                directives: (new IndexedList()).concat(ifANode.directives)
-            });
-            result.directives.remove('if');
-            result.directives.remove('elif');
-            result.directives.remove('else');
-
-            return result;
-        }
     },
 
     /**

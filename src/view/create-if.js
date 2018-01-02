@@ -14,12 +14,14 @@ var isEndStump = require('./is-end-stump');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
+var rinseCondANode = require('./rinse-cond-anode');
 var createNode = require('./create-node');
-var createNodeByEl = require('./create-node-by-el');
+var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
+
 
 /**
  * 创建 if 指令元素
@@ -38,73 +40,41 @@ function createIf(options) {
     node._attachHTML = ifOwnAttachHTML;
     node._update = ifOwnUpdate;
 
-    // #[begin] reverse
-    node._pushChildANode = empty;
-    // #[end]
+    node.cond = node.aNode.directives.get('if').value;
 
     // #[begin] reverse
-    if (options.el) {
-        var aNode = parseTemplate(options.stumpText).children[0];
-        node.aNode = aNode;
-
-        var next = options.elWalker.next;
-        if (next.nodeType === 8 && !isEndStump(next, 'if')) {
-            node.elseIndex = +next.data;
-            options.elWalker.goNext();
-            removeEl(next);
+    if (options.walker) {
+        var elseIndex;
+        if (nodeEvalExpr(node, node.cond)) {
+            node.elseIndex = -1;
+            node.children[0] = createReverseNode(
+                rinseCondANode(node.aNode),
+                options.walker,
+                node
+            );
         }
+        else {
+            each(node.aNode.elses, function (elseANode, index) {
+                var elif = elseANode.directives.get('elif');
 
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            next = options.elWalker.next;
-            if (isEndStump(next, 'if')) {
-                options.elWalker.goNext();
-                removeEl(options.el);
-                node.el = next;
-                break;
-            }
-
-
-            options.elWalker.goNext();
-            var child = createNodeByEl(next, node, options.elWalker);
-            node.children[0] = child;
+                if (!elif || elif && nodeEvalExpr(node, elif.value)) {
+                    node.elseIndex = index;
+                    node.children[0] = createReverseNode(
+                        rinseCondANode(elseANode),
+                        options.walker,
+                        node
+                    );
+                    return false;
+                }
+            });
         }
-
-        node.parent._pushChildANode(node.aNode);
     }
     // #[end]
 
-    node.cond = node.aNode.directives.get('if').value;
+
 
     return node;
 }
-
-/**
- * 创建 if 指令对应条件为 true 时对应的元素
- *
- * @inner
- * @param {ANode} directiveANode 指令ANode
- * @param {IfDirective} mainIf 主if元素
- * @return {Element}
- */
-function createIfDirectiveChild(directiveANode, mainIf) {
-    var childANode = createANode({
-        children: directiveANode.children,
-        props: directiveANode.props,
-        events: directiveANode.events,
-        tagName: directiveANode.tagName,
-        vars: directiveANode.vars,
-        directives: (new IndexedList()).concat(directiveANode.directives)
-    });
-
-    childANode.directives.remove('if');
-    childANode.directives.remove('else');
-    childANode.directives.remove('elif');
-
-    return createNode(childANode, mainIf);
-}
-
 
 /**
  * attach元素的html
@@ -117,7 +87,7 @@ function ifOwnAttachHTML(buf) {
     var child;
 
     if (nodeEvalExpr(me, me.cond)) {
-        child = createIfDirectiveChild(me.aNode, me);
+        child = createNode(rinseCondANode(me.aNode), me);
         elseIndex = -1;
     }
     else {
@@ -125,7 +95,7 @@ function ifOwnAttachHTML(buf) {
             var elif = elseANode.directives.get('elif');
 
             if (!elif || elif && nodeEvalExpr(me, elif.value)) {
-                child = createIfDirectiveChild(elseANode, me);
+                child = createNode(rinseCondANode(elseANode), me);
                 elseIndex = index;
                 return false;
             }
@@ -185,7 +155,7 @@ function ifOwnUpdate(changes) {
 
     function newChild() {
         if (typeof elseIndex !== 'undefined') {
-            var child = createIfDirectiveChild(childANode, me);
+            var child = createNode(rinseCondANode(childANode), me);
             var parentEl = getNodeStumpParent(me);
             child.attach(parentEl, me._getEl() || parentEl.firstChild);
 

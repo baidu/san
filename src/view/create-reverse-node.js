@@ -37,11 +37,10 @@ function createReverseNode(aNode, walker, parent, scope) {
         return createText(options);
     }
 
-    /*
     if (aNode.directives.get('if')) {
         return createIf(options);
     }
-*/
+
     if (aNode.directives.get('for')) {
         return createFor(options);
     }
