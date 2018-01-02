@@ -16,6 +16,7 @@ var removeEl = require('../browser/remove-el');
 function DOMChildrenWalker(el) {
     this.raw = [];
     this.index = 0;
+    this.target = el;
 
     var child = el.firstChild;
     var next;

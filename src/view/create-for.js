@@ -27,7 +27,7 @@ var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var createNode = require('./create-node');
-var createNodeByEl = require('./create-node-by-el');
+var createReverseNode = require('./create-reverse-node');
 var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
@@ -158,45 +158,7 @@ function createFor(options) {
     node._create = nodeOwnCreateStump;
     node._getEl = nodeOwnGetStumpEl;
 
-    // #[begin] reverse
-    node._pushChildANode = empty;
-    // #[end]
-
     var aNode = node.aNode;
-
-    // #[begin] reverse
-    if (options.el) {
-        aNode = parseTemplate(options.stumpText).children[0];
-        node.aNode = aNode;
-
-        var index = 0;
-        var directive = aNode.directives.get('for');
-        var listData = nodeEvalExpr(node, directive.list) || [];
-
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (isEndStump(next, 'for')) {
-                options.elWalker.goNext();
-                removeEl(options.el);
-                node.el = next;
-                break;
-            }
-
-
-            options.elWalker.goNext();
-            var itemScope = new ForItemData(node, listData[index], index);
-            var child = createNodeByEl(next, node, options.elWalker, itemScope);
-            node.children.push(child);
-
-            index++;
-        }
-
-        node.parent._pushChildANode(node.aNode);
-    }
-    // #[end]
-
     node.itemANode = createANode({
         children: aNode.children,
         props: aNode.props,
@@ -206,6 +168,28 @@ function createFor(options) {
         directives: (new IndexedList()).concat(aNode.directives)
     });
     node.itemANode.directives.remove('for');
+
+
+    // #[begin] reverse
+    if (options.walker) {
+        each(
+            nodeEvalExpr(node, node.aNode.directives.get('for').list),
+            function (item, i) {
+                var itemScope = new ForItemData(node, item, i);
+                var child = createReverseNode(node.itemANode, options.walker, node, itemScope);
+                node.children.push(child);
+            }
+        );
+
+        node._create();
+        if (options.walker.current) {
+            options.walker.target.insertBefore(node.el, options.walker.current);
+        }
+        else {
+            options.walker.target.appendChild(node.el);
+        }
+    }
+    // #[end]
 
     return node;
 }

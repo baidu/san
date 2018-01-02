@@ -41,11 +41,11 @@ function createReverseNode(aNode, walker, parent, scope) {
     if (aNode.directives.get('if')) {
         return createIf(options);
     }
-
+*/
     if (aNode.directives.get('for')) {
         return createFor(options);
     }
-*/
+
     var ComponentType = owner.components[aNode.tagName];
     if (ComponentType) {
         options.subTag = aNode.tagName;

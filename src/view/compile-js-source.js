@@ -451,9 +451,6 @@ var aNodeCompiler = {
             indexName = guid();
         }
 
-        // start stump
-        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
-
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
             + indexName + ' < ' + listName + '.length; '
@@ -469,9 +466,6 @@ var aNodeCompiler = {
             )
         );
         sourceBuffer.addRaw('}');
-
-        // stop stump
-        sourceBuffer.joinString(serializeStumpEnd('for'));
     },
 
     /**
