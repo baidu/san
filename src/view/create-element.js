@@ -26,7 +26,6 @@ var elementAttached = require('./element-attached');
 var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnSetHTML = require('./warn-set-html');
 
 /**

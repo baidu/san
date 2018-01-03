@@ -39,7 +39,6 @@ var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnEventListenMethod = require('./warn-event-listen-method');
 var elementLeave = require('./element-leave');
 var elementToPhase = require('./element-to-phase');
@@ -725,8 +724,5 @@ Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
 Component.prototype._onEl = elementOwnOnEl;
 
-// #[begin] reverse
-Component.prototype._pushChildANode = elementOwnPushChildANode;
-// #[end]
 
 exports = module.exports = Component;
