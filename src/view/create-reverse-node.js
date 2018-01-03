@@ -50,7 +50,7 @@ function createReverseNode(aNode, walker, parent, scope) {
         options.subTag = aNode.tagName;
         return new ComponentType(options);
     }
- /*
+
     switch (aNode.tagName) {
         case 'slot':
             return createSlot(options);
@@ -58,7 +58,6 @@ function createReverseNode(aNode, walker, parent, scope) {
         case 'template':
             return createTemplate(options);
     }
-    */
 
     return createElement(options);
 }

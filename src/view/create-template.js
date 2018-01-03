@@ -12,10 +12,9 @@ var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var isEndStump = require('./is-end-stump');
-var createNodeByEl = require('./create-node-by-el');
+var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
@@ -46,50 +45,29 @@ function createTemplate(options) {
     node._attached = nodeOwnSimpleAttached;
     node._update = templateOwnUpdate;
 
-    // #[begin] reverse
-    node._pushChildANode = elementOwnPushChildANode;
-    // #[end]
-
-    node.aNode = node.aNode || createANode();
-
-    // #[begin] reverse
-    if (options.el) {
-        attachings.add(node);
-        removeEl(options.el);
-        options.el = null;
-
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (isEndStump(next, 'tpl')) {
-                options.elWalker.goNext();
-                removeEl(next);
-                break;
-            }
-
-            options.elWalker.goNext();
-            var child = createNodeByEl(next, node, options.elWalker);
-            child && node.children.push(child);
+    // trim children blank text node
+    var aNodeChildren = node.aNode.children;
+    var len = aNodeChildren.length;
+    if (len) {
+        if (aNodeChildren[--len].isText) {
+            aNodeChildren.length = len;
         }
 
-        node.parent._pushChildANode(node.aNode);
+        if (len && aNodeChildren[0].isText) {
+            aNodeChildren.splice(0, 1);
+        }
     }
-    else {
-    // #[end]
-        var aNodeChildren = node.aNode.children;
-        var len = aNodeChildren.length;
 
-        if (len) {
-            if (aNodeChildren[--len].isText) {
-                aNodeChildren.length = len;
-            }
-
-            if (len && aNodeChildren[0].isText) {
-                aNodeChildren.splice(0, 1);
-            }
-        }
     // #[begin] reverse
+    if (options.walker) {
+        each(node.aNode.children, function (aNodeChild) {
+            var child = createReverseNode(aNodeChild, options.walker, node);
+            if (!child._static) {
+                node.children.push(child);
+            }
+        });
+
+        attachings.add(node);
     }
     // #[end]
 

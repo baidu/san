@@ -35,62 +35,38 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {Object} options 初始化参数
  * @return {Object}
  */
-function createSlot(options) { // eslint-disable-line
-    // options.literalOwner = options.owner;
+function createSlot(options) {
     var aNode = createANode();
 
-    // #[begin] reverse
-    if (options.el) {
-        if (options.stumpText.indexOf('!') !== 0) {
-            options.isInserted = true;
-        }
-        else {
-            options.stumpText = options.stumpText.slice(1);
-        }
-
-        aNode = parseTemplate(options.stumpText).children[0];
-        options.nameBind = aNode.props.get('name');
-        if (options.nameBind) {
-            options.isNamed = true;
-            options.name = nodeEvalExpr(options, options.nameBind.expr);
-        }
+    // calc slot name
+    options.nameBind = options.aNode.props.get('name');
+    if (options.nameBind) {
+        options.isNamed = true;
+        options.name = nodeEvalExpr(options, options.nameBind.expr);
     }
-    else {
-    // #[end]
 
-        options.nameBind = options.aNode.props.get('name');
-        if (options.nameBind) {
-            options.isNamed = true;
-            options.name = nodeEvalExpr(options, options.nameBind.expr);
-        }
-
-        var givenSlots = options.owner.givenSlots;
-        var givenChildren;
-        if (givenSlots) {
-            givenChildren = options.isNamed ? givenSlots.named[options.name] : givenSlots.noname;
-        }
-
-        if (givenChildren) {
-            options.isInserted = true;
-        }
-
-        aNode.children = givenChildren || options.aNode.children.slice(0);
-
-
-        aNode.vars = options.aNode.vars;
-
-    // #[begin] reverse
+    // calc aNode children
+    var givenSlots = options.owner.givenSlots;
+    var givenChildren;
+    if (givenSlots) {
+        givenChildren = options.isNamed ? givenSlots.named[options.name] : givenSlots.noname;
     }
-    // #[end]
 
+    if (givenChildren) {
+        options.isInserted = true;
+    }
 
+    aNode.children = givenChildren || options.aNode.children.slice(0);
 
+    // calc scoped slot vars
+    aNode.vars = options.aNode.vars;
     var initData = {};
     each(aNode.vars, function (varItem) {
         options.isScoped = true;
         initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.owner);
     });
 
+    // child owner & child scope
     if (options.isInserted) {
         options.childOwner = options.owner.owner;
         options.childScope = options.owner.scope;
@@ -117,36 +93,19 @@ function createSlot(options) { // eslint-disable-line
     node._attached = nodeOwnSimpleAttached;
     node._update = slotOwnUpdate;
 
-    // #[begin] reverse
-    node._pushChildANode = elementOwnPushChildANode;
-    // #[end]
-
 
     node.owner.slotChildren.push(node);
 
     // #[begin] reverse
-    if (options.el) {
-        removeEl(options.el);
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (!next || isEndStump(next, 'slot')) {
-                if (next) {
-                    options.elWalker.goNext();
-                    removeEl(next);
-                }
-                break;
+    if (options.walker) {
+        each(node.aNode.children, function (aNodeChild) {
+            var child = createReverseNode(aNodeChild, options.walker, node);
+            if (!child._static) {
+                node.children.push(child);
             }
+        });
 
-            options.elWalker.goNext();
-            var child = createNodeByEl(
-                next,
-                node,
-                options.elWalker
-            );
-            node.children.push(child);
-        }
+        attachings.add(node);
     }
     // #[end]
 

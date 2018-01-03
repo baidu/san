@@ -334,9 +334,7 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileTemplate: function (aNode, sourceBuffer, owner) {
-        sourceBuffer.joinString(serializeStump('tpl'));
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
-        sourceBuffer.joinString(serializeStumpEnd('tpl'));
     },
 
     /**
@@ -480,25 +478,11 @@ var aNodeCompiler = {
             });
         }
 
-        sourceBuffer.addRaw('html += "<!--s-slot:" + ($isInserted ? "" : "!") + '
-            + compileExprSource.stringLiteralize(
-                serializeANode({
-                    tagName: aNode.tagName,
-                    vars: aNode.vars,
-                    props: aNode.props,
-                    directives: aNode.directives
-                })
-                + '-->'
-            )
-        );
-
         sourceBuffer.addRaw('for (var $renderIndex = 0; $renderIndex < $givenSlot.length; $renderIndex++) {');
         sourceBuffer.addRaw('  html += $givenSlot[$renderIndex]($slotCtx);');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.joinString(serializeStumpEnd('slot'));
         sourceBuffer.addRaw('})();');
-
     },
 
     /**
