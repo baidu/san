@@ -48,20 +48,19 @@ function createText(options) {
             }
         }
         else {
-            /* eslint-disable no-constant-condition */
-            while (1) {
-                /* eslint-enable no-constant-condition */
-                var next = options.elWalker.next;
-                if (isEndStump(next, 'text')) {
-                    options.elWalker.goNext();
-                    removeEl(next);
+            removeEl(currentNode);
+            options.walker.goNext();
+
+            while (1) { /* eslint-disable-line */
+                currentNode = options.walker.current;
+                if (isEndStump(currentNode, 'text')) {
+                    options.walker.goNext();
+                    removeEl(currentNode);
                     break;
                 }
 
-                options.elWalker.goNext();
+                options.walker.goNext();
             }
-
-            removeEl(currentNode);
         }
     }
     // #[end]
