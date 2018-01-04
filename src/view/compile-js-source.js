@@ -600,17 +600,7 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
 
-
-
     extraProp = extraProp || '';
-    if (component.subTag) {
-        extraProp += ' s-component="' + component.subTag + '"';
-    }
-
-    var refDirective = component.aNode.directives.get('ref');
-    if (refDirective) {
-        extraProp += ' s-ref="' + refDirective.value.raw + '"';
-    }
 
     var eventDeclarations = [];
     for (var key in component.listeners) {
