@@ -20,7 +20,7 @@ var MyComponent = san.defineComponent({
             formData: {}
         };
     },
-    getFooValue() {
+    getFooValue: function () {
         return this.ref('uc').data.get('foo');
     }
 });

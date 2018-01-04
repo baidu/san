@@ -2387,15 +2387,14 @@ describe("Slot", function () {
 
         var a = wrap.getElementsByTagName('a')[0];
         expect(wrap.getElementsByTagName('u').length).toBe(0);
-        expect(a.innerHTML.indexOf('HelloSan') > 0).toBeTruthy();
-
+        expect(/HelloSan/.test(a.innerHTML)).toBeTruthy();
         myComponent.data.set('name', 'ByeER');
         san.nextTick(function () {
 
             var a = wrap.getElementsByTagName('a')[0];
             expect(wrap.getElementsByTagName('u').length).toBe(0);
-            expect(a.innerHTML.indexOf('HelloSan') < 0).toBeTruthy();
-            expect(a.innerHTML.indexOf('ByeER') > 0).toBeTruthy();
+            expect(/HelloSan/.test(a.innerHTML)).toBeFalsy();
+            expect(/ByeER/.test(a.innerHTML)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -2420,7 +2419,7 @@ describe("Slot", function () {
             template: '<div><x-table datasource="{{datasource}}" columns="{{columns}}">'
                 + '<u slot="c-name">{{row.name}}</u>'
                 + '<u slot="c-age">{{row.age}}</u>'
-                + '<u slot="c-eee"><b on-click="removeRow(rowIndex)">del{{rowIndex}}</b></u>'
+                + '<u slot="c-eee"><b>del{{rowIndex}}</b></u>'
                 + '</x-table></div>'
         });
 
