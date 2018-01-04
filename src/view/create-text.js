@@ -180,7 +180,9 @@ function textOwnUpdate(changes) {
                         me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                     }
                     else {
-                        var el = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
+                        var prevEl = me._prev && me._prev._getEl();
+                        prevEl = prevEl && prevEl.nextSibling;
+                        var el = prevEl || parentEl.firstChild;
                         if (el) {
                             switch (el.nodeType) {
                                 case 3:

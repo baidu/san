@@ -2963,7 +2963,7 @@ describe("Component", function () {
                     formData: {}
                 };
             },
-            getFooValue() {
+            getFooValue: function () {
                 return this.ref('uc').data.get('foo');
             }
         });
