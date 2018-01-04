@@ -21,11 +21,10 @@ var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var nodeEvalExpr = require('./node-eval-expr');
-var createNodeByEl = require('./create-node-by-el');
+var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnToPhase = require('./element-own-to-phase');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
