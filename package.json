@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A MVVM Component Framework",
-  "version": "3.2.6",
+  "version": "3.4.0-alpha.1",
   "contributors": [
     {
       "name": "erik",
@@ -27,13 +27,15 @@
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js start",
+    "pretest": "npm run build && node ./test/ssr/build-test.js",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
     "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
-    "build": "node ./tool/build.js && node ./test/ssr/build-test.js"
+    "build": "node ./tool/build.js"
   },
+  "types": "typings/san.d.ts",
   "main": "dist/san.ssr.js",
   "browser": "dist/san.dev.js",
   "unpkg": "dist/san.min.js",
@@ -56,7 +58,6 @@
     "wdio-sauce-service": "^0.3.1",
     "wdio-spec-reporter": "^0.1.0",
     "webdriverio": "^4.2.16",
-    "http-server": "^0.9.0",
     "uglify-js": "^2.8.22",
     "swig": "^1.4.2",
     "art-template": "^4.10.2"

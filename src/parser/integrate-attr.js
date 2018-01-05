@@ -4,6 +4,7 @@
  */
 
 var each = require('../util/each');
+var kebab2camel = require('../util/kebab2camel');
 var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
@@ -11,6 +12,15 @@ var parseDirective = require('./parse-directive');
 var ExprType = require('./expr-type');
 var postProp = require('./post-prop');
 var getPropHandler = require('../view/get-prop-handler');
+
+var DEFAULT_EVENT_ARGS = [
+    {
+        type: ExprType.ACCESSOR,
+        paths: [
+            {type: ExprType.STRING, value: '$event'}
+        ]
+    }
+];
 
 /**
  * 解析抽象节点属性
@@ -21,11 +31,6 @@ var getPropHandler = require('../view/get-prop-handler');
  * @param {boolean=} ignoreNormal 是否忽略无前缀的普通属性
  */
 function integrateAttr(aNode, name, value, ignoreNormal) {
-    if (name === 'id') {
-        aNode.id = value;
-        return;
-    }
-
     var prefixIndex = name.indexOf('-');
     var realName;
     var prefix;
@@ -37,10 +42,27 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
 
     switch (prefix) {
         case 'on':
-            aNode.events.push({
+            var event = {
                 name: realName,
-                expr: parseCall(value)
-            });
+                modifier: {}
+            };
+            aNode.events.push(event);
+
+            var colonIndex;
+            while ((colonIndex = value.indexOf(':')) > 0) {
+                var modifier = value.slice(0, colonIndex);
+
+                // eventHandler("dd:aa") 这种情况不能算modifier，需要辨识
+                if (/^[a-z]+$/i.test(modifier)) {
+                    event.modifier[modifier] = true;
+                    value = value.slice(colonIndex + 1);
+                }
+                else {
+                    break;
+                }
+            }
+
+            event.expr = parseCall(value, DEFAULT_EVENT_ARGS);
             break;
 
         case 'san':
@@ -50,6 +72,18 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
 
         case 'prop':
             integrateProp(aNode, realName, value);
+            break;
+
+        case 'var':
+            if (!aNode.vars) {
+                aNode.vars = [];
+            }
+
+            realName = kebab2camel(realName);
+            aNode.vars.push({
+                name: realName,
+                expr: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
+            });
             break;
 
         default:
@@ -107,7 +141,15 @@ function integrateProp(aNode, name, value) {
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
-                        name: '_' + prop.name,
+                        name: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {
+                                    type: ExprType.STRING,
+                                    value: '_' + prop.name
+                                }
+                            ]
+                        },
                         args: []
                     });
                 }

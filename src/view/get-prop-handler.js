@@ -39,19 +39,30 @@ var HTML_ATTR_PROP_MAP = {
  */
 var defaultElementPropHandler = {
     attr: function (element, name, value) {
-        if (value) {
+        if (value != null) {
             return ' ' + name + '="' + value + '"';
         }
     },
 
     prop: function (element, name, value) {
-        name = HTML_ATTR_PROP_MAP[name] || name;
-        if (svgTags[element.tagName]) {
-            element.el.setAttribute(name, value);
+        var propName = HTML_ATTR_PROP_MAP[name] || name;
+        var el = element.el;
+
+        // input 的 type 是个特殊属性，其实也应该用 setAttribute
+        // 但是 type 不应该运行时动态改变，否则会有兼容性问题
+        // 所以这里直接就不管了
+        if (svgTags[element.tagName] || !(propName in el)) {
+            el.setAttribute(name, value);
         }
         else {
-            element.el[name] = value;
+            el[propName] = value == null ? '' : value;
         }
+
+        // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
+        // 换句话来说，san 是做不到 attribute 时有时无的
+        // if (value == null) {
+        //     el.removeAttribute(name);
+        // }
     },
 
     output: function (element, bindInfo, data) {
@@ -73,7 +84,7 @@ var defaultElementPropHandler = {
 var defaultElementPropHandlers = {
     style: {
         attr: function (element, name, value) {
-            if (value) {
+            if (value != null) {
                 return ' style="' + value + '"';
             }
         },
@@ -83,9 +94,16 @@ var defaultElementPropHandlers = {
         }
     },
 
+    slot: {
+        attr: empty,
+        prop: empty
+    },
+
     draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
-    disabled: genBoolPropHandler('disabled')
+    disabled: genBoolPropHandler('disabled'),
+    autofocus: genBoolPropHandler('autofocus'),
+    required: genBoolPropHandler('required')
 };
 
 var checkedPropHandler = genBoolPropHandler('checked');
@@ -130,7 +148,7 @@ function analInputCheckedState(element, value, oper) {
 
 var elementPropHandlers = {
     input: {
-        mutiple: genBoolPropHandler('mutiple'),
+        multiple: genBoolPropHandler('multiple'),
         checked: {
             attr: function (element, name, value) {
                 return analInputCheckedState(element, value, 'attr');
@@ -235,17 +253,16 @@ var elementPropHandlers = {
  * @return {Object}
  */
 function genBoolPropHandler(attrName) {
-    var attrLiteral = ' ' + attrName;
-
     return {
         attr: function (element, name, value) {
             // 因为元素的attr值必须经过html escape，否则可能有漏洞
             // 所以这里直接对假值字符串形式进行处理
             // NaN之类非主流的就先不考虑了
-            if (element.props.get(name).raw === ''
+            var prop = element.props.get(name);
+            if (prop && prop.raw === ''
                 || value && value !== 'false' && value !== '0'
             ) {
-                return attrLiteral;
+                return ' ' + attrName;
             }
         },
 

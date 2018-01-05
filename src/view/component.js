@@ -8,24 +8,20 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
-var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
-var parseText = require('../parser/parse-text');
 var parseTemplate = require('../parser/parse-template');
-var parseANodeFromEl = require('../parser/parse-anode-from-el');
+var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
-
-var defineComponent = require('./define-component');
+var compileComponent = require('./compile-component');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
-var fromElInitChilds = require('./from-el-init-childs');
+var reverseElementChildren = require('./reverse-element-children');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -35,7 +31,7 @@ var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
-var elementUpdateChilds = require('./element-update-childs');
+var elementUpdateChildren = require('./element-update-children');
 var elementSetElProp = require('./element-set-el-prop');
 var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -43,8 +39,11 @@ var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
-
+var warnEventListenMethod = require('./warn-event-listen-method');
+var elementLeave = require('./element-leave');
+var elementToPhase = require('./element-to-phase');
+var elementDisposeChildren = require('./element-dispose-children');
+var elementAttach = require('./element-attach');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
@@ -55,13 +54,12 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @class
  * @param {Object} options 初始化参数
  */
-function Component(options) {
+function Component(options) { // eslint-disable-line
     elementInitProps(this);
     options = options || {};
 
-    this.dataChanges = [];
     this.listeners = {};
-    this.ownSlotChilds = [];
+    this.slotChildren = [];
 
 
     this.filters = this.filters || this.constructor.filters || {};
@@ -70,49 +68,72 @@ function Component(options) {
     this.subTag = options.subTag;
 
     // compile
-    this._compile();
+    compileComponent(this.constructor);
 
     var me = this;
-
-    var givenANode = options.aNode;
     var protoANode = this.constructor.prototype.aNode;
 
-    if (givenANode) {
+    me.givenANode = options.aNode;
+    me.givenNamedSlotBinds = [];
+    me.givenSlots = {
+        named: {}
+    };
+
+    nodeInit(options, this);
+
+    // #[begin] reverse
+    if (this.el) {
+        var firstChild = this.el.firstChild;
+        if (firstChild && firstChild.nodeType === 8) {
+            var stumpMatch = firstChild.data.match(/^\s*s-data:([\s\S]+)?$/);
+            if (stumpMatch) {
+                var stumpText = stumpMatch[1];
+
+                // fill component data
+                options.data = (new Function(
+                    'return ' + stumpText.replace(/^[\s\n]*/, '')
+                ))();
+
+                removeEl(firstChild);
+            }
+        }
+    }
+    // #[end]
+
+    if (me.givenANode) {
         // 组件运行时传入的结构，做slot解析
-        var givenSlots = {};
-        each(givenANode.childs, function (child) {
-            var slotName = '____';
-            var slotBind = !child.isText && child.props.get('slot');
-            if (slotBind) {
-                slotName = slotBind.raw;
+        this._createGivenSlots();
+
+        // native事件数组
+        var nativeEvents = [];
+        each(me.givenANode.events, function (eventBind) {
+            // 保存当前实例的native事件，下面创建aNode时候做合并
+            if (eventBind.modifier.native) {
+                nativeEvents.push(eventBind);
             }
+            // #[begin] error
+            warnEventListenMethod(eventBind, options.owner);
+            // #[end]
 
-            if (!givenSlots[slotName]) {
-                givenSlots[slotName] = [];
-            }
-
-            givenSlots[slotName].push(child);
-        });
-
-        this.aNode = createANode({
-            tagName: protoANode.tagName || givenANode.tagName,
-            givenSlots: givenSlots,
-
-            // 组件的实际结构应为template编译的结构
-            childs: protoANode.childs,
-
-            // 合并运行时的一些绑定和事件声明
-            props: protoANode.props,
-            binds: camelComponentBinds(givenANode.props),
-            events: protoANode.events,
-            directives: givenANode.directives
-        });
-        each(givenANode.events, function (eventBind) {
             me.on(
                 eventBind.name,
                 bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
                 eventBind
             );
+        });
+
+        this.aNode = createANode({
+            tagName: protoANode.tagName || me.givenANode.tagName,
+            givenSlots: me.givenSlots,
+
+            // 组件的实际结构应为template编译的结构
+            children: protoANode.children,
+
+            // 合并运行时的一些绑定和事件声明
+            props: protoANode.props,
+            binds: camelComponentBinds(me.givenANode.props),
+            events: protoANode.events.concat(nativeEvents),
+            directives: me.givenANode.directives
         });
     }
 
@@ -126,30 +147,18 @@ function Component(options) {
         )
     );
 
-    nodeInit(options, this);
-
-    // #[begin] reverse
-    if (this.el) {
-        this.aNode = parseANodeFromEl(this.el);
-        this.aNode.givenSlots = {};
-        this.aNode.binds = camelComponentBinds(this.aNode.props);
-        this.aNode.props = this.constructor.prototype.aNode.props;
-
-        this.parent && this.parent._pushChildANode(this.aNode);
-        this.tagName = this.aNode.tagName;
-
-        fromElInitChilds(this);
-        attachings.add(this);
-    }
-    // #[end]
-
     elementInitTagName(this);
     this.props = this.aNode.props;
     this.binds = this.aNode.binds || this.aNode.props;
 
     postComponentBinds(this.binds);
     this.scope && this.binds.each(function (bind) {
-        me.data.set(bind.name, nodeEvalExpr(me, bind.expr));
+        var value = nodeEvalExpr(me, bind.expr);
+        if (typeof value === 'undefined') {
+            // See: https://github.com/ecomfe/san/issues/191
+            return;
+        }
+        me.data.set(bind.name, value);
     });
 
     // #[begin] error
@@ -180,20 +189,77 @@ function Component(options) {
     this._toPhase('inited');
 
     // #[begin] reverse
-    // 如果从el编译的，认为已经attach了，触发钩子
     if (this.el) {
+        attachings.add(this);
+        reverseElementChildren(this);
         attachings.done();
+    }
+    else if (options.walker) {
+        var currentNode = options.walker.current;
+        if (currentNode && currentNode.nodeType === 1) {
+            this.el = currentNode;
+            this.el.id = this.id;
+            options.walker.goNext();
+        }
+
+        reverseElementChildren(this);
+
+        me.dynamicProps = new IndexedList();
+        me.aNode.props.each(function (prop) {
+            if (!prop.attr) {
+                me.dynamicProps.push(prop);
+            }
+        });
+        attachings.add(me);
     }
     // #[end]
 }
 
+
+Component.prototype._createGivenSlots = function () {
+    var me = this;
+    me.givenSlots.named = {};
+
+    // 组件运行时传入的结构，做slot解析
+    me.givenANode && me.scope && each(me.givenANode.children, function (child) {
+        var target;
+
+        var slotBind = !child.isText && child.props.get('slot');
+        if (slotBind) {
+            !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
+
+            var slotName = nodeEvalExpr(me, slotBind.expr);
+            target = me.givenSlots.named[slotName];
+            if (!target) {
+                target = me.givenSlots.named[slotName] = [];
+            }
+        }
+        else if (!me.givenSlotInited) {
+            target = me.givenSlots.noname;
+            if (!target) {
+                target = me.givenSlots.noname = [];
+            }
+        }
+
+        target && target.push(child);
+    });
+
+    me.givenSlotInited = true;
+};
+
 /**
  * 类型标识
  *
- * @protected
  * @type {string}
  */
-Component.prototype._type = NodeType.CMPT;
+Component.prototype.nodeType = NodeType.CMPT;
+
+/**
+ * 在下一个更新周期运行函数
+ *
+ * @param {Function} fn 要运行的函数
+ */
+Component.prototype.nextTick = nextTick;
 
 /* eslint-disable operator-linebreak */
 /**
@@ -204,20 +270,16 @@ Component.prototype._type = NodeType.CMPT;
  */
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
-    if (this.lifeCycle.is(name)) {
-        return;
+    if (elementToPhase(this, name)) {
+        if (typeof this[name] === 'function') {
+            this[name]();
+        }
+
+        // 通知devtool
+        // #[begin] devtool
+        emitDevtool('comp-' + name, this);
+        // #[end]
     }
-
-    this.lifeCycle.set(name);
-
-    if (typeof this[name] === 'function') {
-        this[name](this);
-    }
-
-    // 通知devtool
-    // #[begin] devtool
-    emitDevtool('comp-' + name, this);
-    // #[end]
 };
 /* eslint-enable operator-linebreak */
 
@@ -318,10 +380,11 @@ Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
 
     while (parentComponent) {
-        if (typeof parentComponent.messages[name] === 'function') {
-            parentComponent.messages[name].call(
+        var receiver = parentComponent.messages[name] || parentComponent.messages['*'];
+        if (typeof receiver === 'function') {
+            receiver.call(
                 parentComponent,
-                {target: this, value: value}
+                {target: this, value: value, name: name}
             );
             break;
         }
@@ -331,131 +394,80 @@ Component.prototype.dispatch = function (name, value) {
 };
 
 /**
+ * 获取组件内部的 slot
+ *
+ * @param {string=} name slot名称，空为default slot
+ * @return {Array}
+ */
+Component.prototype.slot = function (name) {
+    var result = [];
+    var me = this;
+
+    function childrenTraversal(children) {
+        each(children, function (child) {
+            if (child.nodeType === NodeType.SLOT && child.owner === me) {
+                if (child.isNamed && child.name === name
+                    || !child.isNamed && !name
+                ) {
+                    result.push(child);
+                }
+            }
+            else {
+                childrenTraversal(child.children);
+            }
+        });
+    }
+
+    childrenTraversal(this.children);
+    return result;
+};
+
+/**
  * 获取带有 san-ref 指令的子组件引用
  *
  * @param {string} name 子组件的引用名
  * @return {Component}
  */
 Component.prototype.ref = function (name) {
-    var refComponent;
+    var refTarget;
     var owner = this;
 
-    function slotChildsTraversal(childs) {
-        each(childs, function (slotChild) {
-            childsTraversal(slotChild);
-            return !refComponent;
+    function childrenTraversal(children) {
+        each(children, function (child) {
+            elementTraversal(child);
+            return !refTarget;
         });
     }
 
-    function childsTraversal(element) {
-        slotChildsTraversal(element.slotChilds);
-
-        each(element.childs, function (child) {
-            if (isComponent(child)) {
-                var refDirective = child.aNode.directives.get('ref');
-                if (refDirective
-                    && evalExpr(refDirective.value, child.scope || owner.data, owner) === name
-                ) {
-                    refComponent = child;
-                }
-
-                slotChildsTraversal(child.slotChilds);
+    function elementTraversal(element) {
+        if (element.owner === owner) {
+            switch (element.nodeType) {
+                case NodeType.ELEM:
+                case NodeType.CMPT:
+                    var ref = element.aNode.directives.get('ref');
+                    if (ref && evalExpr(ref.value, element.scope, owner) === name) {
+                        refTarget = NodeType.ELEM === element.nodeType
+                            ? element._getEl() : element;
+                    }
             }
 
-            if (!refComponent && child._type !== NodeType.TEXT) {
-                childsTraversal(child);
+            !refTarget && childrenTraversal(element.slotChildren);
+        }
+
+        !refTarget && each(element.children, function (child) {
+            if (child.nodeType !== NodeType.TEXT) {
+                elementTraversal(child);
             }
 
-            return !refComponent;
+            return !refTarget;
         });
     }
 
-    childsTraversal(this);
-    slotChildsTraversal(this.ownSlotChilds);
+    childrenTraversal(this.children);
 
-    return refComponent;
+    return refTarget;
 };
 
-/* eslint-disable quotes */
-var componentPropExtra = [
-    {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
-    {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
-];
-/* eslint-enable quotes */
-
-
-/**
- * 模板编译行为
- *
- * @private
- */
-Component.prototype._compile = function () {
-    var ComponentClass = this.constructor;
-    var proto = ComponentClass.prototype;
-
-    // pre define components class
-    if (!proto.hasOwnProperty('_cmptReady')) {
-        proto.components =  ComponentClass.components || proto.components || {};
-        var components = proto.components;
-
-        for (var key in components) {
-            var componentClass = components[key];
-
-            if (typeof componentClass === 'object') {
-                components[key] = defineComponent(componentClass);
-            }
-            else if (componentClass === 'self') {
-                components[key] = ComponentClass;
-            }
-        }
-
-        proto._cmptReady = 1;
-    }
-
-
-    // pre compile template
-    if (!proto.hasOwnProperty('_compiled')) {
-        proto.aNode = createANode();
-
-        var tpl = ComponentClass.template || proto.template;
-        if (tpl) {
-            var aNode = parseTemplate(tpl, {
-                trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace
-            });
-            var firstChild = aNode.childs[0];
-
-            // #[begin] error
-            if (aNode.childs.length !== 1 || firstChild.isText) {
-                throw new Error('[SAN FATAL] template must have a root element.');
-            }
-            // #[end]
-
-            proto.aNode = firstChild;
-            if (firstChild.tagName === 'template') {
-                firstChild.tagName = null;
-            }
-
-            firstChild.binds = new IndexedList();
-
-            each(componentPropExtra, function (extra) {
-                var prop = firstChild.props.get(extra.name);
-                if (prop) {
-                    prop.expr.segs.push(extra.expr.segs[0]);
-                    prop.expr.value = null;
-                    prop.attr = null;
-                }
-                else {
-                    firstChild.props.push({
-                        name: extra.name,
-                        expr: extra.expr
-                    });
-                }
-            });
-        }
-
-        proto._compiled = 1;
-    }
-};
 
 /**
  * 视图更新函数
@@ -463,52 +475,78 @@ Component.prototype._compile = function () {
  * @param {Array?} changes 数据变化信息
  */
 Component.prototype._update = function (changes) {
-    if (this.lifeCycle.is('disposed')) {
+    if (this.lifeCycle.disposed) {
         return;
     }
 
     var me = this;
 
-    each(changes, function (change) {
-        var changeExpr = change.expr;
 
-        me.binds.each(function (bindItem) {
-            var relation;
-            var setExpr = bindItem.name;
-            var updateExpr = bindItem.expr;
+    var needReloadForSlot = false;
+    this._notifyNeedReload = function () {
+        needReloadForSlot = true;
+    };
 
-            if (!isDataChangeByElement(change, me, setExpr)
-                && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
-            ) {
-                if (relation > 2) {
-                    setExpr = {
-                        type: ExprType.ACCESSOR,
-                        paths: [{
-                            type: ExprType.STRING,
-                            value: setExpr
-                        }].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                    };
-                    updateExpr = changeExpr;
-                }
+    if (changes) {
+        each(changes, function (change) {
+            var changeExpr = change.expr;
 
-                me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
-                    target: {
-                        id: me.owner.id
+            me.binds.each(function (bindItem) {
+                var relation;
+                var setExpr = bindItem.name;
+                var updateExpr = bindItem.expr;
+
+                if (!isDataChangeByElement(change, me, setExpr)
+                    && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
+                ) {
+                    if (relation > 2) {
+                        setExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: [{
+                                type: ExprType.STRING,
+                                value: setExpr
+                            }].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                        };
+                        updateExpr = changeExpr;
                     }
-                });
-            }
+
+                    me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
+                        target: {
+                            id: me.owner.id
+                        }
+                    });
+                }
+            });
+
+            each(me.givenNamedSlotBinds, function (bindItem) {
+                needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
+                return !needReloadForSlot;
+            });
         });
-    });
 
-    each(this.slotChilds, function (child) {
-        elementUpdateChilds(child, changes);
-    });
+        if (needReloadForSlot) {
+            this._createGivenSlots();
+            this._repaintChildren();
+        }
+        else {
+            var slotChildrenLen = this.slotChildren.length;
+            while (slotChildrenLen--) {
+                var slotChild = this.slotChildren[slotChildrenLen];
 
+                if (slotChild.lifeCycle.disposed) {
+                    this.slotChildren.splice(slotChildrenLen, 1);
+                }
+                else if (slotChild.isInserted) {
+                    slotChild._update(changes, 1);
+                }
+            }
+        }
+    }
 
-    var dataChanges = me.dataChanges;
-    if (dataChanges.length) {
-        me.dataChanges = [];
-        me.props.each(function (prop) {
+    var dataChanges = this.dataChanges;
+    if (dataChanges) {
+        this.dataChanges = null;
+        this.props.each(function (prop) {
             each(dataChanges, function (change) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
@@ -524,44 +562,70 @@ Component.prototype._update = function (changes) {
             });
         });
 
-        elementUpdateChilds(this, dataChanges, 'ownSlotChilds');
+        elementUpdateChildren(this, dataChanges);
+        if (needReloadForSlot) {
+            this._createGivenSlots();
+            this._repaintChildren();
+        }
 
         this._toPhase('updated');
 
-        if (me.owner) {
-            each(dataChanges, function (change) {
-                me.binds.each(function (bindItem) {
-                    var changeExpr = change.expr;
-                    if (bindItem.x
-                        && !isDataChangeByElement(change, me.owner)
-                        && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
-                    ) {
-                        var updateScopeExpr = bindItem.expr;
-                        if (changeExpr.paths.length > 1) {
-                            updateScopeExpr = {
-                                type: ExprType.ACCESSOR,
-                                paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                            };
-                        }
-
-                        me.scope.set(
-                            updateScopeExpr,
-                            evalExpr(changeExpr, me.data, me),
-                            {
-                                target: {
-                                    id: me.id,
-                                    prop: bindItem.name
-                                }
-                            }
-                        );
-                    }
-                });
-            });
-
-            me.owner._update();
+        if (this.owner) {
+            this._updateBindxOwner(dataChanges);
+            this.owner._update();
         }
-
     }
+
+    this._notifyNeedReload = null;
+};
+
+Component.prototype._updateBindxOwner = function (dataChanges) {
+    var me = this;
+
+    if (this.owner) {
+        each(dataChanges, function (change) {
+            me.binds.each(function (bindItem) {
+                var changeExpr = change.expr;
+                if (bindItem.x
+                    && !isDataChangeByElement(change, me.owner)
+                    && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
+                ) {
+                    var updateScopeExpr = bindItem.expr;
+                    if (changeExpr.paths.length > 1) {
+                        updateScopeExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+                        };
+                    }
+
+                    me.scope.set(
+                        updateScopeExpr,
+                        evalExpr(changeExpr, me.data, me),
+                        {
+                            target: {
+                                id: me.id,
+                                prop: bindItem.name
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
+};
+
+/**
+ * 重新绘制组件的内容
+ * 当 dynamic slot name 发生变更或 slot 匹配发生变化时，重新绘制
+ * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
+ */
+Component.prototype._repaintChildren = function () {
+    elementDisposeChildren(this, {dontDetach: true, noTransition: true});
+
+    this._contentReady = 0;
+    this.slotChildren = [];
+    elementAttach(this);
+    attachings.done();
 };
 
 
@@ -572,13 +636,13 @@ Component.prototype._update = function (changes) {
  * @param {Object} change 数据变化信息
  */
 Component.prototype._dataChanger = function (change) {
-    if (this.lifeCycle.is('painting') || this.lifeCycle.is('created')) {
-        var len = this.dataChanges.length;
-
-        if (!len) {
+    if (this.lifeCycle.painting || this.lifeCycle.created) {
+        if (!this.dataChanges) {
             nextTick(this._update, this);
+            this.dataChanges = [];
         }
 
+        var len = this.dataChanges.length;
         while (len--) {
             switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
                 case 1:
@@ -590,6 +654,9 @@ Component.prototype._dataChanger = function (change) {
         }
 
         this.dataChanges.push(change);
+    }
+    else if (this.lifeCycle.inited && this.owner) {
+        this._updateBindxOwner([change]);
     }
 };
 
@@ -613,23 +680,32 @@ Component.prototype.watch = function (dataName, listener) {
 /**
  * 组件销毁的行为
  *
- * @param {boolean} dontDetach 是否不要将节点从DOM移除
+ * @param {Object} options 销毁行为的参数
  */
-Component.prototype.dispose = function (dontDetach) {
-    if (!this.lifeCycle.is('disposed')) {
-        elementDispose(this, dontDetach);
+Component.prototype.dispose = function (options) {
+    var me = this;
+    me._doneLeave = function () {
+        if (!me.lifeCycle.disposed) {
+            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+            me.slotChildren = null;
 
-        this.ownSlotChilds = null;
+            me.data.unlisten();
+            me.dataChanger = null;
+            me.dataChanges = null;
 
-        this.data.unlisten();
-        this.dataChanger = null;
-        this.dataChanges = null;
+            elementDispose(me, options);
+            me.listeners = null;
 
-        this.listeners = null;
+            me.givenANode = null;
+            me.givenSlots = null;
+            me.givenNamedSlotBinds = null;
+        }
+    };
 
-        this._toPhase('disposed');
-    }
+    elementLeave(this, options);
 };
+
+
 
 /**
  * 完成组件 attached 后的行为
@@ -648,8 +724,5 @@ Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
 Component.prototype._onEl = elementOwnOnEl;
 
-// #[begin] reverse
-Component.prototype._pushChildANode = elementOwnPushChildANode;
-// #[end]
 
 exports = module.exports = Component;

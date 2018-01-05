@@ -14,7 +14,7 @@ var readTertiaryExpr = require('./read-tertiary-expr');
 function readParenthesizedExpr(walker) {
     walker.go(1);
     var expr = readTertiaryExpr(walker);
-    walker.goUntil(41);  // )
+    walker.goUntil(41); // )
 
     return expr;
 }

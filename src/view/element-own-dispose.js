@@ -4,17 +4,22 @@
  */
 
 var elementDispose = require('./element-dispose');
+var elementLeave = require('./element-leave');
 
 /**
  * 销毁释放元素
  *
- * @param {boolean} dontDetach 是否不要将节点移除
+ * @param {Object=} options dispose行为参数
  */
-function elementOwnDispose(dontDetach) {
-    if (!this.lifeCycle.is('disposed')) {
-        elementDispose(this, dontDetach);
-        this._toPhase('disposed');
-    }
+function elementOwnDispose(options) {
+    var me = this;
+    me._doneLeave = function () {
+        if (!me.lifeCycle.disposed) {
+            elementDispose(me, options);
+        }
+    };
+
+    elementLeave(this, options);
 }
 
 exports = module.exports = elementOwnDispose;

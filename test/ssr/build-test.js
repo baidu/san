@@ -182,7 +182,138 @@ let componentDatas = [
     {},
     {num: 300},
     {num: 30000},
-    {num: 30}
+    {num: 30},
+    {searchValue: 'er'},
+    {persons: []},
+    {
+        cond: false,
+        persons: [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'varsha', email: 'wangshuonpu@163.com'}
+        ]
+    },
+    {
+        persons: [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]
+    },
+    {
+        num: 300
+    },
+    {
+        title: 'contributor',
+        name: 'errorrik',
+        closeText: 'X'
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San',
+        persons: [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San',
+        num: 300
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San'
+    },
+    {
+        desc: 'MVVM component framework',
+        name: 'San'
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        }
+    },
+    {
+        cates: [
+            'foo',
+            'bar'
+        ],
+        forms: {
+            foo: [1, 2, 3],
+            bar: [4, 5, 6]
+        }
+    },
+    {
+        cates: [
+            'foo',
+            'bar'
+        ]
+    },
+    {
+        deps: [
+            {
+                strong: 'name',
+                columns: [
+                    {name: 'name', label: '名'},
+                    {name: 'email', label: '邮'}
+                ],
+                members: [
+                    {name: 'Justineo', email: 'justineo@gmail.com'},
+                    {name: 'errorrik', email: 'errorrik@gmail.com'}
+                ]
+            },
+            {
+                strong: 'email',
+                columns: [
+                    {name: 'name', label: '名'},
+                    {name: 'email', label: '邮'}
+                ],
+                members: [
+                    {name: 'otakustay', email: 'otakustay@gmail.com'},
+                    {name: 'leeight', email: 'leeight@gmail.com'}
+                ]
+            }
+        ]
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        },
+        tip: 'tip'
+    },
+    {
+        man: {
+            name: 'errorrik',
+            sex: 1,
+            email: 'errorrik@gmail.com'
+        },
+        desc: 'tip'
+    },
+    {}
 ];
 
 
@@ -197,7 +328,8 @@ for (let i = 0; i < componentDatas.length; i++) {
     let index = i + 1;
     let ComponentClass = require('./cmpt' + index);
     let renderer = san.compileToRenderer(ComponentClass);
-
+    // console.log('===================================')
+    // console.log(san.compileToSource(ComponentClass))
     html += '<div id="wrap-cmpt' + index + '">'
         + renderer(componentDatas[i])
         + '</div>\n\n';

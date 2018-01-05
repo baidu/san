@@ -7,6 +7,8 @@ var ExprType = require('../parser/expr-type');
 var BinaryOp = require('./binary-op');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
+var evalArgs = require('./eval-args');
+var findMethod = require('./find-method');
 var each = require('../util/each');
 
 /**
@@ -51,17 +53,13 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
             var value = evalExpr(expr.expr, data, owner);
 
             owner && each(expr.filters, function (filter) {
-                var filterName = filter.name;
                 /* eslint-disable no-use-before-define */
-                var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
+                var filterFn = findMethod(owner.filters, filter.name, data)
+                    || findMethod(DEFAULT_FILTERS, filter.name, data);
                 /* eslint-enable no-use-before-define */
 
                 if (typeof filterFn === 'function') {
-                    var args = [value];
-                    each(filter.args, function (arg) {
-                        args.push(evalExpr(arg, data, owner));
-                    });
-
+                    var args = [value].concat(evalArgs(filter.args, data, owner));
                     value = filterFn.apply(owner, args);
                 }
             });

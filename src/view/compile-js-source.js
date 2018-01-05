@@ -7,14 +7,16 @@
 var each = require('../util/each');
 var camel2kebab = require('../util/camel2kebab');
 var IndexedList = require('../util/indexed-list');
+var guid = require('../util/guid');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
-var escapeHTML = require('../runtime/escape-html');
 var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
+var rinseCondANode = require('./rinse-cond-anode');
 var serializeANode = require('./serialize-a-node');
+var isSimpleText = require('./is-simple-text');
 
 // #[begin] ssr
 
@@ -58,11 +60,13 @@ var elementSourceCompiler = {
      * @param {Object} aNode 对应的抽象节点对象
      * @param {string?} extraProp 额外的属性串
      * @param {boolean?} isComponent 是否组件
+     * @param {boolean?} isClose 是否闭合
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent) {
+    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent, isClose) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
+        /*
         binds.each(function (bindInfo) {
             if (isComponent) {
                 sourceBuffer.joinString(
@@ -77,17 +81,26 @@ var elementSourceCompiler = {
             }
 
         });
+        */
 
+        /*
         var htmlDirective = aNode.directives.get('html');
         if (htmlDirective) {
             sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
         }
+        */
 
+        /*
         each(events, function (event) {
             sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
         });
+        */
 
         props.each(function (prop) {
+            if (prop.name === 'slot') {
+                return;
+            }
+
             if (prop.name === 'value') {
                 switch (tagName) {
                     case 'textarea':
@@ -122,7 +135,7 @@ var elementSourceCompiler = {
                 case 'draggable':
                 case 'readonly':
                 case 'disabled':
-                case 'mutiple':
+                case 'multiple':
                     if (prop.raw === '') {
                         sourceBuffer.joinString(' ' + prop.name);
                     }
@@ -168,12 +181,14 @@ var elementSourceCompiler = {
                     break;
 
                 default:
-                    if (prop.expr.value) {
-                        sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.value + '"');
+                    if (prop.attr) {
+                        sourceBuffer.joinString(' ' + prop.attr);
                     }
                     else {
                         sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
+                            + (prop.x ? 'escapeHTML(' : '')
                             + compileExprSource.expr(prop.expr)
+                            + (prop.x ? ')' : '')
                             + ')'
                         );
                     }
@@ -181,7 +196,7 @@ var elementSourceCompiler = {
             }
         });
 
-        sourceBuffer.joinString('>');
+        sourceBuffer.joinString(isClose ? '/>' : '>');
     },
     /* eslint-enable max-params */
 
@@ -232,7 +247,7 @@ var elementSourceCompiler = {
         }
         else {
             /* eslint-disable no-use-before-define */
-            each(aNode.childs, function (aNodeChild) {
+            each(aNode.children, function (aNodeChild) {
                 sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
             });
             /* eslint-enable no-use-before-define */
@@ -271,6 +286,9 @@ var aNodeCompiler = {
         else if (aNode.tagName === 'slot') {
             compileMethod = 'compileSlot';
         }
+        else if (aNode.tagName === 'template') {
+            compileMethod = 'compileTemplate';
+        }
         else {
             var ComponentType = owner.components[aNode.tagName];
             if (ComponentType) {
@@ -289,16 +307,34 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
-        var value = aNode.textExpr.value;
+        var isSimple = isSimpleText(aNode);
 
+        if (!isSimple) {
+            sourceBuffer.joinString(serializeStump('text'));
+        }
+
+        var value = aNode.textExpr.value;
         if (value == null) {
-            sourceBuffer.joinString('<!--s-text:' + aNode.text + '-->');
             sourceBuffer.joinExpr(aNode.textExpr);
-            sourceBuffer.joinString('<!--/s-text-->');
         }
         else {
             sourceBuffer.joinString(value);
         }
+
+        if (!isSimple) {
+            sourceBuffer.joinString(serializeStumpEnd('text'));
+        }
+    },
+
+    /**
+     * 编译template节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     */
+    compileTemplate: function (aNode, sourceBuffer, owner) {
+        elementSourceCompiler.inner(sourceBuffer, aNode, owner);
     },
 
     /**
@@ -310,13 +346,22 @@ var aNodeCompiler = {
      */
     compileIf: function (aNode, sourceBuffer, owner) {
         sourceBuffer.addRaw('(function () {');
+
         sourceBuffer.addRaw('var ifIndex = null;');
 
-        // for ifIndex
+        // output main if
         var ifDirective = aNode.directives.get('if');
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
-        sourceBuffer.addRaw('    ifIndex = -1;');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                rinseCondANode(aNode),
+                sourceBuffer,
+                owner
+            )
+        );
         sourceBuffer.addRaw('}');
+
+        // output elif and else
         each(aNode.elses, function (elseANode, index) {
             var elifDirective = elseANode.directives.get('elif');
             if (elifDirective) {
@@ -326,65 +371,17 @@ var aNodeCompiler = {
                 sourceBuffer.addRaw('else {');
             }
 
-            sourceBuffer.addRaw('    ifIndex = ' + index + ';');
-            sourceBuffer.addRaw('}');
-        });
-
-        // for output main if html
-        sourceBuffer.addRaw('if (ifIndex === -1) {');
-        sourceBuffer.addRaw(
-            aNodeCompiler.compile(
-                rinseANode(aNode),
-                sourceBuffer,
-                owner,
-                {prop: ' s-if="' + escapeHTML(ifDirective.raw) + '"'}
-            )
-        );
-        sourceBuffer.addRaw('} else {');
-        sourceBuffer.joinString(serializeStump('if', serializeANode(aNode)));
-        sourceBuffer.addRaw('}');
-
-        // for output else html
-        each(aNode.elses, function (elseANode, index) {
-            var elifDirective = elseANode.directives.get('elif');
-            sourceBuffer.addRaw('if (ifIndex === ' + index + ') {');
             sourceBuffer.addRaw(
                 aNodeCompiler.compile(
-                    rinseANode(elseANode),
+                    rinseCondANode(elseANode),
                     sourceBuffer,
-                    owner,
-                    {
-                        prop: elifDirective ? ' s-elif="' + escapeHTML(elifDirective.raw) + '"' : ' s-else'
-                    }
+                    owner
                 )
             );
-            sourceBuffer.addRaw('} else {');
-            sourceBuffer.joinString(serializeStump(elifDirective ? 'elif' : 'else', serializeANode(elseANode)));
             sourceBuffer.addRaw('}');
         });
 
         sourceBuffer.addRaw('})();');
-
-        /**
-         * 清洗 if aNode，返回纯净无 if 指令的 aNode
-         *
-         * @param {ANode} ifANode 节点对象
-         * @return {ANode}
-         */
-        function rinseANode(ifANode) {
-            var result = createANode({
-                childs: ifANode.childs,
-                props: ifANode.props,
-                events: ifANode.events,
-                tagName: ifANode.tagName,
-                directives: (new IndexedList()).concat(ifANode.directives)
-            });
-            result.directives.remove('if');
-            result.directives.remove('elif');
-            result.directives.remove('else');
-
-            return result;
-        }
     },
 
     /**
@@ -396,7 +393,7 @@ var aNodeCompiler = {
      */
     compileFor: function (aNode, sourceBuffer, owner) {
         var forElementANode = createANode({
-            childs: aNode.childs,
+            children: aNode.children,
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
@@ -409,8 +406,9 @@ var aNodeCompiler = {
         var indexName = forDirective.index.raw;
         var listName = compileExprSource.dataAccess(forDirective.list);
 
-        // start stump
-        sourceBuffer.joinString(serializeStump('for', serializeANode(aNode)));
+        if (indexName === '$index') {
+            indexName = guid();
+        }
 
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
@@ -427,9 +425,6 @@ var aNodeCompiler = {
             )
         );
         sourceBuffer.addRaw('}');
-
-        // stop stump
-        sourceBuffer.joinString(serializeStumpEnd('for'));
     },
 
     /**
@@ -440,33 +435,54 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileSlot: function (aNode, sourceBuffer, owner) {
-        var nameProp = aNode.props.get('name');
-        var name = nameProp ? nameProp.raw : '____';
-        var isGivenContent = 0;
-        var childs = aNode.childs;
+        sourceBuffer.addRaw('(function () {');
 
-        if (owner.aNode.givenSlots[name]) {
-            isGivenContent = 1;
-            childs = owner.aNode.givenSlots[name];
-        }
-
-        var stumpText = (!isGivenContent ? '!' : '')
-            + (nameProp ? nameProp.raw : '');
-        sourceBuffer.joinString(serializeStump('slot', stumpText));
-
-        if (isGivenContent) {
-            sourceBuffer.addRaw('(function (componentCtx) {');
-        }
-
-        each(childs, function (aNodeChild) {
+        sourceBuffer.addRaw('function $defaultSlotRender(componentCtx) {');
+        sourceBuffer.addRaw('  var html = "";');
+        each(aNode.children, function (aNodeChild) {
             sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
         });
+        sourceBuffer.addRaw('  return html;');
+        sourceBuffer.addRaw('}');
 
-        if (isGivenContent) {
-            sourceBuffer.addRaw('})(componentCtx.owner);');
+        sourceBuffer.addRaw('  var $givenSlot = [];');
+
+        var nameProp = aNode.props.get('name');
+        if (nameProp) {
+            sourceBuffer.addRaw('var $slotName = ' + compileExprSource.expr(nameProp.expr) + ';');
+        }
+        else {
+            sourceBuffer.addRaw('var $slotName = null;');
         }
 
-        sourceBuffer.joinString(serializeStumpEnd('slot'));
+        sourceBuffer.addRaw('var $ctxGivenSlots = componentCtx.givenSlots;');
+        sourceBuffer.addRaw('for (var $i = 0; $i < $ctxGivenSlots.length; $i++) {');
+        sourceBuffer.addRaw('  if ($ctxGivenSlots[$i][1] == $slotName) {');
+        sourceBuffer.addRaw('    $givenSlot.push($ctxGivenSlots[$i][0]);');
+        sourceBuffer.addRaw('  }');
+        sourceBuffer.addRaw('}');
+
+
+        sourceBuffer.addRaw('var $isInserted = $givenSlot.length > 0;');
+        sourceBuffer.addRaw('if (!$isInserted) { $givenSlot.push($defaultSlotRender); }');
+
+        sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
+        if (aNode.vars) {
+            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};'); // eslint-disable-line
+            each(aNode.vars, function (varItem) {
+                sourceBuffer.addRaw(
+                    '$slotCtx.data["' + varItem.name + '"] = '
+                    + compileExprSource.expr(varItem.expr)
+                    + ';'
+                );
+            });
+        }
+
+        sourceBuffer.addRaw('for (var $renderIndex = 0; $renderIndex < $givenSlot.length; $renderIndex++) {');
+        sourceBuffer.addRaw('  html += $givenSlot[$renderIndex]($slotCtx);');
+        sourceBuffer.addRaw('}');
+
+        sourceBuffer.addRaw('})();');
     },
 
     /**
@@ -481,11 +497,11 @@ var aNodeCompiler = {
         extra = extra || {};
         if (aNode.tagName === 'option'
             && !aNode.props.get('value')
-            && aNode.childs[0]
+            && aNode.children[0]
         ) {
             aNode.props.push({
                 name: 'value',
-                expr: aNode.childs[0].textExpr
+                expr: aNode.children[0].textExpr
             });
         }
 
@@ -513,6 +529,29 @@ var aNodeCompiler = {
      * @param {Function} extra.ComponentClass 对应组件类
      */
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
+        if (aNode) {
+            sourceBuffer.addRaw('var $slotName = null;');
+            sourceBuffer.addRaw('var $givenSlots = [];');
+            each(aNode.children, function (child) {
+                var slotBind = !child.isText && child.props.get('slot');
+                if (slotBind) {
+                    sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
+                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('  var html = "";');
+                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                    sourceBuffer.addRaw('  return html;');
+                    sourceBuffer.addRaw('}, $slotName]);');
+                }
+                else {
+                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('  var html = "";');
+                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                    sourceBuffer.addRaw('  return html;');
+                    sourceBuffer.addRaw('}]);');
+                }
+            });
+        }
+
         var ComponentClass = extra.ComponentClass;
         var component = new ComponentClass({
             aNode: aNode,
@@ -535,10 +574,10 @@ var aNodeCompiler = {
         sourceBuffer.addRendererStart();
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
         sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx);');
+        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx, $givenSlots);');
+        sourceBuffer.addRaw('$givenSlots = null;');
     }
 };
-
 /* eslint-disable guard-for-in */
 
 /**
@@ -552,21 +591,16 @@ var aNodeCompiler = {
 function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
+    sourceBuffer.addRaw('componentCtx.givenSlots = givenSlots;');
+
+
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
     sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
-    sourceBuffer.addRaw('var $computedName = componentCtx.computedNames[$i];');
-    sourceBuffer.addRaw('data[$computedName] = componentCtx.computed[$computedName]();');
+    sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
+    sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
 
     extraProp = extraProp || '';
-    if (component.subTag) {
-        extraProp += ' s-component="' + component.subTag + '"';
-    }
-
-    var refDirective = component.aNode.directives.get('ref');
-    if (refDirective) {
-        extraProp += ' s-ref="' + refDirective.value.raw + '"';
-    }
 
     var eventDeclarations = [];
     for (var key in component.listeners) {
@@ -594,6 +628,8 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer.joinString('-->');
     }
 
+
+
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
 }
@@ -604,6 +640,10 @@ var stringifier = {
         var result = '{';
 
         for (var key in source) {
+            if (typeof source[key] === 'undefined') {
+                continue;
+            }
+
             if (prefixComma) {
                 result += ',';
             }
@@ -679,6 +719,9 @@ var stringifier = {
  */
 function genComponentContextCode(component) {
     var code = ['var componentCtx = {'];
+
+    // given anode
+    code.push('givenSlots: [],');
 
     // filters
     code.push('filters: {');
@@ -765,7 +808,10 @@ function componentCompilePreCode() {
     function extend(target, source) {
         if (source) {
             Object.keys(source).forEach(function (key) {
-                target[key] = source[key];
+                let value = source[key];
+                if (typeof value !== 'undefined') {
+                    target[key] = value;
+                }
             });
         }
 
@@ -881,6 +927,10 @@ function componentCompilePreCode() {
             var result = '{';
 
             Object.keys(source).forEach(function (key) {
+                if (typeof source[key] === 'undefined') {
+                    return;
+                }
+
                 if (prefixComma) {
                     result += ',';
                 }

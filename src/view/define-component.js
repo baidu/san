@@ -25,7 +25,7 @@ function defineComponent(proto) {
     }
     // #[end]
 
-    function ComponentClass(option) {
+    function ComponentClass(option) { // eslint-disable-line
         Component.call(this, option);
     }
 

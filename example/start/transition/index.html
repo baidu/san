@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - hello</title>
+</head>
+
+<body>
+    <script src="../../../dist/san.js"></script>
+    <script>
+    // 这里opacityTranser就是个例子，你可以使用san-transition库，也可以使用jQuery等库
+    var opacityTranser = {
+        enter: function (el, done) {
+            var steps = 20;
+            var currentStep = 0;
+
+            function goStep() {
+                if (currentStep >= steps) {
+                    el.style.opacity = 1;
+                    done();
+                    return;
+                }
+
+                el.style.opacity = currentStep++ / steps;
+                requestAnimationFrame(goStep);
+            }
+
+            goStep();
+        },
+
+        leave: function (el, done) {
+            var steps = 20;
+            var currentStep = 0;
+
+            function goStep() {
+                if (currentStep >= steps) {
+                    el.style.opacity = 0;
+                    done();
+                    return;
+                }
+
+                el.style.opacity = 1 - currentStep++ / steps;
+                requestAnimationFrame(goStep);
+            }
+
+            goStep();
+        }
+    };
+
+    var MyApp = san.defineComponent({
+        template: ''
+            + '<div>'
+            + '  <button on-click="toggle">toggle</button>'
+            + '  <b s-if="num > 10000" s-transition="opacityTranser">big</b>'
+            + '  <span s-else s-transition="opacityTranser">small</span>'
+            + '</div>',
+
+        opacityTranser: opacityTranser,
+
+        toggle: function () {
+            var num = this.data.get('num');
+            this.data.set('num', num > 10000 ? 1 : 30000);
+        }
+    });
+
+
+    var myApp = new MyApp({
+        data: {
+            num: 30000
+        }
+    });
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+

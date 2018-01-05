@@ -8,17 +8,20 @@ var empty = require('../util/empty');
 var IndexedList = require('../util/indexed-list');
 var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
+var removeEl = require('../browser/remove-el');
 var genStumpHTML = require('./gen-stump-html');
+var isEndStump = require('./is-end-stump');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
+var rinseCondANode = require('./rinse-cond-anode');
 var createNode = require('./create-node');
-var createNodeByEl = require('./create-node-by-el');
+var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
-var elementUpdateChilds = require('./element-update-childs');
-var elementDisposeChilds = require('./element-dispose-childs');
+var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
+
 
 /**
  * 创建 if 指令元素
@@ -28,8 +31,8 @@ var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
  */
 function createIf(options) {
     var node = nodeInit(options);
-    node.childs = [];
-    node._type = NodeType.IF;
+    node.children = [];
+    node.nodeType = NodeType.IF;
 
     node.dispose = nodeOwnSimpleDispose;
 
@@ -37,65 +40,40 @@ function createIf(options) {
     node._attachHTML = ifOwnAttachHTML;
     node._update = ifOwnUpdate;
 
-    // #[begin] reverse
-    node._pushChildANode = empty;
-    // #[end]
+    node.cond = node.aNode.directives.get('if').value;
 
     // #[begin] reverse
-    if (options.el) {
-        if (options.el.nodeType === 8) {
-            var aNode = parseTemplate(options.stumpText).childs[0];
-            node.aNode = aNode;
+    if (options.walker) {
+        if (nodeEvalExpr(node, node.cond)) {
+            node.elseIndex = -1;
+            node.children[0] = createReverseNode(
+                rinseCondANode(node.aNode),
+                options.walker,
+                node
+            );
         }
         else {
-            node.elseIndex = -1;
-            var el = document.createComment('san:' + this.id);
-            options.el.parentNode.insertBefore(el, options.el.nextSibling);
+            each(node.aNode.elses, function (elseANode, index) {
+                var elif = elseANode.directives.get('elif');
 
-
-            options.el.removeAttribute('san-if');
-            options.el.removeAttribute('s-if');
-
-            var child = createNodeByEl(options.el, node, options.elWalker);
-            node.childs[0] = child;
-            node.aNode.childs = child.aNode.childs.slice(0);
-
-            node.el = el;
+                if (!elif || elif && nodeEvalExpr(node, elif.value)) {
+                    node.elseIndex = index;
+                    node.children[0] = createReverseNode(
+                        rinseCondANode(elseANode),
+                        options.walker,
+                        node
+                    );
+                    return false;
+                }
+            });
         }
-
-        node.parent._pushChildANode(node.aNode);
     }
     // #[end]
 
-    node.cond = node.aNode.directives.get('if').value;
+
 
     return node;
 }
-
-/**
- * 创建 if 指令对应条件为 true 时对应的元素
- *
- * @inner
- * @param {ANode} directiveANode 指令ANode
- * @param {IfDirective} mainIf 主if元素
- * @return {Element}
- */
-function createIfDirectiveChild(directiveANode, mainIf) {
-    var childANode = createANode({
-        childs: directiveANode.childs,
-        props: directiveANode.props,
-        events: directiveANode.events,
-        tagName: directiveANode.tagName,
-        directives: (new IndexedList()).concat(directiveANode.directives)
-    });
-
-    childANode.directives.remove('if');
-    childANode.directives.remove('else');
-    childANode.directives.remove('elif');
-
-    return createNode(childANode, mainIf);
-}
-
 
 /**
  * attach元素的html
@@ -108,7 +86,7 @@ function ifOwnAttachHTML(buf) {
     var child;
 
     if (nodeEvalExpr(me, me.cond)) {
-        child = createIfDirectiveChild(me.aNode, me);
+        child = createNode(rinseCondANode(me.aNode), me);
         elseIndex = -1;
     }
     else {
@@ -116,7 +94,7 @@ function ifOwnAttachHTML(buf) {
             var elif = elseANode.directives.get('elif');
 
             if (!elif || elif && nodeEvalExpr(me, elif.value)) {
-                child = createIfDirectiveChild(elseANode, me);
+                child = createNode(rinseCondANode(elseANode), me);
                 elseIndex = index;
                 return false;
             }
@@ -124,7 +102,7 @@ function ifOwnAttachHTML(buf) {
     }
 
     if (child) {
-        me.childs[0] = child;
+        me.children[0] = child;
         child._attachHTML(buf);
         me.elseIndex = elseIndex;
     }
@@ -158,20 +136,30 @@ function ifOwnUpdate(changes) {
     }
 
     if (elseIndex === me.elseIndex) {
-        elementUpdateChilds(me, changes);
+        elementUpdateChildren(me, changes);
     }
     else {
-        elementDisposeChilds(me);
-
-        if (typeof elseIndex !== 'undefined') {
-            var child = createIfDirectiveChild(childANode, me);
-            var parentEl = getNodeStumpParent(me);
-            child.attach(parentEl, me._getEl() || parentEl.firstChild);
-
-            me.childs[0] = child;
+        var child = me.children[0];
+        me.children.length = 0;
+        if (child) {
+            child._ondisposed = newChild;
+            child.dispose();
+        }
+        else {
+            newChild();
         }
 
         me.elseIndex = elseIndex;
+    }
+
+    function newChild() {
+        if (typeof elseIndex !== 'undefined') {
+            var child = createNode(rinseCondANode(childANode), me);
+            var parentEl = getNodeStumpParent(me);
+            child.attach(parentEl, me._getEl() || parentEl.firstChild);
+
+            me.children[0] = child;
+        }
     }
 }
 

@@ -4,16 +4,19 @@
     </a>
 </p>
 
-# SAN
+<h1 align="center">SAN</h1>
 
-A MVVM Component Framework for Web. [HomePage](https://ecomfe.github.io/san/)
+<p align="center">
+An MVVM Component Framework for Web. <a href="https://ecomfe.github.io/san/" target="_blank">HomePage</a>
+</p>
 
-[![NPM version](http://img.shields.io/npm/v/san.svg?style=flat-square)](https://npmjs.org/package/san)
-[![Build Status](https://img.shields.io/travis/ecomfe/san/master.svg?style=flat-square)](https://travis-ci.org/ecomfe/san)
-[![Downloads](https://img.shields.io/npm/dm/san.svg?style=flat-square)](https://npmjs.org/package/san)
-[![License](https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square)](https://npmjs.org/package/san)
-[![Issues](https://img.shields.io/github/issues/ecomfe/san.svg?style=flat-square)](https://github.com/ecomfe/san/issues)
-
+<p align="center">
+  <a href="https://www.npmjs.com/package/san"><img src="http://img.shields.io/npm/v/san.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://travis-ci.org/ecomfe/san"><img src="https://img.shields.io/travis/ecomfe/san/master.svg?style=flat-square" alt="Build Status"></a>
+  <a href="https://www.npmjs.com/package/san"><img src="https://img.shields.io/npm/dm/san.svg?style=flat-square" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/san"><img src="https://img.shields.io/github/license/ecomfe/san.svg?style=flat-square" alt="License"></a>
+  <a href="https://github.com/ecomfe/san/issues"><img src="https://img.shields.io/github/issues/ecomfe/san.svg?style=flat-square" alt="Issues"></a>
+</p>
 
 
 
@@ -34,6 +37,42 @@ CDN:
 
 [Dist Files](https://github.com/ecomfe/san/tree/master/dist)
 
+
+## Quick Start
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quick Start</title>
+    <script src="https://unpkg.com/san@latest"></script>
+</head>
+
+<body>
+    <script>
+        const MyApp = san.defineComponent({
+            template: `
+                <div>
+                    <input type="text" value="{=name=}">
+                    <p>Hello {{name}}!</p>
+                </div>
+            `
+        });
+
+        let myApp = new MyApp({
+            data: {
+                name: 'San'
+            }
+        });
+        myApp.attach(document.body);
+    </script>
+</body>
+
+</html>
+```
+
+
 ## Document
 
 - [Start](https://ecomfe.github.io/san/tutorial/start/)
@@ -41,6 +80,10 @@ CDN:
 - [Example](https://ecomfe.github.io/san/example/)
 - [API](https://ecomfe.github.io/san/doc/api/)
 - [ANode](https://github.com/ecomfe/san/blob/master/doc/anode.md)
+
+## DevTool
+
+[DevTool](https://github.com/ecomfe/san-devtool)
 
 ## ChangeLog
 

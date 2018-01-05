@@ -4,18 +4,19 @@
  */
 
 var ExprType = require('./expr-type');
-var readIdent = require('./read-ident');
+var readAccessor = require('./read-accessor');
 var readTertiaryExpr = require('./read-tertiary-expr');
 
 /**
  * 读取调用
  *
  * @param {Walker} walker 源码读取对象
+ * @param {Array=} defaultArgs 默认参数
  * @return {Object}
  */
-function readCall(walker) {
+function readCall(walker, defaultArgs) {
     walker.goUntil();
-    var ident = readIdent(walker);
+    var ident = readAccessor(walker);
     var args = [];
 
     if (walker.goUntil(40)) { // (
@@ -23,6 +24,9 @@ function readCall(walker) {
             args.push(readTertiaryExpr(walker));
             walker.goUntil(44); // ,
         }
+    }
+    else if (defaultArgs) {
+        args = defaultArgs;
     }
 
     return {

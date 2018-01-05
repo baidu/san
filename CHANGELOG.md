@@ -2,6 +2,96 @@
 ChangeLog
 ========
 
+3.3.2
+-------
+
++ 【优化】- scoped slot 的 数据声明，自动将 - 分割转换成 camel case
++ 【优化】- 组件初始化时，data binding 中的 undefined 项，不覆盖默认 data
++ 【优化】- autofocus 和 required 属性增加 boolean 处理
++ 【bug修复】- for 指令位于 template 下，视图更新会触发运行时错误
++ 【bug修复】- 文本节点位于 slot 或 template 中，如果父节点有 prev 兄弟元素，更新不正常
++ 【bug修复】- scoped slot 位于 for 中，列表数据删除可能导致运行错误
++ 【bug修复】- 使用 native 修饰符进行事件绑定，参数获取不到数据
++ 【bug修复】- UIWebView 环境下，双向绑定的输入框在输入法打开时可能更新数据失败
+
+
+3.3.1
+-------
+
++ 【新特性】- slot 声明支持动态的 name
++ 【新特性】- scoped slot 允许访问当前 owner 所在环境的数据
++ 【新特性】- s-ref 指令支持获取 DOM 元素
++ 【优化】- 在 dev 版本中，模板解析提供更丰富的报错信息
++ 【优化】- 模板中允许元素声明 id 属性
++ 【优化】- for 元素更新行为为 clear all 时，保留 transition 效果
++ 【优化】- 事件明确声明为空参数时，不自动添加默认值 $event
++ 【优化】- 模板中声明 slot 属性的元素，DOM 视图中删除 slot attribute
++ 【优化】- 容忍组件反解中对多余的空白文本节点，自动清除
++ 【bug修复】- 带有 transition 的 for item 元素，在快速多次变更时，可能由于 child 不存在产生运行时错误
++ 【bug修复】- 双向绑定时，如果子组件在 inited 时 set data，owner data 未更新
++ 【bug修复】- input value 在双向绑定时可能存在 xss 漏洞
++ 【bug修复】- 文本节点在更新时可能多次转义
+
+
+3.3.0
+-------
+
+
++ 【新特性】- 支持 template tag 声明自身不渲染元素只渲染内容
++ 【新特性】- 事件声明参数为空时，默认 $event
++ 【新特性】- 支持通过 native modifier，直接为组件的根元素绑定事件
++ 【新特性】- 支持通过 capture modifier，在捕获阶段绑定事件
++ 【新特性】- 支持 scoped slot
++ 【新特性】- 支持 transition 机制
++ 【新特性】- slot 支持 if 和 for 指令
++ 【新特性】- 组件实例上添加 slot 方法，可以获取组件内部 slot 插入的内容
++ 【新特性】- 组件实例上添加 nextTick 方法，避免组件实现需要 nextTick 必须显式依赖 san
++ 【新特性】- main 上暴露 NodeType 枚举对象
++ 【变更】- parseTemplate 的 ANode 去除 parent 的引用。消除循环引用后可以 JSON.stringify
++ 【变更】- ANode 上子节点命名由 childs 变更为 children
++ 【变更】- 组件 LifeCycle 对象静态化，main 上不再暴露 LifeCycle 类
++ 【优化】- data 的 push 和 unshift 操作返回新数组长度，和 JS Array 保持一致
++ 【优化】- 增加事件绑定到不存在方法时的错误提示
++ 【优化】- 当数组上有非数字索引的成员并发生变更时，添加判断使视图更新时不报错，增加健壮性
++ 【bug修复】- ssr 在多重循环下可能渲染不完整
++ 【bug修复】- input[type=file] 的 multiple 属性由于低级的拼写问题导致不支持
++ 【bug修复】- input value 使用双向绑定时，如果绑定值为 undefined，表单内容未自动转为空串
+
+
+
+3.2.10
+-------
+
++ 【bug修复】- slot name 可能侵入全局，并且在 this 不存在时可能导致出错。该问题为 3.2.5 引入
+
+
+3.2.9
+-------
+
+
++ 【bug修复】- attr 值为空 string 时，保留 attr，不删除
++ 【bug修复】- 一次时钟周期同时 set 列表数据项 和 非列表数据项时，列表视图可能有部分不更新
+
+
+3.2.8
+-------
+
++ 【优化】- slot dispose 时增加是否主动移除 DOM 的判断，增加组件动态创建场景和销毁顺序不正确时的健壮性
++ 【bug修复】- slot 中包含自定义标签时，ssr 下找不到对应组件类，不能正确渲染组件
++ 【bug修复】- 一次时钟周期对列表同时进行 set 和 splice 操作时，渲染不正确
+
+
+3.2.7
+-------
+
++ 【优化】- bool 型属性值不合法时忽略，增加健壮性
++ 【bug修复】- 元素的自定义属性（如 data-xxx 或 aria-xxx 等）在数据更新时不更新
++ 【bug修复】- if 指令对元素重新创建时，bool 型属性未设置
++ 【bug修复】- if 指令对 for 重新创建时，如果有 text 兄弟节点，for 添加位置可能错误。该问题为 3.2.4 引入
++ 【bug修复】- for 指令 list 对应上级数据整体更新时，视图更新可能不完整。该问题为 3.2.4 引入
++ 【bug修复】- 组件在 attached 中有动态创建组件时，有可能因为生命周期调用时序导致运行出错。该问题为 3.2.5 引入
+
+
 3.2.6
 -------
 

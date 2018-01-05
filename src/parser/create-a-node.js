@@ -25,7 +25,7 @@ function createANode(options) {
         options.directives = options.directives || new IndexedList();
         options.props = options.props || new IndexedList();
         options.events = options.events || [];
-        options.childs = options.childs || [];
+        options.children = options.children || [];
     }
 
     return options;

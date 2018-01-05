@@ -5,6 +5,7 @@
 
 var each = require('../util/each');
 var removeEl = require('../browser/remove-el');
+var insertHTMLBefore = require('../browser/insert-html-before');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var pushStrBuffer = require('../runtime/push-str-buffer');
@@ -14,6 +15,7 @@ var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
+var isSimpleText = require('./is-simple-text');
 
 /**
  * 创建 text 节点
@@ -25,44 +27,48 @@ var isEndStump = require('./is-end-stump');
  */
 function createText(options) {
     var node = nodeInit(options);
-    node._type = NodeType.TEXT;
+    node.nodeType = NodeType.TEXT;
 
+    node.attach = textOwnAttach;
     node.dispose = textOwnDispose;
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
 
+    node._static = node.aNode.textExpr.value;
+    node._simple = isSimpleText(node.aNode);
+
     // #[begin] reverse
     // from el
-    if (node.el) {
-        node.aNode = createANode({
-            isText: 1,
-            text: options.stumpText
-        });
-
-        node.parent._pushChildANode(node.aNode);
-
-        /* eslint-disable no-constant-condition */
-        while (1) {
-        /* eslint-enable no-constant-condition */
-            var next = options.elWalker.next;
-            if (isEndStump(next, 'text')) {
-                options.elWalker.goNext();
-                removeEl(next);
-                break;
+    if (options.walker) {
+        var currentNode = options.walker.current;
+        if (node._simple) {
+            if (currentNode && currentNode.nodeType === 3) {
+                node.el = currentNode;
+                options.walker.goNext();
             }
-
-            options.elWalker.goNext();
         }
+        else {
+            removeEl(currentNode);
+            options.walker.goNext();
 
-        removeEl(node.el);
-        node.el = null;
+            while (1) { /* eslint-disable-line */
+                currentNode = options.walker.current;
+                if (isEndStump(currentNode, 'text')) {
+                    options.walker.goNext();
+                    removeEl(currentNode);
+                    break;
+                }
+
+                options.walker.goNext();
+            }
+        }
     }
     // #[end]
 
-    node._static = node.aNode.textExpr.value;
-
     return node;
 }
+
+
 
 /**
  * 销毁 text 节点
@@ -83,6 +89,49 @@ function textOwnAttachHTML(buf) {
     pushStrBuffer(buf, this.content);
 }
 
+/**
+ * 定位text节点在父元素中的位置
+ *
+ * @param {Object} node text节点元素
+ */
+function textLocatePrevNode(node) {
+    function getPrev(node) {
+        var parentChildren = node.parent.children;
+        var len = parentChildren.length;
+
+        while (len--) {
+            if (node === parentChildren[len]) {
+                return parentChildren[len - 1];
+            }
+        }
+    }
+
+    if (!node._located) {
+        var parentBase = node.parent;
+        node._prev = getPrev(node);
+        while (!node._prev && parentBase
+            && (parentBase.nodeType === NodeType.TPL
+                || parentBase.nodeType === NodeType.SLOT)
+        ) {
+            node._prev = getPrev(parentBase);
+            parentBase = parentBase.parent;
+        }
+
+        node._located = 1;
+    }
+}
+
+/**
+ * 将text attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
+function textOwnAttach(parentEl, beforeEl) {
+    this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
+
+    insertHTMLBefore(this.content, parentEl, beforeEl);
+}
 
 /* eslint-disable max-depth */
 
@@ -98,56 +147,28 @@ function textOwnUpdate(changes) {
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
             var text = nodeEvalExpr(this, this.aNode.textExpr, 1);
+
             if (text !== this.content) {
                 this.content = text;
+                var rawText = nodeEvalExpr(this, this.aNode.textExpr);
 
                 // 无 stump 元素，所以需要根据组件结构定位
-                if (!this._located) {
-                    each(this.parent.childs, function (child, i) {
-                        if (child === me) {
-                            me._prev = me.parent.childs[i - 1];
-                            return false;
-                        }
-                    });
-
-                    this._located = 1;
-                }
-
-                // 两种 update 模式
-                // 1. 单纯的 text node
-                // 2. 可能是复杂的 html 结构
-                if (!me.updateMode) {
-                    me.updateMode = 1;
-                    each(this.aNode.textExpr.segs, function (seg) {
-                        if (seg.type === ExprType.INTERP) {
-                            each(seg.filters, function (filter) {
-                                switch (filter.name) {
-                                    case 'html':
-                                    case 'url':
-                                        return;
-                                }
-
-                                me.updateMode = 2;
-                                return false;
-                            });
-                        }
-
-                        return me.updateMode < 2;
-                    });
-                }
+                textLocatePrevNode(me);
 
                 var parentEl = this.parent._getEl();
-                if (me.updateMode === 1) {
+                if (me._simple) {
                     if (me.el) {
-                        me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+                        me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                     }
                     else {
-                        var el = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
+                        var prevEl = me._prev && me._prev._getEl();
+                        prevEl = prevEl && prevEl.nextSibling;
+                        var el = prevEl || parentEl.firstChild;
                         if (el) {
                             switch (el.nodeType) {
                                 case 3:
                                     me.el = el;
-                                    me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = text;
+                                    me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                                     break;
                                 case 1:
                                     el.insertAdjacentHTML('beforebegin', text);
@@ -176,16 +197,7 @@ function textOwnUpdate(changes) {
                     warnSetHTML(parentEl);
                     // #[end]
 
-
-                    if (insertBeforeEl) {
-                        insertBeforeEl.insertAdjacentHTML('beforebegin', text);
-                    }
-                    else if (me._prev) {
-                        me._prev._getEl().insertAdjacentHTML('afterend', text);
-                    }
-                    else {
-                        parentEl.innerHTML = text;
-                    }
+                    insertHTMLBefore(text, parentEl, insertBeforeEl);
                 }
             }
 

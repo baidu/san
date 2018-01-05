@@ -12,9 +12,8 @@ var IndexedList = require('../util/indexed-list');
  * @param {Object} element 节点对象
  */
 function elementInitProps(element) {
-    element.lifeCycle = new LifeCycle();
-    element.childs = [];
-    element.slotChilds = [];
+    element.lifeCycle = LifeCycle.start;
+    element.children = [];
     element._elFns = {};
     element._propVals = {};
     element.dynamicProps = new IndexedList();

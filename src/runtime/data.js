@@ -75,6 +75,10 @@ Data.prototype.unlisten = function (listener) {
  * @param {Object} change 变更信息对象
  */
 Data.prototype.fire = function (change) {
+    if (change.option.silent || change.option.silence || change.option.quiet) {
+        return;
+    }
+
     each(this.listeners, function (listener) {
         listener.call(this, change);
     }, this);
@@ -145,12 +149,10 @@ function immutableSet(source, exprPaths, value, data) {
     if (source instanceof Array) {
         var index = +prop;
 
-        if (!isNaN(index)) {
-            result = source.slice(0);
-            result[index] = immutableSet(result[index], exprPaths.slice(1), value, data);
+        result = source.slice(0);
+        result[isNaN(index) ? prop : index] = immutableSet(source[index], exprPaths.slice(1), value, data);
 
-            return result;
-        }
+        return result;
     }
     else if (typeof source === 'object') {
         result = {};
@@ -175,7 +177,7 @@ function immutableSet(source, exprPaths, value, data) {
  * @param {string|Object} expr 数据项路径
  * @param {*} value 数据值
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
  */
 Data.prototype.set = function (expr, value, option) {
     option = option || {};
@@ -197,7 +199,7 @@ Data.prototype.set = function (expr, value, option) {
     }
 
     this.raw = immutableSet(this.raw, expr.paths, value, this);
-    !option.silence && this.fire({
+    this.fire({
         type: DataChangeType.SET,
         expr: expr,
         value: value,
@@ -239,7 +241,7 @@ Data.prototype.splice = function (expr, args, option) {
         returnValue = newArray.splice.apply(newArray, args);
         this.raw = immutableSet(this.raw, expr.paths, newArray, this);
 
-        !option.silence && this.fire({
+        this.fire({
             expr: expr,
             type: DataChangeType.SPLICE,
             index: index,
@@ -263,13 +265,15 @@ Data.prototype.splice = function (expr, args, option) {
  * @param {string|Object} expr 数据项路径
  * @param {*} item 要push的值
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ * @return {number} 新数组的length属性
  */
 Data.prototype.push = function (expr, item, option) {
     var target = this.get(expr);
 
     if (target instanceof Array) {
         this.splice(expr, [target.length, 0, item], option);
+        return target.length + 1;
     }
 };
 
@@ -278,7 +282,7 @@ Data.prototype.push = function (expr, item, option) {
  *
  * @param {string|Object} expr 数据项路径
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
  * @return {*}
  */
 Data.prototype.pop = function (expr, option) {
@@ -297,7 +301,7 @@ Data.prototype.pop = function (expr, option) {
  *
  * @param {string|Object} expr 数据项路径
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
  * @return {*}
  */
 Data.prototype.shift = function (expr, option) {
@@ -310,10 +314,16 @@ Data.prototype.shift = function (expr, option) {
  * @param {string|Object} expr 数据项路径
  * @param {*} item 要unshift的值
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ * @return {number} 新数组的length属性
  */
 Data.prototype.unshift = function (expr, item, option) {
-    this.splice(expr, [0, 0, item], option);
+    var target = this.get(expr);
+
+    if (target instanceof Array) {
+        this.splice(expr, [0, 0, item], option);
+        return target.length + 1;
+    }
 };
 
 /**
@@ -322,7 +332,7 @@ Data.prototype.unshift = function (expr, item, option) {
  * @param {string|Object} expr 数据项路径
  * @param {number} index 要移除项的索引
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
  */
 Data.prototype.removeAt = function (expr, index, option) {
     this.splice(expr, [index, 1], option);
@@ -334,7 +344,7 @@ Data.prototype.removeAt = function (expr, index, option) {
  * @param {string|Object} expr 数据项路径
  * @param {*} value 要移除的项
  * @param {Object=} option 设置参数
- * @param {boolean} option.silence 静默设置，不触发变更事件
+ * @param {boolean} option.silent 静默设置，不触发变更事件
  */
 Data.prototype.remove = function (expr, value, option) {
     var target = this.get(expr);

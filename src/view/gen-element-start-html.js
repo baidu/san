@@ -5,9 +5,19 @@
 
 var evalExpr = require('../runtime/eval-expr');
 var pushStrBuffer = require('../runtime/push-str-buffer');
+var escapeHTML = require('../runtime/escape-html');
+var each = require('../util/each');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 var nodeEvalExpr = require('./node-eval-expr');
+
+var BOOL_ATTRIBUTES = {};
+each(
+    'checked,readonly,selected,multiple,draggable,disabled'.split(','),
+    function (key) {
+        BOOL_ATTRIBUTES[key] = 1;
+    }
+);
 
 /**
  * 生成元素标签起始的html
@@ -20,17 +30,22 @@ function genElementStartHTML(element, buf) {
         return;
     }
 
-    pushStrBuffer(buf, '<' + element.tagName + ' id="' + element.id + '"');
+    pushStrBuffer(buf, '<' + element.tagName);
 
     element.props.each(function (prop) {
         var attr = prop.attr;
+        var value;
 
         if (!attr) {
             element.dynamicProps.push(prop);
 
-            var value = isComponent(element)
+            value = isComponent(element)
                 ? evalExpr(prop.expr, element.data, element)
                 : nodeEvalExpr(element, prop.expr, 1);
+
+            if (!BOOL_ATTRIBUTES[prop.name] && prop.x) {
+                value = escapeHTML(value);
+            }
 
             attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
         }
@@ -38,7 +53,14 @@ function genElementStartHTML(element, buf) {
         pushStrBuffer(buf, attr || '');
     });
 
-    pushStrBuffer(buf, '>');
+    var idProp = element.props.get('id');
+    if (idProp) {
+        element._elId = isComponent(element)
+            ? evalExpr(idProp.expr, element.data, element)
+            : nodeEvalExpr(element, idProp.expr, 1);
+    }
+
+    pushStrBuffer(buf, ' id="' + (element._elId || element.id) + '"' + '>');
 }
 
 exports = module.exports = genElementStartHTML;

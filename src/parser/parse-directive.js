@@ -6,6 +6,7 @@
 
 var Walker = require('./walker');
 var parseExpr = require('./parse-expr');
+var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseInterp = require('./parse-interp');
 var readAccessor = require('./read-accessor');
@@ -61,6 +62,12 @@ var directiveParsers = {
     'html': function (value) {
         return {
             value: parseInterp(value)
+        };
+    },
+
+    'transition': function (value) {
+        return {
+            value: parseCall(value)
         };
     }
 };

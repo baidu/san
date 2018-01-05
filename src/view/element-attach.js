@@ -5,7 +5,7 @@
 
 var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
-var genElementChildsHTML = require('./gen-element-childs-html');
+var genElementChildrenHTML = require('./gen-element-children-html');
 var warnSetHTML = require('./warn-set-html');
 
 /**
@@ -28,7 +28,7 @@ function elementAttach(element, parentEl, beforeEl) {
 
     if (!element._contentReady) {
         var buf = createStrBuffer();
-        genElementChildsHTML(element, buf);
+        genElementChildrenHTML(element, buf);
 
         // html 没内容就不要设置 innerHTML了
         // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题

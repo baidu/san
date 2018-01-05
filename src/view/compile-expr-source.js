@@ -72,7 +72,7 @@ var compileExprSource = {
         var code = compileExprSource.expr(interpExpr.expr);
 
         each(interpExpr.filters, function (filter) {
-            code = 'componentCtx.callFilter("' + filter.name + '", [' + code;
+            code = 'componentCtx.callFilter("' + filter.name.paths[0].value + '", [' + code;
             each(filter.args, function (arg) {
                 code += ', ' + compileExprSource.expr(arg);
             });
@@ -103,7 +103,12 @@ var compileExprSource = {
                     filters: [
                         {
                             type: ExprType.CALL,
-                            name: 'html',
+                            name: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: 'html'}
+                                ]
+                            },
                             args: []
                         }
                     ]

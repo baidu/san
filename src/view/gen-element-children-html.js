@@ -15,7 +15,7 @@ var nodeEvalExpr = require('./node-eval-expr');
  * @param {Element} element 元素
  * @param {Object} buf html串存储对象
  */
-function genElementChildsHTML(element, buf) {
+function genElementChildrenHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
@@ -29,10 +29,10 @@ function genElementChildsHTML(element, buf) {
             pushStrBuffer(buf, nodeEvalExpr(element, htmlDirective.value));
         }
         else {
-            each(element.aNode.childs, function (aNodeChild) {
+            each(element.aNode.children, function (aNodeChild) {
                 var child = createNode(aNodeChild, element);
                 if (!child._static) {
-                    element.childs.push(child);
+                    element.children.push(child);
                 }
                 child._attachHTML(buf);
             });
@@ -40,4 +40,4 @@ function genElementChildsHTML(element, buf) {
     }
 }
 
-exports = module.exports = genElementChildsHTML;
+exports = module.exports = genElementChildrenHTML;

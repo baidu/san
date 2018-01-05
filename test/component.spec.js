@@ -119,6 +119,8 @@ describe("Component", function () {
         expect(labelAttached).toBe(1);
         expect(labelDetached).toBe(0);
 
+        expect(myComponent.nextTick).toBe(san.nextTick);
+
         myComponent.detach();
         expect(!!myComponent.lifeCycle.is('created')).toBe(true);
         expect(!!myComponent.lifeCycle.is('attached')).toBe(false);
@@ -417,6 +419,30 @@ describe("Component", function () {
         });
     });
 
+    it("compile before new", function () {
+        var MyComponent = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        expect(MyComponent.prototype.aNode == null).toBeTruthy();
+        san.compileComponent(MyComponent);
+
+        expect(MyComponent.prototype.aNode != null).toBeTruthy();
+
+
+        var myComponent = new MyComponent({data: {text: 'Hello San!'}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('Hello San!');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("template as static property", function () {
         var MyComponent = san.defineComponent({});
         MyComponent.template = '<span title="{{color}}">{{color}}</span>';
@@ -469,7 +495,11 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(myComponent.el.firstChild.nodeType).toBe(3);
+        // ie会自己干掉第一个空白文本节点，妈蛋
+        // 其实它会干掉它认为没意义的节点，包括空白文本节点、注释、空白script
+        if (!/msie/i.test(navigator.userAgent)) {
+            expect(myComponent.el.firstChild.nodeType).toBe(3);
+        }
         expect(myComponent.el.lastChild.nodeType).toBe(3);
 
         myComponent.dispose();
@@ -670,6 +700,54 @@ describe("Component", function () {
             done();
         })
 
+    });
+
+    it("custom event default arg $event", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span on-click="clicker" style="cursor:pointer">click here to fire change event with no arg</span></a>',
+
+            clicker: function () {
+                this.fire('change', "Hello");
+            }
+        });
+
+        var changed = false;
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label on-change="labelChange"></ui-label></div>',
+
+            labelChange: function (event) {
+                expect(event).toBe("Hello");
+                changed = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+            if (changed) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        var span = wrap.getElementsByTagName('span')[0];
+        triggerEvent('#' + span.id, 'click');
+
+        doneSpec();
     });
 
     it("custom event should not pass DOM Event object, when fire with no arg", function (done) {
@@ -873,6 +951,69 @@ describe("Component", function () {
 
     });
 
+    it("dynamic create component", function (done) {
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+
+        var Panel = san.defineComponent({
+            template: '<div>panel</div>',
+            attached: function () {
+                var layer = new Layer({
+                    data: {
+                        content: this.data.get('content')
+                    }
+                });
+
+                this.layer = layer;
+                layer.attach(wrap);
+
+                this.watch('content', function (value) {
+                    layer.data.set('content', value)
+                });
+            },
+
+            disposed: function () {
+                this.layer.dispose();
+                this.layer = null;
+            }
+        });
+        var Layer = san.defineComponent({
+            template: '<b>{{content}}</b>',
+
+            updated: function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('title');
+                expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('subtitle');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<div><x-panel content="{{layerContent}}"></x-panel><u>{{title}}</u></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                layerContent: 'layer',
+                title: 'main'
+            }
+        });
+
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('main');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('layer');
+
+        myComponent.data.set('title', 'title');
+        myComponent.data.set('layerContent', 'subtitle');
+    });
+
     it("dispatch should pass message up, util the first component which recieve it", function (done) {
         var Select = san.defineComponent({
             template: '<ul><slot></slot></ul>',
@@ -1070,6 +1211,133 @@ describe("Component", function () {
         function detectDone() {
             if (selectValue) {
                 expect(wrap.getElementsByTagName('b')[0].title).toBe(selectValue);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(detectDone, 500);
+        }
+
+        detectDone();
+        triggerEvent('#' + itemId, 'click');
+
+    });
+
+    it("message * would receive all message", function (done) {
+        var selectMessageX;
+        var justtestReceived;
+        var Select = san.defineComponent({
+            template: '<ul><slot></slot></ul>',
+
+            messages: {
+                'UI:select-item-selected': function (arg) {
+                    var value = arg.value;
+                    this.data.set('value', value);
+
+                    var len = this.items.length;
+                    while (len--) {
+                        this.items[len].data.set('selectValue', value);
+                    }
+                },
+
+                'UI:select-item-attached': function (arg) {
+                    this.items.push(arg.target);
+                    arg.target.data.set('selectValue', this.data.get('value'));
+                },
+
+                'UI:select-item-detached': function (arg) {
+                    var len = this.items.length;
+                    while (len--) {
+                        if (this.items[len] === arg.target) {
+                            this.items.splice(len, 1);
+                        }
+                    }
+                },
+
+                '*': function (arg) {
+                    selectMessageX = true;
+                    expect(arg.name.indexOf('justtest')).toBe(0);
+                    if (arg.name.indexOf('stop') === -1) {
+                        this.dispatch(arg.name);
+                    }
+                }
+            },
+
+            inited: function () {
+                this.items = [];
+            }
+        });
+
+        var selectValue;
+        var itemId;
+        var SelectItem = san.defineComponent({
+            template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
+
+            select: function () {
+                var value = this.data.get('value');
+                this.dispatch('UI:select-item-selected', value);
+                this.dispatch('justtest', value);
+                selectValue = value;
+            },
+
+            attached: function () {
+                itemId = this.id;
+                this.dispatch('UI:select-item-attached');
+            },
+
+            detached: function () {
+                this.dispatch('UI:select-item-detached');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-select': Select,
+                'ui-selectitem': SelectItem
+            },
+
+            template: '<div><ui-select value="{=v=}">'
+                + '<ui-selectitem value="1">one</ui-selectitem>'
+                + '<ui-selectitem value="2">two</ui-selectitem>'
+                + '<ui-selectitem value="3">three</ui-selectitem>'
+                + '</ui-select>please click to select a item<b title="{{v}}">{{v}}</b></div>',
+
+            messages: {
+                'UI:select-item-selected': function () {
+                    expect(false).toBeTruthy();
+                },
+
+                'UI:select-item-attached': function () {
+                    expect(false).toBeTruthy();
+                },
+
+                'UI:select-item-detached': function () {
+                    expect(false).toBeTruthy();
+                },
+
+                'justtest': function () {
+                    justtestReceived = true;
+                },
+
+                'justteststop': function () {
+                    expect(false).toBeTruthy();
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function detectDone() {
+            if (selectValue) {
+                expect(wrap.getElementsByTagName('b')[0].title).toBe(selectValue);
+                expect(selectMessageX).toBeTruthy();
+                expect(justtestReceived).toBeTruthy();
 
                 myComponent.dispose();
                 document.body.removeChild(wrap);
@@ -1786,6 +2054,37 @@ describe("Component", function () {
             document.body.removeChild(wrap);
             done();
         })
+    });
+
+    it("ref in element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="name in list" s-ref="it-{{name}}">{{name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                list: ['errorrik', 'leeight']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.ref('it-errorrik').innerHTML).toBe('errorrik');
+        expect(myComponent.ref('it-leeight').innerHTML).toBe('leeight');
+
+        myComponent.data.set('list[0]', '2b');
+
+        san.nextTick(function () {
+            expect(myComponent.ref('it-errorrik') == null).toBeTruthy();
+            expect(myComponent.ref('it-2b').innerHTML).toBe('2b');
+            expect(myComponent.ref('it-leeight').innerHTML).toBe('leeight');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
     });
 
 
@@ -2598,6 +2897,146 @@ describe("Component", function () {
 
             done();
         })
+    });
+
+    it("main element not in declare position, need remove when dispose call", function () {
+        var Dialog = san.defineComponent({
+            template: '<div class="ui-dialog">HI Dialog</div>',
+            attached: function() {
+                if (this.el.parentNode !== document.body) {
+                    document.body.appendChild(this.el);
+                }
+            },
+
+            detached: function () {
+                if (this.el.parentNode === document.body) {
+                    document.body.removeChild(this.el);
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-dialog': Dialog
+            },
+
+            template: '<div><span>Hi Component</span><x-dialog s-ref="dialog"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var el = myComponent.el;
+        var spanEl = el.firstChild;
+        var dialogEl = myComponent.ref('dialog').el;
+        expect(dialogEl.parentNode).toBe(document.body);
+        expect(spanEl.parentNode).toBe(el);
+
+        myComponent.dispose();
+
+        // ie又变态了，removeChild后element还有parentNode，变成document了。妈蛋的东西
+        expect(dialogEl.parentNode == null || dialogEl.parentNode.tagName == null).toBeTruthy();
+        expect(el.parentNode == null || el.parentNode.tagName == null).toBeTruthy();
+        document.body.removeChild(wrap);
+    });
+
+    it('given undefined data dont reset initData', function (done) {
+        var U = san.defineComponent({
+            template: '<u>{{foo}}</u>',
+            initData: function () {
+                return {
+                    foo: 'foo'
+                };
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><my-u s-ref="uc" foo="{{formData.foo}}" /></div>',
+            components: {
+                'my-u': U
+            },
+            initData: function () {
+                return {
+                    formData: {}
+                };
+            },
+            getFooValue: function () {
+                return this.ref('uc').data.get('foo');
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.getFooValue()).toBe('foo');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('foo');
+        myComponent.data.set('formData', {foo: 'bar'});
+
+        san.nextTick(function () {
+            expect(myComponent.getFooValue()).toBe('bar');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('bar');
+            done();
+            document.body.removeChild(wrap);
+        });
+    });
+
+    it("dynamic component attach to inner element", function () {
+
+        var UnderlinePanel = san.defineComponent({
+            template: '<div><u><slot></slot></u></div>'
+        });
+
+        var Strong = san.defineComponent({
+            template: '<strong><slot></slot></strong>'
+        });
+
+        var Biz = san.defineComponent({
+            components: {
+                'x-panel': UnderlinePanel,
+                'x-strong': Strong
+            },
+
+            template: '<div>'
+                + '<x-panel><x-strong item="{{item}}" s-if="strongShow">{{item}}</x-strong></x-panel></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><span>hello</span></div>',
+
+            attached: function () {
+                this.biz = new Biz({
+                    data: {
+                        strongShow: true
+                    }
+                });
+                this.biz.attach(this.el);
+            },
+
+            disposed: function () {
+                this.biz.dispose();
+                this.biz = null;
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(1);
+
+        myComponent.dispose();
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(0);
+
+        document.body.removeChild(wrap);
     });
 });
 

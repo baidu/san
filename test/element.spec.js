@@ -18,6 +18,40 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("empty custom string prop", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span data-name="">test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.getAttribute('data-name')).toBe('');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("empty custom string prop, unvalue", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span data-name>test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.getAttribute('data-name')).toBe('');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("line-break attribute", function () {
         var MyComponent = san.defineComponent({
             template: '<a title="line1\r\nline2"><span title="line1\r\nline2">test</span><span class="test2">test2</span></a>'
@@ -59,7 +93,7 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
-    it("bind prop, which has xxx- prefix", function () {
+    it("bind prop, which has xxx- prefix", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a data-name="{{name}}"><span data-name="{{name}}">{{name}}</span></a>'
         });
@@ -75,8 +109,16 @@ describe("Element", function () {
         expect(span.getAttribute('data-name')).toBe('errorrik');
         expect(a.getAttribute('data-name')).toBe('errorrik');
 
-        myComponent.dispose();
-        document.body.removeChild(wrap);
+
+        myComponent.data.set('name', 'erik');
+
+        san.nextTick(function () {
+            expect(span.getAttribute('data-name')).toBe('erik');
+            expect(a.getAttribute('data-name')).toBe('erik');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
 
@@ -235,6 +277,37 @@ describe("Element", function () {
         });
     });
 
+    it("bind input valued undefined", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="text" value="{=info.value=}"></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.value).toBe('');
+
+        myComponent.data.set('info', {value: 'true'});
+
+
+        san.nextTick(function () {
+            expect(input.value).toBe('true');
+
+            myComponent.data.set('info', {});
+
+            san.nextTick(function () {
+                expect(input.value).toBe('');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
     it("bind draggable", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><div draggable="{{draggable}}"></div></a>'
@@ -266,6 +339,33 @@ describe("Element", function () {
 
             });
 
+        });
+    });
+
+    it("bind multiple", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input type="file" multiple="{{ed}}"></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        expect(input.multiple).toBeFalsy();
+
+        myComponent.data.set('ed', true);
+
+
+        san.nextTick(function () {
+            expect(input.multiple).toBeTruthy();
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
         });
     });
 
@@ -585,6 +685,41 @@ describe("Element", function () {
 
         san.nextTick(function () {
             expect(/er<span>erik<\/span>ik/i.test(a.innerHTML)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+
+    it("id prop compatibility", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul id="test"><li s-for="name in list" id="it-{{name}}">{{name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                list: ['errorrik', 'leeight']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ul = document.getElementById('test');
+        expect(ul.tagName).toBe('UL');
+
+        expect(document.getElementById('it-errorrik').innerHTML).toBe('errorrik');
+        expect(document.getElementById('it-leeight').innerHTML).toBe('leeight');
+
+        myComponent.data.set('list[0]', '2b');
+
+        san.nextTick(function () {
+            expect(document.getElementById('it-errorrik') == null).toBeTruthy();
+            expect(document.getElementById('it-2b').innerHTML).toBe('2b');
+            expect(document.getElementById('it-leeight').innerHTML).toBe('leeight');
 
             myComponent.dispose();
             document.body.removeChild(wrap);

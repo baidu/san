@@ -45,7 +45,7 @@ CompileSourceBuffer.prototype.joinRaw = function (code) {
  * 添加renderer方法的起始源码
  */
 CompileSourceBuffer.prototype.addRendererStart = function () {
-    this.addRaw('function (data, parentCtx) {');
+    this.addRaw('function (data, parentCtx, givenSlots) {');
     this.addRaw('var html = "";');
 };
 

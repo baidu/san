@@ -15,7 +15,8 @@ var NodeType = {
     FOR: 3,
     ELEM: 4,
     CMPT: 5,
-    SLOT: 6
+    SLOT: 6,
+    TPL: 7
 };
 
 exports = module.exports = NodeType;

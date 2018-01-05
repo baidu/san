@@ -8,12 +8,12 @@ var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var attachings = require('./attachings');
-var parseANodeFromEl = require('../parser/parse-anode-from-el');
-var fromElInitChilds = require('./from-el-init-childs');
+var NodeType = require('./node-type');
+var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var nodeInit = require('./node-init');
 var nodeEvalExpr = require('./node-eval-expr');
-var elementUpdateChilds = require('./element-update-childs');
+var elementUpdateChildren = require('./element-update-children');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
@@ -21,11 +21,11 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
+var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
 var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
-var elementOwnPushChildANode = require('./element-own-push-child-anode');
 var warnSetHTML = require('./warn-set-html');
 
 /**
@@ -38,6 +38,7 @@ var warnSetHTML = require('./warn-set-html');
  */
 function createElement(options) {
     var node = nodeInit(options);
+    node.nodeType = NodeType.ELEM;
 
     // init methods
     node.attach = elementOwnAttach;
@@ -52,19 +53,22 @@ function createElement(options) {
     node._onEl = elementOwnOnEl;
 
     elementInitProps(node);
+    elementInitTagName(node);
+    node.props = node.aNode.props;
+    node.binds = node.aNode.binds || node.aNode.props;
+
+    node._toPhase('inited');
 
     // #[begin] reverse
-    node._pushChildANode = elementOwnPushChildANode;
-
-    if (node.el) {
-        node.aNode = parseANodeFromEl(node.el);
-        node.parent && node.parent._pushChildANode(node.aNode);
-        node.tagName = node.aNode.tagName;
-
-        if (!node.aNode.directives.get('html')) {
-            fromElInitChilds(node);
+    if (options.walker) {
+        var currentNode = options.walker.current;
+        if (currentNode && currentNode.nodeType === 1) {
+            node.el = currentNode;
+            node.el.id = node.id;
+            options.walker.goNext();
         }
-        node.el.id = node.id;
+
+        reverseElementChildren(node);
 
         node.dynamicProps = new IndexedList();
         node.aNode.props.each(function (prop) {
@@ -76,11 +80,6 @@ function createElement(options) {
     }
     // #[end]
 
-    elementInitTagName(node);
-    node.props = node.aNode.props;
-    node.binds = node.aNode.binds || node.aNode.props;
-
-    node._toPhase('inited');
     return node;
 }
 
@@ -124,7 +123,7 @@ function elementOwnUpdate(changes) {
         });
     }
     else {
-        elementUpdateChilds(this, changes);
+        elementUpdateChildren(this, changes);
     }
 }
 
@@ -135,14 +134,6 @@ function elementOwnAttached() {
     elementAttached(this);
 }
 
-/**
- * 使节点到达相应的生命周期
- *
- * @param {string} name 生命周期名称
- */
-function elementOwnToPhase(name) {
-    this.lifeCycle.set(name);
-}
 
 
 exports = module.exports = createElement;

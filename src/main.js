@@ -40,6 +40,7 @@
     // require('./runtime/binary-op');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
+    // require('./view/node-type');
     // require('./view/gen-stump-html');
     // require('./view/create-text');
     // require('./view/get-prop-handler');
@@ -47,10 +48,8 @@
     // require('./view/event-declaration-listener');
     // require('./view/gen-element-start-html');
     // require('./view/gen-element-end-html');
-    // require('./view/gen-element-childs-html');
+    // require('./view/gen-element-children-html');
     // require('./view/create-node');
-    // require('./parser/parse-anode-from-el');
-    // require('./view/from-el-init-childs');
 
 
     // #[main-dependencies]
@@ -61,7 +60,9 @@
     var parseExpr = require('./parser/parse-expr');
     var ExprType = require('./parser/expr-type');
     var LifeCycle = require('./view/life-cycle');
+    var NodeType = require('./view/node-type');
     var Component = require('./view/component');
+    var compileComponent = require('./view/compile-component');
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
@@ -129,6 +130,13 @@
         defineComponent: defineComponent,
 
         /**
+         * 编译组件类。预解析template和components
+         *
+         * @param {Function} ComponentClass 组件类
+         */
+        compileComponent: compileComponent,
+
+        /**
          * 解析 template
          *
          * @inner
@@ -154,11 +162,17 @@
         ExprType: ExprType,
 
         /**
-         * 生命周期类
-         *
-         * @class
+         * 生命周期
          */
         LifeCycle: LifeCycle,
+
+        /**
+         * 节点类型
+         *
+         * @const
+         * @type {Object}
+         */
+        NodeType: NodeType,
 
         /**
          * 在下一个更新周期运行函数

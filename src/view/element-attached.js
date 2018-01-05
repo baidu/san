@@ -7,11 +7,40 @@
 
 var each = require('../util/each');
 var bind = require('../util/bind');
+var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
 
+var elementGetTransition = require('./element-get-transition');
 var eventDeclarationListener = require('./event-declaration-listener');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
+var warnEventListenMethod = require('./warn-event-listen-method');
+
+/**
+ * 双绑输入框CompositionEnd事件监听函数
+ *
+ * @inner
+ */
+function inputOnCompositionEnd() {
+    if (!this.composing) {
+        return;
+    }
+
+    this.composing = 0;
+
+    var event = document.createEvent('HTMLEvents');
+    event.initEvent('input', true, true);
+    this.dispatchEvent(event);
+}
+
+/**
+ * 双绑输入框CompositionStart事件监听函数
+ *
+ * @inner
+ */
+function inputOnCompositionStart() {
+    this.composing = 1;
+}
 
 
 /**
@@ -36,22 +65,16 @@ function elementAttached(element) {
             getPropHandler(element, bindInfo.name).output(element, bindInfo, data);
         }
 
+
         switch (bindInfo.name) {
             case 'value':
                 switch (element.tagName) {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
-                            element._onEl('compositionstart', function () {
-                                this.composing = 1;
-                            });
-                            element._onEl('compositionend', function () {
-                                this.composing = 0;
-
-                                var event = document.createEvent('HTMLEvents');
-                                event.initEvent('input', true, true);
-                                this.dispatchEvent(event);
-                            });
+                            element._onEl('change', inputOnCompositionEnd);
+                            element._onEl('compositionstart', inputOnCompositionStart);
+                            element._onEl('compositionend', inputOnCompositionEnd);
                         }
 
                         element._onEl(
@@ -87,20 +110,45 @@ function elementAttached(element) {
 
     // bind events
     each(element.aNode.events, function (eventBind) {
+        var owner = isComponent(element) ? element : element.owner;
+        var data = element.data || element.scope;
+
+        // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
+        // 依此指定eventBind.expr.name位于owner还是owner.owner上
+        if (eventBind.modifier.native) {
+            owner = owner.owner;
+            data = element.scope || owner.data;
+        }
+
+        // #[begin] error
+        warnEventListenMethod(eventBind, owner);
+        // #[end]
+
         element._onEl(
             eventBind.name,
             bind(
                 eventDeclarationListener,
-                isComponent(element) ? element : element.owner,
+                owner,
                 eventBind,
                 0,
-                element.data || element.scope
-            )
+                data
+            ),
+            eventBind.modifier.capture
         );
     });
 
     element._toPhase('attached');
-}
 
+
+    if (element._isInitFromEl) {
+        element._isInitFromEl = false;
+    }
+    else {
+        var transition = elementGetTransition(element);
+        if (transition && transition.enter) {
+            transition.enter(element._getEl(), empty);
+        }
+    }
+}
 
 exports = module.exports = elementAttached;

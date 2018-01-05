@@ -3,18 +3,20 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var elementDisposeChilds = require('./element-dispose-childs');
-var nodeDispose = require('./node-dispose');
+
 var un = require('../browser/un');
+var removeEl = require('../browser/remove-el');
+var elementDisposeChildren = require('./element-dispose-children');
+var nodeDispose = require('./node-dispose');
 
 /**
  * 销毁元素节点
  *
  * @param {Object} element 要销毁的元素节点
- * @param {boolean} dontDetach 是否不要将节点从DOM移除
+ * @param {Object=} options 销毁行为的参数
  */
-function elementDispose(element, dontDetach) {
-    elementDisposeChilds(element, true);
+function elementDispose(element, options) {
+    elementDisposeChildren(element, {dontDetach: true, noTransition: true});
 
     /* eslint-disable guard-for-in */
     // el 事件解绑
@@ -23,17 +25,19 @@ function elementDispose(element, dontDetach) {
         var len = nameListeners && nameListeners.length;
 
         while (len--) {
-            un(element._getEl(), key, nameListeners[len]);
+            var fn = nameListeners[len];
+            un(element._getEl(), key, fn[0], fn[1]);
         }
     }
     element._elFns = null;
     /* eslint-enable guard-for-in */
 
 
-    if (!dontDetach) {
-        element.detach();
+    if (!options || !options.dontDetach || !element.parent) {
+        removeEl(element._getEl());
     }
-    else if (element._toPhase) {
+
+    if (element._toPhase) {
         element._toPhase('detached');
     }
 
@@ -41,9 +45,6 @@ function elementDispose(element, dontDetach) {
     element.dynamicProps = null;
     element.binds = null;
     element._propVals = null;
-
-    // 这里不用挨个调用 dispose 了，因为 childs 释放链会调用的
-    element.slotChilds = null;
 
     nodeDispose(element);
 }

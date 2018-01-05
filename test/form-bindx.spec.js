@@ -38,6 +38,75 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("text value for xss", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span>{{name}}</span> <input value="{=name=}"/><input value="{{name}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: '<b>sb</b>'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var inputs = wrap.getElementsByTagName('input');
+        expect(span.innerHTML).toBe('&lt;b&gt;sb&lt;/b&gt;');
+        expect(inputs[0].value).toBe('<b>sb</b>');
+        expect(inputs[1].value).toBe('<b>sb</b>');
+
+
+        function doneSpec() {
+            var name = myComponent.data.get('name');
+
+            if (name !== '<b>sb</b>') {
+                expect(span.innerHTML).toBe('&lt;b&gt;sb&lt;/b&gt;&lt;a&gt;sb&lt;/a&gt;');
+                expect(inputs[0].value).toBe('<b>sb</b><a>sb</a>');
+                expect(inputs[1].value).toBe('<b>sb</b><a>sb</a>');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 100);
+        }
+
+        triggerEvent('#' + inputs[0].id, 'input', '<a>sb</a>');
+        setTimeout(doneSpec, 200);
+
+    });
+
+    it("text value init data has xss char", function () {
+        var initValue = 'ddd"/><a href="aaa">aaa</a>'
+        var MyComponent = san.defineComponent({
+            template: '<div><span>{{name}}</span> <input value="{=name=}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: initValue
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var inputs = wrap.getElementsByTagName('input');
+        expect(span.innerHTML.indexOf('&lt;a href=') > 0).toBeTruthy();
+        expect(inputs[0].value).toBe(initValue);
+        expect(wrap.getElementsByTagName('a').length).toBe(0);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
     it("text input as component root element", function (done) {
         var defName = 'text value';
 

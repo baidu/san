@@ -579,4 +579,48 @@ describe("Component-TwoWay Binding", function () {
             done();
         }, 500);
     });
+
+    it("child component set default value in inited, owner should update", function (done) {
+        var Input = san.defineComponent({
+            template: '<input value="{=value=}">',
+          
+            inited: function () {
+              if (!this.data.get('value')) {
+                this.data.set('value', 'default');
+              }
+            }
+        });
+          
+        var MyComponent = san.defineComponent({
+            components: {
+              'x-input': Input
+            },
+            template: '<div><b>{{name}}</b><x-input value="{=name=}"/><span>{{name}}</span></div>',
+        });
+        var myComponent = new MyComponent();
+        expect(myComponent.data.get('name') == null).toBeTruthy();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        var spans = wrap.getElementsByTagName('span');
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].innerHTML).toBe('');
+        expect(inputs[0].value).toBe('default');
+        expect(spans[0].innerHTML).toBe('default');
+
+        expect(myComponent.data.get('name')).toBe('default');
+
+        myComponent.nextTick(function () {
+            expect(myComponent.data.get('name')).toBe('default');
+            expect(spans[0].innerHTML).toBe('default');
+            expect(bs[0].innerHTML).toBe('default');
+
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        });
+    });
 });

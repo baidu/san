@@ -90,15 +90,390 @@ describe("ForDirective", function () {
 
         expect(lis.length).toBe(0);
 
-        myComponent.data.push('persons',
+        var newLen = myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
+        expect(newLen).toBe(1);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(1);
             expect(lis[0].getAttribute('title')).toBe('otakustay');
             expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list with template, template has sibling, no data, set soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: []
+                };
+            },
+
+            template: '<div><h3>title</h3> <template san-for="p,i in persons">  <h4>{{p.name}}</h4><p>{{p.email}}</p></template> <h3>next</h3></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+        var h3s = wrap.getElementsByTagName('h3');
+
+        expect(h4s.length).toBe(0);
+        expect(ps.length).toBe(0);
+        expect(h3s.length).toBe(2);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(2);
+            expect(ps.length).toBe(2);
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+            expect(h4s[1].innerHTML).toBe('errorrik');
+            expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list with template, template has sibling, pop and unshift soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: [
+                        {name: 'otakustay', email: 'otakustay@gmail.com'},
+                        {name: 'errorrik', email: 'errorrik@gmail.com'}
+                    ]
+                };
+            },
+
+            template: '<div><h3>title</h3> <template san-for="p,i in persons">  <h4>{{p.name}}</h4><p>{{p.email}}</p></template> <h3>next</h3></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+        var h3s = wrap.getElementsByTagName('h3');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+        expect(h3s.length).toBe(2);
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+            expect(h3s.length).toBe(2);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                expect(h3s.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("render list with template, template has no sibling, no data, set soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: []
+                };
+            },
+
+            template: '<div><template san-for="p,i in persons">  <h4>{{p.name}}</h4><p>{{p.email}}</p></template></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(0);
+        expect(ps.length).toBe(0);
+
+        myComponent.data.set('persons', [
+            {name: 'otakustay', email: 'otakustay@gmail.com'},
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        ]);
+
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(2);
+            expect(ps.length).toBe(2);
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+            expect(h4s[1].innerHTML).toBe('errorrik');
+            expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list with template, template has no sibling, pop and unshift soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    persons: [
+                        {name: 'otakustay', email: 'otakustay@gmail.com'},
+                        {name: 'errorrik', email: 'errorrik@gmail.com'}
+                    ]
+                };
+            },
+
+            template: '<div><template san-for="p,i in persons">  <h4>{{p.name}}</h4><p>{{p.email}}</p></template></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h4s = wrap.getElementsByTagName('h4');
+        var ps = wrap.getElementsByTagName('p');
+
+        expect(h4s.length).toBe(2);
+        expect(ps.length).toBe(2);
+
+        expect(h4s[0].innerHTML).toBe('otakustay');
+        expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+        expect(h4s[1].innerHTML).toBe('errorrik');
+        expect(ps[1].innerHTML).toBe('errorrik@gmail.com');
+
+
+        myComponent.data.pop('persons');
+        san.nextTick(function () {
+            var h4s = wrap.getElementsByTagName('h4');
+            var ps = wrap.getElementsByTagName('p');
+            expect(h4s.length).toBe(1);
+            expect(ps.length).toBe(1);
+
+
+            expect(h4s[0].innerHTML).toBe('otakustay');
+            expect(ps[0].innerHTML).toBe('otakustay@gmail.com');
+
+
+            myComponent.data.unshift('persons', {name: 'errorrik', email: 'errorrik@gmail.com'});
+            san.nextTick(function () {
+                expect(h4s[0].innerHTML).toBe('errorrik');
+                expect(ps[0].innerHTML).toBe('errorrik@gmail.com');
+
+                expect(h4s[1].innerHTML).toBe('otakustay');
+                expect(ps[1].innerHTML).toBe('otakustay@gmail.com');
+
+
+                expect(h4s.length).toBe(2);
+                expect(ps.length).toBe(2);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("render list, no data, set and push soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                };
+            },
+
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(0);
+
+        myComponent.data.set('persons',
+            [{name: 'otakustay', email: 'otakustay@gmail.com'}]
+        );
+        myComponent.data.push('persons',
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+            expect(lis[1].getAttribute('title')).toBe('errorrik');
+            expect(lis[1].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, no data, set and unshift soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                };
+            },
+
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(0);
+
+        myComponent.data.set('persons',
+            [{name: 'otakustay', email: 'otakustay@gmail.com'}]
+        );
+        myComponent.data.unshift('persons',
+            {name: 'errorrik', email: 'errorrik@gmail.com'}
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[1].getAttribute('title')).toBe('otakustay');
+            expect(lis[1].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+            expect(lis[0].getAttribute('title')).toBe('errorrik');
+            expect(lis[0].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, no data, set and pop soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                };
+            },
+
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(0);
+
+        myComponent.data.set('persons',
+            [
+                {name: 'otakustay', email: 'otakustay@gmail.com'},
+                {name: 'errorrik', email: 'errorrik@gmail.com'}
+            ]
+        );
+        myComponent.data.pop('persons');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, no data, set and shift soon", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                };
+            },
+
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(0);
+
+        myComponent.data.set('persons',
+            [
+                {name: 'otakustay', email: 'otakustay@gmail.com'},
+                {name: 'errorrik', email: 'errorrik@gmail.com'}
+            ]
+        );
+        myComponent.data.shift('persons');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].getAttribute('title')).toBe('errorrik');
+            expect(lis[0].innerHTML.indexOf('errorrik - errorrik@gmail.com')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -131,9 +506,10 @@ describe("ForDirective", function () {
         expect(lis[0].parentNode.offsetHeight).toBe(itemHeight);
 
 
-        myComponent.data.push('persons',
+        var newLen = myComponent.data.push('persons',
             {name: 'otakustay', email: 'otakustay@gmail.com'}
         );
+        expect(newLen).toBe(2);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
@@ -274,9 +650,10 @@ describe("ForDirective", function () {
         expect(lis[1].getAttribute('title')).toBe('one 1/2');
         expect(lis[1].innerHTML.indexOf('one - one@gmail.com')).toBe(0);
 
-        myComponent.data.unshift('persons',
+        var newLen = myComponent.data.unshift('persons',
             {name: 'three', email: 'three@gmail.com'}
         );
+        expect(newLen).toBe(3);
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
@@ -793,14 +1170,26 @@ describe("ForDirective", function () {
 
     it("update not item data", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li san-for="p in persons" title="{{dep.name}}-{{p.name}}">{{p.name}} - {{p.email}}</li></ul>'
+            template: '<ul>\n'
+                + '    <li san-for="item in winner.winUsers">\n'
+                + '        <b>{{winner.issueNo}}</b>\n'
+                + '        <u>{{item.luckyNo}}</u>\n'
+                + '    </li>\n'
+                + '</ul>'
         });
         var myComponent = new MyComponent({
             data: {
-                dep: {name: 'SSG'},
-                persons: [
-                    {name: 'otakustay', email: 'otakustay@gmail.com'}
-                ]
+                winner: {
+                    issueNo: 'one',
+                    winUsers: [
+                        {
+                            luckyNo: '123'
+                        },
+                        {
+                            luckyNo: '456'
+                        }
+                    ]
+                }
             }
         });
         var wrap = document.createElement('div');
@@ -808,57 +1197,36 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(1);
-        expect(lis[0].title).toBe('SSG-otakustay');
+        expect(lis.length).toBe(2);
+        expect(lis[0].getElementsByTagName('b')[0].innerHTML).toBe('one');
+        expect(lis[0].getElementsByTagName('u')[0].innerHTML).toBe('123');
+        expect(lis[1].getElementsByTagName('b')[0].innerHTML).toBe('one');
+        expect(lis[1].getElementsByTagName('u')[0].innerHTML).toBe('456');
 
-        myComponent.data.set('dep.name', 'TG');
-
+        myComponent.data.set('winner', {
+            issueNo: 'two',
+            winUsers: [
+                {
+                    luckyNo: '789'
+                },
+                {
+                    luckyNo: '890'
+                },
+                {
+                    luckyNo: 'abc'
+                }
+            ]
+        });
 
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(1);
-            expect(lis[0].title).toBe('TG-otakustay');
-
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
-    });
-
-    it("update not item data in slot", function (done) {
-        var Item = san.defineComponent({
-            template: '<li><slot/></li>'
-        });
-        var MyComponent = san.defineComponent({
-            components: {
-                'm-item': Item
-            },
-            template: '<ul><m-item san-for="p in persons">{{dep.name}}-{{p.name}}</m-item></ul>'
-        });
-        var myComponent = new MyComponent({
-            data: {
-                dep: {name: 'SSG'},
-                persons: [
-                    {name: 'otakustay'}
-                ]
-            }
-        });
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
-        var lis = wrap.getElementsByTagName('li');
-        expect(lis.length).toBe(1);
-        expect(lis[0].innerHTML.indexOf('SSG-otakustay')).toBe(0);
-
-
-        myComponent.data.set('dep.name', 'TG');
-
-
-        san.nextTick(function () {
-            var lis = wrap.getElementsByTagName('li');
-            expect(lis.length).toBe(1);
-            expect(lis[0].innerHTML.indexOf('TG-otakustay')).toBe(0);
+            expect(lis.length).toBe(3);
+            expect(lis[0].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[0].getElementsByTagName('u')[0].innerHTML).toBe('789');
+            expect(lis[1].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[1].getElementsByTagName('u')[0].innerHTML).toBe('890');
+            expect(lis[2].getElementsByTagName('b')[0].innerHTML).toBe('two');
+            expect(lis[2].getElementsByTagName('u')[0].innerHTML).toBe('abc');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1191,6 +1559,241 @@ describe("ForDirective", function () {
             done();
         });
 
+    });
+
+    it("merge different kinds of changes in the same tick", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul>'
+                + '<li s-for="item, index in items">{{item}}</li>'
+            + '</ul>',
+            attached: function () {
+                this.data.set('items', ['errorrik', 'otakustay']);
+                this.data.push('items', 'dafrok');
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            expect(lis.length).toBe(3);
+            expect(lis[0].innerHTML).toBe('errorrik');
+            expect(lis[1].innerHTML).toBe('otakustay');
+            expect(lis[2].innerHTML).toBe('dafrok');
+            expect(lis[3]).toBe(undefined);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, set list and set other data soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in persons" title="in {{dep}}">{{p.name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: [
+                    {name: 'otakustay'}
+                ],
+                dep: 'tg'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].title).toBe('in tg');
+        expect(lis[0].innerHTML).toBe('otakustay');
+
+
+        myComponent.data.set('persons',
+            [
+                {name: 'Justineo'},
+                {name: 'errorrik'}
+            ]
+        );
+        myComponent.data.set('dep', 'ssg');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].title).toBe('in ssg');
+            expect(lis[0].innerHTML).toBe('Justineo');
+            expect(lis[1].title).toBe('in ssg');
+            expect(lis[1].innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+
+    it("render list,  set other data and set list soon", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p in persons" title="in {{dep}}">{{p.name}}</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: [
+                    {name: 'otakustay'}
+                ],
+                dep: 'tg'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(1);
+        expect(lis[0].title).toBe('in tg');
+        expect(lis[0].innerHTML).toBe('otakustay');
+
+
+        myComponent.data.set('dep', 'ssg');
+        myComponent.data.set('persons',
+            [
+                {name: 'Justineo'},
+                {name: 'errorrik'}
+            ]
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].title).toBe('in ssg');
+            expect(lis[0].innerHTML).toBe('Justineo');
+            expect(lis[1].title).toBe('in ssg');
+            expect(lis[1].innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("list data (Array) has string property directly, dont throw error", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><h3>{{list.title}}</h3><p s-for="item in list">{{list.title}} {{item}}</p></div>'
+        });
+
+        var data = {
+            list: ['otakustay']
+        };
+        data.list.title = "super";
+
+        var myComponent = new MyComponent({
+            data: data
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(1);
+        expect(ps[0].innerHTML).toBe('super otakustay');
+
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        expect(h3.innerHTML).toBe('super');
+
+        myComponent.data.push('list', 'errorrik');
+        myComponent.data.set('list.title', 'good');
+
+        san.nextTick(function () {
+            var ps = wrap.getElementsByTagName('p');
+            expect(ps.length).toBe(2);
+            expect(ps[0].innerHTML).toBe('good otakustay');
+            expect(ps[1].innerHTML).toBe('good errorrik');
+            var h3 = wrap.getElementsByTagName('h3')[0];
+            expect(h3.innerHTML).toBe('good');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("nest in template node", function (done) {
+        var MyComponent = san.defineComponent({
+            filters: {
+                arr: function (value) {
+                    return value.join('|')
+                }
+            },
+            template: '<div><template s-for="row in rows">'
+                + '<p s-for="subRow in row.childs">'
+                + '<b>{{subRow.channels|arr}}</b>'
+                + '<input type="checkbox" value="foo" checked="{=subRow.channels=}" />'
+                + '<input type="checkbox" value="bar" checked="{=subRow.channels=}" />'
+                + '</p>'
+            + '</template></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                rows: [
+                    {
+                        childs: [
+                            {channels: ['foo']}
+                        ]
+                    },
+                    {
+                        childs: [
+                            {channels: ['bar']}
+                        ]
+                    }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(2);
+        expect(bs[0].innerHTML).toBe('foo');
+        expect(bs[1].innerHTML).toBe('bar');
+
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeTruthy();
+        expect(inputs[1].checked).not.toBeTruthy();
+        expect(inputs[2].checked).not.toBeTruthy();
+        expect(inputs[3].checked).toBeTruthy();
+
+        myComponent.data.push('rows[1].childs[0].channels', 'foo');
+
+        san.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(2);
+            expect(bs[0].innerHTML).toBe('foo');
+            expect(bs[1].innerHTML).toBe('bar|foo');
+
+
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBeTruthy();
+            expect(inputs[1].checked).not.toBeTruthy();
+            expect(inputs[2].checked).toBeTruthy();
+            expect(inputs[3].checked).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
 });

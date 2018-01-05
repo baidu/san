@@ -52,7 +52,7 @@ function readAccessor(walker) {
             case 91: // [
                 walker.go(1);
                 result.paths.push(readTertiaryExpr(walker));
-                walker.goUntil(93);  // ]
+                walker.goUntil(93); // ]
                 break;
 
             default:

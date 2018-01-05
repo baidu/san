@@ -49,19 +49,30 @@ function serializeANode(aNode) {
         str += ' ' + prop.name + '="' + prop.raw + '"';
     });
 
+    // for vars
+    each(aNode.vars, function (varItem) {
+        str += ' var-' + varItem.name + '="' + varItem.expr.raw + '"';
+    });
+
     if (autoCloseTags[tagName]) {
         str += ' />';
     }
     else {
         str += '>';
 
-        // for childs
-        each(aNode.childs, function (child) {
+        // for children
+        each(aNode.children, function (child) {
             str += serializeANode(child);
         });
 
         // close tag
         str += '</' + tagName + '>';
+    }
+
+    if (aNode.directives.get('if')) {
+        each(aNode.elses, function (elseANode) {
+            str += serializeANode(elseANode);
+        });
     }
 
     return str;
