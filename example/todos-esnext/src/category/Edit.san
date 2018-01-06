@@ -11,32 +11,32 @@
 
 <script>
 
-import service from '../service'
+import service from '../service';
 
 export default {
     components: {
         'ui-colorpicker': require('../ui/ColorPicker')
     },
 
-    initData: function () {
+    initData() {
         return {
             categories: []
         };
     },
 
-    attached: function () {
+    attached() {
         this.data.set('categories', service.categories());
     },
 
-    rm: function (index) {
-        var category = this.data.get('categories')[index];
+    rm(index) {
+        let category = this.data.get('categories')[index];
         service.rmCategory(category.id);
         this.data.removeAt('categories', index);
         this.fire('rm');
     },
 
-    edit: function (index) {
-        var category = this.data.get('categories')[index];
+    edit(index) {
+        let category = this.data.get('categories')[index];
         service.editCategory(category);
         this.fire('edit');
     }

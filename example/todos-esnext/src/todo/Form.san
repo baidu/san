@@ -36,7 +36,7 @@ let AddCategoryDialog = san.defineComponent({
         'ui-addcategory': AddCategory
     },
 
-    initData: function () {
+    initData() {
         return {
             width: 200,
             top: 100,
@@ -44,15 +44,15 @@ let AddCategoryDialog = san.defineComponent({
         };
     },
 
-    show: function () {
+    show() {
         this.data.set('left', document.body.clientWidth / 2 - 100);
     },
 
-    hide: function () {
+    hide() {
         this.data.set('left', -1000);
     },
 
-    finish: function (e) {
+    finish(e) {
         this.hide();
         this.fire('finished');
         e.returnValue = false;
@@ -69,7 +69,7 @@ let EditCategoryDialog = san.defineComponent({
         'ui-editcategory': EditCategory
     },
 
-    initData: function () {
+    initData() {
         return {
             width: 200,
             top: 100,
@@ -77,15 +77,15 @@ let EditCategoryDialog = san.defineComponent({
         };
     },
 
-    show: function () {
+    show() {
         this.data.set('left', document.body.clientWidth / 2 - 100);
     },
 
-    hide: function () {
+    hide() {
         this.data.set('left', -1000);
     },
 
-    edited: function () {
+    edited() {
         this.fire('edited');
     }
 });
@@ -98,57 +98,57 @@ export default {
         'ui-calendar': Calendar
     },
 
-    attached: function () {
-        var id = this.data.get('id');
+    computed: {
+        todo() {
+            let id = this.data.get('id');
+            if (id) {
+                return service.todo(id);
+            }
+
+            return {
+                id: 0,
+                title: '',
+                desc: '',
+                endTime: new Date().getTime(),
+                categoryId: null,
+                done: false
+            };
+        },
+
+        endTimeHour() {
+            let endTime = new Date(this.data.get('todo.endTime'));
+            return endTime.getHours();
+        },
+
+        endTimeDate() {
+            let endTime = new Date(this.data.get('todo.endTime'));
+            return new Date(
+                endTime.getFullYear(),
+                endTime.getMonth(),
+                endTime.getDate()
+            )
+        }
+    },
+
+    created() {
+        let id = this.data.get('route.query.id');
         if (id) {
-            this.setTodo(service.todo(id));
+            this.data.set('id', +id);
         }
 
         this.updateCategories();
     },
 
-    created: function () {
-        var now = new Date();
-        this.setTodo({
-            id: 0,
-            title: '',
-            desc: '',
-            endTime: now.getTime(),
-            categoryId: null,
-            done: false
-        });
-
-        var id = this.data.get('route.query.id');
-        if (id) {
-            this.data.set('id', +id);
-        }
-    },
-
-    setTodo: function (todo) {
-        this.data.set('todo', todo);
-        this.splitEndTime();
-    },
-
-    splitEndTime: function () {
-        var endTime = new Date(this.data.get('todo.endTime'));
-        this.data.set('endTimeHour', endTime.getHours());
-        this.data.set('endTimeDate', new Date(
-            endTime.getFullYear(),
-            endTime.getMonth(),
-            endTime.getDate()
-        ));
-    },
-
-    joinEndTime: function () {
-        var endTime = new Date(this.data.get('endTimeDate').getTime());
+    joinEndTime() {
+        let endTime = new Date(this.data.get('endTimeDate').getTime());
         endTime.setHours(this.data.get('endTimeHour'));
         this.data.set('todo.endTime', endTime.getTime());
     },
 
-    submit: function () {
+    submit() {
         this.joinEndTime();
-        var todo = this.data.get('todo');
-        var id = this.data.get('id');
+        let todo = this.data.get('todo');
+        let id = this.data.get('id');
         if (!todo.id) {
             service.addTodo(todo);
         }
@@ -159,15 +159,15 @@ export default {
         history.go(-1);
     },
 
-    cancel: function () {
+    cancel() {
         history.go(-1);
     },
 
-    updateCategories: function () {
+    updateCategories() {
         this.data.set('categories', service.categories());
     },
 
-    startAddCategory: function () {
+    startAddCategory() {
         if (!this.addCategoryDialog) {
             this.addCategoryDialog = new AddCategoryDialog();
             this.addCategoryDialog.attach(document.body);
@@ -176,7 +176,7 @@ export default {
         this.addCategoryDialog.show();
     },
 
-    startEditCategory: function () {
+    startEditCategory() {
         if (!this.editCategoryDialog) {
             this.editCategoryDialog = new EditCategoryDialog();
             this.editCategoryDialog.attach(document.body);
@@ -185,7 +185,7 @@ export default {
         this.editCategoryDialog.show();
     },
 
-    disposed: function () {
+    disposed() {
         if (this.addCategoryDialog) {
             this.addCategoryDialog.dispose();
             this.addCategoryDialog = null;
@@ -206,7 +206,7 @@ export default {
     position: relative;
     box-sizing: border-box;
     border-radius: 5px;
-    margin: 10px auto;
+    margin: 50px auto;
     width: 90%;
     max-width: 800px;
     background: #555;

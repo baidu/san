@@ -1,7 +1,7 @@
 <template>
 
-<div on-click="mainClick()" class="ui-calendar">
-    {{ value | valueText }}
+<div on-click="mainClick" class="ui-calendar">
+    {{ value | formatDate('YYYY-MM-DD') }}
 </div>
 
 </template>
@@ -9,44 +9,37 @@
 <script>
 
 
-import $ from 'jquery'
-import moment from 'moment'
-import Layer from './CalendarLayer'
+import $ from 'jquery';
+import Layer from './CalendarLayer';
+import { formatDate } from '../filters';
 
 export default {
 
-    initData: function () {
+    initData() {
         return {
             value: new Date()
         };
     },
 
-    initLayer: function () {
-        if (!this.layer) {
-            var layer = new Layer();
-            layer.data.set('left', -1000);
-            layer.data.set('top', 0);
-            layer.data.set('value', this.data.get('value'));
+    initLayer() {
+        let layer = new Layer();
+        layer.data.set('left', -1000);
+        layer.data.set('top', 0);
+        layer.data.set('value', this.data.get('value'));
 
-            this.layer = layer;
-            this.layer.attach(document.body);
+        this.layer = layer;
+        this.layer.attach(document.body);
 
-            var calendar = this;
-            layer.on('select', function (value) {
-                calendar.data.set('value', value);
-            });
+        layer.on('select', value => {
+            this.data.set('value', value);
+        });
 
-            this.watch('value', function (value) {
-                layer.data.set('value', value);
-            });
-
-            this._docClicker = this.docClicker.bind(this);
-            $(document).on('click', this._docClicker);
-        }
+        this._docClicker = this.docClicker.bind(this);
+        $(document).on('click', this._docClicker);
     },
 
-    docClicker: function (e) {
-        var target = e.target || e.srcElement;
+    docClicker(e) {
+        let target = e.target || e.srcElement;
         if (target !== this.el
             && $(target).closest(this.el).length === 0
             && $(target).closest(this.layer.el).length === 0
@@ -55,30 +48,24 @@ export default {
         }
     },
 
-
-    mainClick: function () {
-        this.initLayer();
-        if (this.layer.isHide()) {
-            this.showLayer();
-        }
-        else {
-            this.hideLayer();
-        }
+    mainClick() {
+        this.layer || this.initLayer();
+        this.layer.isHide() ? this.showLayer() : this.hideLayer();
     },
 
-    showLayer: function () {
-        var pos = $(this.el).offset();
+    showLayer() {
+        let pos = $(this.el).offset();
         this.layer.show({
             left: pos.left,
             top: pos.top + this.el.offsetHeight + 1
         });
     },
 
-    hideLayer: function () {
+    hideLayer() {
         this.layer && this.layer.hide();
     },
 
-    disposed: function () {
+    disposed() {
         if (this.layer) {
             this.layer.dispose();
             this.layer = null;
@@ -88,13 +75,7 @@ export default {
     },
 
     filters: {
-        valueText: function (value) {
-            if (value instanceof Date) {
-                return moment(value).format('YYYY-MM-DD');
-            }
-
-            return '';
-        }
+        formatDate
     }
 }
 

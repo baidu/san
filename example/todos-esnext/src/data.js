@@ -63,19 +63,9 @@ export default {
     ],
     "category": [
         {
-            "id": 9,
-            "title": "fuck",
-            "color": "#91c7ae"
-        },
-        {
-            "id": 6,
-            "title": "eee2",
-            "color": "#bda29a"
-        },
-        {
-            "id": 4,
-            "title": "ddddd",
-            "color": "#91c7ae"
+            "id": 1,
+            "title": "工作",
+            "color": "#c23531"
         },
         {
             "id": 2,
@@ -83,9 +73,19 @@ export default {
             "color": "#dd8668"
         },
         {
-            "id": 1,
-            "title": "工作",
-            "color": "#c23531"
-        }
+            "id": 3,
+            "title": "学习",
+            "color": "#91c7ae"
+        },
+        {
+            "id": 4,
+            "title": "娱乐",
+            "color": "#bda29a"
+        },
+        {
+            "id": 5,
+            "title": "旅行",
+            "color": "#91c7ae"
+        },
     ]
 }

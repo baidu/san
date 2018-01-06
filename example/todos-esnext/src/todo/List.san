@@ -3,7 +3,7 @@
     <router-link to="/add" class="todo-add"><i class="fa fa-plus-square"></i></router-link>
     <ul class="filter-category">
         <li
-            san-for="item in categories"
+            s-for="item in categories"
             style="background: {{item.color}}"
             class="{{item.id == route.query.category ? 'checked' : ''}}"
         >
@@ -14,14 +14,14 @@
     <router-link to="/" class="fa fa-close filter-category-clear" style="display: {{route.query.category ? '' : 'none'}}"></router-link>
 
     <ul class="todo-list">
-        <li san-for="item, index in todos"
+        <li s-for="item, index in todos"
             style="border-color: {{item.category.color}}"
             class="{{item.done ? 'todo-done' : ''}}"
         >
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>
             <div class="todo-meta">
-                <span v-if="item.category">{{ item.category.title }} | </span>
+                <span s-if="item.category.title">{{ item.category.title }} | </span>
                 <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
             </div>
             <router-link class="fa fa-pencil" to="/edit/{{ item.id }}"></router-link>
@@ -38,34 +38,32 @@ import service from '../service'
 import { formatDate } from '../filters'
 import { Link } from 'san-router'
 
-
 export default {
     components: {
         'router-link': Link
     },
 
     filters: {
-        formatDate: formatDate
+        formatDate
     },
 
-    route: function () {
-        var route = this.data.get('route');
-        var todos = service.todos(+(route.query.category || 0));
+    route() {
+        let route = this.data.get('route');
+        let todos = service.todos(+(route.query.category || 0));
 
         this.data.set('todos', todos);
         this.data.set('categories', service.categories());
     },
 
-
-    doneTodo: function (index) {
-        var todo = this.data.get('todos', index);
+    doneTodo(index) {
+        let todo = this.data.get('todos', index);
         service.doneTodo(todo.id);
 
         this.data.set('todos.' + index + '.done', true);
     },
 
-    rmTodo: function (index) {
-        var todo = this.data.get('todos', index);
+    rmTodo(index) {
+        let todo = this.data.get('todos', index);
         service.rmTodo(todo.id);
 
         this.data.removeAt('todos', index);
@@ -79,7 +77,7 @@ export default {
     box-sizing: border-box;
     border-radius: 5px;
     border: 0;
-    margin: 10px auto;
+    margin: 50px auto 10px;
     max-width: 800px;
     background: #6a6a6a;
     color: #fff;
@@ -97,8 +95,8 @@ export default {
 
 .filter-category li {
     display: inline-block;
-    margin: 5px 5px 5px 0;
-    padding: 5px;
+    margin: 5px 8px 5px 0;
+    padding: 4px 8px;
     border-radius: 3px;
     cursor: pointer;
     color: #fff;
@@ -143,7 +141,7 @@ export default {
     font-size: 14px;
     color: #666;
     border-left: 8px solid #555;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .todo-list .fa {
