@@ -1,7 +1,7 @@
 <template>
     <ul class="ui-categorypicker">
         <li
-            san-for="item, index in datasource"
+            s-for="item, index in datasource"
             style="background: {{item.color}}"
             class="{{item.id == value ? 'selected' : ''}}"
             on-click="itemClick(index)"
@@ -11,14 +11,14 @@
 
 <script>
 export default {
-    initData: function () {
+    initData() {
         return {
             datasource: []
         };
     },
 
-    itemClick: function (index) {
-        var datasource = this.data.get('datasource');
+    itemClick(index) {
+        let datasource = this.data.get('datasource');
         this.data.set('value', datasource[index].id);
     }
 }

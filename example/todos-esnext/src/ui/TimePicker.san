@@ -12,7 +12,7 @@ import $ from 'jquery'
 
 export default {
     filters: {
-        valueText: function (value) {
+        valueText(value) {
             let datasource = this.data.get('datasource');
             let i = datasource.length;
 
@@ -27,7 +27,7 @@ export default {
         }
     },
 
-    initData: function () {
+    initData() {
         return {
             datasource: [
                 {text: '12:00am', value: 0},
@@ -61,7 +61,7 @@ export default {
     },
 
 
-    attached: function () {
+    attached() {
          if (!this.layer) {
             let layer = new Layer();
             layer.data.set('left', this.data.get('left'));
@@ -94,7 +94,7 @@ export default {
         }
     },
 
-    docClicker: function (e) {
+    docClicker(e) {
         let target = e.target || e.srcElement;
         if (target !== this.el && $(target).closest(this.el).length === 0) {
             this.data.set('left', -1000);
@@ -102,7 +102,7 @@ export default {
     },
 
 
-    mainClick: function () {
+    mainClick() {
         let left = this.data.get('left');
         if (left > 0) {
             this.data.set('left', -1000);
@@ -114,7 +114,7 @@ export default {
         }
     },
 
-    disposed: function () {
+    disposed() {
         if (this.layer) {
             this.layer.dispose();
             this.layer = null;

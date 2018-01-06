@@ -1,7 +1,7 @@
 <template>
     <ul class="ui-colorpicker">
         <li
-            san-for="item, index in datasource"
+            s-for="item, index in datasource"
             style="background: {{item}}"
             class="{{item == value ? 'selected' : ''}}"
             on-click="itemClick(item)"
@@ -12,7 +12,7 @@
 <script>
 
 export default {
-    initData: function () {
+    initData() {
         return {
             datasource: [
                 '#c23531', '#314656', '#dd8668', '#91c7ae',
@@ -21,7 +21,7 @@ export default {
         };
     },
 
-    itemClick: function (item) {
+    itemClick(item) {
         this.data.set('value', item);
     }
 }

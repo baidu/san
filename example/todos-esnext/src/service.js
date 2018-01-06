@@ -14,7 +14,7 @@ import data from './data'
  * @return {Object} 返回目标对象
  */
 function extend(target, source) {
-    for (var key in source) {
+    for (let key in source) {
         if (source.hasOwnProperty(key)) {
             target[key] = source[key];
         }
@@ -24,16 +24,16 @@ function extend(target, source) {
 }
 
 export default {
-    todos: function (category) {
-        var categoryMap = {};
-        for (var i = 0; i < data.category.length; i++) {
-            var item = data.category[i];
+    todos(category) {
+        let categoryMap = {};
+        for (let i = 0; i < data.category.length; i++) {
+            let item = data.category[i];
             categoryMap[item.id] = item;
         }
 
-        var todos = [];
-        for (var i = 0; i < data.list.length; i++) {
-            var item = data.list[i];
+        let todos = [];
+        for (let i = 0; i < data.list.length; i++) {
+            let item = data.list[i];
 
             if (!category || item.categoryId === category) {
                 item = extend({}, item);
@@ -48,15 +48,15 @@ export default {
         return todos;
     },
 
-    todo: function (id) {
-        var categoryMap = {};
-        for (var i = 0; i < data.category.length; i++) {
-            var item = data.category[i];
+    todo(id) {
+        let categoryMap = {};
+        for (let i = 0; i < data.category.length; i++) {
+            let item = data.category[i];
             categoryMap[item.id] = item;
         }
 
-        for (var i = 0; i < data.list.length; i++) {
-            var item = data.list[i];
+        for (let i = 0; i < data.list.length; i++) {
+            let item = data.list[i];
 
             if (item.id === id) {
                 if (item.categoryId) {
@@ -71,19 +71,19 @@ export default {
         return null;
     },
 
-    categories: function () {
-        var categories = [];
+    categories() {
+        let categories = [];
 
-        for (var i = 0; i < data.category.length; i++) {
+        for (let i = 0; i < data.category.length; i++) {
             categories.push(extend({}, data.category[i]));
         }
 
         return categories;
     },
 
-    doneTodo: function (id) {
-        for (var i = 0; i < data.list.length; i++) {
-            var item = data.list[i];
+    doneTodo(id) {
+        for (let i = 0; i < data.list.length; i++) {
+            let item = data.list[i];
 
             if (item.id === id) {
                 item.done = true;
@@ -92,10 +92,10 @@ export default {
         }
     },
 
-    rmTodo: function (id) {
+    rmTodo(id) {
         id = +id;
-        for (var i = 0; i < data.list.length; i++) {
-            var item = data.list[i];
+        for (let i = 0; i < data.list.length; i++) {
+            let item = data.list[i];
 
             if (item.id === id) {
                 data.list.splice(i, 1);
@@ -104,9 +104,9 @@ export default {
         }
     },
 
-    addTodo: function (todo) {
-        var first = data.list[0];
-        var id = 1;
+    addTodo(todo) {
+        let first = data.list[0];
+        let id = 1;
         if (first) {
             id = first.id + 1;
         }
@@ -116,11 +116,11 @@ export default {
         data.list.unshift(todo);
     },
 
-    editTodo: function (todo) {
+    editTodo(todo) {
         todo = extend({}, todo);
 
-        for (var i = 0; i < data.list.length; i++) {
-            var item = data.list[i];
+        for (let i = 0; i < data.list.length; i++) {
+            let item = data.list[i];
 
             if (item.id === todo.id) {
                 data.list[i] = todo;
@@ -129,9 +129,9 @@ export default {
         }
     },
 
-    addCategory: function (category) {
-        var first = data.category[0];
-        var id = 1;
+    addCategory(category) {
+        let first = data.category[0];
+        let id = 1;
         if (first) {
             id = first.id + 1;
         }
@@ -141,10 +141,10 @@ export default {
         data.category.unshift(category);
     },
 
-    rmCategory: function (id) {
+    rmCategory(id) {
         id = +id;
-        for (var i = 0; i < data.category.length; i++) {
-            var item = data.category[i];
+        for (let i = 0; i < data.category.length; i++) {
+            let item = data.category[i];
 
             if (item.id === id) {
                 data.category.splice(i, 1);
@@ -153,11 +153,11 @@ export default {
         }
     },
 
-    editCategory: function (category) {
+    editCategory(category) {
         category = extend({}, category);
 
-        for (var i = 0; i < data.category.length; i++) {
-            var item = data.category[i];
+        for (let i = 0; i < data.category.length; i++) {
+            let item = data.category[i];
 
             if (item.id === category.id) {
                 data.category[i] = category;

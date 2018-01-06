@@ -1,6 +1,6 @@
 <template>
     <ul class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
-        <li san-for="item, index in datasource" class="{{item.value == value ? 'selected' : ''}}" on-click="itemClick(item)">{{ item.text }}</li>
+        <li s-for="item, index in datasource" class="{{item.value == value ? 'selected' : ''}}" on-click="itemClick(item)">{{ item.text }}</li>
     </ul>
 </template>
 
@@ -9,7 +9,7 @@
 export default {
     tagName: 'ul',
 
-    itemClick: function (item) {
+    itemClick(item) {
         this.fire('valueChange', item.value);
     }
 }
