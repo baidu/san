@@ -1,7 +1,7 @@
 <template>
 
-<div on-click="mainClick()" class="ui-calendar">
-    {{ value | valueText }}
+<div on-click="mainClick" class="ui-calendar">
+    {{ value | formatDate('YYYY-MM-DD') }}
 </div>
 
 </template>
@@ -9,9 +9,9 @@
 <script>
 
 
-import $ from 'jquery'
-import moment from 'moment'
-import Layer from './CalendarLayer'
+import $ from 'jquery';
+import Layer from './CalendarLayer';
+import { formatDate } from '../filters';
 
 export default {
 
@@ -22,27 +22,20 @@ export default {
     },
 
     initLayer() {
-        if (!this.layer) {
-            let layer = new Layer();
-            layer.data.set('left', -1000);
-            layer.data.set('top', 0);
-            layer.data.set('value', this.data.get('value'));
+        let layer = new Layer();
+        layer.data.set('left', -1000);
+        layer.data.set('top', 0);
+        layer.data.set('value', this.data.get('value'));
 
-            this.layer = layer;
-            this.layer.attach(document.body);
+        this.layer = layer;
+        this.layer.attach(document.body);
 
-            let calendar = this;
-            layer.on('select', value => {
-                calendar.data.set('value', value);
-            });
+        layer.on('select', value => {
+            this.data.set('value', value);
+        });
 
-            this.watch('value', value => {
-                layer.data.set('value', value);
-            });
-
-            this._docClicker = this.docClicker.bind(this);
-            $(document).on('click', this._docClicker);
-        }
+        this._docClicker = this.docClicker.bind(this);
+        $(document).on('click', this._docClicker);
     },
 
     docClicker(e) {
@@ -55,15 +48,9 @@ export default {
         }
     },
 
-
     mainClick() {
-        this.initLayer();
-        if (this.layer.isHide()) {
-            this.showLayer();
-        }
-        else {
-            this.hideLayer();
-        }
+        this.layer || this.initLayer();
+        this.layer.isHide() ? this.showLayer() : this.hideLayer();
     },
 
     showLayer() {
@@ -88,13 +75,7 @@ export default {
     },
 
     filters: {
-        valueText(value) {
-            if (value instanceof Date) {
-                return moment(value).format('YYYY-MM-DD');
-            }
-
-            return '';
-        }
+        formatDate
     }
 }
 

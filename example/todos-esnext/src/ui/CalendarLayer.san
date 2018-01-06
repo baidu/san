@@ -21,7 +21,6 @@
 </div>
 </template>
 
-
 <script>
 
 export default {
@@ -40,7 +39,6 @@ export default {
         let viewYear = this.data.get('viewYear');
         let viewMonth = this.data.get('viewMonth');
 
-
         let viewDate = new Date(viewYear, viewMonth, 1);
         viewYear = viewDate.getFullYear();
         viewMonth = viewDate.getMonth();
@@ -49,6 +47,7 @@ export default {
 
         let dates = [];
         let day = viewDate.getDay() - 1;
+
         for (; day % 7; day--) {
             dates.push('');
         }
@@ -57,7 +56,6 @@ export default {
         for (let i = 1; i <= days; i++) {
             dates.push(i);
         }
-
         this.data.set('dates', dates);
     },
 
@@ -80,7 +78,7 @@ export default {
         return this.data.get('left') < 0;
     },
 
-    presanonth() {
+    prevMonth() {
         let viewMonth = this.data.get('viewMonth');
         this.data.set('viewMonth', viewMonth - 1);
         this.updateViewState();
@@ -93,11 +91,14 @@ export default {
     },
 
     select(date) {
-        this.fire('select', new Date(
+        let newDate = new Date(
             this.data.get('viewYear'),
             this.data.get('viewMonth'),
             date
-        ));
+        );
+        this.data.set('value', newDate);
+        this.fire('select', newDate);
+
         this.hide();
     }
 }

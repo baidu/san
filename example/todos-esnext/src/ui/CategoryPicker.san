@@ -4,7 +4,7 @@
             s-for="item, index in datasource"
             style="background: {{item.color}}"
             class="{{item.id == value ? 'selected' : ''}}"
-            on-click="itemClick(index)"
+            on-click="itemClick(item.id)"
         >{{ item.title }}</li>
     </ul>
 </template>
@@ -17,9 +17,8 @@ export default {
         };
     },
 
-    itemClick(index) {
-        let datasource = this.data.get('datasource');
-        this.data.set('value', datasource[index].id);
+    itemClick(id) {
+        this.data.set('value', id);
     }
 }
 </script>

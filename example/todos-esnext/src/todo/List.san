@@ -44,7 +44,7 @@ export default {
     },
 
     filters: {
-        formatDate: formatDate
+        formatDate
     },
 
     route() {
