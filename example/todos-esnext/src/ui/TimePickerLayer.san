@@ -1,16 +1,47 @@
 <template>
     <ul class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
-        <li s-for="item, index in datasource" class="{{item.value == value ? 'selected' : ''}}" on-click="itemClick(item)">{{ item.text }}</li>
+        <li s-for="item, index in datasource" class="{{item == value ? 'selected' : ''}}" on-click="itemClick(item)">{{ item | formatHour }}</li>
     </ul>
 </template>
 
 <script>
+import { formatHour } from '../filters';
 
 export default {
-    tagName: 'ul',
+    filters: {
+        formatHour
+    },
 
-    itemClick(item) {
-        this.fire('valueChange', item.value);
+    initData() {
+        let datasource = [];
+        for (let i = 0; i <= 23; i++) {
+            datasource.push(i);
+        }
+
+        return {
+            datasource,
+            left: -1000,
+            top: 0
+        };
+    },
+
+    itemClick(value) {
+        this.data.set('value', value);
+        this.fire('valueChange', value);
+        this.hide();
+    },
+
+    hide() {
+        this.data.set('left', -1000);
+    },
+
+    show(pos) {
+        this.data.set('left', pos.left);
+        this.data.set('top', pos.top);
+    },
+
+    isHide() {
+        return this.data.get('left') < 0;
     }
 }
 
