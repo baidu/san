@@ -66,36 +66,6 @@ var elementSourceCompiler = {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
-        /*
-        binds.each(function (bindInfo) {
-            if (isComponent) {
-                sourceBuffer.joinString(
-                    ' prop-' + camel2kebab(bindInfo.name)
-                        + (bindInfo.raw ? '="' + bindInfo.raw + '"' : '')
-                );
-            }
-            else if (bindInfo.raw) {
-                sourceBuffer.joinString(
-                    ' prop-' + camel2kebab(bindInfo.name) + '="' + bindInfo.raw + '"'
-                );
-            }
-
-        });
-        */
-
-        /*
-        var htmlDirective = aNode.directives.get('html');
-        if (htmlDirective) {
-            sourceBuffer.joinString(' s-html="' + htmlDirective.raw + '"');
-        }
-        */
-
-        /*
-        each(events, function (event) {
-            sourceBuffer.joinString(' on-' + event.name + '="' + event.expr.raw + '"');
-        });
-        */
-
         props.each(function (prop) {
             if (prop.name === 'slot') {
                 return;
