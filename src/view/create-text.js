@@ -40,6 +40,8 @@ function createText(options) {
     // #[begin] reverse
     var walker = options.reverseWalker;
     if (walker) {
+        options.reverseWalker = null;
+
         var currentNode = walker.current;
         if (node._simple) {
             if (currentNode && currentNode.nodeType === 3) {

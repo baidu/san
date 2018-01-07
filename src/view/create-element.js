@@ -62,6 +62,8 @@ function createElement(options) {
     // #[begin] reverse
     var walker = options.reverseWalker;
     if (walker) {
+        options.reverseWalker = null;
+
         var currentNode = walker.current;
         if (currentNode && currentNode.nodeType === 1) {
             node.el = currentNode;

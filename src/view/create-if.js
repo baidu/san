@@ -45,6 +45,8 @@ function createIf(options) {
     // #[begin] reverse
     var walker = options.reverseWalker;
     if (walker) {
+        options.reverseWalker = null;
+
         if (nodeEvalExpr(node, node.cond)) {
             node.elseIndex = -1;
             node.children[0] = createReverseNode(

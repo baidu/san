@@ -173,6 +173,8 @@ function createFor(options) {
     // #[begin] reverse
     var walker = options.reverseWalker;
     if (walker) {
+        options.reverseWalker = null;
+
         each(
             nodeEvalExpr(node, node.aNode.directives.get('for').list),
             function (item, i) {
