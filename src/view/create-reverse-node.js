@@ -17,12 +17,12 @@ var createTemplate = require('./create-template');
  * 通过组件反解创建节点
  *
  * @param {ANode} aNode 抽象节点
- * @param {DOMChildrenWalker} walker 子元素遍历对象
+ * @param {DOMChildrenWalker} reverseWalker 子元素遍历对象
  * @param {Node} parent 父亲节点
  * @param {Model=} scope 所属数据环境
  * @return {Node}
  */
-function createReverseNode(aNode, walker, parent, scope) {
+function createReverseNode(aNode, reverseWalker, parent, scope) {
     var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
     scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
     var options = {
@@ -30,7 +30,7 @@ function createReverseNode(aNode, walker, parent, scope) {
         owner: owner,
         scope: scope,
         parent: parent,
-        walker: walker
+        reverseWalker: reverseWalker
     };
 
     if (aNode.isText) {

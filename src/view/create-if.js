@@ -43,12 +43,13 @@ function createIf(options) {
     node.cond = node.aNode.directives.get('if').value;
 
     // #[begin] reverse
-    if (options.walker) {
+    var walker = options.reverseWalker;
+    if (walker) {
         if (nodeEvalExpr(node, node.cond)) {
             node.elseIndex = -1;
             node.children[0] = createReverseNode(
                 rinseCondANode(node.aNode),
-                options.walker,
+                walker,
                 node
             );
         }
@@ -60,7 +61,7 @@ function createIf(options) {
                     node.elseIndex = index;
                     node.children[0] = createReverseNode(
                         rinseCondANode(elseANode),
-                        options.walker,
+                        walker,
                         node
                     );
                     return false;

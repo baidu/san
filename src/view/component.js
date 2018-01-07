@@ -194,12 +194,14 @@ function Component(options) { // eslint-disable-line
         reverseElementChildren(this);
         attachings.done();
     }
-    else if (options.walker) {
-        var currentNode = options.walker.current;
+
+    var walker = options.reverseWalker;
+    if (walker) {
+        var currentNode = walker.current;
         if (currentNode && currentNode.nodeType === 1) {
             this.el = currentNode;
             this.el.id = this.id;
-            options.walker.goNext();
+            walker.goNext();
         }
 
         reverseElementChildren(this);

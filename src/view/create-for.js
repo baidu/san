@@ -171,22 +171,23 @@ function createFor(options) {
 
 
     // #[begin] reverse
-    if (options.walker) {
+    var walker = options.reverseWalker;
+    if (walker) {
         each(
             nodeEvalExpr(node, node.aNode.directives.get('for').list),
             function (item, i) {
                 var itemScope = new ForItemData(node, item, i);
-                var child = createReverseNode(node.itemANode, options.walker, node, itemScope);
+                var child = createReverseNode(node.itemANode, walker, node, itemScope);
                 node.children.push(child);
             }
         );
 
         node._create();
-        if (options.walker.current) {
-            options.walker.target.insertBefore(node.el, options.walker.current);
+        if (walker.current) {
+            walker.target.insertBefore(node.el, walker.current);
         }
         else {
-            options.walker.target.appendChild(node.el);
+            walker.target.appendChild(node.el);
         }
     }
     // #[end]

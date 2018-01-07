@@ -15,12 +15,12 @@ var createReverseNode = require('./create-reverse-node');
  * @param {Object} element 元素
  */
 function reverseElementChildren(element) {
-    var walker = new DOMChildrenWalker(element.el);
+    var reverseWalker = new DOMChildrenWalker(element.el);
     var htmlDirective = element.aNode.directives.get('html');
 
     if (!htmlDirective) {
         each(element.aNode.children, function (aNodeChild) {
-            var child = createReverseNode(aNodeChild, walker, element);
+            var child = createReverseNode(aNodeChild, reverseWalker, element);
             if (!child._static) {
                 element.children.push(child);
             }

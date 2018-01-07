@@ -60,12 +60,13 @@ function createElement(options) {
     node._toPhase('inited');
 
     // #[begin] reverse
-    if (options.walker) {
-        var currentNode = options.walker.current;
+    var walker = options.reverseWalker;
+    if (walker) {
+        var currentNode = walker.current;
         if (currentNode && currentNode.nodeType === 1) {
             node.el = currentNode;
             node.el.id = node.id;
-            options.walker.goNext();
+            walker.goNext();
         }
 
         reverseElementChildren(node);

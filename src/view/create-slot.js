@@ -96,9 +96,10 @@ function createSlot(options) {
     node.owner.slotChildren.push(node);
 
     // #[begin] reverse
-    if (options.walker) {
+    var walker = options.reverseWalker;
+    if (walker) {
         each(node.aNode.children, function (aNodeChild) {
-            var child = createReverseNode(aNodeChild, options.walker, node);
+            var child = createReverseNode(aNodeChild, walker, node);
             if (!child._static) {
                 node.children.push(child);
             }

@@ -38,28 +38,28 @@ function createText(options) {
     node._simple = isSimpleText(node.aNode);
 
     // #[begin] reverse
-    // from el
-    if (options.walker) {
-        var currentNode = options.walker.current;
+    var walker = options.reverseWalker;
+    if (walker) {
+        var currentNode = walker.current;
         if (node._simple) {
             if (currentNode && currentNode.nodeType === 3) {
                 node.el = currentNode;
-                options.walker.goNext();
+                walker.goNext();
             }
         }
         else {
             removeEl(currentNode);
-            options.walker.goNext();
+            walker.goNext();
 
             while (1) { /* eslint-disable-line */
-                currentNode = options.walker.current;
+                currentNode = walker.current;
                 if (isEndStump(currentNode, 'text')) {
-                    options.walker.goNext();
+                    walker.goNext();
                     removeEl(currentNode);
                     break;
                 }
 
-                options.walker.goNext();
+                walker.goNext();
             }
         }
     }
