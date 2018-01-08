@@ -319,6 +319,15 @@ Data.prototype.apply = function (expr, fn, option) {
     // #[end]
 };
 
+/**
+ * 数组数据项splice操作
+ *
+ * @param {string|Object} expr 数据项路径
+ * @param {Array} args splice 接受的参数列表，数组项与Array.prototype.splice的参数一致
+ * @param {Object=} option 设置参数
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ * @return {Array} 新数组
+ */
 Data.prototype.splice = function (expr, args, option) {
     option = option || {};
     // #[begin] error
