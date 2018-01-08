@@ -224,7 +224,6 @@ describe("Expression Update Detect", function () {
         });
     });
 
-
     it("bind property accessor, set outer data", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{p.org.name}}"></span></a>'
@@ -252,6 +251,84 @@ describe("Expression Update Detect", function () {
                 name: 'ssg',
                 company: 'baidu'
             }
+        });
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind property accessor, set outer data, using merge", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.org.name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('p', {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            org: {
+                name: 'efe',
+                company: 'baidu'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+        myComponent.data.merge('p', {
+            org: {
+                name: 'ssg',
+                company: 'baidu'
+            }
+        });
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind property accessor, set outer data, using apply", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.org.name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('p', {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            org: {
+                name: 'efe',
+                company: 'baidu'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+        myComponent.data.apply('p', function () {
+            return {
+                name: 'erik',
+                email: 'errorrik@gmail.com',
+                org: {
+                    name: 'ssg',
+                    company: 'baidu'
+                }
+            };
         });
 
         san.nextTick(function () {
