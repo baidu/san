@@ -212,7 +212,112 @@ Data.prototype.set = function (expr, value, option) {
 
 };
 
+/**
+ * 合并更新数据项
+ *
+ * @param {string|Object} expr 数据项路径
+ * @param {Object} source 待合并的数据值
+ * @param {Object=} option 设置参数
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ */
+Data.prototype.merge = function (expr, source, option) {
+    option = option || {};
 
+    // #[begin] error
+    var exprRaw = expr;
+    // #[end]
+
+    expr = parseExpr(expr);
+
+    // #[begin] error
+    if (expr.type !== ExprType.ACCESSOR) {
+        throw new Error('[SAN ERROR] Invalid Expression in Data merge: ' + exprRaw);
+    }
+    // #[end]
+
+    var oldValue = this.get(expr);
+
+    // #[begin] error
+    if (typeof oldValue !== 'object') {
+        throw new Error('[SAN ERROR] Merge Expects a Target of Type \'object\'; got ' + typeof oldValue);
+    }
+
+    if (typeof source !== 'object') {
+        throw new Error('[SAN ERROR] Merge Expects a Source of Type \'object\'; got ' + typeof source);
+    }
+    // #[end]
+
+    for (var key in oldValue) {
+        if (!source.hasOwnProperty(key)) {
+            source[key] = oldValue[key];
+        }
+    }
+
+    this.raw = immutableSet(this.raw, expr.paths, source, this);
+    this.fire({
+        type: DataChangeType.SET,
+        expr: expr,
+        value: source,
+        option: option
+    });
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
+};
+
+/**
+ * 基于更新函数更新数据项
+ *
+ * @param {string|Object} expr 数据项路径
+ * @param {Function} fn 数据处理函数
+ * @param {Object=} option 设置参数
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ */
+Data.prototype.apply = function (expr, fn, option) {
+    option = option || {};
+
+    // #[begin] error
+    var exprRaw = expr;
+    // #[end]
+
+    expr = parseExpr(expr);
+
+    // #[begin] error
+    if (expr.type !== ExprType.ACCESSOR) {
+        throw new Error('[SAN ERROR] Invalid Expression in Data apply: ' + exprRaw);
+    }
+    // #[end]
+
+    var oldValue = this.get(expr);
+
+    // #[begin] error
+    if (typeof fn !== 'function') {
+        throw new Error(
+            '[SAN ERROR] Invalid Argument\'s Type in Data apply: '
+            + 'Expected Function but got ' + typeof fn
+        );
+    }
+    // #[end]
+
+    var value = fn(oldValue);
+
+    if (oldValue === value) {
+        return;
+    }
+
+    this.raw = immutableSet(this.raw, expr.paths, value, this);
+    this.fire({
+        type: DataChangeType.SET,
+        expr: expr,
+        value: value,
+        option: option
+    });
+
+    // #[begin] error
+    this.checkDataTypes();
+    // #[end]
+};
 
 Data.prototype.splice = function (expr, args, option) {
     option = option || {};
