@@ -46,7 +46,7 @@ function parseTemplate(source, options) {
     var walker = new Walker(source);
 
     var tagReg = /<(\/)?([a-z0-9-]+)\s*/ig;
-    var attrReg = /([-:0-9a-z\(\)\[\]]+)(=(['"])([^\3]*?)\3)?\s*/ig;
+    var attrReg = /([-:0-9a-z\(\)\[\]]+)(\s*=\s*(['"])([^\3]*?)\3)?\s*/ig;
 
     var tagMatch;
     var currentNode = rootNode;
