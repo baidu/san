@@ -233,12 +233,8 @@ Data.prototype.merge = function (expr, source, option) {
     if (expr.type !== ExprType.ACCESSOR) {
         throw new Error('[SAN ERROR] Invalid Expression in Data merge: ' + exprRaw);
     }
-    // #[end]
 
-    var oldValue = this.get(expr);
-
-    // #[begin] error
-    if (typeof oldValue !== 'object') {
+    if (typeof this.get(expr) !== 'object') {
         throw new Error('[SAN ERROR] Merge Expects a Target of Type \'object\'; got ' + typeof oldValue);
     }
 
@@ -247,23 +243,17 @@ Data.prototype.merge = function (expr, source, option) {
     }
     // #[end]
 
-    for (var key in oldValue) {
-        if (!source.hasOwnProperty(key)) {
-            source[key] = oldValue[key];
+    for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+            this.set({
+                type: ExprType.ACCESSOR,
+                paths: expr.paths.concat([{
+                    type: ExprType.STRING,
+                    value: key
+                }])
+            }, source[key], option);
         }
     }
-
-    this.raw = immutableSet(this.raw, expr.paths, source, this);
-    this.fire({
-        type: DataChangeType.SET,
-        expr: expr,
-        value: source,
-        option: option
-    });
-
-    // #[begin] error
-    this.checkDataTypes();
-    // #[end]
 };
 
 /**
@@ -306,17 +296,7 @@ Data.prototype.apply = function (expr, fn, option) {
         return;
     }
 
-    this.raw = immutableSet(this.raw, expr.paths, value, this);
-    this.fire({
-        type: DataChangeType.SET,
-        expr: expr,
-        value: value,
-        option: option
-    });
-
-    // #[begin] error
-    this.checkDataTypes();
-    // #[end]
+    this.set(expr, value, option);
 };
 
 /**
