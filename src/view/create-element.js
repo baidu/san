@@ -27,6 +27,7 @@ var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var warnSetHTML = require('./warn-set-html');
+var getNodePath = require('./get-node-path');
 
 /**
  * 创建 element 节点
@@ -65,11 +66,27 @@ function createElement(options) {
         options.reverseWalker = null;
 
         var currentNode = walker.current;
-        if (currentNode && currentNode.nodeType === 1) {
-            node.el = currentNode;
-            node.el.id = node.id;
-            walker.goNext();
+
+        if (!currentNode) {
+            throw new Error('[SAN REVERSE ERROR] Element not found. \nPaths: '
+                + getNodePath(node).join(' > '));
         }
+
+        if (currentNode.nodeType !== 1) {
+            throw new Error('[SAN REVERSE ERROR] Element type not match, expect 1 but '
+                + currentNode.nodeType + '.\nPaths: '
+                + getNodePath(node).join(' > '));
+        }
+
+        if (currentNode.tagName.toLowerCase() !== node.tagName) {
+            throw new Error('[SAN REVERSE ERROR] Element tagName not match, expect '
+                + node.tagName + ' but meat ' + currentNode.tagName.toLowerCase() + '.\nPaths: '
+                + getNodePath(node).join(' > '));
+        }
+
+        node.el = currentNode;
+        node.el.id = node.id;
+        walker.goNext();
 
         reverseElementChildren(node);
 

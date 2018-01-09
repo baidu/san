@@ -28,6 +28,9 @@ function DOMChildrenWalker(el) {
                 if (/^\s*$/.test(child.data || child.textContent)) {
                     removeEl(child);
                 }
+                else {
+                    this.raw.push(child);
+                }
                 break;
 
             case 1:
