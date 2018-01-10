@@ -7,7 +7,7 @@
 <h1 align="center">SAN</h1>
 
 <p align="center">
-An MVVM Component Framework for Web. <a href="https://ecomfe.github.io/san/" target="_blank">HomePage</a>
+A Flexible JavaScript Component Framework. <a href="https://ecomfe.github.io/san/" target="_blank">HomePage</a>
 </p>
 
 <p align="center">
