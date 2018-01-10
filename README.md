@@ -84,7 +84,7 @@ CDN:
 
 ## Companions
 
-- [DevTool](https://github.com/ecomfe/san-devtool/blob/master/docs/user_guide.md) - Chrome DevTool extension
+- [san-devtool](https://github.com/ecomfe/san-devtool/blob/master/docs/user_guide.md) - Chrome DevTool extension
 - [san-router](https://github.com/ecomfe/san-router) - SPA Router
 - [san-store](https://github.com/ecomfe/san-store) - Application States Management
 - [san-update](https://github.com/ecomfe/san-update) - Immutable Data Update Library
