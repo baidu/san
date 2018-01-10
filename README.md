@@ -35,7 +35,7 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 ```
 
-[Dist Files](https://github.com/ecomfe/san/tree/master/dist)
+[Dist Files Infomation](https://github.com/ecomfe/san/tree/master/dist)
 
 
 ## Quick Start
@@ -81,17 +81,21 @@ CDN:
 - [API](https://ecomfe.github.io/san/doc/api/)
 - [ANode](https://github.com/ecomfe/san/blob/master/doc/anode.md)
 
-## DevTool
 
-[DevTool](https://github.com/ecomfe/san-devtool)
+## Companions
+
+- [DevTool](https://github.com/ecomfe/san-devtool/blob/master/docs/user_guide.md) - Chrome DevTool extension
+- [san-router](https://github.com/ecomfe/san-router) - SPA Router
+- [san-store](https://github.com/ecomfe/san-store) - Application States Management
+- [san-update](https://github.com/ecomfe/san-update) - Immutable Data Update Library
+- [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
+
 
 ## ChangeLog
 
 [ChangeLog](https://github.com/ecomfe/san/blob/master/CHANGELOG.md)
 
-## See Also
 
-- [san-router](https://github.com/ecomfe/san-router) - Official Router for San
-- [san-store](https://github.com/ecomfe/san-store) - Official Application States Management for San
-- [san-update](https://github.com/ecomfe/san-update) - Immutable Data Update Library
-- [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
+## License
+
+San is [MIT licensed](./LICENSE).
