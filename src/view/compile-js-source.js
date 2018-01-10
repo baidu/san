@@ -5,7 +5,6 @@
 
 
 var each = require('../util/each');
-var camel2kebab = require('../util/camel2kebab');
 var IndexedList = require('../util/indexed-list');
 var guid = require('../util/guid');
 var parseExpr = require('../parser/parse-expr');
@@ -15,7 +14,6 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
 var rinseCondANode = require('./rinse-cond-anode');
-var serializeANode = require('./serialize-a-node');
 var isSimpleText = require('./is-simple-text');
 
 // #[begin] ssr

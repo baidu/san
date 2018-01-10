@@ -3,6 +3,9 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+
+var NodeType = require('./node-type');
+
 // #[begin] reverse
 /**
  * 获取节点在组件树中的路径

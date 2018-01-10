@@ -3,6 +3,10 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+
+var each = require('../util/each');
+var ExprType = require('../parser/expr-type');
+
 /**
  * 判断 text aNode 的内容是否简单文本
  *

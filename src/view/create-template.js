@@ -3,15 +3,12 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var each = require('../util/each');
 var empty = require('../util/empty');
-var createANode = require('../parser/create-a-node');
-var removeEl = require('../browser/remove-el');
-
 var NodeType = require('./node-type');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
-var isEndStump = require('./is-end-stump');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');

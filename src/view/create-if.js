@@ -4,13 +4,7 @@
  */
 
 var each = require('../util/each');
-var empty = require('../util/empty');
-var IndexedList = require('../util/indexed-list');
-var parseTemplate = require('../parser/parse-template');
-var createANode = require('../parser/create-a-node');
-var removeEl = require('../browser/remove-el');
 var genStumpHTML = require('./gen-stump-html');
-var isEndStump = require('./is-end-stump');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');

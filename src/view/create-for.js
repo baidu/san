@@ -3,12 +3,10 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var empty = require('../util/empty');
 var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
-var parseTemplate = require('../parser/parse-template');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
@@ -28,7 +26,6 @@ var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
-var isEndStump = require('./is-end-stump');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');

@@ -4,10 +4,13 @@
  */
 
 
+var createANode = require('../parser/create-a-node');
+var IndexedList = require('../util/indexed-list');
+
 /**
  * 清洗条件 aNode，返回纯净无条件指令的 aNode
  *
- * @param {ANode} ifANode 节点对象
+ * @param {ANode} condANode 节点对象
  * @return {ANode}
  */
 function rinseCondANode(condANode) {

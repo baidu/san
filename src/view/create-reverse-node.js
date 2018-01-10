@@ -63,4 +63,4 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
 }
 // #[end]
 
-exports = module.exports = createNode;
+exports = module.exports = createReverseNode;

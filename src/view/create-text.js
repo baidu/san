@@ -3,11 +3,8 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
-var createANode = require('../parser/create-a-node');
-var ExprType = require('../parser/expr-type');
 var pushStrBuffer = require('../runtime/push-str-buffer');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var nodeInit = require('./node-init');
@@ -53,7 +50,7 @@ function createText(options) {
             removeEl(currentNode);
             walker.goNext();
 
-            while (1) { /* eslint-disable-line */
+            while (1) { // eslint-disable-line
                 currentNode = walker.current;
                 if (isEndStump(currentNode, 'text')) {
                     walker.goNext();
