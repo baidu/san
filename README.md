@@ -93,7 +93,7 @@ CDN:
 
 ## ChangeLog
 
-[ChangeLog](https://github.com/ecomfe/san/blob/master/CHANGELOG.md)
+Please visit document [ChangeLog](https://github.com/ecomfe/san/blob/master/CHANGELOG.md)
 
 
 ## License
