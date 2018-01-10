@@ -73,6 +73,23 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("attribute with space around equal operator", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a title = "test0"><span title  ="test1">test1</span><span title=  "test2">test2</span></a>'
+        });
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(a.title).toBe('test0');
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans[0].title).toBe('test1');
+        expect(spans[1].title).toBe('test2');
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
 
     it("bind prop, data change before attach", function () {
         var MyComponent = san.defineComponent({
