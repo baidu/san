@@ -7,6 +7,7 @@ ChangeLog
 
 + 【新特性】- 数据 Data 对象新增 merge、apply 方法
 + 【变更】- 新的基于模板匹配的组件反解机制，代替原来的标记机制
++ 【bug修复】- 模板解析对 element attribute 的 = 两边不支持空白字符
 
 3.3.2
 -------
