@@ -41,6 +41,10 @@ function getNodePath(node) {
             case NodeType.CMPT:
                 nodePaths.unshift('component[' + (nodeParent.subTag || 'root') + ']');
                 break;
+
+            case NodeType.TEXT:
+                nodePaths.unshift('text');
+                break;
         }
 
         nodeParent = nodeParent.parent;

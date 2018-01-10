@@ -13,6 +13,7 @@ var nodeEvalExpr = require('./node-eval-expr');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
+var getNodePath = require('./get-node-path');
 
 /**
  * 创建 text 节点
@@ -40,25 +41,37 @@ function createText(options) {
         options.reverseWalker = null;
 
         var currentNode = walker.current;
-        if (node._simple) {
-            if (currentNode && currentNode.nodeType === 3) {
-                node.el = currentNode;
-                walker.goNext();
-            }
-        }
-        else {
-            removeEl(currentNode);
-            walker.goNext();
+        if (currentNode) {
+            switch (currentNode.nodeType) {
+                case 8:
+                    if (currentNode.data === 's-text') {
+                        removeEl(currentNode);
+                        walker.goNext();
 
-            while (1) { // eslint-disable-line
-                currentNode = walker.current;
-                if (isEndStump(currentNode, 'text')) {
-                    walker.goNext();
-                    removeEl(currentNode);
+                        while (1) { // eslint-disable-line
+                            currentNode = walker.current;
+                            if (!currentNode) {
+                                throw new Error('[SAN REVERSE ERROR] Text end flag not found. \nPaths: '
+                                    + getNodePath(node).join(' > '));
+                            }
+
+                            if (isEndStump(currentNode, 'text')) {
+                                walker.goNext();
+                                removeEl(currentNode);
+                                break;
+                            }
+
+                            walker.goNext();
+                        }
+                    }
                     break;
-                }
 
-                walker.goNext();
+                case 3:
+                    walker.goNext();
+                    if (node._simple) {
+                        node.el = currentNode;
+                    }
+                    break;
             }
         }
     }
