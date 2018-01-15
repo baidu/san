@@ -5,21 +5,19 @@
 
 var each = require('../util/each');
 var kebab2camel = require('../util/kebab2camel');
+var ExprType = require('./expr-type');
+var createAccessor = require('./create-accessor');
 var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
-var ExprType = require('./expr-type');
 var postProp = require('./post-prop');
 var getPropHandler = require('../view/get-prop-handler');
 
 var DEFAULT_EVENT_ARGS = [
-    {
-        type: ExprType.ACCESSOR,
-        paths: [
-            {type: ExprType.STRING, value: '$event'}
-        ]
-    }
+    createAccessor([
+        { type: ExprType.STRING, value: '$event' }
+    ])
 ];
 
 /**
@@ -141,15 +139,12 @@ function integrateProp(aNode, name, value) {
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
-                        name: {
-                            type: ExprType.ACCESSOR,
-                            paths: [
-                                {
-                                    type: ExprType.STRING,
-                                    value: '_' + prop.name
-                                }
-                            ]
-                        },
+                        name: createAccessor([
+                            {
+                                type: ExprType.STRING,
+                                value: '_' + prop.name
+                            }
+                        ]),
                         args: []
                     });
                 }

@@ -12,6 +12,7 @@ var IndexedList = require('../util/indexed-list');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
+var createAccessor = require('../parser/create-accessor');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
@@ -502,13 +503,15 @@ Component.prototype._update = function (changes) {
                     && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
                 ) {
                     if (relation > 2) {
-                        setExpr = {
-                            type: ExprType.ACCESSOR,
-                            paths: [{
-                                type: ExprType.STRING,
-                                value: setExpr
-                            }].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                        };
+                        setExpr = createAccessor(
+                            [
+                                {
+                                    type: ExprType.STRING,
+                                    value: setExpr
+                                }
+                            ].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                        );
+
                         updateExpr = changeExpr;
                     }
 
@@ -594,10 +597,9 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
                 ) {
                     var updateScopeExpr = bindItem.expr;
                     if (changeExpr.paths.length > 1) {
-                        updateScopeExpr = {
-                            type: ExprType.ACCESSOR,
-                            paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                        };
+                        updateScopeExpr = createAccessor(
+                            bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+                        );
                     }
 
                     me.scope.set(

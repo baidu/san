@@ -10,6 +10,7 @@ var IndexedList = require('../util/indexed-list');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
+var createAccessor = require('../parser/create-accessor');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
@@ -68,16 +69,15 @@ ForItemData.prototype.exprResolve = function (expr) {
         if (expr.type === ExprType.ACCESSOR
             && expr.paths[0].value === directive.item.paths[0].value
         ) {
-            return {
-                type: ExprType.ACCESSOR,
-                paths: directive.list.paths.concat(
+            return createAccessor(
+                directive.list.paths.concat(
                     {
                         type: ExprType.NUMBER,
                         value: me.get(directive.index)
                     },
                     expr.paths.slice(1)
                 )
-            };
+            );
         }
 
         return expr;
@@ -99,10 +99,7 @@ ForItemData.prototype.exprResolve = function (expr) {
         );
     });
 
-    return {
-        type: ExprType.ACCESSOR,
-        paths: resolvedPaths
-    };
+    return createAccessor(resolvedPaths);
 };
 
 // 代理数据操作方法
@@ -356,10 +353,9 @@ function forOwnUpdate(changes) {
             }
             else {
                 change = extend({}, change);
-                change.expr = {
-                    type: ExprType.ACCESSOR,
-                    paths: forDirective.item.paths.concat(changePaths.slice(forLen + 1))
-                };
+                change.expr = createAccessor(
+                    forDirective.item.paths.concat(changePaths.slice(forLen + 1))
+                );
 
                 childrenChanges[changeIndex].push(change);
 
@@ -405,10 +401,7 @@ function forOwnUpdate(changes) {
                 childrenChanges[i].push({
                     type: DataChangeType.SET,
                     option: change.option,
-                    expr: {
-                        type: ExprType.ACCESSOR,
-                        paths: forDirective.item.paths.slice(0)
-                    },
+                    expr: createAccessor(forDirective.item.paths.slice(0)),
                     value: newList[i]
                 });
 
@@ -479,13 +472,12 @@ function forOwnUpdate(changes) {
         var lengthChange = {
             type: DataChangeType.SET,
             option: {},
-            expr: {
-                type: ExprType.ACCESSOR,
-                paths: forDirective.list.paths.concat({
+            expr: createAccessor(
+                forDirective.list.paths.concat({
                     type: ExprType.STRING,
                     value: 'length'
                 })
-            }
+            )
         };
         each(childrenChanges, function (childChanges) {
             childChanges.push(lengthChange);
