@@ -34,7 +34,7 @@ var nextHandler;
  * @inner
  * @type {boolean}
  */
-var isNativePromise = typeof Promise === 'function' && /native code/.test(Promise.toString());
+var isNativePromise = typeof Promise === 'function' && /native code/.test(Promise);
 
 /**
  * 在下一个时间周期运行任务
