@@ -2960,7 +2960,8 @@ describe("Component", function () {
             },
             initData: function () {
                 return {
-                    formData: {}
+                    formData: {},
+                    foo: 10
                 };
             },
             getFooValue: function () {
@@ -2976,6 +2977,15 @@ describe("Component", function () {
         expect(myComponent.getFooValue()).toBe('foo');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('foo');
         myComponent.data.set('formData', {foo: 'bar'});
+
+        var myComponent2 = new MyComponent({
+            data: {
+                foo: undefined,
+                bar: 20
+            }
+        });
+        expect(myComponent2.data.get('foo')).toBe(10);
+        expect(myComponent2.data.get('bar')).toBe(20);
 
         san.nextTick(function () {
             expect(myComponent.getFooValue()).toBe('bar');
