@@ -13,7 +13,10 @@
 function extend(target, source) {
     for (var key in source) {
         if (source.hasOwnProperty(key)) {
-            target[key] = source[key];
+            var value = source[key];
+            if (typeof value !== 'undefined') {
+                target[key] = value;
+            }
         }
     }
 
