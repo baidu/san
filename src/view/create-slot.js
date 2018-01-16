@@ -7,6 +7,7 @@
 var each = require('../util/each');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
+var createAccessor = require('../parser/create-accessor');
 var evalExpr = require('../runtime/eval-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
@@ -154,24 +155,18 @@ function slotOwnUpdate(changes, isFromOuter) {
                     if (change.type === DataChangeType.SET) {
                         scopedChanges.push({
                             type: DataChangeType.SET,
-                            expr: {
-                                type: ExprType.ACCESSOR,
-                                paths: [
-                                    {type: ExprType.STRING, value: name}
-                                ]
-                            },
+                            expr: createAccessor([
+                                {type: ExprType.STRING, value: name}
+                            ]),
                             value: me.childScope.get(name),
                             option: change.option
                         });
                     }
                     else if (relation === 2) {
                         scopedChanges.push({
-                            expr: {
-                                type: ExprType.ACCESSOR,
-                                paths: [
-                                    {type: ExprType.STRING, value: name}
-                                ]
-                            },
+                            expr: createAccessor([
+                                { type: ExprType.STRING, value: name }
+                            ]),
                             type: DataChangeType.SPLICE,
                             index: change.index,
                             deleteCount: change.deleteCount,

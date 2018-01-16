@@ -6,6 +6,7 @@
 var ExprType = require('../parser/expr-type');
 var evalExpr = require('./eval-expr');
 var DataChangeType = require('./data-change-type');
+var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
 var each = require('../util/each');
 
@@ -114,10 +115,7 @@ Data.prototype.get = function (expr) {
     }
 
     if (value == null && this.parent) {
-        value = this.parent.get({
-            type: ExprType.ACCESSOR,
-            paths: paths.slice(0, start)
-        });
+        value = this.parent.get(createAccessor(paths.slice(0, start)));
     }
 
     for (i = start; value != null && i < l; i++) {
@@ -245,13 +243,20 @@ Data.prototype.merge = function (expr, source, option) {
 
     for (var key in source) {
         if (source.hasOwnProperty(key)) {
-            this.set({
-                type: ExprType.ACCESSOR,
-                paths: expr.paths.concat([{
-                    type: ExprType.STRING,
-                    value: key
-                }])
-            }, source[key], option);
+            this.set(
+                createAccessor(
+                    expr.paths.concat(
+                        [
+                            {
+                                type: ExprType.STRING,
+                                value: key
+                            }
+                        ]
+                    )
+                ),
+                source[key],
+                option
+            );
         }
     }
 };
