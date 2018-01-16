@@ -1068,7 +1068,7 @@ describe("Component serialize from compiled renderer and reverse", function () {
         });
     });
 
-    it("update multi elif, init with first if", function (done) {
+    it("update multi elif, init with last else", function (done) {
         ##cmpt47##
 
         var spans = wrap.getElementsByTagName('span');

@@ -13,11 +13,11 @@ let html = '';
 let specTpls = '';
 
 // generate html
-let genHtml = function ({componentClass, componentSource, compontentData, specTpl, dirName, result}) {
+let genContent = function ({componentClass, componentSource, compontentData, specTpl, dirName, result}) {
     let renderer = san.compileToRenderer(componentClass);
     let id = dirName;
 
-    // in no inject mark, add it
+    // if no inject mark, add it
     if (!/\/\/\s*\[inject\]/.test(specTpl)) {
         specTpl = specTpl.replace(/function\s*\([a-z0-9_,$\s]*\)\s*\{/, function ($0) {
             return $0 + '\n// [inject] init';
@@ -62,7 +62,7 @@ let buildFile = function (filePath) {
         let isFile = stats.isFile();
         let isDir = stats.isDirectory();
 
-        // if it's a file, init some data
+        // if it's a file, init data
         if (isFile) {
             // component file
             if (filename === 'component.js') {
@@ -98,12 +98,12 @@ let buildFile = function (filePath) {
         }
     });
 
-    let match = filePath.match(/\/([a-z0-9_,$\-]*)$/);
+    let match = filePath.match(/\/([a-zA-Z0-9_,$\-]*)$/);
     // dirName is the identity of each component
     dirName = match[1];
     // generate html when it has source file
     if (sourceFile) {
-        genHtml({
+        genContent({
             componentClass,
             componentSource,
             compontentData,
@@ -114,7 +114,7 @@ let buildFile = function (filePath) {
     }
 };
 
-let writeHtml = function ({htmlTpl, html, specTpls}) {
+let writeIn = function ({htmlTpl, html, specTpls}) {
     let karmaHtml = fs.readFileSync(path.resolve(__dirname, '../karma-context.html.tpl'), 'UTF-8');
     fs.writeFileSync(
         path.resolve(__dirname, '../karma-context.html'),
@@ -136,5 +136,5 @@ let writeHtml = function ({htmlTpl, html, specTpls}) {
 };
 
 buildFile(path.resolve(__dirname, './'));
-// write into html file
-writeHtml({htmlTpl, html, specTpls});
+// write into file
+writeIn({htmlTpl, html, specTpls});
