@@ -2990,8 +2990,12 @@ describe("Component", function () {
         san.nextTick(function () {
             expect(myComponent.getFooValue()).toBe('bar');
             expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('bar');
-            done();
+
+
+            myComponent2.dispose();
+            myComponent.dispose();
             document.body.removeChild(wrap);
+            done();
         });
     });
 
