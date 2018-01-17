@@ -200,6 +200,15 @@ function textOwnUpdate(changes) {
                     var startRemoveEl = insertBeforeEl;
 
                     while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
+                        // TODO: fix 222.
+                        // 先这么修一下，但是不严谨。使用者可以指定element id的，所以nodeType 1对id的判断可能有问题
+                        // 回头再统一整理 text slot template if for 这类非自然节点的结构
+                        if (startRemoveEl.nodeType === 8 && startRemoveEl.data.indexOf('san:') === 0
+                            || startRemoveEl.nodeType === 1 && /^_san_/.test(startRemoveEl.id)
+                        ) {
+                            break;
+                        }
+
                         insertBeforeEl = startRemoveEl.nextSibling;
                         removeEl(startRemoveEl);
                         startRemoveEl = insertBeforeEl;
