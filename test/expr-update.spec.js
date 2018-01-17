@@ -91,6 +91,84 @@ describe("Expression Update Detect", function () {
         });
     });
 
+    it("text has interpolation and filter in complex context", function (done) {
+        var kTypeDefs1 = [
+            {
+                "name": "checked",
+                "type": "bool",
+                "bindx": true,
+                "desc": "设置或者获取控件的选中状态",
+                "defaultValue": "false"
+            }
+        ];
+        var kTypeDefs2 = [
+            {
+                "name": "disabled",
+                "type": "bool",
+                "desc": "控制按钮的禁用状态",
+                "defaultValue": "false"
+            }
+        ];
+
+
+        var DataTypeExplorer = san.defineComponent({
+            template: '<ul><li s-for="typeDef in typeDefs">{{typeDef.name | noop}}<i s-if="typeDef.bindx">ICON: bindx</i></li></ul>',
+            filters: {
+                noop: function (value) {
+                    return value;
+                }
+            },
+            initData() {
+                return {
+                    typeDefs: []
+                };
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><ui-datatype-explorer typeDefs="{{typeDefs}}" /></div>',
+            components: {
+                'ui-datatype-explorer': DataTypeExplorer
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                typeDefs: kTypeDefs1
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var text = wrap.getElementsByTagName('li')[0].firstChild;
+        expect(text.nodeType).toBe(3);
+        expect(text.nextSibling.nodeType).toBe(1);
+        myComponent.data.set('typeDefs', kTypeDefs2);
+
+
+        san.nextTick(function () {
+            var text = wrap.getElementsByTagName('li')[0].firstChild;
+            expect(text.nodeType).toBe(3);
+            expect(text.nextSibling.nodeType).not.toBe(1);
+
+
+            myComponent.data.set('typeDefs', kTypeDefs1);
+            san.nextTick(function () {
+
+                var text = wrap.getElementsByTagName('li')[0].firstChild;
+                expect(text.nodeType).toBe(3);
+                expect(text.nextSibling.nodeType).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
 
     it("bind ident", function (done) {
         var MyComponent = san.defineComponent({
