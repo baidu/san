@@ -18,7 +18,7 @@ var guidIndex = 1;
  * @inner
  * @type {string}
  */
-var guidPrefix = (new Date()).getTime().toString(16);
+var guidPrefix = (new Date()).getTime().toString(16).slice(7);
 
 /**
  * 获取唯一id
