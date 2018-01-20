@@ -13,13 +13,21 @@
 var guidIndex = 1;
 
 /**
+ * 唯一id的前缀
+ *
+ * @inner
+ * @type {string}
+ */
+var guidPrefix = (new Date()).getTime().toString(16);
+
+/**
  * 获取唯一id
  *
  * @inner
  * @return {string} 唯一id
  */
 function guid() {
-    return '_san_' + (guidIndex++);
+    return '_san_' + guidPrefix + (guidIndex++);
 }
 
 exports = module.exports = guid;

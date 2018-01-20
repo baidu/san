@@ -10,6 +10,7 @@
 
 (function (root) {
     // 人工调整打包代码顺序，通过注释手工写一些依赖
+    // require('./util/guid');
     // require('./util/empty');
     // require('./util/extend');
     // require('./util/inherits');
@@ -21,7 +22,6 @@
     // require('./browser/svg-tags');
     // require('./browser/create-el');
     // require('./browser/remove-el');
-    // require('./util/guid');
     // require('./util/next-tick');
     // require('./browser/ie');
     // require('./browser/ie-old-than-9');
