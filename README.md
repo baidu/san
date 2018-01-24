@@ -89,6 +89,7 @@ CDN:
 - [san-store](https://github.com/ecomfe/san-store) - Application States Management
 - [san-update](https://github.com/ecomfe/san-update) - Immutable Data Update Library
 - [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
+- [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
 
 
 ## ChangeLog
