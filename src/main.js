@@ -22,6 +22,7 @@
     // require('./browser/svg-tags');
     // require('./browser/create-el');
     // require('./browser/remove-el');
+    // require('./browser/input-event-compatible');
     // require('./util/next-tick');
     // require('./browser/ie');
     // require('./browser/ie-old-than-9');
