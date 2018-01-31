@@ -10,7 +10,7 @@ var trigger = require('./trigger');
 if (ie === 9) {
     on(document, 'selectionchange', function () {
         var el = document.activeElement;
-        if (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && el.type === 'text')) {
+        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
             trigger(el, 'input');
         }
     });
