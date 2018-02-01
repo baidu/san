@@ -9,6 +9,7 @@ var each = require('../util/each');
 var bind = require('../util/bind');
 var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
+var trigger = require('../browser/trigger');
 
 var elementGetTransition = require('./element-get-transition');
 var eventDeclarationListener = require('./event-declaration-listener');
@@ -28,9 +29,7 @@ function inputOnCompositionEnd() {
 
     this.composing = 0;
 
-    var event = document.createEvent('HTMLEvents');
-    event.initEvent('input', true, true);
-    this.dispatchEvent(event);
+    trigger(this, 'input');
 }
 
 /**
