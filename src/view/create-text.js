@@ -32,7 +32,6 @@ function createText(options) {
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
 
-    node._static = node.aNode.textExpr.value;
     node._simple = isSimpleText(node.aNode);
 
     // #[begin] reverse
@@ -154,6 +153,9 @@ function textOwnAttach(parentEl, beforeEl) {
  */
 function textOwnUpdate(changes) {
     var me = this;
+    if (me.aNode.textExpr.value) {
+        return;
+    }
 
     var len = changes ? changes.length : 0;
     while (len--) {

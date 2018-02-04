@@ -43,17 +43,17 @@ function createTemplate(options) {
     node._update = templateOwnUpdate;
 
     // trim children blank text node
-    var aNodeChildren = node.aNode.children;
-    var len = aNodeChildren.length;
-    if (len) {
-        if (aNodeChildren[--len].isText) {
-            aNodeChildren.length = len;
-        }
+    // var aNodeChildren = node.aNode.children;
+    // var len = aNodeChildren.length;
+    // if (len) {
+    //     if (aNodeChildren[--len].isText) {
+    //         aNodeChildren.length = len;
+    //     }
 
-        if (len && aNodeChildren[0].isText) {
-            aNodeChildren.splice(0, 1);
-        }
-    }
+    //     if (len && aNodeChildren[0].isText) {
+    //         aNodeChildren.splice(0, 1);
+    //     }
+    // }
 
     // #[begin] reverse
     var walker = options.reverseWalker;
@@ -61,10 +61,7 @@ function createTemplate(options) {
         options.reverseWalker = null;
 
         each(node.aNode.children, function (aNodeChild) {
-            var child = createReverseNode(aNodeChild, walker, node);
-            if (!child._static) {
-                node.children.push(child);
-            }
+            node.children.push(createReverseNode(aNodeChild, walker, node));
         });
 
         attachings.add(node);

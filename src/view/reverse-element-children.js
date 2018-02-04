@@ -22,10 +22,7 @@ function reverseElementChildren(element) {
         var reverseWalker = new DOMChildrenWalker(element.el);
 
         each(element.aNode.children, function (aNodeChild) {
-            var child = createReverseNode(aNodeChild, reverseWalker, element);
-            if (!child._static) {
-                element.children.push(child);
-            }
+            element.children.push(createReverseNode(aNodeChild, reverseWalker, element));
         });
     }
 }

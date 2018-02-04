@@ -31,9 +31,7 @@ function genElementChildrenHTML(element, buf) {
         else {
             each(element.aNode.children, function (aNodeChild) {
                 var child = createNode(aNodeChild, element);
-                if (!child._static) {
-                    element.children.push(child);
-                }
+                element.children.push(child);
                 child._attachHTML(buf);
             });
         }

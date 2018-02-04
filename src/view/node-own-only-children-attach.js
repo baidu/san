@@ -20,9 +20,7 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     var me = this;
     each(this.aNode.children, function (aNodeChild) {
         var child = createNode(aNodeChild, me);
-        if (!child._static) {
-            me.children.push(child);
-        }
+        me.children.push(child);
         child.attach(parentEl, beforeEl);
     });
 
