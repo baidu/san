@@ -142,24 +142,26 @@ describe("Expression Update Detect", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var text = wrap.getElementsByTagName('li')[0].firstChild;
-        expect(text.nodeType).toBe(3);
-        expect(text.nextSibling.nodeType).toBe(1);
+        var li0 = wrap.getElementsByTagName('li')[0];
+        expect(li0.innerHTML.indexOf('checked') >= 0).toBeTruthy();
+        expect(li0.getElementsByTagName('i').length).toBe(1);
         myComponent.data.set('typeDefs', kTypeDefs2);
 
 
         san.nextTick(function () {
-            var text = wrap.getElementsByTagName('li')[0].firstChild;
-            expect(text.nodeType).toBe(3);
-            expect(text.nextSibling.nodeType).not.toBe(1);
+
+            var li0 = wrap.getElementsByTagName('li')[0];
+            expect(li0.innerHTML.indexOf('checked') >= 0).toBeFalsy();
+            expect(li0.innerHTML.indexOf('disabled') >= 0).toBeTruthy();
+            expect(li0.getElementsByTagName('i').length).toBe(0);
 
 
             myComponent.data.set('typeDefs', kTypeDefs1);
             san.nextTick(function () {
 
-                var text = wrap.getElementsByTagName('li')[0].firstChild;
-                expect(text.nodeType).toBe(3);
-                expect(text.nextSibling.nodeType).toBe(1);
+                var li0 = wrap.getElementsByTagName('li')[0];
+                expect(li0.innerHTML.indexOf('checked') >= 0).toBeTruthy();
+                expect(li0.getElementsByTagName('i').length).toBe(1);
 
                 myComponent.dispose();
                 document.body.removeChild(wrap);

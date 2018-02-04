@@ -686,9 +686,9 @@ describe("IfDirective", function () {
 
         var ps = wrap.getElementsByTagName('p');
         expect(ps.length).toBe(3);
-        expect(ps[0].innerHTML).toBe('one');
-        expect(ps[1].innerHTML).toBe('two');
-        expect(ps[2].innerHTML).toBe('three');
+        expect(/one/.test(ps[0].innerHTML)).toBeTruthy();
+        expect(/two/.test(ps[1].innerHTML)).toBeTruthy();
+        expect(/three/.test(ps[2].innerHTML)).toBeTruthy();
 
         var wrapHTML = wrap.innerHTML.toLowerCase();
         expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
@@ -703,9 +703,10 @@ describe("IfDirective", function () {
             san.nextTick(function () {
                 var ps = wrap.getElementsByTagName('p');
                 expect(ps.length).toBe(3);
-                expect(ps[0].innerHTML).toBe('one');
-                expect(ps[1].innerHTML).toBe('two');
-                expect(ps[2].innerHTML).toBe('three');
+
+                expect(/one/.test(ps[0].innerHTML)).toBeTruthy();
+                expect(/two/.test(ps[1].innerHTML)).toBeTruthy();
+                expect(/three/.test(ps[2].innerHTML)).toBeTruthy();
 
                 var wrapHTML = wrap.innerHTML.toLowerCase();
                 expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
