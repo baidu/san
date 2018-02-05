@@ -18,6 +18,7 @@ var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
+var insertBefore = require('../browser/insert-before');
 
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
@@ -179,12 +180,7 @@ function createFor(options) {
         );
 
         node._create();
-        if (walker.current) {
-            walker.target.insertBefore(node.el, walker.current);
-        }
-        else {
-            walker.target.appendChild(node.el);
-        }
+        insertBefore(node.el, walker.target, walker.current);
     }
     // #[end]
 
@@ -222,14 +218,7 @@ function forOwnAttachHTML(buf, onlyChildren) {
  */
 function forOwnAttach(parentEl, beforeEl) {
     this._create();
-    if (parentEl) {
-        if (beforeEl) {
-            parentEl.insertBefore(this.el, beforeEl);
-        }
-        else {
-            parentEl.appendChild(this.el);
-        }
-    }
+    insertBefore(this.el, parentEl, beforeEl);
 
     // paint list
     var el = this.el || parentEl.firstChild;

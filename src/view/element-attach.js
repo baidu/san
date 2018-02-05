@@ -5,6 +5,7 @@
 
 var createStrBuffer = require('../runtime/create-str-buffer');
 var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
+var insertBefore = require('../browser/insert-before');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var warnSetHTML = require('./warn-set-html');
 
@@ -17,14 +18,7 @@ var warnSetHTML = require('./warn-set-html');
  */
 function elementAttach(element, parentEl, beforeEl) {
     element._create();
-    if (parentEl) {
-        if (beforeEl) {
-            parentEl.insertBefore(element.el, beforeEl);
-        }
-        else {
-            parentEl.appendChild(element.el);
-        }
-    }
+    insertBefore(element.el, parentEl, beforeEl);
 
     if (!element._contentReady) {
         var buf = createStrBuffer();
