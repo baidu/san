@@ -1765,8 +1765,8 @@ describe("ForDirective", function () {
 
         var bs = wrap.getElementsByTagName('b');
         expect(bs.length).toBe(2);
-        expect(bs[0].innerHTML).toBe('foo');
-        expect(bs[1].innerHTML).toBe('bar');
+        expect(bs[0].innerHTML).toContain('foo');
+        expect(bs[1].innerHTML).toContain('bar');
 
 
         var inputs = wrap.getElementsByTagName('input');
@@ -1780,8 +1780,8 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var bs = wrap.getElementsByTagName('b');
             expect(bs.length).toBe(2);
-            expect(bs[0].innerHTML).toBe('foo');
-            expect(bs[1].innerHTML).toBe('bar|foo');
+            expect(bs[0].innerHTML).toContain('foo');
+            expect(bs[1].innerHTML).toContain('bar|foo');
 
 
             var inputs = wrap.getElementsByTagName('input');

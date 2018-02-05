@@ -544,7 +544,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[0].checked).toBe(false);
         expect(inputs[1].checked).toBe(true);
         expect(inputs[2].checked).toBe(false);
-        expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('varsha');
 
 
         function doneSpec() {

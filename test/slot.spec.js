@@ -1474,10 +1474,10 @@ describe("Slot", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Errorrik@gmail.com');
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toContain('Errorrik,Male,Errorrik@gmail.com');
         myComponent.data.set('man.email', 'erik168@163.com');
         san.nextTick(function () {
-            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('Errorrik,Male,Erik168@163.com');
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toContain('Errorrik,Male,Erik168@163.com');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1616,15 +1616,15 @@ describe("Slot", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
-        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
-        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERRORRIK@GMAIL.COM');
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toContain('ERRORRIK');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('MALE');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('ERRORRIK@GMAIL.COM');
         myComponent.data.set('man.email', 'erik168@163.com');
         san.nextTick(function () {
 
-            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('ERRORRIK');
-            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('MALE');
-            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('ERIK168@163.COM');
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toContain('ERRORRIK');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('MALE');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('ERIK168@163.COM');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
