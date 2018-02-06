@@ -599,12 +599,12 @@ describe("Slot", function () {
         var lis = wrap.getElementsByTagName('li');
 
         var a1 = lis[0].getElementsByTagName('a')[0];
-        var b1 = a1.firstChild;
+        var b1 = a1.getElementsByTagName('b')[0];
         expect(a1.href).toBe('http://ecomfe.github.io/san/')
         expect(b1.title).toBe('website');
 
         var a2 = lis[1].getElementsByTagName('a')[0];
-        var b2 = a2.firstChild;
+        var b2 = a2.getElementsByTagName('b')[0];
         expect(a2.href).toBe('https://github.com/ecomfe/san')
         expect(b2.title).toBe('github');
 
@@ -614,17 +614,17 @@ describe("Slot", function () {
             var lis = wrap.getElementsByTagName('li');
 
             var a1 = lis[0].getElementsByTagName('a')[0];
-            var b1 = a1.firstChild;
+            var b1 = a1.getElementsByTagName('b')[0];
             expect(a1.href).toBe('http://ecomfe.github.io/san/')
             expect(b1.title).toBe('website');
 
             var a2 = lis[1].getElementsByTagName('a')[0];
-            var b2 = a2.firstChild;
+            var b2 = a2.getElementsByTagName('b')[0];
             expect(a2.href).toBe('https://github.com/ecomfe/san')
             expect(b2.title).toBe('github');
 
             var a3 = lis[2].getElementsByTagName('a')[0];
-            var b3 = a3.firstChild;
+            var b3 = a3.getElementsByTagName('b')[0];
             expect(a3.href).toBe('https://unpkg.com/san@latest')
             expect(b3.title).toBe('cdn');
 
@@ -726,12 +726,12 @@ describe("Slot", function () {
         var aEls = wrap.getElementsByTagName('a');
 
         var a1 = aEls[0];
-        var b1 = a1.firstChild;
+        var b1 = a1.getElementsByTagName('b')[0];
         expect(a1.href).toBe('http://ecomfe.github.io/san/')
         expect(b1.title).toBe('website');
 
         var a2 = aEls[1];
-        var b2 = a2.firstChild;
+        var b2 = a2.getElementsByTagName('b')[0];
         expect(a2.href).toBe('https://github.com/ecomfe/san')
         expect(b2.title).toBe('github');
 
@@ -741,17 +741,17 @@ describe("Slot", function () {
             var aEls = wrap.getElementsByTagName('a');
 
             var a1 = aEls[0];
-            var b1 = a1.firstChild;
+            var b1 = a1.getElementsByTagName('b')[0];
             expect(a1.href).toBe('http://ecomfe.github.io/san/')
             expect(b1.title).toBe('website');
 
             var a2 = aEls[1];
-            var b2 = a2.firstChild;
+            var b2 = a2.getElementsByTagName('b')[0];
             expect(a2.href).toBe('https://github.com/ecomfe/san')
             expect(b2.title).toBe('github');
 
             var a3 = aEls[2];
-            var b3 = a3.firstChild;
+            var b3 = a3.getElementsByTagName('b')[0];
             expect(a3.href).toBe('https://unpkg.com/san@latest')
             expect(b3.title).toBe('cdn');
 
