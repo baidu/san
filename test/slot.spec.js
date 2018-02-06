@@ -29,12 +29,12 @@ describe("Slot", function () {
         myComponent.attach(wrap);
 
         expect(wrap.getElementsByTagName('u').length).toBe(1);
-        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('foo');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('foo');
 
-        myComponent.data.set('foo', 'san');
+        myComponent.data.set('foo', 'errorrik');
         san.nextTick(function () {
             expect(wrap.getElementsByTagName('u').length).toBe(1);
-            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('san');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('errorrik');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -912,12 +912,12 @@ describe("Slot", function () {
         myComponent.attach(wrap);
 
         expect(wrap.getElementsByTagName('u').length).toBe(1);
-        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('bar');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('bar');
 
         myComponent.data.set('bar', 'san');
         san.nextTick(function () {
             expect(wrap.getElementsByTagName('u').length).toBe(1);
-            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('san');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('san');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -1942,7 +1942,7 @@ describe("Slot", function () {
         expect(!!folder.slot()[0].isInserted).toBeTruthy();
         expect(!!folder.slot()[0].isScoped).toBeFalsy();
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('contributor');
-        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('X');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toContain('X');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik');
 
         myComponent.data.set('closeText', 'close');
@@ -1953,7 +1953,7 @@ describe("Slot", function () {
 
             expect(wrap.getElementsByTagName('b')[0].getAttribute('slot') == null).toBeTruthy();
             expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('member');
-            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('close');
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toContain('close');
             expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('otakustay');
 
 
@@ -2101,8 +2101,8 @@ describe("Slot", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
-        expect(lis[1].innerHTML).toBe('errorrik@gmail.com');
-        expect(lis[3].innerHTML).toBe('leeight@gmail.com');
+        expect(lis[1].innerHTML).toContain('errorrik@gmail.com');
+        expect(lis[3].innerHTML).toContain('leeight@gmail.com');
 
         myComponent.data.push('list', {name: 'otakustay', email: 'otakustay@gmail.com'});
         myComponent.data.set('list[0].email', 'erik168@163.com');
@@ -2114,8 +2114,8 @@ describe("Slot", function () {
 
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(6);
-            expect(lis[1].innerHTML).toBe('erik168@163.com');
-            expect(lis[5].innerHTML).toBe('otakustay@gmail.com');
+            expect(lis[1].innerHTML).toContain('erik168@163.com');
+            expect(lis[5].innerHTML).toContain('otakustay@gmail.com');
 
             myComponent.data.set('columns', [
                 {name: 'email', label: '邮'},
@@ -2130,9 +2130,9 @@ describe("Slot", function () {
 
                 var lis = wrap.getElementsByTagName('li');
                 expect(lis.length).toBe(6);
-                expect(lis[2].innerHTML).toBe('leeight@gmail.com');
-                expect(lis[0].innerHTML).toBe('erik168@163.com');
-                expect(lis[4].innerHTML).toBe('otakustay@gmail.com');
+                expect(lis[2].innerHTML).toContain('leeight@gmail.com');
+                expect(lis[0].innerHTML).toContain('erik168@163.com');
+                expect(lis[4].innerHTML).toContain('otakustay@gmail.com');
 
                 myComponent.dispose();
                 document.body.removeChild(wrap);
@@ -2208,10 +2208,10 @@ describe("Slot", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(8);
-        expect(lis[1].innerHTML).toBe('justineo@gmail.com');
-        expect(lis[3].innerHTML).toBe('errorrik@gmail.com');
-        expect(lis[4].innerHTML).toBe('otakustay');
-        expect(lis[6].innerHTML).toBe('leeight');
+        expect(lis[1].innerHTML).toContain('justineo@gmail.com');
+        expect(lis[3].innerHTML).toContain('errorrik@gmail.com');
+        expect(lis[4].innerHTML).toContain('otakustay');
+        expect(lis[6].innerHTML).toContain('leeight');
 
 
         myComponent.data.set('deps[0].strong', 'email');
@@ -2228,10 +2228,10 @@ describe("Slot", function () {
 
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(8);
-            expect(lis[0].innerHTML).toBe('Justineo');
-            expect(lis[2].innerHTML).toBe('otakustay');
-            expect(lis[4].innerHTML).toBe('leeight');
-            expect(lis[6].innerHTML).toBe('who');
+            expect(lis[0].innerHTML).toContain('Justineo');
+            expect(lis[2].innerHTML).toContain('otakustay');
+            expect(lis[4].innerHTML).toContain('leeight');
+            expect(lis[6].innerHTML).toContain('who');
 
             myComponent.data.set('deps[1].columns', [
                 {name: 'email', label: '邮'},
@@ -2248,10 +2248,10 @@ describe("Slot", function () {
 
                 var lis = wrap.getElementsByTagName('li');
                 expect(lis.length).toBe(8);
-                expect(lis[0].innerHTML).toBe('Justineo');
-                expect(lis[3].innerHTML).toBe('otakustay');
-                expect(lis[5].innerHTML).toBe('leeight');
-                expect(lis[7].innerHTML).toBe('who');
+                expect(lis[0].innerHTML).toContain('Justineo');
+                expect(lis[3].innerHTML).toContain('otakustay');
+                expect(lis[5].innerHTML).toContain('leeight');
+                expect(lis[7].innerHTML).toContain('who');
 
                 myComponent.data.set('deps[1].strong', 'name');
 
