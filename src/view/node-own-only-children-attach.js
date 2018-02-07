@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var createNode = require('./create-node');
+var nodeCreateStump = require('./node-create-stump');
 var attachings = require('./attachings');
 
 
@@ -18,11 +19,18 @@ var attachings = require('./attachings');
  */
 function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     var me = this;
+
+    me.sel = nodeCreateStump(me);
+    insertBefore(me.sel, parentEl, beforeEl);
+
     each(this.aNode.children, function (aNodeChild) {
         var child = createNode(aNodeChild, me);
         me.children.push(child);
         child.attach(parentEl, beforeEl);
     });
+
+    me.el = nodeCreateStump(me);
+    insertBefore(me.el, parentEl, beforeEl);
 
     attachings.done();
 }

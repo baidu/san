@@ -19,16 +19,17 @@ function getNodeStump(node) {
 
         while (el) {
             if (el.nodeType === 8
-                && el.data.indexOf('san:') === 0
-                && el.data.replace('san:', '') === node.id
+                && el.data.indexOf(node.id) === 0
             ) {
-                break;
+                if (node.el) {
+                    node.sel = node.el;
+                }
+
+                node.el = el;
             }
 
             el = el.nextSibling;
         }
-
-        node.el = el;
     }
 
     return node.el;

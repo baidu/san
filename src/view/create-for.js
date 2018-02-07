@@ -558,11 +558,11 @@ function forOwnUpdate(changes) {
                     // flush new children html
                     var nextChild = me.children[i + 1];
                     if (!nextChild || nextChild.lifeCycle.attached) {
-                        var beforeEl = nextChild && (nextChild._getEl() || nextChild.children[0]._getEl());
+                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el);
                         insertHTMLBefore(
                             stringifyStrBuffer(newChildBuf),
                             parentEl,
-                            beforeEl || me.el || parentEl.firstChild
+                            beforeEl || me.el
                         );
 
                         newChildBuf = null;

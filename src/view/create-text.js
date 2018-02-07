@@ -5,6 +5,7 @@
 
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
+var insertBefore = require('../browser/insert-before');
 var pushStrBuffer = require('../runtime/push-str-buffer');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var nodeInit = require('./node-init');
@@ -14,6 +15,8 @@ var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
 var getNodePath = require('./get-node-path');
+var genStumpHTML = require('./gen-stump-html');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * 创建 text 节点
@@ -29,6 +32,7 @@ function createText(options) {
 
     node.attach = textOwnAttach;
     node.dispose = textOwnDispose;
+    node._getEl = textOwnGetEl;
     node._attachHTML = textOwnAttachHTML;
     node._update = textOwnUpdate;
 
@@ -79,7 +83,59 @@ function createText(options) {
     return node;
 }
 
+/**
+ * 获取文本节点对应的主元素
+ *
+ * @return {HTMLComment|HTMLTextNode}
+ */
+function textOwnGetEl() {
+    if (this.el) {
+        return this.el;
+    }
 
+    if (this._simple) {
+        var parent = this.parent;
+        var prev;
+
+        var me = this;
+        each(parent.children, function (child, i) {
+            if (child === me) {
+                return false;
+            }
+
+            prev = child;
+        });
+
+        var parentEl = parent._getEl();
+        if (parentEl.nodeType !== 1) {
+            parentEl = parentEl.parentNode;
+        }
+
+        var prevEl = prev && prev._getEl() && prev.el.nextSibling;
+
+
+        if (this.content) {
+            this.el = prevEl;
+
+            if (!this.el) {
+                switch (parent.nodeType) {
+                    case NodeType.TPL:
+                    case NodeType.SLOT:
+                        this.el = parent.sel.nextSibling;
+                        break;
+                    default:
+                        this.el = parentEl.firstChild;
+                }
+            }
+        }
+        else {
+            this.el = document.createTextNode('');
+            insertBefore(this.el, parentEl, prevEl);
+        }
+    }
+
+    return getNodeStump(this);
+}
 
 /**
  * 销毁 text 节点
@@ -97,38 +153,15 @@ function textOwnDispose() {
  */
 function textOwnAttachHTML(buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
-    pushStrBuffer(buf, this.content);
-}
 
-/**
- * 定位text节点在父元素中的位置
- *
- * @param {Object} node text节点元素
- */
-function textLocatePrevNode(node) {
-    function getPrev(node) {
-        var parentChildren = node.parent.children;
-        var len = parentChildren.length;
-
-        while (len--) {
-            if (node === parentChildren[len]) {
-                return parentChildren[len - 1];
-            }
-        }
+    if (!this._simple) {
+        genStumpHTML(this, buf);
     }
 
-    if (!node._located) {
-        var parentBase = node.parent;
-        node._prev = getPrev(node);
-        while (!node._prev && parentBase
-            && (parentBase.nodeType === NodeType.TPL
-                || parentBase.nodeType === NodeType.SLOT)
-        ) {
-            node._prev = getPrev(parentBase);
-            parentBase = parentBase.parent;
-        }
+    pushStrBuffer(buf, this.content);
 
-        node._located = 1;
+    if (!this._simple) {
+        genStumpHTML(this, buf);
     }
 }
 
@@ -157,6 +190,8 @@ function textOwnUpdate(changes) {
         return;
     }
 
+    var el = this._getEl();
+
     var len = changes ? changes.length : 0;
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
@@ -166,61 +201,24 @@ function textOwnUpdate(changes) {
                 this.content = text;
                 var rawText = nodeEvalExpr(this, this.aNode.textExpr);
 
-                // 无 stump 元素，所以需要根据组件结构定位
-                textLocatePrevNode(me);
-
-                var parentEl = this.parent._getEl();
                 if (me._simple) {
-                    if (me.el) {
-                        me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
-                    }
-                    else {
-                        var prevEl = me._prev && me._prev._getEl();
-                        prevEl = prevEl && prevEl.nextSibling;
-                        var el = prevEl || parentEl.firstChild;
-                        if (el) {
-                            switch (el.nodeType) {
-                                case 3:
-                                    me.el = el;
-                                    me.el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
-                                    break;
-                                case 1:
-                                    el.insertAdjacentHTML('beforebegin', text);
-                                    break;
-                                default:
-                                    me.el = document.createTextNode(text);
-                                    parentEl.insertBefore(me.el, el);
-                            }
-                        }
-                        else {
-                            parentEl.insertAdjacentHTML('beforeend', text);
-                        }
-                    }
+                    el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                 }
                 else {
-                    var insertBeforeEl = me._prev && me._prev._getEl().nextSibling || parentEl.firstChild;
-                    var startRemoveEl = insertBeforeEl;
+                    var startRemoveEl = me.sel.nextSibling;
+                    var parentEl = el.parentNode;
 
-                    while (startRemoveEl && !/^_san_/.test(startRemoveEl.id)) {
-                        // TODO: fix 222.
-                        // 先这么修一下，但是不严谨。使用者可以指定element id的，所以nodeType 1对id的判断可能有问题
-                        // 回头再统一整理 text slot template if for 这类非自然节点的结构
-                        if (startRemoveEl.nodeType === 8 && startRemoveEl.data.indexOf('san:') === 0
-                            || startRemoveEl.nodeType === 1 && /^_san_/.test(startRemoveEl.id)
-                        ) {
-                            break;
-                        }
-
-                        insertBeforeEl = startRemoveEl.nextSibling;
-                        removeEl(startRemoveEl);
-                        startRemoveEl = insertBeforeEl;
+                    while (startRemoveEl !== el) {
+                        var removeTarget = startRemoveEl;
+                        startRemoveEl = startRemoveEl.nextSibling;
+                        removeEl(removeTarget);
                     }
 
                     // #[begin] error
                     warnSetHTML(parentEl);
                     // #[end]
 
-                    insertHTMLBefore(text, parentEl, insertBeforeEl);
+                    insertHTMLBefore(text, parentEl, el);
                 }
             }
 

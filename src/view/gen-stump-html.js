@@ -12,7 +12,7 @@ var pushStrBuffer = require('../runtime/push-str-buffer');
  * @param {Object} buf html串存储对象
  */
 function genStumpHTML(node, buf) {
-    pushStrBuffer(buf, '<!--san:' + node.id + '-->');
+    pushStrBuffer(buf, '<!--' + node.id + '-->');
 }
 
 exports = module.exports = genStumpHTML;

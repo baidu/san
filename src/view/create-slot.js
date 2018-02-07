@@ -85,7 +85,7 @@ function createSlot(options) {
     node.attach = nodeOwnOnlyChildrenAttach;
 
     node._toPhase = elementOwnToPhase;
-    node._getEl = slotOwnGetEl;
+    node._getEl = nodeOwnGetStumpEl;
     node._attachHTML = slotOwnAttachHTML;
     node._attached = nodeOwnSimpleAttached;
     node._update = slotOwnUpdate;
@@ -189,18 +189,11 @@ function slotOwnUpdate(changes, isFromOuter) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
+    genStumpHTML(this, buf);
     genElementChildrenHTML(this, buf);
-    attachings.add(this);
-}
+    genStumpHTML(this, buf);
 
-/**
- * 获取 slot 对应的主元素
- * slot 是片段的管理，没有主元素，所以直接返回爹的主元素，不持有引用
- *
- * @return {HTMLElement}
- */
-function slotOwnGetEl() {
-    return this.parent._getEl();
+    attachings.add(this);
 }
 
 /**

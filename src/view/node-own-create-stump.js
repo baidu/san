@@ -3,11 +3,14 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+
+var nodeCreateStump = require('./node-create-stump');
+
 /**
  * 创建节点对应的 stump comment 主元素
  */
 function nodeOwnCreateStump() {
-    this.el = this.el || document.createComment('san:' + this.id);
+    this.el = this.el || nodeCreateStump(this);
 }
 
 exports = module.exports = nodeOwnCreateStump;

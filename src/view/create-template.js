@@ -16,6 +16,7 @@ var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
+var genStumpHTML = require('./gen-stump-html');
 var LifeCycle = require('./life-cycle');
 
 /**
@@ -37,7 +38,7 @@ function createTemplate(options) {
 
 
     node._toPhase = elementOwnToPhase;
-    node._getEl = empty;
+    node._getEl = nodeOwnGetStumpEl;
     node._attachHTML = templateOwnAttachHTML;
     node._attached = nodeOwnSimpleAttached;
     node._update = templateOwnUpdate;
@@ -86,7 +87,10 @@ function templateOwnUpdate(changes) {
  * @param {Object} buf html串存储对象
  */
 function templateOwnAttachHTML(buf) {
+    genStumpHTML(this, buf);
     genElementChildrenHTML(this, buf);
+    genStumpHTML(this, buf);
+
     attachings.add(this);
 }
 
