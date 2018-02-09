@@ -43,18 +43,6 @@ function createTemplate(options) {
     node._attached = nodeOwnSimpleAttached;
     node._update = templateOwnUpdate;
 
-    // trim children blank text node
-    // var aNodeChildren = node.aNode.children;
-    // var len = aNodeChildren.length;
-    // if (len) {
-    //     if (aNodeChildren[--len].isText) {
-    //         aNodeChildren.length = len;
-    //     }
-
-    //     if (len && aNodeChildren[0].isText) {
-    //         aNodeChildren.splice(0, 1);
-    //     }
-    // }
 
     // #[begin] reverse
     var walker = options.reverseWalker;
