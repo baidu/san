@@ -48,7 +48,7 @@ function createText(options) {
             switch (currentNode.nodeType) {
                 case 8:
                     if (currentNode.data === 's-text') {
-                        removeEl(currentNode);
+                        currentNode.data = node.id;
                         walker.goNext();
 
                         while (1) { // eslint-disable-line
@@ -60,7 +60,7 @@ function createText(options) {
 
                             if (isEndStump(currentNode, 'text')) {
                                 walker.goNext();
-                                removeEl(currentNode);
+                                currentNode.data = node.id;
                                 break;
                             }
 

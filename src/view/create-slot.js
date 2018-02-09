@@ -98,9 +98,15 @@ function createSlot(options) {
     if (walker) {
         options.reverseWalker = null;
 
+        node.sel = nodeCreateStump(node);
+        insertBefore(node.sel, walker.target, walker.current);
+
         each(node.aNode.children, function (aNodeChild) {
             node.children.push(createReverseNode(aNodeChild, walker, node));
         });
+
+        node.el = nodeCreateStump(node);
+        insertBefore(node.el, walker.target, walker.current);
 
         attachings.add(node);
     }

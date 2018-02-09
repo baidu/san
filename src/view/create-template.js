@@ -14,6 +14,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
+var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 var genStumpHTML = require('./gen-stump-html');
@@ -49,9 +50,15 @@ function createTemplate(options) {
     if (walker) {
         options.reverseWalker = null;
 
+        node.sel = nodeCreateStump(node);
+        insertBefore(node.sel, walker.target, walker.current);
+
         each(node.aNode.children, function (aNodeChild) {
             node.children.push(createReverseNode(aNodeChild, walker, node));
         });
+
+        node.el = nodeCreateStump(node);
+        insertBefore(node.el, walker.target, walker.current);
 
         attachings.add(node);
     }
