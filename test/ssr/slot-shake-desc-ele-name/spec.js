@@ -10,10 +10,10 @@ it("dynamic slot name description and dynamic name in given slot element", funct
 
     var lis = wrap.getElementsByTagName('li');
     expect(lis.length).toBe(8);
-    expect(lis[1].innerHTML).toBe('justineo@gmail.com');
-    expect(lis[3].innerHTML).toBe('errorrik@gmail.com');
-    expect(lis[4].innerHTML).toBe('otakustay');
-    expect(lis[6].innerHTML).toBe('leeight');
+    expect(lis[1].innerHTML).toContain('justineo@gmail.com');
+    expect(lis[3].innerHTML).toContain('errorrik@gmail.com');
+    expect(lis[4].innerHTML).toContain('otakustay');
+    expect(lis[6].innerHTML).toContain('leeight');
 
     myComponent.data.set('deps[0].strong', 'email');
     myComponent.data.pop('deps[0].members');
@@ -22,18 +22,18 @@ it("dynamic slot name description and dynamic name in given slot element", funct
     myComponent.nextTick(function () {
         var bs = wrap.getElementsByTagName('b');
         expect(bs.length).toBe(4);
-        expect(bs[0].innerHTML).toBe('justineo@gmail.com');
+        expect(bs[0].innerHTML).toContain('justineo@gmail.com');
         expect(bs[0].getAttribute('slot') == null).toBeTruthy();
-        expect(bs[1].innerHTML).toBe('otakustay@gmail.com');
-        expect(bs[2].innerHTML).toBe('leeight@gmail.com');
-        expect(bs[3].innerHTML).toBe('areyou@gmail.com');
+        expect(bs[1].innerHTML).toContain('otakustay@gmail.com');
+        expect(bs[2].innerHTML).toContain('leeight@gmail.com');
+        expect(bs[3].innerHTML).toContain('areyou@gmail.com');
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(8);
-        expect(lis[0].innerHTML).toBe('Justineo');
-        expect(lis[2].innerHTML).toBe('otakustay');
-        expect(lis[4].innerHTML).toBe('leeight');
-        expect(lis[6].innerHTML).toBe('who');
+        expect(lis[0].innerHTML).toContain('Justineo');
+        expect(lis[2].innerHTML).toContain('otakustay');
+        expect(lis[4].innerHTML).toContain('leeight');
+        expect(lis[6].innerHTML).toContain('who');
 
         myComponent.data.set('deps[1].columns', [
             {name: 'email', label: '邮'},
@@ -51,10 +51,10 @@ it("dynamic slot name description and dynamic name in given slot element", funct
 
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(8);
-            expect(lis[0].innerHTML).toBe('Justineo');
-            expect(lis[3].innerHTML).toBe('otakustay');
-            expect(lis[5].innerHTML).toBe('leeight');
-            expect(lis[7].innerHTML).toBe('who');
+            expect(lis[0].innerHTML).toContain('Justineo');
+            expect(lis[3].innerHTML).toContain('otakustay');
+            expect(lis[5].innerHTML).toContain('leeight');
+            expect(lis[7].innerHTML).toContain('who');
 
             myComponent.data.set('deps[1].strong', 'name');
 
