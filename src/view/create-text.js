@@ -112,21 +112,20 @@ function textOwnGetEl() {
         }
 
         var prevEl = prev && prev._getEl() && prev.el.nextSibling;
+        if (!prevEl) {
+            switch (parent.nodeType) {
+                case NodeType.TPL:
+                case NodeType.SLOT:
+                    prevEl = parent.sel.nextSibling;
+                    break;
+                default:
+                    prevEl = parentEl.firstChild;
+            }
+        }
 
 
         if (this.content) {
             this.el = prevEl;
-
-            if (!this.el) {
-                switch (parent.nodeType) {
-                    case NodeType.TPL:
-                    case NodeType.SLOT:
-                        this.el = parent.sel.nextSibling;
-                        break;
-                    default:
-                        this.el = parentEl.firstChild;
-                }
-            }
         }
         else {
             this.el = document.createTextNode('');
