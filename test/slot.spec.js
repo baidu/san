@@ -2504,4 +2504,85 @@ describe("Slot", function () {
             });
         })
     });
+
+    it("has text sibling，mix inner text node", function (done) {
+        var Panel = san.defineComponent({
+            template: '<a>test<slot></slot>dddd</a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<u><x-panel>{{name}}</x-panel></u>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'HelloSan'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+
+        expect(a.innerHTML).toContain('test');
+        expect(a.innerHTML).toContain('dddd');
+        expect(a.innerHTML).toContain('HelloSan');
+        myComponent.data.set('name', 'ByeER');
+
+        san.nextTick(function () {
+            expect(a.innerHTML).toContain('ByeER');
+            expect(a.innerHTML).toContain('test');
+            expect(a.innerHTML).toContain('dddd');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("has text sibling，mix inner text node, init with empty string", function (done) {
+        var Panel = san.defineComponent({
+            template: '<a>test<slot></slot>dddd</a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<u><x-panel>{{name}}</x-panel></u>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: ''
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+
+        expect(a.innerHTML).toContain('test');
+        expect(a.innerHTML).toContain('dddd');
+        myComponent.data.set('name', 'ByeER');
+
+        san.nextTick(function () {
+            expect(a.innerHTML).toContain('ByeER');
+            expect(a.innerHTML).toContain('test');
+            expect(a.innerHTML).toContain('dddd');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
