@@ -106,6 +106,7 @@ export interface SanComponent<T> {
 
 interface ComponentConstructor<T, D> {
     new(): SanComponent<T> & D
+    new(config: SanComponentConfig<T, D>): SanComponent<T> & D
 }
 interface SanSlot {
     isScoped: boolean;
