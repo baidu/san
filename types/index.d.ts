@@ -25,9 +25,9 @@ export interface SanData<T> {
     push(expr: string | ExprAccessorNode, item: any, option?: SanDataChangeOption): number;
     pop(expr: string | ExprAccessorNode, option?: SanDataChangeOption): any;
     shift(expr: string | ExprAccessorNode, option?: SanDataChangeOption): any;
-    unshift(expr: string | ExprAccessorNode, item, option?: SanDataChangeOption): number;
-    removeAt(expr: string | ExprAccessorNode, index, option?: SanDataChangeOption): void;
-    remove(expr: string | ExprAccessorNode, value, option?: SanDataChangeOption): void;
+    unshift(expr: string | ExprAccessorNode, item: any, option?: SanDataChangeOption): number;
+    removeAt(expr: string | ExprAccessorNode, index: number, option?: SanDataChangeOption): void;
+    remove(expr: string | ExprAccessorNode, value: any, option?: SanDataChangeOption): void;
 }
 
 interface SanChangeListener<T> {
@@ -54,8 +54,8 @@ type DataTypeChecker = (data: any, dataName: string, componentName: string)=> vo
 export interface SanComponentConfig<T extends {}, D> {
     el?: Element;
     trimWhitespace?: 'none' | 'blank' | 'all';
-    data?: T;
-    initData?(): T;
+    data?: Partial<T>;
+    initData?(): Partial<T>;
     displayName?: string;
     template?: string;
     filters?: {
@@ -72,7 +72,7 @@ export interface SanComponentConfig<T extends {}, D> {
         [k: string]: SanEventListener<{}, {}>,
     };
     dataTypes?: {
-        [k: string]: DataTypeChecker;
+        [k in keyof T]: DataTypeChecker;
     },
     compiled?(this: SanComponent<T> & D): void;
     inited?(this: SanComponent<T> & D): void;
@@ -84,7 +84,7 @@ export interface SanComponentConfig<T extends {}, D> {
 }
 
 export interface SanComponent<T> {
-    constructor(option?: { data?: T })
+    constructor(option?: { data?: Partial<T> }): SanComponent<T>;
 
     el?: Element;
     nodeType: NodeType;
@@ -105,7 +105,7 @@ export interface SanComponent<T> {
 }
 
 interface ComponentConstructor<T, D> {
-    new(option?: { data?: object }): SanComponent<T> & D
+    new(option?: { data?: Partial<T> }): SanComponent<T> & D
 }
 interface SanSlot {
     isScoped: boolean;
@@ -171,10 +171,15 @@ interface ExprTertiaryNode {
     segs: ExprNode[];
 }
 
-interface SanIndexedList {
-    get(bindName: string): ExprNode;
-    each(handler: (bindItem: ExprNode) => any);
-    push(item: { name: string } & {});
+interface SanIndexedList<T> {
+    raw: T[];
+    index: { [name: string]: T};
+
+    get(bindName: string): T;
+    each(handler: (bindItem: T) => any, thisArg: any): void;
+    push(item: { name: string } & {}): void;
+    remove(name: string): any;
+    concat(other: SanIndexedList<T>): SanIndexedList<T>;
 }
 
 declare enum NodeType {
@@ -192,9 +197,9 @@ interface ANode {
     text?: string;
     textExpr?: ExprTextNode;
     children?: ANode[];
-    props: SanIndexedList;
-    events: SanIndexedList;
-    directives: SanIndexedList;
+    props: SanIndexedList<ExprNode>;
+    events: SanIndexedList<ExprNode>;
+    directives: SanIndexedList<ExprNode>;
     tagName: string;
 }
 
@@ -210,7 +215,7 @@ interface SanStatic {
 
     parseExpr(template: string): ExprNode;
     parseTemplate(template: string): ANode;
-    inherits(childClazz: (...args: any[]) => void, parentClazz: ComponentConstructor<{}, {}>);
+    inherits(childClazz: (...args: any[]) => void, parentClazz: ComponentConstructor<{}, {}>): void;
     nextTick(doNextTick: () => any): void;
     DataTypes: {
         any: DataTypeChecker;
@@ -230,7 +235,7 @@ interface SanStatic {
         exact: DataTypeChecker;
     };
     debug: boolean;
-    version: boolean;
+    version: string;
 }
 
 declare const San: SanStatic;
