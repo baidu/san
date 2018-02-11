@@ -92,3 +92,9 @@ const Test = san.defineComponent({
         }
     }
 });
+
+let app = new Test({
+  data: {
+      name: 'San'
+  }
+});
