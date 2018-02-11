@@ -235,7 +235,7 @@ interface SanStatic {
         exact: DataTypeChecker;
     };
     debug: boolean;
-    version: boolean;
+    version: string;
 }
 
 declare const San: SanStatic;

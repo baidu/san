@@ -7,6 +7,7 @@ ChangeLog
 
 + 【bug修复】- 更改 template / slot / text 的结构，彻底解决复杂嵌套场景的更新不正确
 + 【bug修复】- ie9 下 input[type=text] 双向绑定，用户输入的值更新失败
++ 【优化】- 为常用 api 添加 typescript 的类型定义
 
 3.4.2
 -------
