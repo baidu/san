@@ -105,7 +105,7 @@ export interface SanComponent<T> {
 }
 
 interface ComponentConstructor<T, D> {
-    new(option?: { data?: T }): SanComponent<T> & D
+    new(option?: { data?: object }): SanComponent<T> & D
 }
 interface SanSlot {
     isScoped: boolean;
