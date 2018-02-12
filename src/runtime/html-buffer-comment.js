@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var isCompatStrJoin = require('../browser/is-compat-str-join');
+var isCommentAutoClear = require('../browser/is-comment-auto-clear');
 
 /**
  * 往html字符串连接对象中添加注释
@@ -11,7 +11,7 @@ var isCompatStrJoin = require('../browser/is-compat-str-join');
  * @param {Object} buf 字符串连接对象
  * @param {string} str 要添加的字符串
  */
-var htmlBufferComment = isCompatStrJoin
+var htmlBufferComment = isCommentAutoClear
     ? function (buf, str) {
         buf.raw[buf.length++] = '<!--' + str + '-->';
         if (buf.tagStart) {
