@@ -1,11 +1,11 @@
-import san, { SanComponentConfig, SanComponent } from "san";
+import * as san from "san";
 
 interface ColorPickerData {
     data: string;
     datasource: string[];
 }
 
-interface ColorPicker extends SanComponent<ColorPickerData>{
+interface ColorPicker extends san.SanComponent<ColorPickerData>{
     itemClick(color: string): void;
 }
 
