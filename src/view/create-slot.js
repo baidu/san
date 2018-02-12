@@ -13,6 +13,7 @@ var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
+var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
@@ -26,6 +27,8 @@ var elementUpdateChildren = require('./element-update-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
+var nodeCreateStump = require('./node-create-stump');
 
 /**
  * 创建 slot 元素
@@ -169,7 +172,7 @@ function slotOwnUpdate(changes, isFromOuter) {
                     else if (relation === 2) {
                         scopedChanges.push({
                             expr: createAccessor([
-                                { type: ExprType.STRING, value: name }
+                                {type: ExprType.STRING, value: name}
                             ]),
                             type: DataChangeType.SPLICE,
                             index: change.index,

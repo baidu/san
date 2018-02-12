@@ -6,7 +6,6 @@
 var isCompatStrJoin = require('../browser/is-compat-str-join');
 var isCommentAutoClear = require('../browser/is-comment-auto-clear');
 var insertBefore = require('../browser/insert-before');
-var insertHTMLBefore = require('../browser/insert-html-before');
 
 /**
  * 输出 HTML buffer 内容到 DOM 上
@@ -14,7 +13,6 @@ var insertHTMLBefore = require('../browser/insert-html-before');
  * @param {Object} buf html字符串连接对象
  * @param {HTMLElement} target 目标DOM元素
  * @param {string?} pos 相对target的位置
- * @return {string}
  */
 function outputHTMLBuffer(buf, target, pos) {
     // html 没内容就不要设置 innerHTML了

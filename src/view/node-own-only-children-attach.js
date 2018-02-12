@@ -5,6 +5,7 @@
 
 
 var each = require('../util/each');
+var insertBefore = require('../browser/insert-before');
 var createNode = require('./create-node');
 var nodeCreateStump = require('./node-create-stump');
 var attachings = require('./attachings');

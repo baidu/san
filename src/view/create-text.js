@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var each = require('../util/each');
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
 var insertBefore = require('../browser/insert-before');
@@ -11,12 +12,12 @@ var htmlBufferComment = require('../runtime/html-buffer-comment');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
+var getNodeStump = require('./get-node-stump');
 var nodeEvalExpr = require('./node-eval-expr');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
 var getNodePath = require('./get-node-path');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * 创建 text 节点

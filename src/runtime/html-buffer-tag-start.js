@@ -1,5 +1,5 @@
 /**
- * @file 往html字符串连接对象中添加注释
+ * @file 标记 HTML 字符串连接对象当前为 tag 起始位置
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -7,10 +7,10 @@ var isCommentAutoClear = require('../browser/is-comment-auto-clear');
 var empty = require('../util/empty');
 
 /**
- * 往html字符串连接对象中添加注释
+ * 标记 HTML 字符串连接对象当前为 tag 起始位置
  *
  * @param {Object} buf 字符串连接对象
- * @param {string} str 要添加的字符串
+ * @param {string} id 起始tag的id
  */
 var htmlBufferTagStart = isCommentAutoClear
     ? function (buf, id) {

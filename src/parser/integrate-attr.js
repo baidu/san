@@ -16,7 +16,7 @@ var getPropHandler = require('../view/get-prop-handler');
 
 var DEFAULT_EVENT_ARGS = [
     createAccessor([
-        { type: ExprType.STRING, value: '$event' }
+        {type: ExprType.STRING, value: '$event'}
     ])
 ];
 

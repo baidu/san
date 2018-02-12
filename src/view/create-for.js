@@ -18,7 +18,6 @@ var createHTMLBuffer = require('../runtime/create-html-buffer');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var removeEl = require('../browser/remove-el');
-var insertHTMLBefore = require('../browser/insert-html-before');
 var insertBefore = require('../browser/insert-before');
 
 var LifeCycle = require('./life-cycle');

@@ -4,9 +4,10 @@
  */
 
 var each = require('../util/each');
-var empty = require('../util/empty');
+var insertBefore = require('../browser/insert-before');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var NodeType = require('./node-type');
+var LifeCycle = require('./life-cycle');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
@@ -18,7 +19,7 @@ var elementUpdateChildren = require('./element-update-children');
 var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
-var LifeCycle = require('./life-cycle');
+var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * 创建 template 元素
