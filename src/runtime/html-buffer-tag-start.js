@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var isCommentAutoClear = require('../browser/is-comment-auto-clear');
+var ieOldThan9 = require('../browser/ie-old-than-9');
 var empty = require('../util/empty');
 
 /**
@@ -12,7 +12,7 @@ var empty = require('../util/empty');
  * @param {Object} buf 字符串连接对象
  * @param {string} id 起始tag的id
  */
-var htmlBufferTagStart = isCommentAutoClear
+var htmlBufferTagStart = ieOldThan9
     ? function (buf, id) {
         buf.tagId = id;
         buf.tagStart = 1;

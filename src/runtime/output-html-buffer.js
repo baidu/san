@@ -4,7 +4,7 @@
  */
 
 var isCompatStrJoin = require('../browser/is-compat-str-join');
-var isCommentAutoClear = require('../browser/is-comment-auto-clear');
+var ieOldThan9 = require('../browser/ie-old-than-9');
 var insertBefore = require('../browser/insert-before');
 
 /**
@@ -30,7 +30,7 @@ function outputHTMLBuffer(buf, target, pos) {
     }
 
     // 处理 ie 低版本下自动过滤 comment 的问题
-    if (isCommentAutoClear) {
+    if (ieOldThan9) {
         var insertComments = buf.insertComments;
         var len = insertComments.length;
 

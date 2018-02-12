@@ -5,8 +5,8 @@
 
 var ie = require('./ie');
 
-// HACK: IE8下，设置innerHTML时如果以script开头，script会被自动滤掉
-//       为了保证script的stump存在，前面加个零宽特殊字符
+// HACK: IE8下，设置innerHTML时如果以html comment开头，comment会被自动滤掉
+//       为了保证stump存在，需要设置完html后，createComment并appendChild/insertBefore
 //       IE8下，innerHTML还不支持custom element，所以需要用div替代，不用createElement
 
 /**
