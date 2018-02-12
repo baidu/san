@@ -42,7 +42,9 @@
   "unpkg": "dist/san.min.js",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "types/*.d.ts",
+    "types/*.json"
   ],
   "license": "MIT",
   "devDependencies": {
