@@ -1,4 +1,4 @@
-import san, { SanComponentConfig, SanComponent } from "../";
+import san, { SanComponentConfig, SanComponent } from "san";
 
 interface ColorPickerData {
     data: string;
@@ -6,10 +6,10 @@ interface ColorPickerData {
 }
 
 interface ColorPicker extends SanComponent<ColorPickerData>{
-    itemClick(color: string)
+    itemClick(color: string): void;
 }
 
-function ColorPicker(options) {
+function ColorPicker(this: ColorPicker, options: { data: ColorPickerData }) {
     san.Component.call(this, options);
 }
 san.inherits(ColorPicker, san.Component);
@@ -55,8 +55,8 @@ interface ClickerData {
     email: string;
 }
 interface ClickerMethods {
-    mainClicker();
-    clicker(name: string, email: string, event: Event);
+    mainClicker(): void;
+    clicker(name: string, email: string, event: Event): void;
 }
 
 let clicked = 0;
@@ -81,14 +81,28 @@ document.body.appendChild(wrap);
 myComponent.attach(wrap);
 myComponent.dispose();
 
-const Test = san.defineComponent({
+interface TestData {
+    name: string,
+    otherProp: number,
+}
+
+const Test = san.defineComponent<TestData, {}>({
     template: '<div>{name}</div>',
     displayName: 'Test',
     dataTypes: {
-        name: function (data, dataName, componentName) {
+        name(data, dataName, componentName) {
             if (data[dataName] === 'hello') {
                 throw new Error('no `hello` allowed');
             }
+        },
+        otherProp(data, dataName, componentName) {
+            
         }
+    }
+});
+
+let app = new Test({
+    data: {
+        name: 'San'
     }
 });

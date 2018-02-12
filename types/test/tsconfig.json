@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "module": "commonjs",
+        "baseUrl": ".",
+        "paths": {
+            "san": [
+                "../index.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "../index.d.ts",
+        "san-test.ts"
+    ],
+    "compileOnSave": false
+}
