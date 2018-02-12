@@ -17,6 +17,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var createHTMLBuffer = require('../runtime/create-html-buffer');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBuffer = require('../runtime/output-html-buffer');
+var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 
@@ -560,21 +561,11 @@ function forOwnUpdate(changes) {
                     // flush new children html
                     var nextChild = me.children[i + 1];
                     if (!nextChild || nextChild.lifeCycle.attached) {
-                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el) || me.el;
-                        if (beforeEl) {
-                            if (beforeEl.nodeType === 1) {
-                                outputHTMLBuffer(newChildBuf, beforeEl, 'beforebegin');
-                            }
-                            else {
-                                var tempFlag = document.createElement('script');
-                                parentEl.insertBefore(tempFlag, beforeEl);
-                                outputHTMLBuffer(newChildBuf, tempFlag, 'beforebegin');
-                                parentEl.removeChild(tempFlag);
-                            }
-                        }
-                        else {
-                            outputHTMLBuffer(newChildBuf, parentEl, 'beforeend');
-                        }
+                        outputHTMLBufferBefore(
+                            newChildBuf,
+                            parentEl,
+                            nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el) || me.el
+                        );
 
                         newChildBuf = null;
                     }

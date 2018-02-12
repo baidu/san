@@ -5,10 +5,11 @@
 
 var each = require('../util/each');
 var removeEl = require('../browser/remove-el');
-var insertHTMLBefore = require('../browser/insert-html-before');
 var insertBefore = require('../browser/insert-before');
+var createHTMLBuffer = require('../runtime/create-html-buffer');
 var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
+var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
@@ -172,9 +173,9 @@ function textOwnAttachHTML(buf) {
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function textOwnAttach(parentEl, beforeEl) {
-    this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
-
-    insertHTMLBefore(this.content, parentEl, beforeEl);
+    var buf = createHTMLBuffer();
+    this._attachHTML(buf);
+    outputHTMLBufferBefore(buf, parentEl, beforeEl);
 }
 
 /* eslint-disable max-depth */
@@ -185,8 +186,7 @@ function textOwnAttach(parentEl, beforeEl) {
  * @param {Array} changes 数据变化信息
  */
 function textOwnUpdate(changes) {
-    var me = this;
-    if (me.aNode.textExpr.value) {
+    if (this.aNode.textExpr.value) {
         return;
     }
 
@@ -201,11 +201,11 @@ function textOwnUpdate(changes) {
                 this.content = text;
                 var rawText = nodeEvalExpr(this, this.aNode.textExpr);
 
-                if (me._simple) {
-                    el[typeof me.el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
+                if (this._simple) {
+                    el[typeof el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
                 }
                 else {
-                    var startRemoveEl = me.sel.nextSibling;
+                    var startRemoveEl = this.sel.nextSibling;
                     var parentEl = el.parentNode;
 
                     while (startRemoveEl !== el) {
@@ -218,7 +218,10 @@ function textOwnUpdate(changes) {
                     warnSetHTML(parentEl);
                     // #[end]
 
-                    insertHTMLBefore(text, parentEl, el);
+                    var tempFlag = document.createElement('script');
+                    parentEl.insertBefore(tempFlag, el);
+                    tempFlag.insertAdjacentHTML('beforebegin', text);
+                    parentEl.removeChild(tempFlag);
                 }
             }
 
