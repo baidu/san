@@ -17,17 +17,21 @@ describe("Template Tag", function () {
 
         var a = wrap.getElementsByTagName('a')[0];
 
-        expect(a.innerHTML).toContain('test');
-        expect(a.innerHTML).toContain('aaaa');
-        expect(/<\/p>hellosan/i.test(a.innerHTML)).toBeTruthy();
-        expect(/hellosan<p/i.test(a.innerHTML)).toBeTruthy();
+        var html = a.innerHTML.toLowerCase();
+        expect(html).toContain('test');
+        expect(html).toContain('aaaa');
+
+        expect(/<\/p>\s*hellosan/i.test(html)).toBeTruthy();
+        expect(/hellosan\s*<p/i.test(html)).toBeTruthy();
         myComponent.data.set('name', 'ByeER');
 
         san.nextTick(function () {
-            expect(/<\/p>byeer/i.test(a.innerHTML)).toBeTruthy();
-            expect(/byeer<p/i.test(a.innerHTML)).toBeTruthy();
-            expect(a.innerHTML).toContain('test');
-            expect(a.innerHTML).toContain('aaaa');
+
+            var html = a.innerHTML.toLowerCase();
+            expect(/<\/p>\s*byeer/i.test(html)).toBeTruthy();
+            expect(/byeer\s*<p/i.test(html)).toBeTruthy();
+            expect(html).toContain('test');
+            expect(html).toContain('aaaa');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -58,10 +62,12 @@ describe("Template Tag", function () {
         myComponent.data.set('name', 'ByeER');
 
         san.nextTick(function () {
-            expect(/<\/p>byeer/i.test(a.innerHTML)).toBeTruthy();
-            expect(/byeer<p/i.test(a.innerHTML)).toBeTruthy();
-            expect(a.innerHTML).toContain('test');
-            expect(a.innerHTML).toContain('aaaa');
+            var html = a.innerHTML.toLowerCase();
+            expect(/<\/p>\s*byeer/i.test(html)).toBeTruthy();
+            expect(/byeer\s*<p/i.test(html)).toBeTruthy();
+
+            expect(html).toContain('test');
+            expect(html).toContain('aaaa');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
