@@ -6,7 +6,8 @@
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
 var insertBefore = require('../browser/insert-before');
-var pushStrBuffer = require('../runtime/push-str-buffer');
+var htmlBufferPush = require('../runtime/html-buffer-push');
+var htmlBufferComment = require('../runtime/html-buffer-comment');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
@@ -15,7 +16,6 @@ var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
 var getNodePath = require('./get-node-path');
-var genStumpHTML = require('./gen-stump-html');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
@@ -154,13 +154,13 @@ function textOwnAttachHTML(buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
 
     if (!this._simple) {
-        genStumpHTML(this, buf);
+        htmlBufferComment(buf, this.id);
     }
 
-    pushStrBuffer(buf, this.content);
+    htmlBufferPush(buf, this.content);
 
     if (!this._simple) {
-        genStumpHTML(this, buf);
+        htmlBufferComment(buf, this.id);
     }
 }
 

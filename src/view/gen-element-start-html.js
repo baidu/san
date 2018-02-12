@@ -4,8 +4,10 @@
  */
 
 var evalExpr = require('../runtime/eval-expr');
-var pushStrBuffer = require('../runtime/push-str-buffer');
+var htmlBufferPush = require('../runtime/html-buffer-push');
+var htmlBufferTagStart = require('../runtime/html-buffer-tag-start');
 var escapeHTML = require('../runtime/escape-html');
+var autoCloseTags = require('../browser/auto-close-tags');
 var each = require('../util/each');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
@@ -26,11 +28,12 @@ each(
  * @param {Object} buf html串存储对象
  */
 function genElementStartHTML(element, buf) {
-    if (!element.tagName) {
+    var tagName = element.tagName;
+    if (!tagName) {
         return;
     }
 
-    pushStrBuffer(buf, '<' + element.tagName);
+    htmlBufferPush(buf, '<' + tagName);
 
     element.props.each(function (prop) {
         var attr = prop.attr;
@@ -50,7 +53,7 @@ function genElementStartHTML(element, buf) {
             attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
         }
 
-        pushStrBuffer(buf, attr || '');
+        htmlBufferPush(buf, attr || '');
     });
 
     var idProp = element.props.get('id');
@@ -60,7 +63,11 @@ function genElementStartHTML(element, buf) {
             : nodeEvalExpr(element, idProp.expr, 1);
     }
 
-    pushStrBuffer(buf, ' id="' + (element._elId || element.id) + '"' + '>');
+    var id = element._elId || element.id;
+    htmlBufferPush(buf, ' id="' + id + '"' + '>');
+    if (!autoCloseTags[tagName]) {
+        htmlBufferTagStart(buf, id);
+    }
 }
 
 exports = module.exports = genElementStartHTML;

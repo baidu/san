@@ -5,6 +5,7 @@
 
 var each = require('../util/each');
 var empty = require('../util/empty');
+var htmlBufferComment = require('../runtime/html-buffer-comment');
 var NodeType = require('./node-type');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
@@ -17,7 +18,6 @@ var elementUpdateChildren = require('./element-update-children');
 var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
-var genStumpHTML = require('./gen-stump-html');
 var LifeCycle = require('./life-cycle');
 
 /**
@@ -82,9 +82,9 @@ function templateOwnUpdate(changes) {
  * @param {Object} buf html串存储对象
  */
 function templateOwnAttachHTML(buf) {
-    genStumpHTML(this, buf);
+    htmlBufferComment(buf, this.id);
     genElementChildrenHTML(this, buf);
-    genStumpHTML(this, buf);
+    htmlBufferComment(buf, this.id);
 
     attachings.add(this);
 }

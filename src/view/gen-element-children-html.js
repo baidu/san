@@ -4,7 +4,7 @@
  */
 
 var escapeHTML = require('../runtime/escape-html');
-var pushStrBuffer = require('../runtime/push-str-buffer');
+var htmlBufferPush = require('../runtime/html-buffer-push');
 var each = require('../util/each');
 var createNode = require('./create-node');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -19,14 +19,14 @@ function genElementChildrenHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = element.props.get('value');
         if (valueProp) {
-            pushStrBuffer(buf, escapeHTML(nodeEvalExpr(element, valueProp.expr)));
+            htmlBufferPush(buf, escapeHTML(nodeEvalExpr(element, valueProp.expr)));
         }
     }
     else {
         var htmlDirective = element.aNode.directives.get('html');
 
         if (htmlDirective) {
-            pushStrBuffer(buf, nodeEvalExpr(element, htmlDirective.value));
+            htmlBufferPush(buf, nodeEvalExpr(element, htmlDirective.value));
         }
         else {
             each(element.aNode.children, function (aNodeChild) {

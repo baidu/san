@@ -14,15 +14,15 @@ var createAccessor = require('../parser/create-accessor');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
-var createStrBuffer = require('../runtime/create-str-buffer');
-var stringifyStrBuffer = require('../runtime/stringify-str-buffer');
+var createHTMLBuffer = require('../runtime/create-html-buffer');
+var htmlBufferComment = require('../runtime/html-buffer-comment');
+var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var removeEl = require('../browser/remove-el');
 var insertHTMLBefore = require('../browser/insert-html-before');
 var insertBefore = require('../browser/insert-before');
 
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
-var genStumpHTML = require('./gen-stump-html');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -205,7 +205,7 @@ function forOwnAttachHTML(buf, onlyChildren) {
     );
 
     if (!onlyChildren) {
-        genStumpHTML(me, buf);
+        htmlBufferComment(buf, me.id);
     }
 }
 
@@ -223,7 +223,7 @@ function forOwnAttach(parentEl, beforeEl) {
     // paint list
     var el = this.el || parentEl.firstChild;
     var prevEl = el && el.previousSibling;
-    var buf = createStrBuffer();
+    var buf = createHTMLBuffer();
 
     prev: while (prevEl) {
         var nextPrev = prevEl.previousSibling;
@@ -249,14 +249,16 @@ function forOwnAttach(parentEl, beforeEl) {
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        parentEl.insertAdjacentHTML('afterbegin', stringifyStrBuffer(buf));
+
+        outputHTMLBuffer(buf, parentEl, 'afterbegin');
     }
     else if (prevEl.nodeType === 1) {
         this._attachHTML(buf, 1);
         // #[begin] error
         warnSetHTML(parentEl);
         // #[end]
-        prevEl.insertAdjacentHTML('afterend', stringifyStrBuffer(buf));
+
+        outputHTMLBuffer(buf, prevEl, 'afterend');
     }
     else {
         each(
@@ -515,14 +517,14 @@ function forOwnUpdate(changes) {
 
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
-            var buf = createStrBuffer();
+            var buf = createHTMLBuffer();
             each(
                 me.children,
                 function (child) {
                     child._attachHTML(buf);
                 }
             );
-            parentEl.innerHTML = stringifyStrBuffer(buf);
+            outputHTMLBuffer(buf, parentEl);
             me.el = document.createComment('san:' + me.id);
             parentEl.appendChild(me.el);
         }
@@ -552,18 +554,27 @@ function forOwnUpdate(changes) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);
                 }
                 else {
-                    newChildBuf = newChildBuf || createStrBuffer();
+                    newChildBuf = newChildBuf || createHTMLBuffer();
                     child._attachHTML(newChildBuf);
 
                     // flush new children html
                     var nextChild = me.children[i + 1];
                     if (!nextChild || nextChild.lifeCycle.attached) {
-                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el);
-                        insertHTMLBefore(
-                            stringifyStrBuffer(newChildBuf),
-                            parentEl,
-                            beforeEl || me.el
-                        );
+                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el) || me.el;
+                        if (beforeEl) {
+                            if (beforeEl.nodeType === 1) {
+                                outputHTMLBuffer(newChildBuf, beforeEl, 'beforebegin');
+                            }
+                            else {
+                                var tempFlag = document.createElement('script');
+                                parentEl.insertBefore(tempFlag, beforeEl);
+                                outputHTMLBuffer(newChildBuf, tempFlag, 'beforebegin');
+                                parentEl.removeChild(tempFlag);
+                            }
+                        }
+                        else {
+                            outputHTMLBuffer(newChildBuf, parentEl, 'beforeend');
+                        }
 
                         newChildBuf = null;
                     }

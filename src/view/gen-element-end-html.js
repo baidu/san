@@ -4,7 +4,7 @@
  */
 
 var autoCloseTags = require('../browser/auto-close-tags');
-var pushStrBuffer = require('../runtime/push-str-buffer');
+var htmlBufferPush = require('../runtime/html-buffer-push');
 
 /**
  * 生成元素标签结束的html
@@ -17,7 +17,7 @@ function genElementEndHTML(element, buf) {
     var tagName = element.tagName;
 
     if (!autoCloseTags[tagName]) {
-        pushStrBuffer(buf, '</' + tagName + '>');
+        htmlBufferPush(buf, '</' + tagName + '>');
     }
 }
 

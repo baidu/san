@@ -4,7 +4,7 @@
  */
 
 var each = require('../util/each');
-var genStumpHTML = require('./gen-stump-html');
+var htmlBufferComment = require('../runtime/html-buffer-comment');
 var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -104,7 +104,7 @@ function ifOwnAttachHTML(buf) {
         me.elseIndex = elseIndex;
     }
 
-    genStumpHTML(this, buf);
+    htmlBufferComment(buf, this.id);
 }
 
 /**

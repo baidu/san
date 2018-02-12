@@ -11,12 +11,13 @@ var isCompatStrJoin = require('../browser/is-compat-str-join');
  * @param {Object} buf 字符串连接对象
  * @param {string} str 要添加的字符串
  */
-var pushStrBuffer = isCompatStrJoin
+var htmlBufferPush = isCompatStrJoin
     ? function (buf, str) {
         buf.raw[buf.length++] = str;
+        buf.tagStart = 0;
     }
     : function (buf, str) {
         buf.raw += str;
     };
 
-exports = module.exports = pushStrBuffer;
+exports = module.exports = htmlBufferPush;

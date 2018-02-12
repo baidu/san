@@ -12,6 +12,6 @@ var ie = require('./ie');
  * @inner
  * @type {boolean}
  */
-var isCompatStrJoin = ie && ie < 8;
+var isCompatStrJoin = ie && ie < 9;
 
 exports = module.exports = isCompatStrJoin;

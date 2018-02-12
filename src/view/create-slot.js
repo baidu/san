@@ -12,6 +12,7 @@ var evalExpr = require('../runtime/eval-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var htmlBufferComment = require('../runtime/html-buffer-comment');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
@@ -195,9 +196,9 @@ function slotOwnUpdate(changes, isFromOuter) {
  * @param {Object} buf html串存储对象
  */
 function slotOwnAttachHTML(buf) {
-    genStumpHTML(this, buf);
+    htmlBufferComment(buf, this.id);
     genElementChildrenHTML(this, buf);
-    genStumpHTML(this, buf);
+    htmlBufferComment(buf, this.id);
 
     attachings.add(this);
 }

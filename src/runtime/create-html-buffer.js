@@ -10,11 +10,13 @@ var isCompatStrJoin = require('../browser/is-compat-str-join');
  *
  * @return {Object}
  */
-function createStrBuffer() {
+function createHTMLBuffer() {
     return {
         raw: isCompatStrJoin ? [] : '',
-        length: 0
+        length: 0,
+        tagStart: 1,
+        insertComments: []
     };
 }
 
-exports = module.exports = createStrBuffer;
+exports = module.exports = createHTMLBuffer;
