@@ -118,7 +118,7 @@ describe("Expression Update Detect", function () {
                     return value;
                 }
             },
-            initData() {
+            initData: function() {
                 return {
                     typeDefs: []
                 };

@@ -476,7 +476,7 @@ describe("IfDirective", function () {
 
     it("and else with disabled", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><input type="radio"s-if="cond" disabled="{{true}}">'
+            template: '<div><input type="radio" s-if="cond" disabled="{{true}}">'
                 + '<input type="checkbox" s-else disabled="{{true}}"></div>'
         });
         var myComponent = new MyComponent();
