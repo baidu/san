@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var isCompatStrJoin = require('../browser/is-compat-str-join');
+var ieOldThan9 = require('../browser/ie-old-than-9');
 
 /**
  * 创建字符串连接对象
@@ -12,7 +12,7 @@ var isCompatStrJoin = require('../browser/is-compat-str-join');
  */
 function createHTMLBuffer() {
     return {
-        raw: isCompatStrJoin ? [] : '',
+        raw: ieOldThan9 ? [] : '',
         length: 0,
         tagStart: 1,
         insertComments: []

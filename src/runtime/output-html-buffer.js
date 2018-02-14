@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var isCompatStrJoin = require('../browser/is-compat-str-join');
 var ieOldThan9 = require('../browser/ie-old-than-9');
 var insertBefore = require('../browser/insert-before');
 
@@ -17,7 +16,7 @@ var insertBefore = require('../browser/insert-before');
 function outputHTMLBuffer(buf, target, pos) {
     // html 没内容就不要设置 innerHTML了
     // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题
-    var html = isCompatStrJoin ? buf.raw.join('') : buf.raw;
+    var html = ieOldThan9 ? buf.raw.join('') : buf.raw;
     if (!html) {
         return;
     }
