@@ -17,17 +17,8 @@ function isSimpleText(aNode) {
     var isSimple = true;
 
     each(aNode.textExpr.segs, function (seg) {
-        if (seg.type === ExprType.INTERP) {
-            each(seg.filters, function (filter) {
-                switch (filter.name) {
-                    case 'html':
-                    case 'url':
-                        return;
-                }
-
-                isSimple = false;
-                return isSimple;
-            });
+        if (seg.type === ExprType.INTERP && seg.raw) {
+            isSimple = false;
         }
 
         return isSimple;

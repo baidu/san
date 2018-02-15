@@ -61,7 +61,7 @@ var directiveParsers = {
 
     'html': function (value) {
         return {
-            value: parseInterp(value)
+            value: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
         };
     },
 

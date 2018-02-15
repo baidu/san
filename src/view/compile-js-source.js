@@ -831,11 +831,7 @@ function componentCompilePreCode() {
     }
 
     var DEFAULT_FILTERS = {
-        html: escapeHTML,
         url: encodeURIComponent,
-        raw: function (source) {
-            return source;
-        },
         _class: function (source) {
             if (source instanceof Array) {
                 return source.join(' ');

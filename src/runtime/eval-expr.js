@@ -68,19 +68,17 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                 value = '';
             }
 
+            // escape html
+            if (escapeInterpHtml && !expr.raw) {
+                value = escapeHTML(value);
+            }
+
             return value;
 
         case ExprType.TEXT:
             var buf = '';
             each(expr.segs, function (seg) {
-                var segValue = evalExpr(seg, data, owner);
-
-                // escape html
-                if (escapeInterpHtml && seg.type === ExprType.INTERP && !seg.filters[0]) {
-                    segValue = escapeHTML(segValue);
-                }
-
-                buf += segValue;
+                buf += evalExpr(seg, data, owner, escapeInterpHtml);
             });
             return buf;
     }

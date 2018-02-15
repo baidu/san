@@ -16,18 +16,27 @@ var readCall = require('./read-call');
  */
 function parseInterp(source) {
     var walker = new Walker(source);
-    var expr = readTertiaryExpr(walker);
 
-    var filters = [];
+    var interp = {
+        type: ExprType.INTERP,
+        expr: readTertiaryExpr(walker),
+        filters: []
+    };
+
     while (walker.goUntil(124)) { // |
-        filters.push(readCall(walker));
+        var callExpr = readCall(walker);
+        switch (callExpr.name.paths[0].value) {
+            case 'html':
+                break;
+            case 'raw':
+                interp.raw = 1;
+                break;
+            default:
+                interp.filters.push(callExpr);
+        }
     }
 
-    return {
-        type: ExprType.INTERP,
-        expr: expr,
-        filters: filters
-    };
+    return interp;
 }
 
 exports = module.exports = parseInterp;

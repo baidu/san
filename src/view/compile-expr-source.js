@@ -71,6 +71,7 @@ var compileExprSource = {
     interp: function (interpExpr) {
         var code = compileExprSource.expr(interpExpr.expr);
 
+
         each(interpExpr.filters, function (filter) {
             code = 'componentCtx.callFilter("' + filter.name.paths[0].value + '", [' + code;
             each(filter.args, function (arg) {
@@ -78,6 +79,10 @@ var compileExprSource = {
             });
             code += '])';
         });
+
+        if (!interpExpr.raw) {
+            return 'escapeHTML(' + code + ')';
+        }
 
         return code;
     },
@@ -96,25 +101,6 @@ var compileExprSource = {
         var code = '';
 
         each(textExpr.segs, function (seg) {
-            if (seg.type === ExprType.INTERP && !seg.filters[0]) {
-                seg = {
-                    type: ExprType.INTERP,
-                    expr: seg.expr,
-                    filters: [
-                        {
-                            type: ExprType.CALL,
-                            name: {
-                                type: ExprType.ACCESSOR,
-                                paths: [
-                                    {type: ExprType.STRING, value: 'html'}
-                                ]
-                            },
-                            args: []
-                        }
-                    ]
-                };
-            }
-
             var segCode = compileExprSource.expr(seg);
             code += code ? ' + ' + segCode : segCode;
         });

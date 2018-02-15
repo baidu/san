@@ -17,30 +17,12 @@ var escapeHTML = require('./escape-html');
 var DEFAULT_FILTERS = {
 
     /**
-     * HTML转义filter
-     *
-     * @param {string} source 源串
-     * @return {string} 替换结果串
-     */
-    html: escapeHTML,
-
-    /**
      * URL编码filter
      *
      * @param {string} source 源串
      * @return {string} 替换结果串
      */
     url: encodeURIComponent,
-
-    /**
-     * 源串filter，用于在默认开启HTML转义时获取源串，不进行转义
-     *
-     * @param {string} source 源串
-     * @return {string} 替换结果串
-     */
-    raw: function (source) {
-        return source;
-    },
 
     _class: function (source) {
         if (source instanceof Array) {
