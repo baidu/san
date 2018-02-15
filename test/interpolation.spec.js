@@ -48,7 +48,7 @@ describe("Interpolation", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(wrap.firstChild.innerHTML.indexOf('&lt;u&gt;errorrik&lt;/u&gt;')).toBe(0);
+        expect(wrap.firstChild.innerHTML).toContain('&lt;u&gt;errorrik&lt;/u&gt;');
 
         myComponent.dispose();
         document.body.removeChild(wrap);
