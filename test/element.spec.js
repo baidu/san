@@ -563,40 +563,6 @@ describe("Element", function () {
         });
     });
 
-    it("s-html with filter", function (done) {
-        var MyComponent = san.defineComponent({
-            filters: {
-                b: function (source) {
-                    return '<b>' + source.replace(/^b:/, '') + '</b>';
-                }
-            },
-
-            template: '<a><span s-html="html|b"></span></a>'
-        });
-        var myComponent = new MyComponent();
-        myComponent.data.set('html', 'b:xxx');
-
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
-        var span = wrap.getElementsByTagName('span')[0];
-        expect(/^<b>xxx<\/b>/i.test(span.innerHTML)).toBeTruthy();
-
-
-        myComponent.data.set('html', 'b:aaa');
-
-
-        san.nextTick(function () {
-
-            expect(/^<b>aaa<\/b>/i.test(span.innerHTML)).toBeTruthy();
-
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-
-            done();
-        });
-    });
 
 
 
