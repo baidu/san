@@ -275,6 +275,10 @@ function componentPreheat(component) {
     analyseANodeDataRef(component.constructor.prototype.aNode);
 }
 
+Component.prototype.getComponentType = function (aNode) {
+    return this.components[aNode.tagName];
+};
+
 /**
  * 初始化创建组件外部传入的插槽对象
  *
