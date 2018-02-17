@@ -152,7 +152,7 @@ function textOwnDispose() {
  *
  * @param {Object} buf html串存储对象
  */
-function textOwnAttachHTML(buf) {debugger
+function textOwnAttachHTML(buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
 
     if (!this._simple) {
