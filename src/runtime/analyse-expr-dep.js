@@ -1,4 +1,12 @@
 /**
+ * @file 分析表达式的依赖
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+var each = require('../util/each');
+var IndexedList = require('../util/indexed-list');
+
+/**
  * 分析表达式的依赖
  *
  * @param {Object} expr 要分析的目标表达式
@@ -13,13 +21,13 @@ function analyseExprDep(expr) {
             var len = paths.length;
 
             if (paths.length === 1) {
-                deps.push(paths[0].value);
+                deps.push({name: paths[0].value});
             }
             else if (!paths[1].value) {
-                deps.push(paths[0].value + '.*');
+                deps.push({ name: paths[0].value + '.*'});
             }
             else {
-                deps.push(paths[0].value + '.' + paths[1].value);
+                deps.push({ name: paths[0].value + '.' + paths[1].value});
             }
 
             break;
