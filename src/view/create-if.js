@@ -34,7 +34,7 @@ function createIf(options) {
     node._attachHTML = ifOwnAttachHTML;
     node._update = ifOwnUpdate;
 
-    node.cond = node.aNode.directives.get('if').value;
+    node.cond = node.aNode.directives['if'].value;
 
     // #[begin] reverse
     var walker = options.reverseWalker;
@@ -51,7 +51,7 @@ function createIf(options) {
         }
         else {
             each(node.aNode.elses, function (elseANode, index) {
-                var elif = elseANode.directives.get('elif');
+                var elif = elseANode.directives.elif;
 
                 if (!elif || elif && nodeEvalExpr(node, elif.value)) {
                     node.elseIndex = index;
@@ -88,7 +88,7 @@ function ifOwnAttachHTML(buf) {
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {
-            var elif = elseANode.directives.get('elif');
+            var elif = elseANode.directives.elif;
 
             if (!elif || elif && nodeEvalExpr(me, elif.value)) {
                 child = createNode(rinseCondANode(elseANode), me);
@@ -122,7 +122,7 @@ function ifOwnUpdate(changes) {
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {
-            var elif = elseANode.directives.get('elif');
+            var elif = elseANode.directives.elif;
 
             if (elif && nodeEvalExpr(me, elif.value) || !elif) {
                 elseIndex = index;

@@ -9,6 +9,7 @@ var htmlBufferTagStart = require('../runtime/html-buffer-tag-start');
 var escapeHTML = require('../runtime/escape-html');
 var autoCloseTags = require('../browser/auto-close-tags');
 var each = require('../util/each');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -35,7 +36,7 @@ function genElementStartHTML(element, buf) {
 
     htmlBufferPush(buf, '<' + tagName);
 
-    element.props.each(function (prop) {
+    each(element.props, function (prop) {
         var attr = prop.attr;
         var value;
 
@@ -54,7 +55,7 @@ function genElementStartHTML(element, buf) {
         htmlBufferPush(buf, attr || '');
     });
 
-    var idProp = element.props.get('id');
+    var idProp = getPropAndIndex(element, 'id');
     if (idProp) {
         element._elId = isComponent(element)
             ? evalExpr(idProp.expr, element.data, element)

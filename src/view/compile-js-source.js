@@ -7,8 +7,10 @@
 var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
 var guid = require('../util/guid');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
+var cloneDirectives = require('../parser/clone-directives');
 var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
@@ -64,7 +66,13 @@ var elementSourceCompiler = {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
-        props.each(function (prop) {
+        // index list
+        var propsIndex = {};
+        each(props, function (prop) {
+            propsIndex[prop.name] = prop;
+        });
+
+        each(props, function (prop) {
             if (prop.name === 'slot') {
                 return;
             }
@@ -117,11 +125,11 @@ var elementSourceCompiler = {
 
                 case 'checked':
                     if (tagName === 'input') {
-                        var valueProp = props.get('value');
+                        var valueProp = propsIndex.value;
                         var valueCode = compileExprSource.expr(valueProp.expr);
 
                         if (valueProp) {
-                            switch (props.get('type').raw) {
+                            switch (propsIndex.type.raw) {
                                 case 'checkbox':
                                     sourceBuffer.addRaw('if (contains('
                                         + compileExprSource.expr(prop.expr)
@@ -198,7 +206,7 @@ var elementSourceCompiler = {
     inner: function (sourceBuffer, aNode, owner) {
         // inner content
         if (aNode.tagName === 'textarea') {
-            var valueProp = aNode.props.get('value');
+            var valueProp = getPropAndIndex(aNode, 'value');
             if (valueProp) {
                 sourceBuffer.joinRaw('escapeHTML('
                     + compileExprSource.expr(valueProp.expr)
@@ -209,7 +217,7 @@ var elementSourceCompiler = {
             return;
         }
 
-        var htmlDirective = aNode.directives.get('html');
+        var htmlDirective = aNode.directives.html;
         if (htmlDirective) {
             sourceBuffer.joinExpr(htmlDirective.value);
         }
@@ -245,10 +253,10 @@ var aNodeCompiler = {
         if (aNode.isText) {
             compileMethod = 'compileText';
         }
-        else if (aNode.directives.get('if')) {
+        else if (aNode.directives['if']) {
             compileMethod = 'compileIf';
         }
-        else if (aNode.directives.get('for')) {
+        else if (aNode.directives['for']) {
             compileMethod = 'compileFor';
         }
         else if (aNode.tagName === 'slot') {
@@ -318,7 +326,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('var ifIndex = null;');
 
         // output main if
-        var ifDirective = aNode.directives.get('if');
+        var ifDirective = aNode.directives['if'];
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
         sourceBuffer.addRaw(
             aNodeCompiler.compile(
@@ -331,7 +339,7 @@ var aNodeCompiler = {
 
         // output elif and else
         each(aNode.elses, function (elseANode, index) {
-            var elifDirective = elseANode.directives.get('elif');
+            var elifDirective = elseANode.directives['elif'];
             if (elifDirective) {
                 sourceBuffer.addRaw('else if (' + compileExprSource.expr(elifDirective.value) + ') {');
             }
@@ -365,11 +373,12 @@ var aNodeCompiler = {
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
-            directives: (new IndexedList()).concat(aNode.directives)
+            directives: cloneDirectives(aNode.directives, {
+                'for': 1
+            })
         });
-        forElementANode.directives.remove('for');
 
-        var forDirective = aNode.directives.get('for');
+        var forDirective = aNode.directives['for'];
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
         var listName = compileExprSource.dataAccess(forDirective.list);
@@ -415,7 +424,7 @@ var aNodeCompiler = {
 
         sourceBuffer.addRaw('  var $givenSlot = [];');
 
-        var nameProp = aNode.props.get('name');
+        var nameProp = getPropAndIndex(aNode, 'name');
         if (nameProp) {
             sourceBuffer.addRaw('var $slotName = ' + compileExprSource.expr(nameProp.expr) + ';');
         }
@@ -464,7 +473,7 @@ var aNodeCompiler = {
     compileElement: function (aNode, sourceBuffer, owner, extra) {
         extra = extra || {};
         if (aNode.tagName === 'option'
-            && !aNode.props.get('value')
+            && !getPropAndIndex(aNode, 'value')
             && aNode.children[0]
         ) {
             aNode.props.push({
@@ -501,7 +510,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('var $slotName = null;');
             sourceBuffer.addRaw('var $givenSlots = [];');
             each(aNode.children, function (child) {
-                var slotBind = !child.isText && child.props.get('slot');
+                var slotBind = !child.isText && getPropAndIndex(child, 'slot');
                 if (slotBind) {
                     sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
                     sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
@@ -530,7 +539,7 @@ var aNodeCompiler = {
         var givenData = [];
 
         postComponentBinds(aNode.props);
-        component.binds.each(function (prop) {
+        each(component.binds, function (prop) {
             givenData.push(
                 compileExprSource.stringLiteralize(prop.name)
                 + ':'

@@ -106,7 +106,7 @@ function elementOwnUpdate(changes) {
     this._getEl();
     var me = this;
 
-    this.props.each(function (prop) {
+    each(this.props, function (prop) {
         if (prop.expr.value) {
             return;
         }
@@ -124,7 +124,7 @@ function elementOwnUpdate(changes) {
         });
     });
 
-    var htmlDirective = this.aNode.directives.get('html');
+    var htmlDirective = this.aNode.directives.html;
     if (htmlDirective) {
         each(changes, function (change) {
             if (changeExprCompare(change.expr, htmlDirective.value, me.scope)) {

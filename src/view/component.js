@@ -9,6 +9,7 @@ var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
 var IndexedList = require('../util/indexed-list');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
@@ -153,7 +154,7 @@ function Component(options) { // eslint-disable-line
     this.binds = this.aNode.binds || this.aNode.props;
 
     postComponentBinds(this.binds);
-    this.scope && this.binds.each(function (bind) {
+    this.scope && each(this.binds, function (bind) {
         var value = nodeEvalExpr(me, bind.expr);
         if (typeof value === 'undefined') {
             // See: https://github.com/ecomfe/san/issues/191
@@ -221,7 +222,7 @@ Component.prototype._createGivenSlots = function () {
     me.givenANode && me.scope && each(me.givenANode.children, function (child) {
         var target;
 
-        var slotBind = !child.isText && child.props.get('slot');
+        var slotBind = !child.isText && getPropAndIndex(child, 'slot');
         if (slotBind) {
             !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
 
@@ -441,7 +442,7 @@ Component.prototype.ref = function (name) {
             switch (element.nodeType) {
                 case NodeType.ELEM:
                 case NodeType.CMPT:
-                    var ref = element.aNode.directives.get('ref');
+                    var ref = element.aNode.directives.ref;
                     if (ref && evalExpr(ref.value, element.scope, owner) === name) {
                         refTarget = NodeType.ELEM === element.nodeType
                             ? element._getEl() : element;
@@ -488,7 +489,7 @@ Component.prototype._update = function (changes) {
         each(changes, function (change) {
             var changeExpr = change.expr;
 
-            me.binds.each(function (bindItem) {
+            each(me.binds, function (bindItem) {
                 var relation;
                 var setExpr = bindItem.name;
                 var updateExpr = bindItem.expr;
@@ -545,7 +546,7 @@ Component.prototype._update = function (changes) {
     var dataChanges = this.dataChanges;
     if (dataChanges) {
         this.dataChanges = null;
-        this.props.each(function (prop) {
+        each(this.props, function (prop) {
             each(dataChanges, function (change) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
@@ -583,7 +584,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
 
     if (this.owner) {
         each(dataChanges, function (change) {
-            me.binds.each(function (bindItem) {
+            each(me.binds, function (bindItem) {
                 var changeExpr = change.expr;
                 if (bindItem.x
                     && !isDataChangeByElement(change, me.owner)

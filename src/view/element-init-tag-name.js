@@ -4,6 +4,7 @@
  */
 
 var ieOldThan9 = require('../browser/ie-old-than-9');
+var getPropAndIndex = require('../util/get-prop-and-index');
 
 /**
  * 初始化 element 节点的 tagName 处理
@@ -20,7 +21,7 @@ function elementInitTagName(node) {
     // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
     // 所以没有设置 value 时，默认把 option 的内容作为 value
     if (node.tagName === 'option'
-        && !node.aNode.props.get('value')
+        && !getPropAndIndex(node.aNode, 'value')
         && node.aNode.children[0]
     ) {
         node.aNode.props.push({

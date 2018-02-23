@@ -27,7 +27,7 @@ function getNodePath(node) {
                 break;
 
             case NodeType.FOR:
-                nodePaths.unshift('for[' + nodeParent.anode.directive.get('for').raw + ']');
+                nodePaths.unshift('for[' + nodeParent.anode.directives['for'].raw + ']');
                 break;
 
             case NodeType.SLOT:

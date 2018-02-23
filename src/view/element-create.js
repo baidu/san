@@ -20,7 +20,7 @@ function elementCreate(element) {
     element.el = createEl(element.tagName);
 
     var hasIdDeclaration;
-    element.props.each(function (prop) {
+    each(element.props, function (prop) {
         var attr = prop.attr;
 
         var value = isComponent(element)

@@ -5,6 +5,7 @@
 
 
 var each = require('../util/each');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var createAccessor = require('../parser/create-accessor');
@@ -40,7 +41,7 @@ function createSlot(options) {
     var aNode = createANode();
 
     // calc slot name
-    options.nameBind = options.aNode.props.get('name');
+    options.nameBind = getPropAndIndex(options.aNode, 'name');
     if (options.nameBind) {
         options.isNamed = true;
         options.name = nodeEvalExpr(options, options.nameBind.expr);
@@ -50,7 +51,8 @@ function createSlot(options) {
     var givenSlots = options.owner.givenSlots;
     var givenChildren;
     if (givenSlots) {
-        givenChildren = options.isNamed ? givenSlots.named[options.name] : givenSlots.noname;
+        givenChildren = options.isNamed
+            ? givenSlots.named[options.name] : givenSlots.noname;
     }
 
     if (givenChildren) {

@@ -4,7 +4,7 @@
  */
 
 var kebab2camel = require('../util/kebab2camel');
-var IndexedList = require('../util/indexed-list');
+var each = require('../util/each');
 
 /**
  * 将 binds 的 name 从 kebabcase 转换成 camelcase
@@ -13,8 +13,8 @@ var IndexedList = require('../util/indexed-list');
  * @return {IndexedList}
  */
 function camelComponentBinds(binds) {
-    var result = new IndexedList();
-    binds.each(function (bind) {
+    var result = [];
+    each(binds, function (bind) {
         result.push({
             name: kebab2camel(bind.name),
             expr: bind.expr,

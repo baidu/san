@@ -5,6 +5,7 @@
 
 var contains = require('../util/contains');
 var empty = require('../util/empty');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var svgTags = require('../browser/svg-tags');
 var evalExpr = require('../runtime/eval-expr');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -115,14 +116,14 @@ var analInputChecker = {
 };
 
 function analInputCheckedState(element, value, oper) {
-    var bindValue = element.props.get('value');
-    var bindType = element.props.get('type');
+    var bindValue = getPropAndIndex(element, 'value');
+    var bindType = getPropAndIndex(element, 'type');
 
     if (bindValue && bindType) {
         var type = nodeEvalExpr(element, bindType.expr);
 
         if (analInputChecker[type]) {
-            var bindChecked = element.props.get('checked');
+            var bindChecked = getPropAndIndex(element, 'checked');
             if (!bindChecked.hintExpr) {
                 bindChecked.hintExpr = bindValue.expr;
             }
@@ -160,8 +161,8 @@ var elementPropHandlers = {
 
             output: function (element, bindInfo, data) {
                 var el = element.el;
-                var bindValue = element.props.get('value');
-                var bindType = element.props.get('type') || {};
+                var bindValue = getPropAndIndex(element, 'value');
+                var bindType = getPropAndIndex(element, 'type') || {};
 
                 if (bindValue && bindType) {
                     switch (bindType.raw) {
@@ -212,7 +213,7 @@ var elementPropHandlers = {
                     var prop;
                     var expr;
 
-                    if ((prop = parentSelect.props.get('value'))
+                    if ((prop = getPropAndIndex(parentSelect, 'value'))
                         && (expr = prop.expr)
                     ) {
                         selectValue = isComponent(parentSelect)
@@ -258,7 +259,7 @@ function genBoolPropHandler(attrName) {
             // 因为元素的attr值必须经过html escape，否则可能有漏洞
             // 所以这里直接对假值字符串形式进行处理
             // NaN之类非主流的就先不考虑了
-            var prop = element.props.get(name);
+            var prop = getPropAndIndex(element, name);
             if (prop && prop.raw === ''
                 || value && value !== 'false' && value !== '0'
             ) {

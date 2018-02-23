@@ -16,7 +16,7 @@ var createReverseNode = require('./create-reverse-node');
  * @param {Object} element 元素
  */
 function reverseElementChildren(element) {
-    var htmlDirective = element.aNode.directives.get('html');
+    var htmlDirective = element.aNode.directives.html;
 
     if (!htmlDirective) {
         var reverseWalker = new DOMChildrenWalker(element.el);

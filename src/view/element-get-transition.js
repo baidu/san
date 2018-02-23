@@ -13,7 +13,7 @@ var findMethod = require('../runtime/find-method');
  * @return {Object?}
  */
 function elementGetTransition(element) {
-    var directive = element.aNode.directives.get('transition');
+    var directive = element.aNode.directives.transition;
     var owner = element.owner;
 
     var transition;

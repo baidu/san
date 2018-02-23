@@ -186,7 +186,7 @@ function parseTemplate(source, options) {
             }
 
             // match if directive for else/elif directive
-            var elseDirective = aElement.directives.get('else') || aElement.directives.get('elif');
+            var elseDirective = aElement.directives['else'] || aElement.directives.elif;
             if (elseDirective) {
                 var parentChildrenLen = currentNode.children.length;
 
@@ -198,7 +198,7 @@ function parseTemplate(source, options) {
                     }
 
                     // #[begin] error
-                    if (!parentChild.directives.get('if')) {
+                    if (!parentChild.directives['if']) {
                         throw new Error('[SAN FATEL] else not match if.');
                     }
                     // #[end]

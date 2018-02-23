@@ -20,7 +20,7 @@ var postProp = require('../parser/post-prop');
  * @param {IndexedList} binds 组件绑定信息集合对象
  */
 function postComponentBinds(binds) {
-    binds.each(function (bind) {
+    each(binds, function (bind) {
         postProp(bind);
     });
 }

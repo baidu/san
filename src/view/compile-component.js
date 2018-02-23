@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var IndexedList = require('../util/indexed-list');
+var getPropAndIndex = require('../util/get-prop-and-index');
 var createANode = require('../parser/create-a-node');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
@@ -69,10 +70,11 @@ function compileComponent(ComponentClass) {
                 firstChild.tagName = null;
             }
 
-            firstChild.binds = new IndexedList();
+            firstChild.binds = [];
 
             each(componentPropExtra, function (extra) {
-                var prop = firstChild.props.get(extra.name);
+                var prop = getPropAndIndex(firstChild, extra.name);
+
                 if (prop) {
                     prop.expr.segs.push(extra.expr.segs[0]);
                     prop.expr.value = null;

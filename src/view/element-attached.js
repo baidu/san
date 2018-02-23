@@ -54,7 +54,7 @@ function elementAttached(element) {
 
     // 处理自身变化时双向绑定的逻辑
     var xBinds = isComponent(element) ? element.props : element.binds;
-    xBinds && xBinds.each(function (bindInfo) {
+    each(xBinds, function (bindInfo) {
         if (!bindInfo.x) {
             return;
         }

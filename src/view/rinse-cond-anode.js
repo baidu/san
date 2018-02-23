@@ -5,7 +5,8 @@
 
 
 var createANode = require('../parser/create-a-node');
-var IndexedList = require('../util/indexed-list');
+var cloneDirectives = require('../parser/clone-directives');
+
 
 /**
  * 清洗条件 aNode，返回纯净无条件指令的 aNode
@@ -20,12 +21,12 @@ function rinseCondANode(condANode) {
         events: condANode.events,
         tagName: condANode.tagName,
         vars: condANode.vars,
-        directives: (new IndexedList()).concat(condANode.directives)
+        directives: cloneDirectives(condANode.directives, {
+            'if': 1,
+            'else': 1,
+            'elif': 1
+        })
     });
-
-    clearANode.directives.remove('if');
-    clearANode.directives.remove('else');
-    clearANode.directives.remove('elif');
 
     return clearANode;
 }

@@ -11,6 +11,7 @@ var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var createAccessor = require('../parser/create-accessor');
+var cloneDirectives = require('../parser/clone-directives');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
@@ -51,7 +52,7 @@ function ForItemData(forElement, item, index) {
     this.raw = {};
     this.listeners = [];
 
-    this.directive = forElement.aNode.directives.get('for');
+    this.directive = forElement.aNode.directives['for'];
     this.raw[this.directive.item.raw] = item;
     this.raw[this.directive.index.raw] = index;
 }
@@ -161,9 +162,10 @@ function createFor(options) {
         events: aNode.events,
         tagName: aNode.tagName,
         vars: aNode.vars,
-        directives: (new IndexedList()).concat(aNode.directives)
+        directives: cloneDirectives(aNode.directives, {
+            'for': 1
+        })
     });
-    node.itemANode.directives.remove('for');
 
 
     // #[begin] reverse
@@ -172,7 +174,7 @@ function createFor(options) {
         options.reverseWalker = null;
 
         each(
-            nodeEvalExpr(node, node.aNode.directives.get('for').list),
+            nodeEvalExpr(node, node.aNode.directives['for'].list),
             function (item, i) {
                 var itemScope = new ForItemData(node, item, i);
                 var child = createReverseNode(node.itemANode, walker, node, itemScope);
@@ -197,7 +199,7 @@ function createFor(options) {
 function forOwnAttachHTML(buf, onlyChildren) {
     var me = this;
     each(
-        nodeEvalExpr(me, me.aNode.directives.get('for').list),
+        nodeEvalExpr(me, me.aNode.directives['for'].list),
         function (item, i) {
             var child = createForDirectiveChild(me, item, i);
             me.children.push(child);
@@ -263,7 +265,7 @@ function forOwnAttach(parentEl, beforeEl) {
     }
     else {
         each(
-            nodeEvalExpr(this, this.aNode.directives.get('for').list),
+            nodeEvalExpr(this, this.aNode.directives['for'].list),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.children.push(child);
@@ -306,7 +308,7 @@ function forOwnUpdate(changes) {
 
 
     var disposeChildren = [];
-    var forDirective = this.aNode.directives.get('for');
+    var forDirective = this.aNode.directives['for'];
 
     this._getEl();
     var parentEl = getNodeStumpParent(this);
@@ -480,7 +482,7 @@ function forOwnUpdate(changes) {
     // 清除应该干掉的 child
     me._doCreateAndUpdate = doCreateAndUpdate;
     var violentClear = isOnlyParentChild && newChildrenLen === 0
-        && !me.aNode.directives.get('transition');
+        && !me.aNode.directives.transition;
     // 这里不用getTransition，getTransition和scope相关，for和forItem的scope是不同的
     // 所以getTransition结果本身也是不一致的。不如直接判断指令是否存在，如果存在就不进入暴力清除模式
     // var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
