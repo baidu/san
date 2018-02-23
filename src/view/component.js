@@ -207,12 +207,6 @@ function Component(options) { // eslint-disable-line
 
         reverseElementChildren(this);
 
-        me.dynamicProps = new IndexedList();
-        me.aNode.props.each(function (prop) {
-            if (!prop.attr) {
-                me.dynamicProps.push(prop);
-            }
-        });
         attachings.add(me);
     }
     // #[end]

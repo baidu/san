@@ -42,7 +42,6 @@ function elementDispose(element, options) {
     }
 
     element.props = null;
-    element.dynamicProps = null;
     element.binds = null;
     element._propVals = null;
 

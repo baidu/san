@@ -23,10 +23,6 @@ function elementCreate(element) {
     element.props.each(function (prop) {
         var attr = prop.attr;
 
-        if (!attr) {
-            element.dynamicProps.push(prop);
-        }
-
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
             : nodeEvalExpr(element, prop.expr, 1);

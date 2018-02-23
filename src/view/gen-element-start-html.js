@@ -40,8 +40,6 @@ function genElementStartHTML(element, buf) {
         var value;
 
         if (!attr) {
-            element.dynamicProps.push(prop);
-
             value = isComponent(element)
                 ? evalExpr(prop.expr, element.data, element)
                 : nodeEvalExpr(element, prop.expr, 1);

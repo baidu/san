@@ -90,12 +90,6 @@ function createElement(options) {
 
         reverseElementChildren(node);
 
-        node.dynamicProps = new IndexedList();
-        node.aNode.props.each(function (prop) {
-            if (!prop.attr) {
-                node.dynamicProps.push(prop);
-            }
-        });
         attachings.add(node);
     }
     // #[end]
@@ -112,7 +106,7 @@ function elementOwnUpdate(changes) {
     this._getEl();
     var me = this;
 
-    this.dynamicProps.each(function (prop) {
+    this.props.each(function (prop) {
         if (prop.expr.value) {
             return;
         }
