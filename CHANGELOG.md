@@ -10,10 +10,12 @@ ChangeLog
 + 【变更】- ANode 部分属性从 IndexedList 改为数组，使 ANode 易于 JSON 序列化
 + 【新特性】- 组件声明时增加 delimiters 的支持，可配置插值两侧的分隔符
 + 【优化】- 一些性能优化
++ 【优化】- typescript定义中添加全局san对象的定义
 + 【bug修复】- fire 方法会触发父组件使用 native 修饰符声明的事件
 + 【bug修复】- 为枚举值为布尔类型的枚举属性（如 draggable）赋值字符串时输出与期望不符
 + 【bug修复】- 对组件使用 for 时，当一次时钟周期多次数据更新导致未渲染的组件 index 发生变化时，视图更新不正确
-
++ 【bug修复】- 修复typescript定义中DataTypeCheck的定义错误
++ 【bug修复】- 修复typescript定义中computed属性this的定义错误
 
 3.4.3
 -------
