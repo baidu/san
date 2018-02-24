@@ -61,6 +61,10 @@ function componentPreheat(component) {
                 recordDataRef(analyseExprDataRefs(aNode.textExpr));
             }
             else {
+                each(aNode.vars, function (varItem) {
+                    recordDataRef(analyseExprDataRefs(varItem.expr));
+                });
+
                 each(aNode.props, function (prop) {
                     recordDataRef(analyseExprDataRefs(prop.expr));
                 });
@@ -100,16 +104,22 @@ function analyseExprDataRefs(expr) {
     switch (expr.type) {
         case ExprType.ACCESSOR:
             var paths = expr.paths;
+            dataRefs.push(paths[0].value);
 
-            if (paths.length === 1) {
-                dataRefs.push(paths[0].value);
+            if (paths.length > 1) {
+                if (!paths[1].value) {
+                    dataRefs.push(paths[0].value + '.*');
+                }
+                else {
+                    dataRefs.push(paths[0].value + '.' + paths[1].value);
+                }
             }
-            else if (!paths[1].value) {
-                dataRefs.push(paths[0].value + '.*');
-            }
-            else {
-                dataRefs.push(paths[0].value + '.' + paths[1].value);
-            }
+
+            each(paths, function (path, index) {
+                if (index) {
+                    dataRefs = dataRefs.concat(analyseExprDataRefs(path));
+                }
+            });
 
             break;
 
@@ -128,7 +138,10 @@ function analyseExprDataRefs(expr) {
             dataRefs = analyseExprDataRefs(expr.expr);
 
             each(expr.filters, function (filter) {
-                dataRefs = dataRefs.concat(analyseExprDataRefs(filter.name));
+                each(filter.name.paths, function (path) {
+                    dataRefs = dataRefs.concat(analyseExprDataRefs(path));
+                });
+
 
                 each(filter.args, function (arg) {
                     dataRefs = dataRefs.concat(analyseExprDataRefs(arg));

@@ -11,17 +11,18 @@ var cloneDirectives = require('../parser/clone-directives');
 /**
  * 清洗条件 aNode，返回纯净无条件指令的 aNode
  *
- * @param {ANode} condANode 节点对象
+ * @param {ANode} aNode 条件节点对象
  * @return {ANode}
  */
-function rinseCondANode(condANode) {
+function rinseCondANode(aNode) {
     var clearANode = createANode({
-        children: condANode.children,
-        props: condANode.props,
-        events: condANode.events,
-        tagName: condANode.tagName,
-        vars: condANode.vars,
-        directives: cloneDirectives(condANode.directives, {
+        children: aNode.children,
+        props: aNode.props,
+        events: aNode.events,
+        tagName: aNode.tagName,
+        vars: aNode.vars,
+        dataRef: aNode.dataRef,
+        directives: cloneDirectives(aNode.directives, {
             'if': 1,
             'else': 1,
             'elif': 1

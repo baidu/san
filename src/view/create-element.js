@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var attachings = require('./attachings');
 var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
@@ -102,6 +103,10 @@ function createElement(options) {
  * @param {Array} changes 数据变化信息
  */
 function elementOwnUpdate(changes) {
+    if (!changesIsInDataRef(changes, this.aNode.dataRef)) {
+        return;
+    }
+
     this._getEl();
     var me = this;
 

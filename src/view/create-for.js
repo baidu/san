@@ -161,6 +161,7 @@ function createFor(options) {
         events: aNode.events,
         tagName: aNode.tagName,
         vars: aNode.vars,
+        dataRef: aNode.dataRef,
         directives: cloneDirectives(aNode.directives, {
             'for': 1
         })
@@ -346,6 +347,7 @@ function forOwnUpdate(changes) {
             }
             else {
                 change = extend({}, change);
+                change.overview = null;
                 change.expr = createAccessor(
                     forDirective.item.paths.concat(changePaths.slice(forLen + 1))
                 );
