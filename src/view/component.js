@@ -50,6 +50,99 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
 
 /* eslint-disable guard-for-in */
 
+function componentPreheat(component) {
+    var stack = [];
+
+    function analyseANodeDataRef(aNode) {
+        if (!aNode.dataRef) {
+            stack.push(aNode);
+            aNode.dataRef = {};
+
+            if (aNode.isText) {
+                recordDataRef(analyseExprDataRefs(aNode.textExpr));
+            }
+            else {
+                each(aNode.props, function (prop) {
+                    recordDataRef(analyseExprDataRefs(prop.expr));
+                });
+
+                for (var key in aNode.directives) {
+                    var directive = aNode.directives[key];
+                    recordDataRef(analyseExprDataRefs(directive.value));
+                }
+
+                each(aNode.elses, function (child) {
+                    analyseANodeDataRef(child);
+                });
+
+                each(aNode.children, function (child) {
+                    analyseANodeDataRef(child);
+                });
+            }
+
+            stack.pop();
+        }
+    }
+
+    function recordDataRef(dataRefs) {
+        each(stack, function (aNode) {
+            each(dataRefs, function (dataRef) {
+                aNode.dataRef[dataRef] = 1;
+            });
+        });
+    }
+
+    analyseANodeDataRef(component.constructor.prototype.aNode);
+}
+
+function analyseExprDataRefs(expr) {
+    var dataRefs = [];
+
+    switch (expr.type) {
+        case ExprType.ACCESSOR:
+            var paths = expr.paths;
+
+            if (paths.length === 1) {
+                dataRefs.push(paths[0].value);
+            }
+            else if (!paths[1].value) {
+                dataRefs.push(paths[0].value + '.*');
+            }
+            else {
+                dataRefs.push(paths[0].value + '.' + paths[1].value);
+            }
+
+            break;
+
+        case ExprType.UNARY:
+            return analyseExprDataRefs(expr.expr);
+
+        case ExprType.TEXT:
+        case ExprType.BINARY:
+        case ExprType.TERTIARY:
+            each(expr.segs, function (seg) {
+                dataRefs = dataRefs.concat(analyseExprDataRefs(seg));
+            });
+            break;
+
+        case ExprType.INTERP:
+            dataRefs = analyseExprDataRefs(expr.expr);
+
+            each(expr.filters, function (filter) {
+                dataRefs = dataRefs.concat(analyseExprDataRefs(filter.name));
+
+                each(filter.args, function (arg) {
+                    dataRefs = dataRefs.concat(analyseExprDataRefs(arg));
+                });
+            });
+
+            break;
+
+    }
+
+    return dataRefs;
+}
+
 /**
  * 组件类
  *
@@ -63,17 +156,19 @@ function Component(options) { // eslint-disable-line
     this.listeners = {};
     this.slotChildren = [];
 
+    var clazz = this.constructor;
 
-    this.filters = this.filters || this.constructor.filters || {};
-    this.computed = this.computed || this.constructor.computed || {};
-    this.messages = this.messages || this.constructor.messages || {};
+    this.filters = this.filters || clazz.filters || {};
+    this.computed = this.computed || clazz.computed || {};
+    this.messages = this.messages || clazz.messages || {};
     this.subTag = options.subTag;
 
     // compile
-    compileComponent(this.constructor);
+    compileComponent(clazz);
+    componentPreheat(this);
 
     var me = this;
-    var protoANode = this.constructor.prototype.aNode;
+    var protoANode = clazz.prototype.aNode;
 
     me.givenANode = options.aNode;
     me.givenNamedSlotBinds = [];
@@ -166,11 +261,11 @@ function Component(options) { // eslint-disable-line
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
     // NOTE: 只在开发版本中进行属性校验
-    var dataTypes = this.dataTypes || this.constructor.dataTypes;
+    var dataTypes = this.dataTypes || clazz.dataTypes;
     if (dataTypes) {
         var dataTypeChecker = createDataTypesChecker(
             dataTypes,
-            this.subTag || this.name || this.constructor.name
+            this.subTag || this.name || clazz.name
         );
         this.data.setTypeChecker(dataTypeChecker);
         this.data.checkDataTypes();

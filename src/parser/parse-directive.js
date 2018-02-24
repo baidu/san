@@ -26,7 +26,7 @@ var directiveParsers = {
             return {
                 item: parseExpr(match[1]),
                 index: parseExpr(match[3] || '$index'),
-                list: readAccessor(walker)
+                value: readAccessor(walker)
             };
         }
 
@@ -55,7 +55,7 @@ var directiveParsers = {
 
     'else': function (value) {
         return {
-            value: 1
+            value: {}
         };
     },
 

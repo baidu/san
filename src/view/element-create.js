@@ -21,8 +21,6 @@ function elementCreate(element) {
 
     var hasIdDeclaration;
     each(element.props, function (prop) {
-        var attr = prop.attr;
-
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
             : nodeEvalExpr(element, prop.expr, 1);

@@ -381,7 +381,7 @@ var aNodeCompiler = {
         var forDirective = aNode.directives['for'];
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
-        var listName = compileExprSource.dataAccess(forDirective.list);
+        var listName = compileExprSource.dataAccess(forDirective.value);
 
         if (indexName === '$index') {
             indexName = guid();

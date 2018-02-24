@@ -73,7 +73,7 @@ ForItemData.prototype.exprResolve = function (expr) {
             && expr.paths[0].value === directive.item.paths[0].value
         ) {
             return createAccessor(
-                directive.list.paths.concat(
+                directive.value.paths.concat(
                     {
                         type: ExprType.NUMBER,
                         value: me.get(directive.index)
@@ -174,7 +174,7 @@ function createFor(options) {
         options.reverseWalker = null;
 
         each(
-            nodeEvalExpr(node, node.aNode.directives['for'].list),
+            nodeEvalExpr(node, node.aNode.directives['for'].value),
             function (item, i) {
                 var itemScope = new ForItemData(node, item, i);
                 var child = createReverseNode(node.itemANode, walker, node, itemScope);
@@ -199,7 +199,7 @@ function createFor(options) {
 function forOwnAttachHTML(buf, onlyChildren) {
     var me = this;
     each(
-        nodeEvalExpr(me, me.aNode.directives['for'].list),
+        nodeEvalExpr(me, me.aNode.directives['for'].value),
         function (item, i) {
             var child = createForDirectiveChild(me, item, i);
             me.children.push(child);
@@ -265,7 +265,7 @@ function forOwnAttach(parentEl, beforeEl) {
     }
     else {
         each(
-            nodeEvalExpr(this, this.aNode.directives['for'].list),
+            nodeEvalExpr(this, this.aNode.directives['for'].value),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.children.push(child);
@@ -325,7 +325,7 @@ function forOwnUpdate(changes) {
     var isChildrenRebuild;
 
     each(changes, function (change) {
-        var relation = changeExprCompare(change.expr, forDirective.list, this.scope);
+        var relation = changeExprCompare(change.expr, forDirective.value, this.scope);
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
@@ -337,7 +337,7 @@ function forOwnUpdate(changes) {
             // 变更表达式是list绑定表达式的子项
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
-            var forLen = forDirective.list.paths.length;
+            var forLen = forDirective.value.paths.length;
             var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
 
             if (isNaN(changeIndex)) {
@@ -378,7 +378,7 @@ function forOwnUpdate(changes) {
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
-            var newList = nodeEvalExpr(this, forDirective.list);
+            var newList = nodeEvalExpr(this, forDirective.value);
             var newLen = newList && newList.length || 0;
 
             // 老的比新的多的部分，标记需要dispose
@@ -467,7 +467,7 @@ function forOwnUpdate(changes) {
             type: DataChangeType.SET,
             option: {},
             expr: createAccessor(
-                forDirective.list.paths.concat({
+                forDirective.value.paths.concat({
                     type: ExprType.STRING,
                     value: 'length'
                 })
