@@ -17,7 +17,7 @@ var postProp = require('../parser/post-prop');
  * bool属性：
  * 当绑定项没有值时，默认为true
  *
- * @param {IndexedList} binds 组件绑定信息集合对象
+ * @param {Array} binds 组件绑定信息集合对象
  */
 function postComponentBinds(binds) {
     each(binds, function (bind) {

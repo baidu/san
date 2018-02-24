@@ -8,7 +8,6 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
-var IndexedList = require('../util/indexed-list');
 var getPropAndIndex = require('../util/get-prop-and-index');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');

@@ -6,7 +6,6 @@
 var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
-var IndexedList = require('../util/indexed-list');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');

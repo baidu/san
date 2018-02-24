@@ -9,8 +9,8 @@ var each = require('../util/each');
 /**
  * 将 binds 的 name 从 kebabcase 转换成 camelcase
  *
- * @param {IndexedList} binds binds集合
- * @return {IndexedList}
+ * @param {Array} binds binds集合
+ * @return {Array}
  */
 function camelComponentBinds(binds) {
     var result = [];

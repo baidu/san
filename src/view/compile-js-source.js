@@ -5,7 +5,6 @@
 
 
 var each = require('../util/each');
-var IndexedList = require('../util/indexed-list');
 var guid = require('../util/guid');
 var getPropAndIndex = require('../util/get-prop-and-index');
 var parseExpr = require('../parser/parse-expr');
@@ -54,8 +53,8 @@ var elementSourceCompiler = {
      *
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
-     * @param {IndexedList} props 属性列表
-     * @param {IndexedList} binds 绑定信息列表
+     * @param {Array} props 属性列表
+     * @param {Array} binds 绑定信息列表
      * @param {Array} events 绑定事件列表
      * @param {Object} aNode 对应的抽象节点对象
      * @param {string?} extraProp 额外的属性串

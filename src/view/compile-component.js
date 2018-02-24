@@ -5,7 +5,6 @@
 
 
 var each = require('../util/each');
-var IndexedList = require('../util/indexed-list');
 var getPropAndIndex = require('../util/get-prop-and-index');
 var createANode = require('../parser/create-a-node');
 var parseTemplate = require('../parser/parse-template');
