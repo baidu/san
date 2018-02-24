@@ -26,7 +26,6 @@
     // require('./browser/ie');
     // require('./browser/ie-old-than-9');
     // require('./browser/input-event-compatible');
-    // require('./util/indexed-list');
     // require('./browser/auto-close-tags');
     // require('./util/data-types.js');
     // require('./util/create-data-types-checker.js');
