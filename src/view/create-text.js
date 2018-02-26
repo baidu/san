@@ -144,7 +144,6 @@ function textOwnGetEl() {
 function textOwnDispose() {
     this._prev = null;
     this.el = null;
-    this.content = null;
 }
 
 /**
