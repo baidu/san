@@ -179,6 +179,8 @@ function textOwnAttach(parentEl, beforeEl) {
 
 /* eslint-disable max-depth */
 
+var textUpdateProp;
+
 /**
  * 更新 text 节点的视图
  *
@@ -188,6 +190,9 @@ function textOwnUpdate(changes) {
     if (this.aNode.textExpr.value) {
         return;
     }
+
+    textUpdateProp = textUpdateProp
+        || typeof document.createTextNode('').textContent === 'string' ? 'textContent' : 'data';
 
     var el = this._getEl();
 
@@ -201,7 +206,7 @@ function textOwnUpdate(changes) {
                 var rawText = nodeEvalExpr(this, this.aNode.textExpr);
 
                 if (this._simple) {
-                    el[typeof el.textContent === 'string' ? 'textContent' : 'data'] = rawText;
+                    el[textUpdateProp] = rawText;
                 }
                 else {
                     var startRemoveEl = this.sel.nextSibling;
