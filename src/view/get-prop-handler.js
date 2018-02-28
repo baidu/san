@@ -55,7 +55,9 @@ var defaultElementPropHandler = {
             el.setAttribute(name, value);
         }
         else {
-            el[propName] = value == null ? '' : value;
+            // 因为 draggable 属性的枚举值同时包含布尔和字符串两种类型，所以这里把 'true' 和 'false' 转成对应的布尔类型
+            // 其它属性可以将布尔类型隐式转换为字符串所以不需要担心产生其它类型问题
+            el[propName] = value === 'true' || value === 'false' ? value === 'true' : value == null ? '' : value;
         }
 
         // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
@@ -99,7 +101,6 @@ var defaultElementPropHandlers = {
         prop: empty
     },
 
-    draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
     disabled: genBoolPropHandler('disabled'),
     autofocus: genBoolPropHandler('autofocus'),
