@@ -4,12 +4,12 @@ ChangeLog
 
 3.5.0
 -------
-
 + 【变更】- 插值 HTML encode 行为变更为：默认进行 HTML encode，除非最后一个 filter 为 raw
 + 【变更】- 由于插值 HTML encode 行为变更，删除两个 filters：html 和 raw
 + 【变更】- ANode 部分属性从 IndexedList 改为数组，使 ANode 易于 JSON 序列化
 + 【优化】- 一些性能优化
-
++ 【bug修复】- fire 方法会触发父组件使用 native 修饰符声明的事件
++ 【bug修复】- 枚举值为布尔类型的枚举属性（如 draggable）赋值为字符串造成出与期望不符
 
 3.4.3
 -------

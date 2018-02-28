@@ -16,7 +16,7 @@ var nodeEvalExpr = require('./node-eval-expr');
 
 var BOOL_ATTRIBUTES = {};
 each(
-    'checked,readonly,selected,multiple,draggable,disabled'.split(','),
+    'checked,readonly,selected,multiple,disabled'.split(','),
     function (key) {
         BOOL_ATTRIBUTES[key] = 1;
     }
