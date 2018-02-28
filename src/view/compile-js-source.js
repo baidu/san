@@ -107,7 +107,6 @@ var elementSourceCompiler = {
             }
 
             switch (prop.name) {
-                case 'draggable':
                 case 'readonly':
                 case 'disabled':
                 case 'multiple':
