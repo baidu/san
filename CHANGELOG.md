@@ -2,6 +2,15 @@
 ChangeLog
 ========
 
+3.5.0
+-------
+
++ 【变更】- 插值 HTML encode 行为变更为：默认进行 HTML encode，除非最后一个 filter 为 raw
++ 【变更】- 由于插值 HTML encode 行为变更，删除两个 filters：html 和 raw
++ 【变更】- ANode 部分属性从 IndexedList 改为数组，使 ANode 易于 JSON 序列化
++ 【优化】- 一些性能优化
+
+
 3.4.3
 -------
 
