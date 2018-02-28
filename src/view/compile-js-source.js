@@ -252,10 +252,10 @@ var aNodeCompiler = {
         if (aNode.isText) {
             compileMethod = 'compileText';
         }
-        else if (aNode.directives['if']) {
+        else if (aNode.directives['if']) { // eslint-disable-line dot-notation
             compileMethod = 'compileIf';
         }
-        else if (aNode.directives['for']) {
+        else if (aNode.directives['for']) { // eslint-disable-line dot-notation
             compileMethod = 'compileFor';
         }
         else if (aNode.tagName === 'slot') {
@@ -325,7 +325,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('var ifIndex = null;');
 
         // output main if
-        var ifDirective = aNode.directives['if'];
+        var ifDirective = aNode.directives['if']; // eslint-disable-line dot-notation
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
         sourceBuffer.addRaw(
             aNodeCompiler.compile(
@@ -338,7 +338,7 @@ var aNodeCompiler = {
 
         // output elif and else
         each(aNode.elses, function (elseANode, index) {
-            var elifDirective = elseANode.directives['elif'];
+            var elifDirective = elseANode.directives.elif;
             if (elifDirective) {
                 sourceBuffer.addRaw('else if (' + compileExprSource.expr(elifDirective.value) + ') {');
             }
@@ -377,7 +377,7 @@ var aNodeCompiler = {
             })
         });
 
-        var forDirective = aNode.directives['for'];
+        var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
         var listName = compileExprSource.dataAccess(forDirective.value);

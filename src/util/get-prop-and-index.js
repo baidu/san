@@ -1,7 +1,15 @@
 /**
- * 获取唯一id
+ * @file 获取对象的props数组中符合name为给予值的项，并建立快捷索引便于多次获取
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+var each = require('./each');
+
+/**
+ * 获取对象的props数组中符合name为给予值的项，并建立快捷索引便于多次获取
  *
- * @inner
+ * @param {Object} source 获取源，包含props的对象
+ * @param {string} name name属性匹配串
  * @return {Object}
  */
 function getPropAndIndex(source, name) {

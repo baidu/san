@@ -51,7 +51,7 @@ function ForItemData(forElement, item, index) {
     this.raw = {};
     this.listeners = [];
 
-    this.directive = forElement.aNode.directives['for'];
+    this.directive = forElement.aNode.directives['for']; // eslint-disable-line dot-notation
     this.raw[this.directive.item.raw] = item;
     this.raw[this.directive.index.raw] = index;
 }
@@ -174,7 +174,7 @@ function createFor(options) {
         options.reverseWalker = null;
 
         each(
-            nodeEvalExpr(node, node.aNode.directives['for'].value),
+            nodeEvalExpr(node, node.aNode.directives['for'].value), // eslint-disable-line dot-notation
             function (item, i) {
                 var itemScope = new ForItemData(node, item, i);
                 var child = createReverseNode(node.itemANode, walker, node, itemScope);
@@ -199,7 +199,7 @@ function createFor(options) {
 function forOwnAttachHTML(buf, onlyChildren) {
     var me = this;
     each(
-        nodeEvalExpr(me, me.aNode.directives['for'].value),
+        nodeEvalExpr(me, me.aNode.directives['for'].value), // eslint-disable-line dot-notation
         function (item, i) {
             var child = createForDirectiveChild(me, item, i);
             me.children.push(child);
@@ -265,7 +265,7 @@ function forOwnAttach(parentEl, beforeEl) {
     }
     else {
         each(
-            nodeEvalExpr(this, this.aNode.directives['for'].value),
+            nodeEvalExpr(this, this.aNode.directives['for'].value), // eslint-disable-line dot-notation
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.children.push(child);
@@ -308,7 +308,7 @@ function forOwnUpdate(changes) {
 
 
     var disposeChildren = [];
-    var forDirective = this.aNode.directives['for'];
+    var forDirective = this.aNode.directives['for']; // eslint-disable-line dot-notation
 
     this._getEl();
     var parentEl = getNodeStumpParent(this);

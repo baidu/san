@@ -18,6 +18,7 @@ var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var analyseExprDataRef = require('../runtime/analyse-expr-data-ref');
 var compileComponent = require('./compile-component');
 var attachings = require('./attachings');
 var isDataChangeByElement = require('./is-data-change-by-element');
@@ -47,113 +48,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
-/* eslint-disable guard-for-in */
 
-function componentPreheat(component) {
-    var stack = [];
-
-    function analyseANodeDataRef(aNode) {
-        if (!aNode.dataRef) {
-            stack.push(aNode);
-            aNode.dataRef = {};
-
-            if (aNode.isText) {
-                recordDataRef(analyseExprDataRefs(aNode.textExpr));
-            }
-            else {
-                each(aNode.vars, function (varItem) {
-                    recordDataRef(analyseExprDataRefs(varItem.expr));
-                });
-
-                each(aNode.props, function (prop) {
-                    recordDataRef(analyseExprDataRefs(prop.expr));
-                });
-
-                for (var key in aNode.directives) {
-                    var directive = aNode.directives[key];
-                    recordDataRef(analyseExprDataRefs(directive.value));
-                }
-
-                each(aNode.elses, function (child) {
-                    analyseANodeDataRef(child);
-                });
-
-                each(aNode.children, function (child) {
-                    analyseANodeDataRef(child);
-                });
-            }
-
-            stack.pop();
-        }
-    }
-
-    function recordDataRef(dataRefs) {
-        each(stack, function (aNode) {
-            each(dataRefs, function (dataRef) {
-                aNode.dataRef[dataRef] = 1;
-            });
-        });
-    }
-
-    analyseANodeDataRef(component.constructor.prototype.aNode);
-}
-
-function analyseExprDataRefs(expr) {
-    var dataRefs = [];
-
-    switch (expr.type) {
-        case ExprType.ACCESSOR:
-            var paths = expr.paths;
-            dataRefs.push(paths[0].value);
-
-            if (paths.length > 1) {
-                if (!paths[1].value) {
-                    dataRefs.push(paths[0].value + '.*');
-                }
-                else {
-                    dataRefs.push(paths[0].value + '.' + paths[1].value);
-                }
-            }
-
-            each(paths, function (path, index) {
-                if (index) {
-                    dataRefs = dataRefs.concat(analyseExprDataRefs(path));
-                }
-            });
-
-            break;
-
-        case ExprType.UNARY:
-            return analyseExprDataRefs(expr.expr);
-
-        case ExprType.TEXT:
-        case ExprType.BINARY:
-        case ExprType.TERTIARY:
-            each(expr.segs, function (seg) {
-                dataRefs = dataRefs.concat(analyseExprDataRefs(seg));
-            });
-            break;
-
-        case ExprType.INTERP:
-            dataRefs = analyseExprDataRefs(expr.expr);
-
-            each(expr.filters, function (filter) {
-                each(filter.name.paths, function (path) {
-                    dataRefs = dataRefs.concat(analyseExprDataRefs(path));
-                });
-
-
-                each(filter.args, function (arg) {
-                    dataRefs = dataRefs.concat(analyseExprDataRefs(arg));
-                });
-            });
-
-            break;
-
-    }
-
-    return dataRefs;
-}
 
 /**
  * 组件类
@@ -285,11 +180,13 @@ function Component(options) { // eslint-disable-line
     // #[end]
 
     this.computedDeps = {};
+    /* eslint-disable guard-for-in */
     for (var expr in this.computed) {
         if (!this.computedDeps[expr]) {
             this._calcComputed(expr);
         }
     }
+    /* eslint-enable guard-for-in */
 
     if (!this.dataChanger) {
         this.dataChanger = bind(this._dataChanger, this);
@@ -320,7 +217,67 @@ function Component(options) { // eslint-disable-line
     // #[end]
 }
 
+/**
+ * 组件预热，分析组件aNode的数据引用
+ *
+ * @param {Object} component 组件实例
+ */
+function componentPreheat(component) {
+    var stack = [];
 
+    function analyseANodeDataRef(aNode) {
+        if (!aNode.dataRef) {
+            stack.push(aNode);
+            aNode.dataRef = {};
+
+            if (aNode.isText) {
+                recordDataRef(analyseExprDataRef(aNode.textExpr));
+            }
+            else {
+                each(aNode.vars, function (varItem) {
+                    recordDataRef(analyseExprDataRef(varItem.expr));
+                });
+
+                each(aNode.props, function (prop) {
+                    recordDataRef(analyseExprDataRef(prop.expr));
+                });
+
+                /* eslint-disable guard-for-in */
+                for (var key in aNode.directives) {
+                    var directive = aNode.directives[key];
+                    recordDataRef(analyseExprDataRef(directive.value));
+                }
+                /* eslint-enable guard-for-in */
+
+                each(aNode.elses, function (child) {
+                    analyseANodeDataRef(child);
+                });
+
+                each(aNode.children, function (child) {
+                    analyseANodeDataRef(child);
+                });
+            }
+
+            stack.pop();
+        }
+    }
+
+    function recordDataRef(dataRefs) {
+        each(stack, function (aNode) {
+            each(dataRefs, function (dataRef) {
+                aNode.dataRef[dataRef] = 1;
+            });
+        });
+    }
+
+    analyseANodeDataRef(component.constructor.prototype.aNode);
+}
+
+/**
+ * 初始化创建组件外部传入的插槽对象
+ *
+ * @protected
+ */
 Component.prototype._createGivenSlots = function () {
     var me = this;
     me.givenSlots.named = {};

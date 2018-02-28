@@ -1,10 +1,15 @@
+/**
+ * @file 判断变更数组是否影响到数据引用摘要
+ * @author errorrik(errorrik@gmail.com)
+ */
+
 var each = require('../util/each');
 
 /**
+ * 判断变更数组是否影响到数据引用摘要
  *
- *
- * @param {Array} changes
- * @param {Object} dataRef
+ * @param {Array} changes 变更数组
+ * @param {Object} dataRef 数据引用摘要
  * @return {boolean}
  */
 function changesIsInDataRef(changes, dataRef) {

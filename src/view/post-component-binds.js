@@ -5,6 +5,7 @@
 
 
 var postProp = require('../parser/post-prop');
+var each = require('../util/each');
 
 /**
  * 将组件的绑定信息进行后处理

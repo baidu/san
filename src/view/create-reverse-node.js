@@ -37,11 +37,11 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
         return createText(options);
     }
 
-    if (aNode.directives['if']) {
+    if (aNode.directives['if']) { // eslint-disable-line dot-notation
         return createIf(options);
     }
 
-    if (aNode.directives['for']) {
+    if (aNode.directives['for']) { // eslint-disable-line dot-notation
         return createFor(options);
     }
 
