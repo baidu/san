@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var escapeHTML = require('./escape-html');
 
 /* eslint-disable fecs-camelcase */
 /* eslint-disable guard-for-in */

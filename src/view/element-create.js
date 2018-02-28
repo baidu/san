@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var each = require('../util/each');
 var createEl = require('../browser/create-el');
 var evalExpr = require('../runtime/eval-expr');
 var nodeEvalExpr = require('./node-eval-expr');

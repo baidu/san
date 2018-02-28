@@ -34,7 +34,7 @@ function createIf(options) {
     node._attachHTML = ifOwnAttachHTML;
     node._update = ifOwnUpdate;
 
-    node.cond = node.aNode.directives['if'].value;
+    node.cond = node.aNode.directives['if'].value; // eslint-disable-line dot-notation
 
     // #[begin] reverse
     var walker = options.reverseWalker;
