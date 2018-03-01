@@ -431,7 +431,7 @@ Component.prototype.un = function (name, listener) {
  */
 Component.prototype.fire = function (name, event) {
     each(this.listeners[name], function (listener) {
-        listener.fn.call(this, event);
+        !listener.declaration.modifier.native && listener.fn.call(this, event);
     }, this);
 };
 
