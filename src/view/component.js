@@ -390,7 +390,7 @@ Component.prototype.fire = function (name, event) {
     each(this.listeners[name], function (listener) {
         listener.declaration
             && listener.declaration.modifier
-            && !listener.declaration.modifier.native
+            && listener.declaration.modifier.native ^ 1
             && listener.fn.call(this, event);
     }, this);
 };
