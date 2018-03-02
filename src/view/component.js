@@ -114,7 +114,9 @@ function Component(options) { // eslint-disable-line
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
                 nativeEvents.push(eventBind);
+                return;
             }
+
             // #[begin] error
             warnEventListenMethod(eventBind, options.owner);
             // #[end]
@@ -388,10 +390,7 @@ Component.prototype.un = function (name, listener) {
  */
 Component.prototype.fire = function (name, event) {
     each(this.listeners[name], function (listener) {
-        listener.declaration
-            && listener.declaration.modifier
-            && listener.declaration.modifier.native ^ 1
-            && listener.fn.call(this, event);
+        listener.fn.call(this, event);
     }, this);
 };
 
