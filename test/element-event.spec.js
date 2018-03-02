@@ -121,9 +121,10 @@ describe("Element-Event", function () {
 
         function doneSpec() {
             if (clicked === 1) {
-                done();
                 myComponent.dispose();
                 document.body.removeChild(wrap);
+                done();
+
                 return;
             }
             setTimeout(doneSpec, 500);
@@ -131,6 +132,55 @@ describe("Element-Event", function () {
         // 两次点击，期望只有第一次nativeEvent的点击生效
         triggerEvent('#' + nativeChildEl.id, 'click');
         triggerEvent('#' + childEl.id, 'click');
+        doneSpec();
+    });
+
+    it("native bind dont be invoked in fire", function (done) {
+        var inCount = 0;
+        var outCount = 0;
+        var Checkbox = san.defineComponent({
+            template: '<input type="checkbox" on-change="onChange" />',
+
+            onChange: function () {
+                inCount++;
+                this.fire('change');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><label><x-checkbox on-change="native:onNativeChange"/>Click me and see console</label></div>',
+
+            components: {
+                'x-checkbox': Checkbox
+            },
+
+            onNativeChange: function () {
+                outCount++;
+            }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+
+        function doneSpec() {
+            if (inCount > 0) {
+                expect(inCount).toBe(1);
+                expect(outCount).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent('#' + input.id, 'click');
         doneSpec();
     });
 
