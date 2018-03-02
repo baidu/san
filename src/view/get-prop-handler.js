@@ -56,7 +56,7 @@ var defaultElementPropHandler = {
             el.setAttribute(name, value);
         }
         else {
-            el[propName] = value == null ? '' : value;
+            el[propName] = value == null ? '' : value !== 'false' && value;
         }
 
         // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
@@ -100,7 +100,6 @@ var defaultElementPropHandlers = {
         prop: empty
     },
 
-    draggable: genBoolPropHandler('draggable'),
     readonly: genBoolPropHandler('readonly'),
     disabled: genBoolPropHandler('disabled'),
     autofocus: genBoolPropHandler('autofocus'),
