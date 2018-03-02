@@ -56,7 +56,7 @@ var defaultElementPropHandler = {
             el.setAttribute(name, value);
         }
         else {
-            el[propName] = value == null ? '' : value !== 'false' && value;
+            el[propName] = value == null ? '' : value;
         }
 
         // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
@@ -103,8 +103,13 @@ var defaultElementPropHandlers = {
     readonly: genBoolPropHandler('readonly'),
     disabled: genBoolPropHandler('disabled'),
     autofocus: genBoolPropHandler('autofocus'),
-    required: genBoolPropHandler('required')
+    required: genBoolPropHandler('required'),
+    draggable: genBoolPropHandler('draggable')
 };
+
+// draggable attribute 是枚举类型，但 property 接受 boolean
+// 所以这里声明 bool prop，然后 attr 置回来
+defaultElementPropHandlers.draggable.attr = defaultElementPropHandler.attr;
 
 var checkedPropHandler = genBoolPropHandler('checked');
 var analInputChecker = {
