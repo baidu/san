@@ -485,6 +485,29 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("custom delims", function () {
+        var MyComponent = san.defineComponent({
+            delimiters: ['{%', '%}'],
+            template: '<a><span title="Good {%name%}">Hello {%name%}</span></a>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'San'
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('Good San');
+        expect(span.innerHTML).toContain('Hello San');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("template trim whitespace, default none", function () {
         var MyComponent = san.defineComponent({
             template: '<a>  \n    <span>san</span>\n  </a>'

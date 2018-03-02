@@ -34,9 +34,9 @@ var directiveParsers = {
         // #[end]
     },
 
-    'ref': function (value) {
+    'ref': function (value, options) {
         return {
-            value: parseText(value)
+            value: parseText(value, options.delimiters)
         };
     },
 
@@ -77,12 +77,14 @@ var directiveParsers = {
  * @param {ANode} aNode 抽象节点
  * @param {string} name 指令名称
  * @param {string} value 指令值
+ * @param {Object} options 解析参数
+ * @param {Array?} options.delimiters 插值分隔符列表
  */
-function parseDirective(aNode, name, value) {
+function parseDirective(aNode, name, value, options) {
     var parser = directiveParsers[name];
 
     if (parser) {
-        var result = parser(value);
+        var result = parser(value, options);
         result.raw = value;
         aNode.directives[name] = result;
     }

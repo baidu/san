@@ -31,7 +31,7 @@ function createNode(aNode, parent, scope) {
         parent: parent
     };
 
-    if (aNode.isText) {
+    if (aNode.textExpr) {
         return createText(options);
     }
 

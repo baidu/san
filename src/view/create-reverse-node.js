@@ -33,7 +33,7 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
         reverseWalker: reverseWalker
     };
 
-    if (aNode.isText) {
+    if (aNode.textExpr) {
         return createText(options);
     }
 

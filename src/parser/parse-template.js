@@ -7,6 +7,7 @@
 var createANode = require('./create-a-node');
 var Walker = require('./walker');
 var integrateAttr = require('./integrate-attr');
+var parseText = require('./parse-text');
 var autoCloseTags = require('../browser/auto-close-tags');
 
 // #[begin] error
@@ -30,6 +31,7 @@ function getXPath(stack, currentTagName) {
  * @param {string} source template源码
  * @param {Object?} options 解析参数
  * @param {string?} options.trimWhitespace 空白文本的处理策略。none|blank|all
+ * @param {Array?} options.delimiters 插值分隔符列表
  * @return {ANode}
  */
 function parseTemplate(source, options) {
@@ -179,7 +181,8 @@ function parseTemplate(source, options) {
                     integrateAttr(
                         aElement,
                         attrMatch[1],
-                        attrMatch[2] ? attrMatch[4] : ''
+                        attrMatch[2] ? attrMatch[4] : '',
+                        options
                     );
                 }
 
@@ -192,7 +195,7 @@ function parseTemplate(source, options) {
 
                 while (parentChildrenLen--) {
                     var parentChild = currentNode.children[parentChildrenLen];
-                    if (parentChild.isText) {
+                    if (parentChild.textExpr) {
                         currentNode.children.splice(parentChildrenLen, 1);
                         continue;
                     }
@@ -256,8 +259,7 @@ function parseTemplate(source, options) {
 
         if (text) {
             currentNode.children.push(createANode({
-                isText: 1,
-                text: text
+                textExpr: parseText(text, options.delimiters)
             }));
         }
     }

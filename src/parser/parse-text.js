@@ -8,13 +8,32 @@ var ExprType = require('./expr-type');
 var parseInterp = require('./parse-interp');
 
 /**
+ * 对字符串进行可用于new RegExp的字面化
+ *
+ * @inner
+ * @param {string} source 需要字面化的字符串
+ * @return {string} 字符串字面化结果
+ */
+function regexpLiteral(source) {
+    return source.replace(/[\^\[\]\$\(\)\{\}\?\*\.\+\\]/g, function (c) {
+        return '\\' + c;
+    });
+}
+
+/**
  * 解析文本
  *
  * @param {string} source 源码
+ * @param {Array?} delimiters 分隔符。默认为 ['{{', '}}']
  * @return {Object}
  */
-function parseText(source) {
-    var exprStartReg = /\{\{\s*([\s\S]+?)\s*\}\}/ig;
+function parseText(source, delimiters) {
+    delimiters = delimiters || ['{{', '}}'];
+    var exprStartReg = new RegExp(
+        regexpLiteral(delimiters[0]) + '\\s*([\\s\\S]+?)\\s*' + regexpLiteral(delimiters[1]),
+        'ig'
+    );
+
     var exprMatch;
 
     var walker = new Walker(source);

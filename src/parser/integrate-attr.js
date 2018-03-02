@@ -26,9 +26,10 @@ var DEFAULT_EVENT_ARGS = [
  * @param {ANode} aNode 抽象节点
  * @param {string} name 属性名称
  * @param {string} value 属性值
- * @param {boolean=} ignoreNormal 是否忽略无前缀的普通属性
+ * @param {Object} options 解析参数
+ * @param {Array?} options.delimiters 插值分隔符列表
  */
-function integrateAttr(aNode, name, value, ignoreNormal) {
+function integrateAttr(aNode, name, value, options) {
     var prefixIndex = name.indexOf('-');
     var realName;
     var prefix;
@@ -64,11 +65,11 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
 
         case 'san':
         case 's':
-            parseDirective(aNode, realName, value);
+            parseDirective(aNode, realName, value, options);
             break;
 
         case 'prop':
-            integrateProp(aNode, realName, value);
+            integrateProp(aNode, realName, value, options);
             break;
 
         case 'var':
@@ -84,9 +85,7 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
             break;
 
         default:
-            if (!ignoreNormal) {
-                integrateProp(aNode, name, value);
-            }
+            integrateProp(aNode, name, value, options);
     }
 }
 
@@ -97,8 +96,10 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
  * @param {ANode} aNode 抽象节点
  * @param {string} name 属性名称
  * @param {string} value 属性值
+ * @param {Object} options 解析参数
+ * @param {Array?} options.delimiters 插值分隔符列表
  */
-function integrateProp(aNode, name, value) {
+function integrateProp(aNode, name, value, options) {
     // parse two way binding, e.g. value="{=ident=}"
     var xMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
 
@@ -116,7 +117,7 @@ function integrateProp(aNode, name, value) {
     // parse normal prop
     var prop = {
         name: name,
-        expr: parseText(value),
+        expr: parseText(value, options.delimiters),
         raw: value
     };
 

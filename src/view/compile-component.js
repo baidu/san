@@ -54,7 +54,8 @@ function compileComponent(ComponentClass) {
         var tpl = ComponentClass.template || proto.template;
         if (tpl) {
             var aNode = parseTemplate(tpl, {
-                trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace
+                trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
+                delimiters: proto.delimiters || ComponentClass.delimiters
             });
             var firstChild = aNode.children[0];
 

@@ -232,7 +232,7 @@ function componentPreheat(component) {
             stack.push(aNode);
             aNode.dataRef = {};
 
-            if (aNode.isText) {
+            if (aNode.textExpr) {
                 recordDataRef(analyseExprDataRef(aNode.textExpr));
             }
             else {
@@ -288,7 +288,7 @@ Component.prototype._createGivenSlots = function () {
     me.givenANode && me.scope && each(me.givenANode.children, function (child) {
         var target;
 
-        var slotBind = !child.isText && getPropAndIndex(child, 'slot');
+        var slotBind = !child.textExpr && getPropAndIndex(child, 'slot');
         if (slotBind) {
             !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
 

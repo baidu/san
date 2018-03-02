@@ -248,7 +248,7 @@ var aNodeCompiler = {
         extra = extra || {};
         var compileMethod = 'compileElement';
 
-        if (aNode.isText) {
+        if (aNode.textExpr) {
             compileMethod = 'compileText';
         }
         else if (aNode.directives['if']) { // eslint-disable-line dot-notation
@@ -508,7 +508,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('var $slotName = null;');
             sourceBuffer.addRaw('var $givenSlots = [];');
             each(aNode.children, function (child) {
-                var slotBind = !child.isText && getPropAndIndex(child, 'slot');
+                var slotBind = !child.textExpr && getPropAndIndex(child, 'slot');
                 if (slotBind) {
                     sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
                     sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
