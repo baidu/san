@@ -51,13 +51,12 @@ function integrateAttr(aNode, name, value, ignoreNormal) {
                 var modifier = value.slice(0, colonIndex);
 
                 // eventHandler("dd:aa") 这种情况不能算modifier，需要辨识
-                if (/^[a-z]+$/i.test(modifier)) {
-                    event.modifier[modifier] = true;
-                    value = value.slice(colonIndex + 1);
-                }
-                else {
+                if (!/^[a-z]+$/i.test(modifier)) {
                     break;
                 }
+
+                event.modifier[modifier] = true;
+                value = value.slice(colonIndex + 1);
             }
 
             event.expr = parseCall(value, DEFAULT_EVENT_ARGS);
