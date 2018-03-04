@@ -109,6 +109,7 @@ inherits(ForItemData, Data);
 each(
     ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
     function (method) {
+        ForItemData.prototype['_' + method] = Data.prototype[method];
         ForItemData.prototype[method] = function (expr) {
             expr = this.exprResolve(parseExpr(expr));
 
@@ -300,6 +301,9 @@ function forOwnDetach() {
 function forOwnUpdate(changes) {
     var me = this;
 
+    // 控制列表更新策略是否原样更新的变量
+    var originalUpdate = this.aNode.directives.transition;
+
     var childrenChanges = [];
     var oldChildrenLen = this.children.length;
     each(this.children, function () {
@@ -311,10 +315,12 @@ function forOwnUpdate(changes) {
     var forDirective = this.aNode.directives['for']; // eslint-disable-line dot-notation
 
     this._getEl();
+
+    // 判断列表是否父元素下唯一的元素
+    // 如果是的话，可以做一些更新优化
     var parentEl = getNodeStumpParent(this);
     var parentFirstChild = parentEl.firstChild;
     var parentLastChild = parentEl.lastChild;
-
     var isOnlyParentChild = oldChildrenLen > 0 // 有孩子时
             && parentFirstChild === this.children[0]._getEl()
             && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1]._getEl())
@@ -322,10 +328,11 @@ function forOwnUpdate(changes) {
             && parentFirstChild === this.el
             && parentLastChild === this.el;
 
+    // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
     each(changes, function (change) {
-        var relation = changeExprCompare(change.expr, forDirective.value, this.scope);
+        var relation = changeExprCompare(change.expr, forDirective.value, me.scope);
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
@@ -338,7 +345,7 @@ function forOwnUpdate(changes) {
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
             var forLen = forDirective.value.paths.length;
-            var changeIndex = +nodeEvalExpr(this, changePaths[forLen]);
+            var changeIndex = +nodeEvalExpr(me, changePaths[forLen]);
 
             if (isNaN(changeIndex)) {
                 each(childrenChanges, function (childChanges) {
@@ -356,8 +363,7 @@ function forOwnUpdate(changes) {
 
                 switch (change.type) {
                     case DataChangeType.SET:
-                        Data.prototype.set.call(
-                            this.children[changeIndex].scope,
+                        me.children[changeIndex].scope._set(
                             change.expr,
                             change.value,
                             {silent: 1}
@@ -366,8 +372,7 @@ function forOwnUpdate(changes) {
 
 
                     case DataChangeType.SPLICE:
-                        Data.prototype.splice.call(
-                            this.children[changeIndex].scope,
+                        me.children[changeIndex].scope._splice(
                             change.expr,
                             [].concat(change.index, change.deleteCount, change.insertions),
                             {silent: 1}
@@ -379,15 +384,15 @@ function forOwnUpdate(changes) {
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
-            var newList = nodeEvalExpr(this, forDirective.value);
+            var newList = nodeEvalExpr(me, forDirective.value);
             var newLen = newList && newList.length || 0;
 
             // 老的比新的多的部分，标记需要dispose
             if (oldChildrenLen > newLen) {
-                disposeChildren = disposeChildren.concat(this.children.slice(newLen));
+                disposeChildren = disposeChildren.concat(me.children.slice(newLen));
 
                 childrenChanges.length = newLen;
-                this.children.length = newLen;
+                me.children.length = newLen;
             }
 
             // 整项变更
@@ -405,60 +410,56 @@ function forOwnUpdate(changes) {
                     childrenChanges[i].push(change);
                 }
 
-                if (this.children[i]) {
-                    Data.prototype.set.call(
-                        this.children[i].scope,
+                if (me.children[i]) {
+                    me.children[i].scope._set(
                         forDirective.item,
                         newList[i],
                         {silent: 1}
                     );
                 }
                 else {
-                    this.children[i] = createForDirectiveChild(this, newList[i], i);
+                    me.children[i] = createForDirectiveChild(me, newList[i], i);
                 }
             }
 
             isChildrenRebuild = 1;
         }
         else if (relation === 2 && change.type === DataChangeType.SPLICE && !isChildrenRebuild) {
-            // 变更表达式是list绑定表达式本身数组的SPLICE操作
+            // 变更表达式是list绑定表达式本身数组的splice操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
             var deleteCount = change.deleteCount;
-
-            var indexChange = {
-                type: DataChangeType.SET,
-                option: change.option,
-                expr: forDirective.index
-            };
-
             var insertionsLen = change.insertions.length;
+
+            // 处理由于splice带来的某些项index变化
             if (insertionsLen !== deleteCount) {
-                each(this.children, function (child, index) {
-                    // update child index
-                    if (index >= changeStart + deleteCount) {
-                        childrenChanges[index].push(indexChange);
-                        Data.prototype.set.call(
-                            child.scope,
-                            indexChange.expr,
-                            index - deleteCount + insertionsLen,
-                            {silent: 1}
-                        );
-                    }
-                }, this);
+                var indexChange = {
+                    type: DataChangeType.SET,
+                    option: change.option,
+                    expr: forDirective.index
+                };
+
+                for (var i = changeStart + deleteCount; i < me.children.length; i++) {
+                    childrenChanges[i].push(indexChange);
+                    me.children[i].scope._set(
+                        indexChange.expr,
+                        i - deleteCount + insertionsLen,
+                        {silent: 1}
+                    );
+                }
             }
 
             var spliceArgs = [changeStart, deleteCount];
             var childrenChangesSpliceArgs = [changeStart, deleteCount];
             each(change.insertions, function (insertion, index) {
-                spliceArgs.push(createForDirectiveChild(this, insertion, changeStart + index));
+                spliceArgs.push(createForDirectiveChild(me, insertion, changeStart + index));
                 childrenChangesSpliceArgs.push([]);
-            }, this);
+            });
 
-            disposeChildren = disposeChildren.concat(this.children.splice.apply(this.children, spliceArgs));
+            disposeChildren = disposeChildren.concat(me.children.splice.apply(me.children, spliceArgs));
             childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);
         }
-    }, this);
+    });
 
     var newChildrenLen = this.children.length;
 
@@ -479,14 +480,15 @@ function forOwnUpdate(changes) {
         });
     }
 
-
     // 清除应该干掉的 child
     me._doCreateAndUpdate = doCreateAndUpdate;
-    var violentClear = isOnlyParentChild && newChildrenLen === 0
-        && !me.aNode.directives.transition;
+
     // 这里不用getTransition，getTransition和scope相关，for和forItem的scope是不同的
     // 所以getTransition结果本身也是不一致的。不如直接判断指令是否存在，如果存在就不进入暴力清除模式
     // var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
+    var violentClear = !originalUpdate && isOnlyParentChild && newChildrenLen === 0;
+
+
     var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
     each(disposeChildren, function (child) {
