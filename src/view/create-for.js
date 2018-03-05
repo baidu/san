@@ -331,6 +331,9 @@ function forOwnUpdate(changes) {
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
+    var newList = nodeEvalExpr(me, forDirective.value);
+    var newLen = newList && newList.length || 0;
+
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.value, me.scope);
 
@@ -384,8 +387,7 @@ function forOwnUpdate(changes) {
         else if (change.type === DataChangeType.SET) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
-            var newList = nodeEvalExpr(me, forDirective.value);
-            var newLen = newList && newList.length || 0;
+
 
             // 老的比新的多的部分，标记需要dispose
             if (oldChildrenLen > newLen) {
@@ -418,7 +420,8 @@ function forOwnUpdate(changes) {
                     );
                 }
                 else {
-                    me.children[i] = createForDirectiveChild(me, newList[i], i);
+                    //me.children[i] = createForDirectiveChild(me, newList[i], i);
+                    me.children[i] = 0;
                 }
             }
 
@@ -441,7 +444,7 @@ function forOwnUpdate(changes) {
 
                 for (var i = changeStart + deleteCount; i < me.children.length; i++) {
                     childrenChanges[i].push(indexChange);
-                    me.children[i].scope._set(
+                    me.children[i] && me.children[i].scope._set(
                         indexChange.expr,
                         i - deleteCount + insertionsLen,
                         {silent: 1}
@@ -452,7 +455,7 @@ function forOwnUpdate(changes) {
             var spliceArgs = [changeStart, deleteCount];
             var childrenChangesSpliceArgs = [changeStart, deleteCount];
             each(change.insertions, function (insertion, index) {
-                spliceArgs.push(createForDirectiveChild(me, insertion, changeStart + index));
+                spliceArgs.push(0);
                 childrenChangesSpliceArgs.push([]);
             });
 
@@ -492,8 +495,13 @@ function forOwnUpdate(changes) {
     var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
     each(disposeChildren, function (child) {
-        child._ondisposed = childDisposed;
-        child.dispose({dontDetach: violentClear, noTransition: violentClear});
+        if (child) {
+            child._ondisposed = childDisposed;
+            child.dispose({dontDetach: violentClear, noTransition: violentClear});
+        }
+        else {
+            childDisposed();
+        }
     });
 
     if (violentClear) {
@@ -521,16 +529,17 @@ function forOwnUpdate(changes) {
             return;
         }
 
+
+        var newChildBuf = createHTMLBuffer();
+
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
-            var buf = createHTMLBuffer();
-            each(
-                me.children,
-                function (child) {
-                    child._attachHTML(buf);
-                }
-            );
-            outputHTMLBuffer(buf, parentEl);
+            for (var i = 0; i < newChildrenLen; i++) {
+                var child = createForDirectiveChild(me, newList[i], i);
+                me.children[i] = child;
+                child._attachHTML(newChildBuf);
+            }
+            outputHTMLBuffer(newChildBuf, parentEl);
             me.el = nodeCreateStump(me);
             parentEl.appendChild(me.el);
         }
@@ -551,21 +560,21 @@ function forOwnUpdate(changes) {
             //     attachStump = child;
             // }
 
-            var newChildBuf;
 
             for (var i = 0; i < newChildrenLen; i++) {
                 var child = me.children[i];
 
-                if (child.lifeCycle.attached) {
+                if (child) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);
                 }
                 else {
                     newChildBuf = newChildBuf || createHTMLBuffer();
+                    child = me.children[i] = createForDirectiveChild(me, newList[i], i);
                     child._attachHTML(newChildBuf);
 
                     // flush new children html
                     var nextChild = me.children[i + 1];
-                    if (!nextChild || nextChild.lifeCycle.attached) {
+                    if (i === newChildrenLen - 1 || nextChild) {
                         outputHTMLBufferBefore(
                             newChildBuf,
                             parentEl,

@@ -1796,4 +1796,50 @@ describe("ForDirective", function () {
         });
     });
 
+    it("with component, splice more than once", function (done) {
+
+        var A = san.defineComponent({
+            template: '<li>{{index}}-{{name}}</li>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': A
+            },
+            template: '<ul><x-a s-for="p, index in list" index="{{index}}" name="{{p}}"/></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: ['one', 'two']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(2);
+        expect(lis[0].innerHTML).toContain('0-one');
+        expect(lis[1].innerHTML).toContain('1-two');
+
+        myComponent.data.splice('list', [0, 0, 'three']);
+        myComponent.data.splice('list', [0, 0, 'four', 'five']);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(5);
+            expect(lis[0].innerHTML).toContain('0-four');
+            expect(lis[1].innerHTML).toContain('1-five');
+            expect(lis[2].innerHTML).toContain('2-three');
+            expect(lis[3].innerHTML).toContain('3-one');
+            expect(lis[4].innerHTML).toContain('4-two');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
