@@ -51,7 +51,10 @@ declare namespace San {
         SPLICE = 2,
     }
 
-    type DataTypeChecker = (data: any, dataName: string, componentName: string) => void;
+    type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
+    interface ChainableDataTypeChecker extends DataTypeChecker {
+        isRequired: DataTypeChecker;
+    }
 
     interface SanComponentConfig<T extends {}, D> {
         el?: Element;
@@ -64,10 +67,10 @@ declare namespace San {
             [k: string]: (value: any, ...filterOption: any[]) => any,
         };
         components?: {
-            [k: string]: ComponentConstructor<{}, {}>,
+            [k: string]: ComponentConstructor<{}, {}> | SanComponentConfig<{}, {}> | 'self',
         };
         computed?: {
-            [k: string]: (this: SanComponent<T> & D) => any,
+            [k: string]: (this: { data: SanData<T> }) => any,
         };
 
         messages?: {
@@ -85,12 +88,12 @@ declare namespace San {
         updated?(this: SanComponent<T> & D): void;
     }
 
-    interface SanComponent<T> {
-        constructor(option?: { data?: Partial<T> }): SanComponent<T>;
+    class SanComponent<T> {
+        constructor(option?: { data?: Partial<T> });
 
         el?: Element;
         nodeType: NodeType;
-        data: SanData<T>,
+        data: SanData<T>;
         fire(eventName: string, eventData: any): void;
         dispatch(eventName: string, eventData: any): void;
 
@@ -98,8 +101,8 @@ declare namespace San {
         un(eventName: string, listener?: SanEventListener<{}, {}>): void;
 
         watch(propName: string, watcher: (newValue: any) => any): void;
-        ref(refName: string): SanComponent<{}> | Element;
-        slot(): SanComponent<{}>[];
+        ref<T extends SanComponent<{}> | Element>(refName: string): T;
+        slot<T extends SanComponent<{}>>(name?: string): Array<T & SanSlot>;
         nextTick(doNextTick: () => any): void;
         attach(container: Element): void;
         detach(): void;
@@ -109,6 +112,7 @@ declare namespace San {
     interface ComponentConstructor<T, D> {
         new(option?: { data?: Partial<T> }): SanComponent<T> & D
     }
+
     interface SanSlot {
         isScoped: boolean;
         isInserted: boolean;
@@ -199,9 +203,9 @@ declare namespace San {
         text?: string;
         textExpr?: ExprTextNode;
         children?: ANode[];
-        props: SanIndexedList<ExprNode>;
+        props: ExprNode[];
         events: SanIndexedList<ExprNode>;
-        directives: SanIndexedList<ExprNode>;
+        directives: { [k: string]: ExprNode };
         tagName: string;
     }
 
@@ -219,24 +223,123 @@ declare namespace San {
     function inherits(childClazz: (...args: any[]) => void, parentClazz: ComponentConstructor<{}, {}>): void;
     function nextTick(doNextTick: () => any): void;
     const DataTypes: {
-            any: DataTypeChecker;
-            array: DataTypeChecker;
-            object: DataTypeChecker;
-            func: DataTypeChecker;
-            string: DataTypeChecker;
-            number: DataTypeChecker;
-            bool: DataTypeChecker;
-            symbol: DataTypeChecker;
-            arrayOf: DataTypeChecker;
-            instanceOf: DataTypeChecker;
-            shape: DataTypeChecker;
-            oneOf: DataTypeChecker;
-            oneOfType: DataTypeChecker;
-            objectOf: DataTypeChecker;
-            exact: DataTypeChecker;
-        };
+        any: ChainableDataTypeChecker;
+        array: ChainableDataTypeChecker;
+        object: ChainableDataTypeChecker;
+        func: ChainableDataTypeChecker;
+        string: ChainableDataTypeChecker;
+        number: ChainableDataTypeChecker;
+        bool: ChainableDataTypeChecker;
+        symbol: ChainableDataTypeChecker;
+
+        arrayOf(arrayItemChecker: DataTypeChecker): ChainableDataTypeChecker;
+        instanceOf<T>(expectedClass: new () => T): ChainableDataTypeChecker;
+        shape(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
+        oneOf(expectedEnumValues: any[]): ChainableDataTypeChecker;
+        oneOfType(expectedEnumOfTypeValues: DataTypeChecker[]): ChainableDataTypeChecker;
+        objectOf(typeChecker: DataTypeChecker): ChainableDataTypeChecker;
+        exact(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
+    };
+
+    interface SanLifeCycleStage {
+        is(stat: string): boolean;
+        attached?: true;
+        compiled?: true;
+        created?: true;
+        detached?: true;
+        disposed?: true;
+        inited?: true;
+        leaving?: true;
+        painting?: true;
+    }
+
+    const LifeCycle: {
+        start: {},
+
+        compiled: {
+            is(stat: string): boolean,
+            compiled: true
+        },
+
+        inited: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true
+        },
+
+        painting: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true,
+            painting: true
+        },
+
+        created: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true,
+            created: true
+        },
+
+        attached: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true,
+            created: true,
+            attached: true
+        },
+
+        leaving: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true,
+            created: true,
+            attached: true,
+            leaving: true
+        },
+
+        detached: {
+            is(stat: string): boolean,
+            compiled: true,
+            inited: true,
+            created: true,
+            detached: true
+        },
+
+        disposed: {
+            is(stat: string): boolean,
+            disposed: true
+        }
+    }
+
     const debug: boolean;
     const version: string;
 }
 
 export = San;
+
+interface SanStaticGlobal {
+
+    Component: San.ComponentConstructor<{}, {}>;
+
+    defineComponent<T, D>(config: San.SanComponentConfig<T, D> & D): San.ComponentConstructor<T, D>;
+    compileComponent<T extends San.SanComponent<{}>>(component: T): void;
+    compileToRenderer<T extends San.SanComponent<{}>>(component: T): San.SanRenderer<T>;
+    compileToSource<T extends San.SanComponent<{}>>(component: T): string;
+
+    parseExpr(template: string): San.ExprNode;
+    parseTemplate(template: string): San.ANode;
+    inherits(childClazz: (...args: any[]) => void, parentClazz: San.ComponentConstructor<{}, {}>): void;
+    nextTick(doNextTick: () => any): void;
+
+    DataTypes: typeof San.NodeType;
+    NodeType: typeof San.NodeType;
+    LifeCycle: typeof San.LifeCycle;
+
+    debug: boolean;
+    version: string;
+}
+
+declare global {
+    const san: SanStaticGlobal;
+}
