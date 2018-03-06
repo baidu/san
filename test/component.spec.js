@@ -3075,5 +3075,173 @@ describe("Component", function () {
 
         document.body.removeChild(wrap);
     });
+
+    it("pre compile template to aNode", function (done) {
+        var Man = san.defineComponent({
+            filters: {
+                upper: function (source) {
+                    return source.charAt(0).toUpperCase() + source.slice(1);
+                }
+            },
+
+            aNode: san.parseTemplate('<div><slot name="test" var-n="data.name" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>').children[0]
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            filters: {
+                upper: function (source) {
+                    return source.toUpperCase();
+                }
+            },
+
+            aNode: san.parseTemplate('<div><x-man data="{{man}}"><h3 slot="test">{{n|upper}}</h3><b slot="test">{{sex|upper}}</b><u slot="test">{{email|upper}}</u></x-man></div>').children[0],
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toContain('ERRORRIK');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('MALE');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('ERRORRIK@GMAIL.COM');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toContain('ERRORRIK');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('MALE');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('ERIK168@163.COM');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("compile template to aNode, aNode is JSON stringifible", function (done) {
+        var stringifier = {
+            obj: function (source) {
+                var prefixComma;
+                var result = '{';
+
+                for (var key in source) {
+                    if (typeof source[key] === 'undefined') {
+                        continue;
+                    }
+
+                    if (prefixComma) {
+                        result += ',';
+                    }
+                    prefixComma = 1;
+
+                    result += stringifier.str(key) + ':' + stringifier.any(source[key]);
+                }
+
+                return result + '}';
+            },
+
+            arr: function (source) {
+                var prefixComma;
+                var result = '[';
+
+                for (var i = 0; i < source.length; i++) {
+                    value = source[i];
+                    if (prefixComma) {
+                        result += ',';
+                    }
+                    prefixComma = 1;
+
+                    result += stringifier.any(value);
+                }
+
+                return result + ']';
+            },
+
+            str: function (source) {
+                return '"'
+                    + source
+                        .replace(/\x5C/g, '\\\\')
+                        .replace(/"/g, '\\"')
+                        .replace(/\x0A/g, '\\n')
+                        .replace(/\x09/g, '\\t')
+                        .replace(/\x0D/g, '\\r')
+                    // .replace( /\x08/g, '\\b' )
+                    // .replace( /\x0C/g, '\\f' )
+                    + '"';
+            },
+
+            any: function (source) {
+                switch (typeof source) {
+                    case 'string':
+                        return stringifier.str(source);
+
+                    case 'number':
+                        return '' + source;
+
+                    case 'boolean':
+                        return source ? 'true' : 'false';
+
+                    case 'object':
+                        if (!source) {
+                            return null;
+                        }
+
+                        if (source instanceof Array) {
+                            return stringifier.arr(source);
+                        }
+
+                        if (source instanceof Date) {
+                            return stringifier.date(source);
+                        }
+
+                        return stringifier.obj(source);
+                }
+
+                throw new Error('Cannot Stringify:' + source);
+            }
+        };
+        var aNode = san.parseTemplate('<a><span>aaa</span>hello {{name|raw}}!<b>bbb</b></a>').children[0];
+        var MyComponent = eval('san.defineComponent({aNode: '
+            + stringifier.any(aNode)
+            + '})')
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'er<u>erik</u>ik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(/hello er<u>erik<\/u>ik!/i.test(a.innerHTML)).toBeTruthy();
+        expect(b.innerHTML).toBe('bbb');
+
+        myComponent.data.set('name', 'er<span>erik</span>ik');
+
+        san.nextTick(function () {
+            expect(/hello er<span>erik<\/span>ik!/i.test(a.innerHTML)).toBeTruthy();
+            expect(b.innerHTML).toBe('bbb');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });
 
