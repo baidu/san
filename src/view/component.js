@@ -711,17 +711,6 @@ Component.prototype._dataChanger = function (change) {
             this.dataChanges = [];
         }
 
-        var len = this.dataChanges.length;
-        while (len--) {
-            switch (changeExprCompare(change.expr, this.dataChanges[len].expr)) {
-                case 1:
-                case 2:
-                    if (change.type === DataChangeType.SET) {
-                        this.dataChanges.splice(len, 1);
-                    }
-            }
-        }
-
         this.dataChanges.push(change);
     }
     else if (this.lifeCycle.inited && this.owner) {
