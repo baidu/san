@@ -17,13 +17,13 @@ var each = require('../util/each');
  * @return {number}
  */
 function changeExprCompareExprs(changeExpr, exprs, data) {
-    var result;
-    each(exprs, function (expr) {
-        result = changeExprCompare(changeExpr, expr, data);
-        return !result;
-    });
+    for (var i = 0, l = exprs.length; i < l; i++) {
+        if (changeExprCompare(changeExpr, exprs[i], data)) {
+            return 1;
+        }
+    }
 
-    return result ? 1 : 0;
+    return 0;
 }
 
 /**
