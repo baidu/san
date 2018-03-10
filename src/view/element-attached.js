@@ -49,11 +49,12 @@ function inputOnCompositionStart() {
  */
 function elementAttached(element) {
     element._toPhase('created');
+    var elementIsComponent = isComponent(element);
 
-    var data = isComponent(element) ? element.data : element.scope;
+    var data = elementIsComponent ? element.data : element.scope;
 
     // 处理自身变化时双向绑定的逻辑
-    var xBinds = isComponent(element) ? element.props : element.binds;
+    var xBinds = elementIsComponent ? element.props : element.binds;
     each(xBinds, function (bindInfo) {
         if (!bindInfo.x) {
             return;
@@ -109,7 +110,7 @@ function elementAttached(element) {
 
     // bind events
     each(element.aNode.events, function (eventBind) {
-        var owner = isComponent(element) ? element : element.owner;
+        var owner = elementIsComponent ? element : element.owner;
         var data = element.data || element.scope;
 
         // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
