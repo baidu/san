@@ -21,7 +21,7 @@ function rinseCondANode(aNode) {
         events: aNode.events,
         tagName: aNode.tagName,
         vars: aNode.vars,
-        dataRef: aNode.dataRef,
+        hotspot: aNode.hotspot,
         directives: cloneDirectives(aNode.directives, {
             'if': 1,
             'else': 1,

@@ -162,7 +162,7 @@ function createFor(options) {
         events: aNode.events,
         tagName: aNode.tagName,
         vars: aNode.vars,
-        dataRef: aNode.dataRef,
+        hotspot: aNode.hotspot,
         directives: cloneDirectives(aNode.directives, {
             'for': 1
         })

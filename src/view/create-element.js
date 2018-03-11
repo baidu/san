@@ -103,7 +103,7 @@ function createElement(options) {
  * @param {Array} changes 数据变化信息
  */
 function elementOwnUpdate(changes) {
-    if (!changesIsInDataRef(changes, this.aNode.dataRef)) {
+    if (!changesIsInDataRef(changes, this.aNode.hotspot.data)) {
         return;
     }
 
