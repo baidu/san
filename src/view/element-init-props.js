@@ -14,7 +14,6 @@ function elementInitProps(element) {
     element.lifeCycle = LifeCycle.start;
     element.children = [];
     element._elFns = {};
-    element._propVals = {};
 }
 
 exports = module.exports = elementInitProps;

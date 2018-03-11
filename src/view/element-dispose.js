@@ -43,7 +43,6 @@ function elementDispose(element, options) {
 
     element.props = null;
     element.binds = null;
-    element._propVals = null;
 
     nodeDispose(element);
 }
