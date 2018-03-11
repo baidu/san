@@ -12,12 +12,6 @@ var parseText = require('../parser/parse-text');
 var defineComponent = require('./define-component');
 
 
-/* eslint-disable quotes */
-var componentPropExtra = [
-    {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
-    {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
-];
-/* eslint-enable quotes */
 
 /**
  * 编译组件类。预解析template和components
@@ -70,23 +64,27 @@ function compileComponent(ComponentClass) {
                 firstChild.tagName = null;
             }
 
-            firstChild.binds = [];
+            /* eslint-disable quotes */
+            var componentPropExtra = {
+                'class': { name: 'class', expr: parseText("{{class | _class | _sep(' ')}}") },
+                'style': { name: 'style', expr: parseText("{{style | _style | _sep(';')}}") }
+            };
+            /* eslint-enable quotes */
 
-            each(componentPropExtra, function (extra) {
-                var prop = getPropAndIndex(firstChild, extra.name);
+            var len = firstChild.props.length;
+            while (len--) {
+                var prop = firstChild.props[len];
+                var extra = componentPropExtra[prop.name];
 
-                if (prop) {
+                if (extra) {
+                    firstChild.props.splice(len, 1);
+                    componentPropExtra[prop.name] = prop;
                     prop.expr.segs.push(extra.expr.segs[0]);
                     prop.expr.value = null;
-                    prop.attr = null;
                 }
-                else {
-                    firstChild.props.push({
-                        name: extra.name,
-                        expr: extra.expr
-                    });
-                }
-            });
+            }
+
+            firstChild.props.push(componentPropExtra['class'], componentPropExtra.style);
         }
     }
 }

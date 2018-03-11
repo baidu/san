@@ -28,8 +28,7 @@ var HTML_ATTR_PROP_MAP = {
     'valign': 'vAlign',
     'usemap': 'useMap',
     'frameborder': 'frameBorder',
-    'for': 'htmlFor',
-    'class': 'className'
+    'for': 'htmlFor'
 };
 
 /**
@@ -85,13 +84,25 @@ var defaultElementPropHandler = {
 var defaultElementPropHandlers = {
     style: {
         attr: function (element, name, value) {
-            if (value != null) {
+            if (value) {
                 return ' style="' + value + '"';
             }
         },
 
         prop: function (element, name, value) {
             element.el.style.cssText = value;
+        }
+    },
+
+    'class': {
+        attr: function (element, name, value) {
+            if (value) {
+                return ' class="' + value + '"';
+            }
+        },
+
+        prop: function (element, name, value) {
+            element.el.className = value;
         }
     },
 
@@ -120,14 +131,14 @@ var analInputChecker = {
 };
 
 function analInputCheckedState(element, value, oper) {
-    var bindValue = getPropAndIndex(element, 'value');
-    var bindType = getPropAndIndex(element, 'type');
+    var bindValue = getANodeProp(element.aNode, 'value');
+    var bindType = getANodeProp(element.aNode, 'type');
 
     if (bindValue && bindType) {
         var type = nodeEvalExpr(element, bindType.expr);
 
         if (analInputChecker[type]) {
-            var bindChecked = getPropAndIndex(element, 'checked');
+            var bindChecked = getANodeProp(element.aNode, 'checked');
             if (!bindChecked.hintExpr) {
                 bindChecked.hintExpr = bindValue.expr;
             }
@@ -165,8 +176,8 @@ var elementPropHandlers = {
 
             output: function (element, bindInfo, data) {
                 var el = element.el;
-                var bindValue = getPropAndIndex(element, 'value');
-                var bindType = getPropAndIndex(element, 'type') || {};
+                var bindValue = getANodeProp(element.anode, 'value');
+                var bindType = getANodeProp(element.anode, 'type') || {};
 
                 if (bindValue && bindType) {
                     switch (bindType.raw) {
@@ -217,7 +228,7 @@ var elementPropHandlers = {
                     var prop;
                     var expr;
 
-                    if ((prop = getPropAndIndex(parentSelect, 'value'))
+                    if ((prop = getANodeProp(parentSelect.aNode, 'value'))
                         && (expr = prop.expr)
                     ) {
                         selectValue = isComponent(parentSelect)
@@ -263,7 +274,7 @@ function genBoolPropHandler(attrName) {
             // 因为元素的attr值必须经过html escape，否则可能有漏洞
             // 所以这里直接对假值字符串形式进行处理
             // NaN之类非主流的就先不考虑了
-            var prop = getPropAndIndex(element, name);
+            var prop = getANodeProp(element.aNode, name);
             if (prop && prop.raw === ''
                 || value && value !== 'false' && value !== '0'
             ) {
