@@ -4,7 +4,6 @@
  */
 
 var ExprType = require('../parser/expr-type');
-var BinaryOp = require('./binary-op');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
 var evalArgs = require('./eval-args');
@@ -30,12 +29,39 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
             return !evalExpr(expr.expr, data, owner);
 
         case ExprType.BINARY:
-            var opHandler = BinaryOp[expr.operator];
-            if (typeof opHandler === 'function') {
-                return opHandler(
-                    evalExpr(expr.segs[0], data, owner),
-                    evalExpr(expr.segs[1], data, owner)
-                );
+            var leftValue = evalExpr(expr.segs[0], data, owner);
+            var rightValue = evalExpr(expr.segs[1], data, owner);
+            switch (expr.operator) {
+                case 37:
+                    return leftValue % rightValue;
+                case 43:
+                    return leftValue + rightValue;
+                case 45:
+                    return leftValue - rightValue;
+                case 42:
+                    return leftValue * rightValue;
+                case 47:
+                    return leftValue / rightValue;
+                case 60:
+                    return leftValue < rightValue;
+                case 62:
+                    return leftValue > rightValue;
+                case 76:
+                    return leftValue && rightValue;
+                case 94:
+                    return leftValue != rightValue;
+                case 121:
+                    return leftValue <= rightValue;
+                case 122:
+                    return leftValue == rightValue;
+                case 123:
+                    return leftValue >= rightValue;
+                case 155:
+                    return leftValue !== rightValue;
+                case 183:
+                    return leftValue === rightValue;
+                case 248:
+                    return leftValue || rightValue;
             }
             return;
 
