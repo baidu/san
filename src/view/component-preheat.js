@@ -10,9 +10,9 @@ var handleProp = require('./handle-prop');
 /**
  * 组件预热，分析组件aNode的数据引用等信息
  *
- * @param {Object} component 组件实例
+ * @param {Function} ComponentClass 组件类
  */
-function componentPreheat(component) {
+function componentPreheat(ComponentClass) {
     var stack = [];
 
     function analyseANodeHotspot(aNode) {
@@ -53,19 +53,22 @@ function componentPreheat(component) {
 
 
                 // === analyse hotspot props: start
-                // aNode.hotspot.dynamicProps = [];
-                // aNode.hotspot.tagStart = '<' + aNode.tagName;
+                aNode.hotspot.dynamicProps = [];
+                aNode.hotspot.tagStart = '<' + aNode.tagName;
+                aNode.hotspot.props = {};
 
-                // each(aNode.props, function (prop) {
-                //     if (prop.expr.value != null
-                //         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
-                //     ) {
-                //         aNode.hotspot.tagStart += handleProp.attr(aNode, prop.name, prop.expr.value);
-                //     }
-                //     else {
-                //         aNode.hotspot.dynamicProps.push(prop);
-                //     }
-                // });
+                each(aNode.props, function (prop, index) {
+                    aNode.hotspot.props[prop.name] = index;
+
+                    // if (prop.expr.value != null
+                    //     && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
+                    // ) {
+                    //     aNode.hotspot.tagStart += handleProp.attr(aNode, prop.name, prop.expr.value);
+                    // }
+                    // else {
+                    //     aNode.hotspot.dynamicProps.push(prop);
+                    // }
+                });
                 // === analyse hotspot props: end
             }
 
@@ -81,7 +84,7 @@ function componentPreheat(component) {
         });
     }
 
-    analyseANodeHotspot(component.constructor.prototype.aNode);
+    analyseANodeHotspot(ComponentClass.prototype.aNode);
 }
 
 /**

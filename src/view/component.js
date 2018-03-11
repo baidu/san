@@ -72,7 +72,7 @@ function Component(options) { // eslint-disable-line
 
     // compile
     compileComponent(clazz);
-    componentPreheat(this);
+    componentPreheat(clazz);
 
     var me = this;
     var protoANode = clazz.prototype.aNode;
