@@ -37,7 +37,6 @@
     // require('./runtime/data');
     // require('./runtime/escape-html');
     // require('./runtime/default-filters');
-    // require('./runtime/binary-op');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
     // require('./view/node-type');
