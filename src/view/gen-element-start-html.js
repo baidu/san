@@ -11,7 +11,7 @@ var autoCloseTags = require('../browser/auto-close-tags');
 var each = require('../util/each');
 var getPropAndIndex = require('../util/get-prop-and-index');
 var isComponent = require('./is-component');
-var getPropHandler = require('./get-prop-handler');
+var handleProp = require('./handle-prop');
 var nodeEvalExpr = require('./node-eval-expr');
 
 var BOOL_ATTRIBUTES = {};
@@ -49,7 +49,7 @@ function genElementStartHTML(element, buf) {
                 value = escapeHTML(value);
             }
 
-            attr = getPropHandler(element, prop.name).attr(element, prop.name, value);
+            attr = handleProp.attr(element, prop.name, value);
         }
 
         htmlBufferPush(buf, attr || '');

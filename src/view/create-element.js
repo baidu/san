@@ -23,9 +23,9 @@ var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
-var elementSetElProp = require('./element-set-el-prop');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
+var handleProp = require('./handle-prop');
 var warnSetHTML = require('./warn-set-html');
 var getNodePath = require('./get-node-path');
 
@@ -122,7 +122,7 @@ function elementOwnUpdate(changes) {
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.scope)
                 )
             ) {
-                elementSetElProp(me, prop.name, nodeEvalExpr(me, prop.expr));
+                handleProp.prop(me, prop.name, nodeEvalExpr(me, prop.expr));
                 return false;
             }
         });

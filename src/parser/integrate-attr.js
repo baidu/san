@@ -12,7 +12,7 @@ var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var postProp = require('./post-prop');
-var getPropHandler = require('../view/get-prop-handler');
+var handleProp = require('../view/handle-prop');
 
 var DEFAULT_EVENT_ARGS = [
     createAccessor([
@@ -122,7 +122,7 @@ function integrateProp(aNode, name, value, options) {
     };
 
     if (prop.expr.value != null && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)) {
-        prop.attr = getPropHandler(aNode, name).attr(aNode, name, value);
+        prop.attr = handleProp.attr(aNode, name, value);
     }
 
     if (name === 'checked' && aNode.tagName === 'input') {

@@ -5,6 +5,7 @@
 
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
+var handleProp = require('./handle-prop');
 
 /**
  * 组件预热，分析组件aNode的数据引用等信息
@@ -59,7 +60,7 @@ function componentPreheat(component) {
                 //     if (prop.expr.value != null
                 //         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
                 //     ) {
-                //         aNode.hotspot.tagStart += getPropHandler(aNode, prop.name).attr(aNode, prop.name, prop.expr.value);
+                //         aNode.hotspot.tagStart += handleProp.attr(aNode, prop.name, prop.expr.value);
                 //     }
                 //     else {
                 //         aNode.hotspot.dynamicProps.push(prop);

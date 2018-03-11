@@ -8,7 +8,7 @@ var createEl = require('../browser/create-el');
 var evalExpr = require('../runtime/eval-expr');
 var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
-var elementSetElProp = require('./element-set-el-prop');
+var handleProp = require('./handle-prop');
 var LifeCycle = require('./life-cycle');
 
 /**
@@ -26,7 +26,7 @@ function elementCreate(element) {
             ? evalExpr(prop.expr, element.data, element)
             : nodeEvalExpr(element, prop.expr, 1);
 
-        elementSetElProp(element, prop.name, value);
+        handleProp.prop(element, prop.name, value);
 
         if (prop.name === 'id') {
             element._elId = value;

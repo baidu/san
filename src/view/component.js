@@ -34,7 +34,6 @@ var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
-var elementSetElProp = require('./element-set-el-prop');
 var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnCreate = require('./element-own-create');
@@ -46,6 +45,7 @@ var elementLeave = require('./element-leave');
 var elementToPhase = require('./element-to-phase');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
+var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 
 
@@ -568,7 +568,7 @@ Component.prototype._update = function (changes) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
                 ) {
-                    elementSetElProp(
+                    handleProp.prop(
                         me,
                         prop.name,
                         evalExpr(prop.expr, me.data, me)
