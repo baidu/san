@@ -30,11 +30,12 @@ function genElementChildrenHTML(element, buf) {
             htmlBufferPush(buf, nodeEvalExpr(element, htmlDirective.value));
         }
         else {
-            each(element.aNode.children, function (aNodeChild) {
-                var child = createNode(aNodeChild, element);
+            var aNodeChildren = element.aNode.children;
+            for (var i = 0, l = aNodeChildren.length; i < l; i++) {
+                var child = createNode(aNodeChildren[i], element);
                 element.children.push(child);
                 child._attachHTML(buf);
-            });
+            }
         }
     }
 }

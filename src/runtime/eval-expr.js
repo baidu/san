@@ -77,9 +77,10 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
 
         case ExprType.TEXT:
             var buf = '';
-            each(expr.segs, function (seg) {
-                buf += evalExpr(seg, data, owner, escapeInterpHtml);
-            });
+            for (var i = 0, l = expr.segs.length; i < l; i++) {
+                var seg = expr.segs[i];
+                buf += seg.value || evalExpr(seg, data, owner, escapeInterpHtml);
+            }
             return buf;
     }
 }

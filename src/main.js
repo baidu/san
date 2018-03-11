@@ -45,8 +45,6 @@
     // require('./view/get-prop-handler');
     // require('./view/is-data-change-by-element');
     // require('./view/event-declaration-listener');
-    // require('./view/gen-element-start-html');
-    // require('./view/gen-element-end-html');
     // require('./view/gen-element-children-html');
     // require('./view/create-node');
 
