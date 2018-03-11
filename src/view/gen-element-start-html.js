@@ -34,6 +34,7 @@ function genElementStartHTML(element, buf) {
         return;
     }
 
+    var elementIsComponent = isComponent(element);
     htmlBufferPush(buf, '<' + tagName);
 
     each(element.props, function (prop) {
@@ -41,7 +42,7 @@ function genElementStartHTML(element, buf) {
         var value;
 
         if (!attr) {
-            value = isComponent(element)
+            value = elementIsComponent
                 ? evalExpr(prop.expr, element.data, element)
                 : nodeEvalExpr(element, prop.expr, 1);
 
