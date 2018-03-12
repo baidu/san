@@ -78,17 +78,23 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
         case ExprType.INTERP:
             var value = evalExpr(expr.expr, data, owner);
 
-            owner && each(expr.filters, function (filter) {
-                /* eslint-disable no-use-before-define */
-                var filterFn = findMethod(owner.filters, filter.name, data)
-                    || findMethod(DEFAULT_FILTERS, filter.name, data);
-                /* eslint-enable no-use-before-define */
+            if (owner) {
+                for (var i = 0, l = expr.filters.length; i < l; i++) {
+                    var filter = expr.filters[i];
 
-                if (typeof filterFn === 'function') {
-                    var args = [value].concat(evalArgs(filter.args, data, owner));
-                    value = filterFn.apply(owner, args);
+                    /* eslint-disable no-use-before-define */
+                    var filterName = filter.name.paths[0].value;
+                    var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
+                    /* eslint-enable no-use-before-define */
+
+                    if (typeof filterFn === 'function') {
+                        var args = evalArgs(filter.args, data, owner);
+                        value = args.length
+                            ? filterFn.apply(owner, [value].concat(args))
+                            : filterFn(value);
+                    }
                 }
-            });
+            }
 
             if (value == null) {
                 value = '';
