@@ -6,6 +6,7 @@
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
 var handleProp = require('./handle-prop');
+var getANodeProp = require('./get-a-node-prop');
 
 /**
  * 组件预热，分析组件aNode的数据引用等信息
@@ -54,21 +55,36 @@ function componentPreheat(ComponentClass) {
 
                 // === analyse hotspot props: start
                 aNode.hotspot.dynamicProps = [];
-                aNode.hotspot.tagStart = '<' + aNode.tagName;
+                aNode.hotspot.staticAttr = '';
                 aNode.hotspot.props = {};
 
                 each(aNode.props, function (prop, index) {
                     aNode.hotspot.props[prop.name] = index;
 
-                    // if (prop.expr.value != null
-                    //     && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
-                    // ) {
-                    //     aNode.hotspot.tagStart += handleProp.attr(aNode, prop.name, prop.expr.value);
-                    // }
-                    // else {
-                    //     aNode.hotspot.dynamicProps.push(prop);
-                    // }
+                    if (prop.expr.value != null
+                        && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
+                    ) {
+                        aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.name, prop.expr.value) || '';
+                    }
+                    else {
+                        aNode.hotspot.dynamicProps.push(prop);
+                    }
                 });
+
+                // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
+                // 所以没有设置 value 时，默认把 option 的内容作为 value
+                if (aNode.tagName === 'option'
+                    && !getANodeProp(aNode, 'value')
+                    && aNode.children[0]
+                ) {
+                    var valueProp = {
+                        name: 'value',
+                        expr: aNode.children[0].textExpr
+                    };
+                    aNode.props.push(valueProp);
+                    aNode.hotspot.dynamicProps.push(valueProp);
+                    aNode.hotspot.props.value = aNode.props.length - 1;
+                }
                 // === analyse hotspot props: end
             }
 

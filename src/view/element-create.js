@@ -21,7 +21,7 @@ function elementCreate(element) {
     element.el = createEl(element.tagName);
 
     var hasIdDeclaration;
-    each(element.props, function (prop) {
+    each(element.aNode.props, function (prop) {
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
             : nodeEvalExpr(element, prop.expr, 1);

@@ -8,7 +8,6 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
-var getPropAndIndex = require('../util/get-prop-and-index');
 var ExprType = require('../parser/expr-type');
 var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
@@ -21,6 +20,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
 var componentPreheat = require('./component-preheat');
 var attachings = require('./attachings');
+var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var reverseElementChildren = require('./reverse-element-children');
@@ -83,7 +83,18 @@ function Component(options) { // eslint-disable-line
         named: {}
     };
 
-    nodeInit(options, this);
+
+    // nodeInit(options, this);
+    this.owner = options.owner;
+    this.parent = options.parent;
+    this.scope = options.scope;
+    this.el = options.el;
+
+    this.parentComponent = isComponent(options.parent)
+        ? options.parent
+        : options.parent && options.parent.parentComponent,
+
+    this.id = guid();
 
     // #[begin] reverse
     if (this.el) {
@@ -104,16 +115,17 @@ function Component(options) { // eslint-disable-line
     }
     // #[end]
 
-    if (me.givenANode) {
+    // native事件数组
+    this.nativeEvents = [];
+
+    if (this.givenANode) {
         // 组件运行时传入的结构，做slot解析
         this._createGivenSlots();
 
-        // native事件数组
-        var nativeEvents = [];
-        each(me.givenANode.events, function (eventBind) {
+        each(this.givenANode.events, function (eventBind) {
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
-                nativeEvents.push(eventBind);
+                me.nativeEvents.push(eventBind);
                 return;
             }
 
@@ -128,20 +140,22 @@ function Component(options) { // eslint-disable-line
             );
         });
 
-        this.aNode = createANode({
-            tagName: protoANode.tagName || me.givenANode.tagName,
-            givenSlots: me.givenSlots,
+        this.tagName = protoANode.tagName || me.givenANode.tagName;
+        this.binds = camelComponentBinds(this.givenANode.props);
+        // this.aNode = createANode({
+        //     tagName: protoANode.tagName || me.givenANode.tagName,
+        //     givenSlots: me.givenSlots,
 
-            // 组件的实际结构应为template编译的结构
-            children: protoANode.children,
+        //     // 组件的实际结构应为template编译的结构
+        //     children: protoANode.children,
 
-            // 合并运行时的一些绑定和事件声明
-            props: protoANode.props,
-            binds: camelComponentBinds(me.givenANode.props),
-            events: protoANode.events.concat(nativeEvents),
-            directives: me.givenANode.directives,
-            hotspot: protoANode.hotspot
-        });
+        //     // 合并运行时的一些绑定和事件声明
+        //     props: protoANode.props,
+        //     binds: camelComponentBinds(me.givenANode.props),
+        //     events: protoANode.events.concat(nativeEvents),
+        //     directives: me.givenANode.directives,
+        //     hotspot: protoANode.hotspot
+        // });
     }
 
     this._toPhase('compiled');
@@ -155,8 +169,8 @@ function Component(options) { // eslint-disable-line
     );
 
     elementInitTagName(this);
-    this.props = this.aNode.props;
-    this.binds = this.aNode.binds || this.aNode.props;
+    // this.props = this.aNode.props;
+    // this.binds = this.aNode.binds || this.aNode.props;
 
     postComponentBinds(this.binds);
     this.scope && each(this.binds, function (bind) {
@@ -239,7 +253,7 @@ Component.prototype._createGivenSlots = function () {
     me.givenANode && me.scope && each(me.givenANode.children, function (child) {
         var target;
 
-        var slotBind = !child.textExpr && getPropAndIndex(child, 'slot');
+        var slotBind = !child.textExpr && getANodeProp(child, 'slot');
         if (slotBind) {
             !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
 
@@ -455,27 +469,32 @@ Component.prototype.ref = function (name) {
     }
 
     function elementTraversal(element) {
+        var nodeType = element.nodeType;
+        if (nodeType === NodeType.TEXT) {
+            return;
+        }
+
         if (element.owner === owner) {
+            var ref;
             switch (element.nodeType) {
                 case NodeType.ELEM:
-                case NodeType.CMPT:
-                    var ref = element.aNode.directives.ref;
+                    ref = element.aNode.directives.ref;
                     if (ref && evalExpr(ref.value, element.scope, owner) === name) {
-                        refTarget = NodeType.ELEM === element.nodeType
-                            ? element._getEl() : element;
+                        refTarget = element._getEl();
+                    }
+                    break;
+
+                case NodeType.CMPT:
+                    ref = element.givenANode.directives.ref;
+                    if (ref && evalExpr(ref.value, element.scope, owner) === name) {
+                        refTarget = element;
                     }
             }
 
             !refTarget && childrenTraversal(element.slotChildren);
         }
 
-        !refTarget && each(element.children, function (child) {
-            if (child.nodeType !== NodeType.TEXT) {
-                elementTraversal(child);
-            }
-
-            return !refTarget;
-        });
+        !refTarget && childrenTraversal(element.children);
     }
 
     childrenTraversal(this.children);
@@ -563,7 +582,7 @@ Component.prototype._update = function (changes) {
     var dataChanges = this.dataChanges;
     if (dataChanges) {
         this.dataChanges = null;
-        each(this.props, function (prop) {
+        each(this.aNode.hotspot.dynamicProps, function (prop) {
             each(dataChanges, function (change) {
                 if (changeExprCompare(change.expr, prop.expr, me.data)
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)

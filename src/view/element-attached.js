@@ -54,8 +54,7 @@ function elementAttached(element) {
     var data = elementIsComponent ? element.data : element.scope;
 
     // 处理自身变化时双向绑定的逻辑
-    var xBinds = elementIsComponent ? element.props : element.binds;
-    each(xBinds, function (bindInfo) {
+    each(element.aNode.props, function (bindInfo) {
         if (!bindInfo.x) {
             return;
         }
@@ -109,7 +108,11 @@ function elementAttached(element) {
     });
 
     // bind events
-    each(element.aNode.events, function (eventBind) {
+    var events = elementIsComponent
+        ? element.aNode.events.concat(element.nativeEvents)
+        : element.aNode.events;
+
+    each(events, function (eventBind) {
         var owner = elementIsComponent ? element : element.owner;
         var data = element.data || element.scope;
 

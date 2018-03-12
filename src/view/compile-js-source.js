@@ -6,7 +6,6 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
-var getPropAndIndex = require('../util/get-prop-and-index');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
 var cloneDirectives = require('../parser/clone-directives');
@@ -16,6 +15,7 @@ var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
 var rinseCondANode = require('./rinse-cond-anode');
 var isSimpleText = require('./is-simple-text');
+var getANodeProp = require('./get-a-node-prop');
 
 // #[begin] ssr
 
@@ -54,14 +54,10 @@ var elementSourceCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
      * @param {Array} props 属性列表
-     * @param {Array} binds 绑定信息列表
-     * @param {Array} events 绑定事件列表
-     * @param {Object} aNode 对应的抽象节点对象
      * @param {string?} extraProp 额外的属性串
-     * @param {boolean?} isComponent 是否组件
      * @param {boolean?} isClose 是否闭合
      */
-    tagStart: function (sourceBuffer, tagName, props, binds, events, aNode, extraProp, isComponent, isClose) {
+    tagStart: function (sourceBuffer, tagName, props, extraProp, isClose) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
@@ -204,7 +200,7 @@ var elementSourceCompiler = {
     inner: function (sourceBuffer, aNode, owner) {
         // inner content
         if (aNode.tagName === 'textarea') {
-            var valueProp = getPropAndIndex(aNode, 'value');
+            var valueProp = getANodeProp(aNode, 'value');
             if (valueProp) {
                 sourceBuffer.joinRaw('escapeHTML('
                     + compileExprSource.expr(valueProp.expr)
@@ -373,7 +369,8 @@ var aNodeCompiler = {
             tagName: aNode.tagName,
             directives: cloneDirectives(aNode.directives, {
                 'for': 1
-            })
+            }),
+            hotspot: aNode.hotspot
         });
 
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
@@ -422,7 +419,7 @@ var aNodeCompiler = {
 
         sourceBuffer.addRaw('  var $givenSlot = [];');
 
-        var nameProp = getPropAndIndex(aNode, 'name');
+        var nameProp = getANodeProp(aNode, 'name');
         if (nameProp) {
             sourceBuffer.addRaw('var $slotName = ' + compileExprSource.expr(nameProp.expr) + ';');
         }
@@ -470,23 +467,20 @@ var aNodeCompiler = {
      */
     compileElement: function (aNode, sourceBuffer, owner, extra) {
         extra = extra || {};
-        if (aNode.tagName === 'option'
-            && !getPropAndIndex(aNode, 'value')
-            && aNode.children[0]
-        ) {
-            aNode.props.push({
-                name: 'value',
-                expr: aNode.children[0].textExpr
-            });
-        }
+        // if (aNode.tagName === 'option'
+        //     && !getANodeProp(aNode, 'value')
+        //     && aNode.children[0]
+        // ) {
+        //     aNode.props.push({
+        //         name: 'value',
+        //         expr: aNode.children[0].textExpr
+        //     });
+        // }
 
         elementSourceCompiler.tagStart(
             sourceBuffer,
             aNode.tagName,
             aNode.props,
-            aNode.props,
-            aNode.events,
-            aNode,
             extra.prop
         );
 
@@ -508,7 +502,7 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('var $slotName = null;');
             sourceBuffer.addRaw('var $givenSlots = [];');
             each(aNode.children, function (child) {
-                var slotBind = !child.textExpr && getPropAndIndex(child, 'slot');
+                var slotBind = !child.textExpr && getANodeProp(child, 'slot');
                 if (slotBind) {
                     sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
                     sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
@@ -589,12 +583,8 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     elementSourceCompiler.tagStart(
         sourceBuffer,
         component.tagName,
-        component.props,
-        component.binds,
-        eventDeclarations,
-        component.aNode,
-        extraProp,
-        1
+        component.aNode.props,
+        extraProp
     );
 
     if (!component.owner) {

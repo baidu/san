@@ -55,8 +55,6 @@ function createElement(options) {
 
     elementInitProps(node);
     elementInitTagName(node);
-    node.props = node.aNode.props;
-    node.binds = node.aNode.binds || node.aNode.props;
 
     node._toPhase('inited');
 
@@ -110,11 +108,7 @@ function elementOwnUpdate(changes) {
     this._getEl();
     var me = this;
 
-    each(this.props, function (prop) {
-        if (prop.expr.value) {
-            return;
-        }
-
+    each(this.aNode.hotspot.dynamicProps, function (prop) {
         each(changes, function (change) {
             if (!isDataChangeByElement(change, me, prop.name)
                 && (

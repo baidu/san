@@ -4,7 +4,6 @@
  */
 
 var ieOldThan9 = require('../browser/ie-old-than-9');
-var getPropAndIndex = require('../util/get-prop-and-index');
 
 /**
  * 初始化 element 节点的 tagName 处理
@@ -13,21 +12,10 @@ var getPropAndIndex = require('../util/get-prop-and-index');
  */
 function elementInitTagName(node) {
     node.tagName = node.tagName || node.aNode.tagName || 'div';
+
     // ie8- 不支持innerHTML输出自定义标签
     if (ieOldThan9 && node.tagName.indexOf('-') > 0) {
         node.tagName = 'div';
-    }
-
-    // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
-    // 所以没有设置 value 时，默认把 option 的内容作为 value
-    if (node.tagName === 'option'
-        && !getPropAndIndex(node.aNode, 'value')
-        && node.aNode.children[0]
-    ) {
-        node.aNode.props.push({
-            name: 'value',
-            expr: node.aNode.children[0].textExpr
-        });
     }
 }
 

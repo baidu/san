@@ -5,7 +5,6 @@
 
 
 var each = require('../util/each');
-var getPropAndIndex = require('../util/get-prop-and-index');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var createAccessor = require('../parser/create-accessor');
@@ -18,6 +17,7 @@ var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
+var getANodeProp = require('./get-a-node-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
@@ -41,7 +41,7 @@ function createSlot(options) {
     var aNode = createANode();
 
     // calc slot name
-    options.nameBind = getPropAndIndex(options.aNode, 'name');
+    options.nameBind = getANodeProp(options.aNode, 'name');
     if (options.nameBind) {
         options.isNamed = true;
         options.name = nodeEvalExpr(options, options.nameBind.expr);

@@ -5,9 +5,9 @@
 
 var contains = require('../util/contains');
 var empty = require('../util/empty');
-var getPropAndIndex = require('../util/get-prop-and-index');
 var svgTags = require('../browser/svg-tags');
 var evalExpr = require('../runtime/eval-expr');
+var getANodeProp = require('./get-a-node-prop');
 var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 
@@ -176,8 +176,8 @@ var elementPropHandlers = {
 
             output: function (element, bindInfo, data) {
                 var el = element.el;
-                var bindValue = getANodeProp(element.anode, 'value');
-                var bindType = getANodeProp(element.anode, 'type') || {};
+                var bindValue = getANodeProp(element.aNode, 'value');
+                var bindType = getANodeProp(element.aNode, 'type') || {};
 
                 if (bindValue && bindType) {
                     switch (bindType.raw) {

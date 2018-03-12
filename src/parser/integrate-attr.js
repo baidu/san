@@ -12,7 +12,6 @@ var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var postProp = require('./post-prop');
-var handleProp = require('../view/handle-prop');
 
 var DEFAULT_EVENT_ARGS = [
     createAccessor([
@@ -121,18 +120,10 @@ function integrateProp(aNode, name, value, options) {
         raw: value
     };
 
-    if (prop.expr.value != null && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)) {
-        prop.attr = handleProp.attr(aNode, name, value);
-    }
-
-    if (name === 'checked' && aNode.tagName === 'input') {
-        postProp(prop);
-    }
-
     // 这里不能把只有一个插值的属性抽取
     // 因为插值里的值可能是html片段，容易被注入
     // 组件的数据绑定在组件init时做抽取
-    switch (prop.name) {
+    switch (name) {
         case 'class':
         case 'style':
             each(prop.expr.segs, function (seg) {
@@ -149,6 +140,12 @@ function integrateProp(aNode, name, value, options) {
                     });
                 }
             });
+            break;
+
+        case 'checked':
+            if (aNode.tagName === 'input') {
+                postProp(prop);
+            }
             break;
     }
 
