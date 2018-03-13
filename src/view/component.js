@@ -28,7 +28,6 @@ var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var nodeEvalExpr = require('./node-eval-expr');
 var NodeType = require('./node-type');
-var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
@@ -56,9 +55,11 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) { // eslint-disable-line
-    elementInitProps(this);
     options = options || {};
 
+    this.lifeCycle = LifeCycle.start;
+    this.children = [];
+    this._elFns = {};
     this.listeners = {};
     this.slotChildren = [];
 
