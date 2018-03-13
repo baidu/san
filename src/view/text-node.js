@@ -11,9 +11,9 @@ var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var getNodeStump = require('./get-node-stump');
-var nodeEvalExpr = require('./node-eval-expr');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
@@ -158,7 +158,7 @@ TextNode.prototype._getEl = function () {
  * @param {Object} buf html串存储对象
  */
 TextNode.prototype._attachHTML = function (buf) {
-    this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
+    this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
 
     if (!this._simple) {
         htmlBufferComment(buf, this.id);
@@ -191,11 +191,11 @@ TextNode.prototype._update = function (changes) {
     var len = changes ? changes.length : 0;
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
-            var text = nodeEvalExpr(this, this.aNode.textExpr, 1);
+            var text = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
 
             if (text !== this.content) {
                 this.content = text;
-                var rawText = nodeEvalExpr(this, this.aNode.textExpr);
+                var rawText = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
                 if (this._simple) {
                     el[textUpdateProp] = rawText;

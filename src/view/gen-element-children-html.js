@@ -5,9 +5,9 @@
 
 var escapeHTML = require('../runtime/escape-html');
 var htmlBufferPush = require('../runtime/html-buffer-push');
+var evalExpr = require('../runtime/eval-expr');
 var getANodeProp = require('./get-a-node-prop');
 var createNode = require('./create-node');
-var nodeEvalExpr = require('./node-eval-expr');
 
 /**
  * 生成子元素html
@@ -19,14 +19,14 @@ function genElementChildrenHTML(element, buf) {
     if (element.tagName === 'textarea') {
         var valueProp = getANodeProp(element.aNode, 'value');
         if (valueProp) {
-            htmlBufferPush(buf, escapeHTML(nodeEvalExpr(element, valueProp.expr)));
+            htmlBufferPush(buf, escapeHTML(evalExpr(valueProp.expr, element.scope, element.owner)));
         }
     }
     else {
         var htmlDirective = element.aNode.directives.html;
 
         if (htmlDirective) {
-            htmlBufferPush(buf, nodeEvalExpr(element, htmlDirective.value));
+            htmlBufferPush(buf, evalExpr(htmlDirective.value, element.scope, element.owner));
         }
         else {
             var aNodeChildren = element.aNode.children;

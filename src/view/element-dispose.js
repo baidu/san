@@ -41,9 +41,6 @@ function elementDispose(element, options) {
         element._toPhase('detached');
     }
 
-    element.props = null;
-    element.binds = null;
-
     nodeDispose(element);
 }
 

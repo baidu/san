@@ -19,13 +19,13 @@ var createHTMLBuffer = require('../runtime/create-html-buffer');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
+var evalExpr = require('../runtime/eval-expr');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
 var isComponent = require('./is-component');
 var NodeType = require('./node-type');
-var nodeEvalExpr = require('./node-eval-expr');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
@@ -168,11 +168,13 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
         })
     });
 
+    this.param = aNode.directives['for']; // eslint-disable-line dot-notation
+
     // #[begin] reverse
     if (reverseWalker) {
         var me = this;
         each(
-            nodeEvalExpr(this, aNode.directives['for'].value), // eslint-disable-line dot-notation
+            evalExpr(this.param.value, this.scope, this.owner),
             function (item, i) {
                 var itemScope = new ForItemData(me, item, i);
                 var child = createReverseNode(me.itemANode, reverseWalker, me, itemScope);
@@ -244,7 +246,7 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
     }
     else {
         each(
-            nodeEvalExpr(this, this.aNode.directives['for'].value), // eslint-disable-line dot-notation
+            evalExpr(this.param.value, this.scope, this.owner),
             function (item, i) {
                 var child = createForDirectiveChild(this, item, i);
                 this.children.push(child);
@@ -278,7 +280,7 @@ ForNode.prototype.detach = function () {
 ForNode.prototype._attachHTML = function (buf, onlyChildren) {
     var me = this;
     each(
-        nodeEvalExpr(me, me.aNode.directives['for'].value), // eslint-disable-line dot-notation
+        evalExpr(this.param.value, this.scope, this.owner),
         function (item, i) {
             var child = createForDirectiveChild(me, item, i);
             me.children.push(child);
@@ -308,9 +310,7 @@ ForNode.prototype._update = function (changes) {
         childrenChanges.push([]);
     });
 
-
     var disposeChildren = [];
-    var forDirective = this.aNode.directives['for']; // eslint-disable-line dot-notation
 
     this._getEl();
 
@@ -329,12 +329,12 @@ ForNode.prototype._update = function (changes) {
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
-    var newList = nodeEvalExpr(me, forDirective.value);
+    var newList = evalExpr(this.param.value, this.scope, this.owner);
     var newLen = newList && newList.length || 0;
 
     /* eslint-disable no-redeclare */
     each(changes, function (change) {
-        var relation = changeExprCompare(change.expr, forDirective.value, me.scope);
+        var relation = changeExprCompare(change.expr, me.param.value, me.scope);
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
@@ -346,8 +346,8 @@ ForNode.prototype._update = function (changes) {
             // 变更表达式是list绑定表达式的子项
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
-            var forLen = forDirective.value.paths.length;
-            var changeIndex = +nodeEvalExpr(me, changePaths[forLen]);
+            var forLen = me.param.value.paths.length;
+            var changeIndex = +evalExpr(changePaths[forLen], me.scope, me.owner);
 
             if (isNaN(changeIndex)) {
                 each(childrenChanges, function (childChanges) {
@@ -358,7 +358,7 @@ ForNode.prototype._update = function (changes) {
                 change = extend({}, change);
                 change.overview = null;
                 change.expr = createAccessor(
-                    forDirective.item.paths.concat(changePaths.slice(forLen + 1))
+                    me.param.item.paths.concat(changePaths.slice(forLen + 1))
                 );
 
                 childrenChanges[changeIndex].push(change);
@@ -402,7 +402,7 @@ ForNode.prototype._update = function (changes) {
                 childrenChanges[i].push({
                     type: DataChangeType.SET,
                     option: change.option,
-                    expr: createAccessor(forDirective.item.paths.slice(0)),
+                    expr: createAccessor(me.param.item.paths.slice(0)),
                     value: newList[i]
                 });
 
@@ -413,7 +413,7 @@ ForNode.prototype._update = function (changes) {
 
                 if (me.children[i]) {
                     me.children[i].scope._set(
-                        forDirective.item,
+                        me.param.item,
                         newList[i],
                         {silent: 1}
                     );
@@ -437,7 +437,7 @@ ForNode.prototype._update = function (changes) {
                 var indexChange = {
                     type: DataChangeType.SET,
                     option: change.option,
-                    expr: forDirective.index
+                    expr: me.param.index
                 };
 
                 for (var i = changeStart + deleteCount; i < me.children.length; i++) {
@@ -470,7 +470,7 @@ ForNode.prototype._update = function (changes) {
             type: DataChangeType.SET,
             option: {},
             expr: createAccessor(
-                forDirective.value.paths.concat({
+                this.param.value.paths.concat({
                     type: ExprType.STRING,
                     value: 'length'
                 })

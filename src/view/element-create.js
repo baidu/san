@@ -6,7 +6,6 @@
 var each = require('../util/each');
 var createEl = require('../browser/create-el');
 var evalExpr = require('../runtime/eval-expr');
-var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 var handleProp = require('./handle-prop');
 var LifeCycle = require('./life-cycle');
@@ -24,7 +23,7 @@ function elementCreate(element) {
     each(element.aNode.props, function (prop) {
         var value = isComponent(element)
             ? evalExpr(prop.expr, element.data, element)
-            : nodeEvalExpr(element, prop.expr, 1);
+            : evalExpr(prop.expr, element.scope, element.owner);
 
         handleProp.prop(element, prop.name, value);
 

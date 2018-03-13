@@ -8,11 +8,11 @@ var evalExpr = require('../runtime/eval-expr');
 var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferTagStart = require('../runtime/html-buffer-tag-start');
 var escapeHTML = require('../runtime/escape-html');
+var evalExpr = require('../runtime/eval-expr');
 var autoCloseTags = require('../browser/auto-close-tags');
 var getANodeProp = require('./get-a-node-prop');
 var isComponent = require('./is-component');
 var handleProp = require('./handle-prop');
-var nodeEvalExpr = require('./node-eval-expr');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
@@ -47,7 +47,7 @@ function elementOwnAttachHTML(buf) {
         var prop = props[i];
         var value = elementIsComponent
             ? evalExpr(prop.expr, this.data, this)
-            : nodeEvalExpr(this, prop.expr, 1);
+            : evalExpr(prop.expr, this.scope, this.owner, 1);
 
         if (prop.x && !BOOL_ATTRIBUTES[prop.name]) {
             value = escapeHTML(value);
@@ -60,7 +60,7 @@ function elementOwnAttachHTML(buf) {
     if (idProp) {
         this._elId = elementIsComponent
             ? evalExpr(idProp.expr, this.data, this)
-            : nodeEvalExpr(this, idProp.expr, 1);
+            : evalExpr(idProp.expr, this.scope, this.owner, 1);
     }
 
     var id = this._elId || this.id;

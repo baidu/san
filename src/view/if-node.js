@@ -6,8 +6,8 @@
 var each = require('../util/each');
 var guid = require('../util/guid');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
+var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
-var nodeEvalExpr = require('./node-eval-expr');
 var rinseCondANode = require('./rinse-cond-anode');
 var isComponent = require('./is-component');
 var createNode = require('./create-node');
@@ -42,7 +42,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
-        if (nodeEvalExpr(this, this.cond)) {
+        if (evalExpr(this.cond, this.scope, this.owner)) {
             this.elseIndex = -1;
             this.children[0] = createReverseNode(
                 rinseCondANode(aNode),
@@ -55,7 +55,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
             each(aNode.elses, function (elseANode, index) {
                 var elif = elseANode.directives.elif;
 
-                if (!elif || elif && nodeEvalExpr(me, elif.value)) {
+                if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
                     me.elseIndex = index;
                     me.children[0] = createReverseNode(
                         rinseCondANode(elseANode),
@@ -85,7 +85,7 @@ IfNode.prototype._attachHTML = function (buf) {
     var elseIndex;
     var child;
 
-    if (nodeEvalExpr(me, me.cond)) {
+    if (evalExpr(this.cond, this.scope, this.owner)) {
         child = createNode(rinseCondANode(me.aNode), me);
         elseIndex = -1;
     }
@@ -93,7 +93,7 @@ IfNode.prototype._attachHTML = function (buf) {
         each(me.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.elif;
 
-            if (!elif || elif && nodeEvalExpr(me, elif.value)) {
+            if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
                 child = createNode(rinseCondANode(elseANode), me);
                 elseIndex = index;
                 return false;
@@ -120,14 +120,14 @@ IfNode.prototype._update = function (changes) {
     var childANode = me.aNode;
     var elseIndex;
 
-    if (nodeEvalExpr(this, this.cond)) {
+    if (evalExpr(this.cond, this.scope, this.owner)) {
         elseIndex = -1;
     }
     else {
         each(me.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.elif;
 
-            if (elif && nodeEvalExpr(me, elif.value) || !elif) {
+            if (elif && evalExpr(elif.value, me.scope, me.owner) || !elif) {
                 elseIndex = index;
                 childANode = elseANode;
                 return false;

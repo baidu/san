@@ -8,7 +8,6 @@ var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
 var evalExpr = require('../runtime/eval-expr');
 var getANodeProp = require('./get-a-node-prop');
-var nodeEvalExpr = require('./node-eval-expr');
 var isComponent = require('./is-component');
 
 
@@ -137,7 +136,7 @@ function analInputCheckedState(element, value, oper) {
     var bindType = getANodeProp(element.aNode, 'type');
 
     if (bindValue && bindType) {
-        var type = nodeEvalExpr(element, bindType.expr);
+        var type = evalExpr(bindType.expr, element.scope, element.owner);
 
         if (analInputChecker[type]) {
             var bindChecked = getANodeProp(element.aNode, 'checked');
@@ -147,7 +146,7 @@ function analInputCheckedState(element, value, oper) {
 
             var checkedState = analInputChecker[type](
                 value,
-                nodeEvalExpr(element, bindValue.expr)
+                evalExpr(bindValue.expr, element.scope, element.owner)
             );
 
             switch (oper) {
@@ -235,7 +234,7 @@ var elementPropHandlers = {
                     ) {
                         selectValue = isComponent(parentSelect)
                                 ? evalExpr(expr, parentSelect.data, parentSelect)
-                                : nodeEvalExpr(parentSelect, expr)
+                                : evalExpr(expr, parentSelect.scope, parentSelect.owner)
                             || '';
                     }
 

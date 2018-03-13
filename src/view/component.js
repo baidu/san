@@ -26,7 +26,6 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
-var nodeEvalExpr = require('./node-eval-expr');
 var NodeType = require('./node-type');
 var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
@@ -172,7 +171,7 @@ function Component(options) { // eslint-disable-line
 
     postComponentBinds(this.binds);
     this.scope && each(this.binds, function (bind) {
-        var value = nodeEvalExpr(me, bind.expr);
+        var value = evalExpr(bind.expr, me.scope, me.owner);
         if (typeof value === 'undefined') {
             // See: https://github.com/ecomfe/san/issues/191
             return;
@@ -255,7 +254,7 @@ Component.prototype._createGivenSlots = function () {
         if (slotBind) {
             !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
 
-            var slotName = nodeEvalExpr(me, slotBind.expr);
+            var slotName = evalExpr(slotBind.expr, me.scope, me.owner);
             target = me.givenSlots.named[slotName];
             if (!target) {
                 target = me.givenSlots.named[slotName] = [];
@@ -544,7 +543,7 @@ Component.prototype._update = function (changes) {
                         updateExpr = changeExpr;
                     }
 
-                    me.data.set(setExpr, nodeEvalExpr(me, updateExpr), {
+                    me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
                         target: {
                             id: me.owner.id
                         }

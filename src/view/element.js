@@ -8,13 +8,13 @@ var each = require('../util/each');
 var guid = require('../util/guid');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
+var evalExpr = require('../runtime/eval-expr');
 var attachings = require('./attachings');
 var isComponent = require('./is-component');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var nodeEvalExpr = require('./node-eval-expr');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var elementOwnCreate = require('./element-own-create');
@@ -124,7 +124,7 @@ Element.prototype._update = function (changes) {
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.scope)
                 )
             ) {
-                handleProp.prop(me, prop.name, nodeEvalExpr(me, prop.expr));
+                handleProp.prop(me, prop.name, evalExpr(prop.expr, me.scope, me.owner));
                 return false;
             }
         });
@@ -137,7 +137,7 @@ Element.prototype._update = function (changes) {
                 // #[begin] error
                 warnSetHTML(me.el);
                 // #[end]
-                me.el.innerHTML = nodeEvalExpr(me, htmlDirective.value);
+                me.el.innerHTML = evalExpr(htmlDirective.value, me.scope, me.owner);
                 return false;
             }
         });

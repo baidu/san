@@ -21,7 +21,6 @@ var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeDispose = require('./node-dispose');
-var nodeEvalExpr = require('./node-eval-expr');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementUpdateChildren = require('./element-update-children');
@@ -60,7 +59,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
     this.nameBind = getANodeProp(aNode, 'name');
     if (this.nameBind) {
         this.isNamed = true;
-        this.name = nodeEvalExpr(this, this.nameBind.expr);
+        this.name = evalExpr(this.nameBind.expr, this.scope, this.owner);
     }
 
     // calc aNode children
@@ -159,19 +158,20 @@ SlotNode.prototype._attachHTML = function (buf) {
  */
 SlotNode.prototype._update = function (changes, isFromOuter) {
     var me = this;
-    if (me.nameBind && nodeEvalExpr(me, me.nameBind.expr) !== me.name) {
-        me.owner._notifyNeedReload();
+
+    if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== me.name) {
+        this.owner._notifyNeedReload();
         return false;
     }
 
     if (isFromOuter) {
-        if (me.isInserted) {
-            elementUpdateChildren(me, changes);
+        if (this.isInserted) {
+            elementUpdateChildren(this, changes);
         }
     }
     else {
-        if (me.isScoped) {
-            each(me.aNode.vars, function (varItem) {
+        if (this.isScoped) {
+            each(this.aNode.vars, function (varItem) {
                 me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
             });
 
@@ -216,10 +216,10 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                 });
             });
 
-            elementUpdateChildren(me, scopedChanges);
+            elementUpdateChildren(this, scopedChanges);
         }
-        else if (!me.isInserted) {
-            elementUpdateChildren(me, changes);
+        else if (!this.isInserted) {
+            elementUpdateChildren(this, changes);
         }
     }
 };
