@@ -91,7 +91,7 @@ Data.prototype.fire = function (change) {
  * @param {string|Object?} expr 数据项路径
  * @return {*}
  */
-Data.prototype.get = function (expr) {
+Data.prototype.get = function (expr, callee) {
     var value = this.raw;
     if (!expr) {
         return value;
@@ -100,26 +100,17 @@ Data.prototype.get = function (expr) {
     expr = parseExpr(expr);
 
     var paths = expr.paths;
-    var start = 0;
-    var l = paths.length;
+    callee = callee || this;
 
-    for (; start < l; start++) {
-        if (paths[start].value == null) {
-            break;
-        }
-    }
-
-    var i = 0;
-    for (; value != null && i < start; i++) {
-        value = value[paths[i].value];
-    }
+    value = value[paths[0].value];
 
     if (value == null && this.parent) {
-        value = this.parent.get(createAccessor(paths.slice(0, start)));
+        value = this.parent.get(expr, callee);
     }
-
-    for (i = start; value != null && i < l; i++) {
-        value = value[evalExpr(paths[i], this)];
+    else {
+        for (var i = 1, l = paths.length; value != null && i < l; i++) {
+            value = value[evalExpr(paths[i], callee)];
+        }
     }
 
     return value;
