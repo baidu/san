@@ -5,21 +5,21 @@
 
 var bind = require('../util/bind');
 var each = require('../util/each');
+var guid = require('../util/guid');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
 var ExprType = require('../parser/expr-type');
-var createANode = require('../parser/create-a-node');
 var parseExpr = require('../parser/parse-expr');
 var createAccessor = require('../parser/create-accessor');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
-var DataChangeType = require('../runtime/data-change-type');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
 var componentPreheat = require('./component-preheat');
 var attachings = require('./attachings');
+var isComponent = require('./is-component');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
@@ -28,7 +28,6 @@ var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var nodeEvalExpr = require('./node-eval-expr');
 var NodeType = require('./node-type');
-var nodeInit = require('./node-init');
 var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
@@ -83,8 +82,6 @@ function Component(options) { // eslint-disable-line
         named: {}
     };
 
-
-    // nodeInit(options, this);
     this.owner = options.owner;
     this.parent = options.parent;
     this.scope = options.scope;

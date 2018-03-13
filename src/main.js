@@ -40,7 +40,6 @@
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
     // require('./view/node-type');
-    // require('./view/create-text');
     // require('./view/get-prop-handler');
     // require('./view/is-data-change-by-element');
     // require('./view/event-declaration-listener');

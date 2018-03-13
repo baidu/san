@@ -1,14 +1,15 @@
 /**
- * @file 创建 if 指令元素
+ * @file if 指令节点类
  * @author errorrik(errorrik@gmail.com)
  */
 
 var each = require('../util/each');
+var guid = require('../util/guid');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
-var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var rinseCondANode = require('./rinse-cond-anode');
+var isComponent = require('./is-component');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
@@ -16,49 +17,50 @@ var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
-
 /**
- * 创建 if 指令元素
+ * if 指令节点类
  *
- * @param {Object} options 初始化参数
- * @return {Object}
+ * @param {Object} aNode 抽象节点
+ * @param {Component} owner 所属组件环境
+ * @param {Model=} scope 所属数据环境
+ * @param {Node} parent 父亲节点
+ * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function createIf(options) {
-    var node = nodeInit(options);
-    node.children = [];
-    node.nodeType = NodeType.IF;
+function IfNode(aNode, owner, scope, parent, reverseWalker) {
+    this.aNode = aNode;
+    this.owner = owner;
+    this.scope = scope;
+    this.parent = parent;
+    this.parentComponent = isComponent(parent)
+        ? parent
+        : parent.parentComponent;
 
-    node.dispose = nodeOwnSimpleDispose;
+    this.id = guid();
+    this.children = [];
 
-    node._getEl = nodeOwnGetStumpEl;
-    node._attachHTML = ifOwnAttachHTML;
-    node._update = ifOwnUpdate;
-
-    node.cond = node.aNode.directives['if'].value; // eslint-disable-line dot-notation
+    this.cond = this.aNode.directives['if'].value; // eslint-disable-line dot-notation
 
     // #[begin] reverse
-    var walker = options.reverseWalker;
-    if (walker) {
-        options.reverseWalker = null;
-
-        if (nodeEvalExpr(node, node.cond)) {
-            node.elseIndex = -1;
-            node.children[0] = createReverseNode(
-                rinseCondANode(node.aNode),
-                walker,
-                node
+    if (reverseWalker) {
+        if (nodeEvalExpr(this, this.cond)) {
+            this.elseIndex = -1;
+            this.children[0] = createReverseNode(
+                rinseCondANode(aNode),
+                reverseWalker,
+                this
             );
         }
         else {
-            each(node.aNode.elses, function (elseANode, index) {
+            var me = this;
+            each(aNode.elses, function (elseANode, index) {
                 var elif = elseANode.directives.elif;
 
-                if (!elif || elif && nodeEvalExpr(node, elif.value)) {
-                    node.elseIndex = index;
-                    node.children[0] = createReverseNode(
+                if (!elif || elif && nodeEvalExpr(me, elif.value)) {
+                    me.elseIndex = index;
+                    me.children[0] = createReverseNode(
                         rinseCondANode(elseANode),
-                        walker,
-                        node
+                        reverseWalker,
+                        me
                     );
                     return false;
                 }
@@ -66,18 +68,19 @@ function createIf(options) {
         }
     }
     // #[end]
-
-
-
-    return node;
 }
+
+IfNode.prototype.nodeType = NodeType.IF;
+IfNode.prototype._getEl = nodeOwnGetStumpEl;
+IfNode.prototype.dispose = nodeOwnSimpleDispose;
+
 
 /**
  * attach元素的html
  *
  * @param {Object} buf html串存储对象
  */
-function ifOwnAttachHTML(buf) {
+IfNode.prototype._attachHTML = function (buf) {
     var me = this;
     var elseIndex;
     var child;
@@ -105,14 +108,14 @@ function ifOwnAttachHTML(buf) {
     }
 
     htmlBufferComment(buf, this.id);
-}
+};
 
 /**
  * 视图更新函数
  *
  * @param {Array} changes 数据变化信息
  */
-function ifOwnUpdate(changes) {
+IfNode.prototype._update = function (changes) {
     var me = this;
     var childANode = me.aNode;
     var elseIndex;
@@ -158,6 +161,6 @@ function ifOwnUpdate(changes) {
             me.children[0] = child;
         }
     }
-}
+};
 
-exports = module.exports = createIf;
+exports = module.exports = IfNode;

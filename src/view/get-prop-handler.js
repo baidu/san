@@ -75,6 +75,7 @@ var defaultElementPropHandler = {
     }
 };
 
+/* eslint-disable fecs-properties-quote */
 /**
  * 默认的属性设置变换方法
  *
@@ -94,7 +95,7 @@ var defaultElementPropHandlers = {
         }
     },
 
-    'class': {
+    'class': { // eslint-disable-line
         attr: function (element, name, value) {
             if (value) {
                 return ' class="' + value + '"';
@@ -117,6 +118,7 @@ var defaultElementPropHandlers = {
     required: genBoolPropHandler('required'),
     draggable: genBoolPropHandler('draggable')
 };
+/* eslint-enable fecs-properties-quote */
 
 // draggable attribute 是枚举类型，但 property 接受 boolean
 // 所以这里声明 bool prop，然后 attr 置回来

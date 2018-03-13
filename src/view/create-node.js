@@ -5,12 +5,12 @@
 
 
 var isComponent = require('./is-component');
-var createText = require('./create-text');
-var createElement = require('./create-element');
-var createSlot = require('./create-slot');
-var createFor = require('./create-for');
-var createIf = require('./create-if');
-var createTemplate = require('./create-template');
+var TextNode = require('./text-node');
+var Element = require('./element');
+var SlotNode = require('./slot-node');
+var ForNode = require('./for-node');
+var IfNode = require('./if-node');
+var TemplateNode = require('./template-node');
 
 
 /**
@@ -24,40 +24,41 @@ var createTemplate = require('./create-template');
 function createNode(aNode, parent, scope) {
     var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
     scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
-    var options = {
-        aNode: aNode,
-        owner: owner,
-        scope: scope,
-        parent: parent
-    };
+
 
     if (aNode.textExpr) {
-        return createText(options);
+        return new TextNode(aNode, owner, scope, parent);
     }
 
     if (aNode.directives['if']) { // eslint-disable-line dot-notation
-        return createIf(options);
+        return new IfNode(aNode, owner, scope, parent);
     }
 
     if (aNode.directives['for']) { // eslint-disable-line dot-notation
-        return createFor(options);
+        return new ForNode(aNode, owner, scope, parent);
     }
 
     var ComponentType = owner.getComponentType(aNode);
     if (ComponentType) {
-        options.subTag = aNode.tagName;
-        return new ComponentType(options);
+        return new ComponentType({
+            aNode: aNode,
+            owner: owner,
+            scope: scope,
+            parent: parent,
+            subTag: aNode.tagName
+        });
     }
+
 
     switch (aNode.tagName) {
         case 'slot':
-            return createSlot(options);
+            return new SlotNode(aNode, owner, scope, parent);
 
         case 'template':
-            return createTemplate(options);
+            return new TemplateNode(aNode, owner, scope, parent);
     }
 
-    return createElement(options);
+    return new Element(aNode, owner, scope, parent);
 }
 
 exports = module.exports = createNode;

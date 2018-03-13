@@ -1,10 +1,10 @@
 /**
- * @file 创建 slot 元素
+ * @file slot 节点类
  * @author errorrik(errorrik@gmail.com)
  */
 
-
 var each = require('../util/each');
+var guid = require('../util/guid');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var createAccessor = require('../parser/create-accessor');
@@ -16,10 +16,10 @@ var htmlBufferComment = require('../runtime/html-buffer-comment');
 var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
+var isComponent = require('./is-component');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
-var nodeInit = require('./node-init');
 var nodeDispose = require('./node-dispose');
 var nodeEvalExpr = require('./node-eval-expr');
 var createReverseNode = require('./create-reverse-node');
@@ -31,95 +31,124 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var nodeCreateStump = require('./node-create-stump');
 
+
 /**
- * 创建 slot 元素
+ * slot 节点类
  *
- * @param {Object} options 初始化参数
- * @return {Object}
+ * @param {Object} aNode 抽象节点
+ * @param {Component} owner 所属组件环境
+ * @param {Model=} scope 所属数据环境
+ * @param {Node} parent 父亲节点
+ * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function createSlot(options) {
-    var aNode = createANode();
+function SlotNode(aNode, owner, scope, parent, reverseWalker) {
+    var realANode = createANode();
+    this.aNode = realANode;
+    this.owner = owner;
+    this.scope = scope;
+    this.parent = parent;
+    this.parentComponent = isComponent(parent)
+        ? parent
+        : parent.parentComponent;
+
+    this.id = guid();
+
+    this.lifeCycle = LifeCycle.start;
+    this.children = [];
 
     // calc slot name
-    options.nameBind = getANodeProp(options.aNode, 'name');
-    if (options.nameBind) {
-        options.isNamed = true;
-        options.name = nodeEvalExpr(options, options.nameBind.expr);
+    this.nameBind = getANodeProp(aNode, 'name');
+    if (this.nameBind) {
+        this.isNamed = true;
+        this.name = nodeEvalExpr(this, this.nameBind.expr);
     }
 
     // calc aNode children
-    var givenSlots = options.owner.givenSlots;
+    var givenSlots = owner.givenSlots;
     var givenChildren;
     if (givenSlots) {
-        givenChildren = options.isNamed
-            ? givenSlots.named[options.name] : givenSlots.noname;
+        givenChildren = this.isNamed ? givenSlots.named[this.name] : givenSlots.noname;
     }
 
     if (givenChildren) {
-        options.isInserted = true;
+        this.isInserted = true;
     }
 
-    aNode.children = givenChildren || options.aNode.children.slice(0);
+    realANode.children = givenChildren || aNode.children.slice(0);
+
+    var me = this;
 
     // calc scoped slot vars
-    aNode.vars = options.aNode.vars;
+    realANode.vars = aNode.vars;
     var initData = {};
-    each(aNode.vars, function (varItem) {
-        options.isScoped = true;
-        initData[varItem.name] = evalExpr(varItem.expr, options.scope, options.owner);
+    each(realANode.vars, function (varItem) {
+        me.isScoped = true;
+        initData[varItem.name] = evalExpr(varItem.expr, scope, owner);
     });
 
     // child owner & child scope
-    if (options.isInserted) {
-        options.childOwner = options.owner.owner;
-        options.childScope = options.owner.scope;
+    if (this.isInserted) {
+        this.childOwner = owner.owner;
+        this.childScope = owner.scope;
     }
 
-    if (options.isScoped) {
-        options.childScope = new Data(initData, options.childScope || options.scope);
+    if (this.isScoped) {
+        this.childScope = new Data(initData, this.childScope || this.scope);
     }
 
 
-    options.aNode = aNode;
-
-
-    var node = nodeInit(options);
-    node.lifeCycle = LifeCycle.start;
-    node.children = [];
-    node.nodeType = NodeType.SLOT;
-    node.dispose = slotOwnDispose;
-    node.attach = nodeOwnOnlyChildrenAttach;
-
-    node._toPhase = elementOwnToPhase;
-    node._getEl = nodeOwnGetStumpEl;
-    node._attachHTML = slotOwnAttachHTML;
-    node._attached = nodeOwnSimpleAttached;
-    node._update = slotOwnUpdate;
-
-
-    node.owner.slotChildren.push(node);
+    owner.slotChildren.push(this);
 
     // #[begin] reverse
-    var walker = options.reverseWalker;
-    if (walker) {
-        options.reverseWalker = null;
+    if (reverseWalker) {
 
-        node.sel = nodeCreateStump(node);
-        insertBefore(node.sel, walker.target, walker.current);
+        this.sel = nodeCreateStump(this);
+        insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
-        each(node.aNode.children, function (aNodeChild) {
-            node.children.push(createReverseNode(aNodeChild, walker, node));
+        each(this.aNode.children, function (aNodeChild) {
+            me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
         });
 
-        node.el = nodeCreateStump(node);
-        insertBefore(node.el, walker.target, walker.current);
+        this.el = nodeCreateStump(this);
+        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
-        attachings.add(node);
+        attachings.add(this);
     }
     // #[end]
-
-    return node;
 }
+
+SlotNode.prototype.nodeType = NodeType.SLOT;
+
+/**
+ * 销毁释放 slot
+ *
+ * @param {Object=} options dispose行为参数
+ */
+SlotNode.prototype.dispose = function (options) {
+    this.childOwner = null;
+    this.childScope = null;
+
+    elementDisposeChildren(this, options);
+    nodeDispose(this);
+};
+
+SlotNode.prototype.attach = nodeOwnOnlyChildrenAttach;
+SlotNode.prototype._toPhase = elementOwnToPhase;
+SlotNode.prototype._getEl = nodeOwnGetStumpEl;
+SlotNode.prototype._attached = nodeOwnSimpleAttached;
+
+/**
+ * attach元素的html
+ *
+ * @param {Object} buf html串存储对象
+ */
+SlotNode.prototype._attachHTML = function (buf) {
+    htmlBufferComment(buf, this.id);
+    genElementChildrenHTML(this, buf);
+    htmlBufferComment(buf, this.id);
+
+    attachings.add(this);
+};
 
 /**
  * 视图更新函数
@@ -128,7 +157,7 @@ function createSlot(options) {
  * @param {boolean=} isFromOuter 变化信息是否来源于父组件之外的组件
  * @return {boolean}
  */
-function slotOwnUpdate(changes, isFromOuter) {
+SlotNode.prototype._update = function (changes, isFromOuter) {
     var me = this;
     if (me.nameBind && nodeEvalExpr(me, me.nameBind.expr) !== me.name) {
         me.owner._notifyNeedReload();
@@ -193,33 +222,6 @@ function slotOwnUpdate(changes, isFromOuter) {
             elementUpdateChildren(me, changes);
         }
     }
-}
+};
 
-/**
- * attach元素的html
- *
- * @param {Object} buf html串存储对象
- */
-function slotOwnAttachHTML(buf) {
-    htmlBufferComment(buf, this.id);
-    genElementChildrenHTML(this, buf);
-    htmlBufferComment(buf, this.id);
-
-    attachings.add(this);
-}
-
-/**
- * 销毁释放 slot
- *
- * @param {Object=} options dispose行为参数
- */
-function slotOwnDispose(options) {
-    this.childOwner = null;
-    this.childScope = null;
-
-    elementDisposeChildren(this, options);
-    nodeDispose(this);
-}
-
-
-exports = module.exports = createSlot;
+exports = module.exports = SlotNode;

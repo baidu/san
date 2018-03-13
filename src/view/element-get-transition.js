@@ -5,6 +5,7 @@
 
 var evalArgs = require('../runtime/eval-args');
 var findMethod = require('../runtime/find-method');
+var isComponent = require('./is-component');
 
 /**
  * 获取 element 的 transition 控制对象

@@ -1,17 +1,19 @@
 /**
- * @file 创建 element 节点
+ * @file 元素节点类
  * @author errorrik(errorrik@gmail.com)
  */
 
 
 var each = require('../util/each');
+var guid = require('../util/guid');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var attachings = require('./attachings');
+var isComponent = require('./is-component');
+var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var nodeInit = require('./node-init');
 var nodeEvalExpr = require('./node-eval-expr');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnAttachHTML = require('./element-own-attach-html');
@@ -23,84 +25,90 @@ var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
-var elementInitProps = require('./element-init-props');
 var elementInitTagName = require('./element-init-tag-name');
 var handleProp = require('./handle-prop');
 var warnSetHTML = require('./warn-set-html');
 var getNodePath = require('./get-node-path');
 
 /**
- * 创建 element 节点
+ * 元素节点类
  *
- * @param {Object} options 初始化参数
- * @param {ANode} options.aNode 抽象信息节点对象
- * @param {Component=} options.owner 所属的组件对象
- * @return {Object}
+ * @param {Object} aNode 抽象节点
+ * @param {Component} owner 所属组件环境
+ * @param {Model=} scope 所属数据环境
+ * @param {Node} parent 父亲节点
+ * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function createElement(options) {
-    var node = nodeInit(options);
-    node.nodeType = NodeType.ELEM;
+function Element(aNode, owner, scope, parent, reverseWalker) {
+    this.aNode = aNode;
+    this.owner = owner;
+    this.scope = scope;
+    this.parent = parent;
 
-    // init methods
-    node.attach = elementOwnAttach;
-    node.detach = elementOwnDetach;
-    node.dispose = elementOwnDispose;
-    node._attachHTML = elementOwnAttachHTML;
-    node._update = elementOwnUpdate;
-    node._create = elementOwnCreate;
-    node._attached = elementOwnAttached;
-    node._getEl = elementOwnGetEl;
-    node._toPhase = elementOwnToPhase;
-    node._onEl = elementOwnOnEl;
+    this.lifeCycle = LifeCycle.start;
+    this.children = [];
+    this._elFns = {};
+    this.parentComponent = isComponent(parent)
+        ? parent
+        : parent.parentComponent;
 
-    elementInitProps(node);
-    elementInitTagName(node);
+    this.id = guid();
 
-    node._toPhase('inited');
+    elementInitTagName(this);
+
+    this._toPhase('inited');
 
     // #[begin] reverse
-    var walker = options.reverseWalker;
-    if (walker) {
-        options.reverseWalker = null;
-
-        var currentNode = walker.current;
+    if (reverseWalker) {
+        var currentNode = reverseWalker.current;
 
         if (!currentNode) {
             throw new Error('[SAN REVERSE ERROR] Element not found. \nPaths: '
-                + getNodePath(node).join(' > '));
+                + getNodePath(this).join(' > '));
         }
 
         if (currentNode.nodeType !== 1) {
             throw new Error('[SAN REVERSE ERROR] Element type not match, expect 1 but '
                 + currentNode.nodeType + '.\nPaths: '
-                + getNodePath(node).join(' > '));
+                + getNodePath(this).join(' > '));
         }
 
-        if (currentNode.tagName.toLowerCase() !== node.tagName) {
+        if (currentNode.tagName.toLowerCase() !== this.tagName) {
             throw new Error('[SAN REVERSE ERROR] Element tagName not match, expect '
-                + node.tagName + ' but meat ' + currentNode.tagName.toLowerCase() + '.\nPaths: '
-                + getNodePath(node).join(' > '));
+                + this.tagName + ' but meat ' + currentNode.tagName.toLowerCase() + '.\nPaths: '
+                + getNodePath(this).join(' > '));
         }
 
-        node.el = currentNode;
-        node.el.id = node.id;
-        walker.goNext();
+        this.el = currentNode;
+        this.el.id = this.id;
+        reverseWalker.goNext();
 
-        reverseElementChildren(node);
+        reverseElementChildren(this);
 
-        attachings.add(node);
+        attachings.add(this);
     }
     // #[end]
-
-    return node;
 }
 
+
+Element.prototype.nodeType = NodeType.ELEM;
+
+
+Element.prototype.attach = elementOwnAttach;
+Element.prototype.detach = elementOwnDetach;
+Element.prototype.dispose = elementOwnDispose;
+Element.prototype._attachHTML = elementOwnAttachHTML;
+Element.prototype._create = elementOwnCreate;
+Element.prototype._getEl = elementOwnGetEl;
+Element.prototype._toPhase = elementOwnToPhase;
+Element.prototype._onEl = elementOwnOnEl;
+
 /**
- * 视图更新函数
+ * 视图更新
  *
  * @param {Array} changes 数据变化信息
  */
-function elementOwnUpdate(changes) {
+Element.prototype._update = function (changes) {
     if (!changesIsInDataRef(changes, this.aNode.hotspot.data)) {
         return;
     }
@@ -137,15 +145,13 @@ function elementOwnUpdate(changes) {
     else {
         elementUpdateChildren(this, changes);
     }
-}
+};
 
 /**
  * 执行完成attached状态的行为
  */
-function elementOwnAttached() {
+Element.prototype._attached = function () {
     elementAttached(this);
-}
+};
 
-
-
-exports = module.exports = createElement;
+exports = module.exports = Element;

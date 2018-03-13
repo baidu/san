@@ -1,5 +1,5 @@
 /**
- * @file 创建 text 节点
+ * @file text 节点类
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -11,7 +11,6 @@ var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var changeExprCompare = require('../runtime/change-expr-compare');
-var nodeInit = require('./node-init');
 var NodeType = require('./node-type');
 var getNodeStump = require('./get-node-stump');
 var nodeEvalExpr = require('./node-eval-expr');
@@ -20,77 +19,92 @@ var isEndStump = require('./is-end-stump');
 var isSimpleText = require('./is-simple-text');
 var getNodePath = require('./get-node-path');
 
+
 /**
- * 创建 text 节点
+ * text 节点类
  *
- * @param {Object} options 初始化参数
- * @param {ANode} options.aNode 抽象信息节点对象
- * @param {Component=} options.owner 所属的组件对象
- * @return {Object}
+ * @param {Object} aNode 抽象节点
+ * @param {Component} owner 所属组件环境
+ * @param {Model=} scope 所属数据环境
+ * @param {Node} parent 父亲节点
+ * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function createText(options) {
-    var node = nodeInit(options);
-    node.nodeType = NodeType.TEXT;
+function TextNode(aNode, owner, scope, parent, reverseWalker) {
+    this.aNode = aNode;
+    this.owner = owner;
+    this.scope = scope;
+    this.parent = parent;
 
-    node.attach = textOwnAttach;
-    node.dispose = textOwnDispose;
-    node._getEl = textOwnGetEl;
-    node._attachHTML = textOwnAttachHTML;
-    node._update = textOwnUpdate;
-
-    node._simple = isSimpleText(node.aNode);
+    this._simple = isSimpleText(aNode);
 
     // #[begin] reverse
-    var walker = options.reverseWalker;
-    if (walker) {
-        options.reverseWalker = null;
-
-        var currentNode = walker.current;
+    if (reverseWalker) {
+        var currentNode = reverseWalker.current;
         if (currentNode) {
             switch (currentNode.nodeType) {
                 case 8:
                     if (currentNode.data === 's-text') {
-                        currentNode.data = node.id;
-                        walker.goNext();
+                        currentNode.data = this.id;
+                        reverseWalker.goNext();
 
                         while (1) { // eslint-disable-line
-                            currentNode = walker.current;
+                            currentNode = reverseWalker.current;
                             if (!currentNode) {
                                 throw new Error('[SAN REVERSE ERROR] Text end flag not found. \nPaths: '
-                                    + getNodePath(node).join(' > '));
+                                    + getNodePath(this).join(' > '));
                             }
 
                             if (isEndStump(currentNode, 'text')) {
-                                walker.goNext();
-                                currentNode.data = node.id;
+                                reverseWalker.goNext();
+                                currentNode.data = this.id;
                                 break;
                             }
 
-                            walker.goNext();
+                            reverseWalker.goNext();
                         }
                     }
                     break;
 
                 case 3:
-                    walker.goNext();
-                    if (node._simple) {
-                        node.el = currentNode;
+                    reverseWalker.goNext();
+                    if (this._simple) {
+                        this.el = currentNode;
                     }
                     break;
             }
         }
     }
     // #[end]
-
-    return node;
 }
+
+TextNode.prototype.nodeType = NodeType.TEXT;
+
+/**
+ * 将text attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
+TextNode.prototype.attach = function (parentEl, beforeEl) {
+    var buf = createHTMLBuffer();
+    this._attachHTML(buf);
+    outputHTMLBufferBefore(buf, parentEl, beforeEl);
+};
+
+/**
+ * 销毁 text 节点
+ */
+TextNode.prototype.dispose = function () {
+    this._prev = null;
+    this.el = null;
+};
 
 /**
  * 获取文本节点对应的主元素
  *
  * @return {HTMLComment|HTMLTextNode}
  */
-function textOwnGetEl() {
+TextNode.prototype._getEl = function () {
     if (this.el) {
         return this.el;
     }
@@ -136,22 +150,14 @@ function textOwnGetEl() {
     }
 
     return getNodeStump(this);
-}
-
-/**
- * 销毁 text 节点
- */
-function textOwnDispose() {
-    this._prev = null;
-    this.el = null;
-}
+},
 
 /**
  * attach text 节点的 html
  *
  * @param {Object} buf html串存储对象
  */
-function textOwnAttachHTML(buf) {
+TextNode.prototype._attachHTML = function (buf) {
     this.content = nodeEvalExpr(this, this.aNode.textExpr, 1);
 
     if (!this._simple) {
@@ -163,21 +169,7 @@ function textOwnAttachHTML(buf) {
     if (!this._simple) {
         htmlBufferComment(buf, this.id);
     }
-}
-
-/**
- * 将text attach到页面
- *
- * @param {HTMLElement} parentEl 要添加到的父元素
- * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
- */
-function textOwnAttach(parentEl, beforeEl) {
-    var buf = createHTMLBuffer();
-    this._attachHTML(buf);
-    outputHTMLBufferBefore(buf, parentEl, beforeEl);
-}
-
-/* eslint-disable max-depth */
+};
 
 var textUpdateProp;
 
@@ -186,7 +178,7 @@ var textUpdateProp;
  *
  * @param {Array} changes 数据变化信息
  */
-function textOwnUpdate(changes) {
+TextNode.prototype._update = function (changes) {
     if (this.aNode.textExpr.value) {
         return;
     }
@@ -232,8 +224,6 @@ function textOwnUpdate(changes) {
             return;
         }
     }
-}
+};
 
-/* eslint-enable max-depth */
-
-exports = module.exports = createText;
+exports = module.exports = TextNode;

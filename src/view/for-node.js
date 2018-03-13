@@ -1,11 +1,12 @@
 /**
- * @file 创建 for 指令元素
+ * @file for 指令节点类
  * @author errorrik(errorrik@gmail.com)
  */
 
 var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
+var guid = require('../util/guid');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
@@ -20,10 +21,9 @@ var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
-
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
-var nodeInit = require('./node-init');
+var isComponent = require('./is-component');
 var NodeType = require('./node-type');
 var nodeEvalExpr = require('./node-eval-expr');
 var createNode = require('./create-node');
@@ -136,27 +136,27 @@ function createForDirectiveChild(forElement, item, index) {
 }
 
 /**
- * 创建 for 指令元素
+ * for 指令节点类
  *
- * @param {Object} options 初始化参数
- * @return {Object}
+ * @param {Object} aNode 抽象节点
+ * @param {Component} owner 所属组件环境
+ * @param {Model=} scope 所属数据环境
+ * @param {Node} parent 父亲节点
+ * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function createFor(options) {
-    var node = nodeInit(options);
-    node.children = [];
-    node.nodeType = NodeType.FOR;
+function ForNode(aNode, owner, scope, parent, reverseWalker) {
+    this.aNode = aNode;
+    this.owner = owner;
+    this.scope = scope;
+    this.parent = parent;
+    this.parentComponent = isComponent(parent)
+        ? parent
+        : parent.parentComponent;
 
-    node.attach = forOwnAttach;
-    node.detach = forOwnDetach;
-    node.dispose = nodeOwnSimpleDispose;
+    this.id = guid();
+    this.children = [];
 
-    node._attachHTML = forOwnAttachHTML;
-    node._update = forOwnUpdate;
-    node._create = nodeOwnCreateStump;
-    node._getEl = nodeOwnGetStumpEl;
-
-    var aNode = node.aNode;
-    node.itemANode = createANode({
+    this.itemANode = createANode({
         children: aNode.children,
         props: aNode.props,
         events: aNode.events,
@@ -168,51 +168,29 @@ function createFor(options) {
         })
     });
 
-
     // #[begin] reverse
-    var walker = options.reverseWalker;
-    if (walker) {
-        options.reverseWalker = null;
-
+    if (reverseWalker) {
+        var me = this;
         each(
-            nodeEvalExpr(node, node.aNode.directives['for'].value), // eslint-disable-line dot-notation
+            nodeEvalExpr(this, aNode.directives['for'].value), // eslint-disable-line dot-notation
             function (item, i) {
-                var itemScope = new ForItemData(node, item, i);
-                var child = createReverseNode(node.itemANode, walker, node, itemScope);
-                node.children.push(child);
+                var itemScope = new ForItemData(me, item, i);
+                var child = createReverseNode(me.itemANode, reverseWalker, me, itemScope);
+                me.children.push(child);
             }
         );
 
-        node._create();
-        insertBefore(node.el, walker.target, walker.current);
+        this._create();
+        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
     }
     // #[end]
-
-    return node;
 }
 
-/**
- * attach元素的html
- *
- * @param {Object} buf html串存储对象
- * @param {boolean} onlyChildren 是否只attach列表本身html，不包括stump部分
- */
-function forOwnAttachHTML(buf, onlyChildren) {
-    var me = this;
-    each(
-        nodeEvalExpr(me, me.aNode.directives['for'].value), // eslint-disable-line dot-notation
-        function (item, i) {
-            var child = createForDirectiveChild(me, item, i);
-            me.children.push(child);
-            child._attachHTML(buf);
-        }
-    );
 
-    if (!onlyChildren) {
-        htmlBufferComment(buf, me.id);
-    }
-}
-
+ForNode.prototype.nodeType = NodeType.FOR;
+ForNode.prototype._create = nodeOwnCreateStump;
+ForNode.prototype._getEl = nodeOwnGetStumpEl;
+ForNode.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
  * 将元素attach到页面的行为
@@ -220,7 +198,7 @@ function forOwnAttachHTML(buf, onlyChildren) {
  * @param {HTMLElement} parentEl 要添加到的父元素
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
-function forOwnAttach(parentEl, beforeEl) {
+ForNode.prototype.attach = function (parentEl, beforeEl) {
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
 
@@ -277,28 +255,48 @@ function forOwnAttach(parentEl, beforeEl) {
     }
 
     attachings.done();
-}
-
+};
 
 /**
  * 将元素从页面上移除的行为
  */
-function forOwnDetach() {
+ForNode.prototype.detach = function () {
     if (this.lifeCycle.attached) {
         elementDisposeChildren(this, true);
         removeEl(this._getEl());
         this.lifeCycle = LifeCycle.detached;
     }
-}
+};
 
 
+/**
+ * attach元素的html
+ *
+ * @param {Object} buf html串存储对象
+ * @param {boolean} onlyChildren 是否只attach列表本身html，不包括stump部分
+ */
+ForNode.prototype._attachHTML = function (buf, onlyChildren) {
+    var me = this;
+    each(
+        nodeEvalExpr(me, me.aNode.directives['for'].value), // eslint-disable-line dot-notation
+        function (item, i) {
+            var child = createForDirectiveChild(me, item, i);
+            me.children.push(child);
+            child._attachHTML(buf);
+        }
+    );
+
+    if (!onlyChildren) {
+        htmlBufferComment(buf, me.id);
+    }
+};
 
 /**
  * 视图更新函数
  *
  * @param {Array} changes 数据变化信息
  */
-function forOwnUpdate(changes) {
+ForNode.prototype._update = function (changes) {
     var me = this;
 
     // 控制列表更新策略是否原样更新的变量
@@ -420,7 +418,6 @@ function forOwnUpdate(changes) {
                     );
                 }
                 else {
-                    //me.children[i] = createForDirectiveChild(me, newList[i], i);
                     me.children[i] = 0;
                 }
             }
@@ -533,9 +530,11 @@ function forOwnUpdate(changes) {
         var newChildBuf = createHTMLBuffer();
 
         // 对相应的项进行更新
+        var i = 0;
+        var child;
         if (oldChildrenLen === 0 && isOnlyParentChild) {
-            for (var i = 0; i < newChildrenLen; i++) {
-                var child = createForDirectiveChild(me, newList[i], i);
+            for (; i < newChildrenLen; i++) {
+                child = createForDirectiveChild(me, newList[i], i);
                 me.children[i] = child;
                 child._attachHTML(newChildBuf);
             }
@@ -561,8 +560,8 @@ function forOwnUpdate(changes) {
             // }
 
 
-            for (var i = 0; i < newChildrenLen; i++) {
-                var child = me.children[i];
+            for (; i < newChildrenLen; i++) {
+                child = me.children[i];
 
                 if (child) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);
@@ -589,7 +588,7 @@ function forOwnUpdate(changes) {
 
         attachings.done();
     }
-}
+};
 
 
-exports = module.exports = createFor;
+exports = module.exports = ForNode;
