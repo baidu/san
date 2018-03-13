@@ -58,9 +58,9 @@ function nextTick(fn, thisArg) {
         nextTasks = [];
         nextHandler = null;
 
-        each(tasks, function (task) {
-            task();
-        });
+        for (var i = 0, l = tasks.length; i < l; i++) {
+            tasks[i]();
+        }
     };
 
     // 非标准方法，但是此方法非常吻合要求。
