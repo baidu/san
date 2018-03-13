@@ -90,9 +90,8 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                     /* eslint-enable no-use-before-define */
 
                     if (typeof filterFn === 'function') {
-                        var args = evalArgs(filter.args, data, owner);
-                        value = args.length
-                            ? filterFn.apply(owner, [value].concat(args))
+                        value = filter.args.length
+                            ? filterFn.apply(owner, [value].concat(evalArgs(filter.args, data, owner)))
                             : filterFn(value);
                     }
                 }
