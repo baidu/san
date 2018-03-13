@@ -14,17 +14,18 @@ var ExprType = require('../parser/expr-type');
  * @return {boolean}
  */
 function isSimpleText(aNode) {
-    var isSimple = true;
+    var segs = aNode.textExpr.segs;
+    var len = segs.length;
 
-    each(aNode.textExpr.segs, function (seg) {
+    while (len--) {
+        var seg = segs[len];
+
         if (seg.type === ExprType.INTERP && seg.raw) {
-            isSimple = false;
+            return false;
         }
+    }
 
-        return isSimple;
-    });
-
-    return isSimple;
+    return true;
 }
 
 exports = module.exports = isSimpleText;
