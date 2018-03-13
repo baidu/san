@@ -89,6 +89,7 @@ Data.prototype.fire = function (change) {
  * 获取数据项
  *
  * @param {string|Object?} expr 数据项路径
+ * @param {Data?} callee 当前数据获取的调用环境
  * @return {*}
  */
 Data.prototype.get = function (expr, callee) {

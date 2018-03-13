@@ -7,8 +7,6 @@ var ExprType = require('../parser/expr-type');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
 var evalArgs = require('./eval-args');
-var findMethod = require('./find-method');
-var each = require('../util/each');
 
 /**
  * 计算表达式的值
@@ -31,6 +29,9 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
         case ExprType.BINARY:
             var leftValue = evalExpr(expr.segs[0], data, owner);
             var rightValue = evalExpr(expr.segs[1], data, owner);
+
+
+            /* eslint-disable eqeqeq */
             switch (expr.operator) {
                 case 37:
                     return leftValue % rightValue;
@@ -63,6 +64,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                 case 248:
                     return leftValue || rightValue;
             }
+            /* eslint-enable eqeqeq */
             return;
 
         case ExprType.TERTIARY:
@@ -107,6 +109,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
 
             return value;
 
+        /* eslint-disable no-redeclare */
         case ExprType.TEXT:
             var buf = '';
             for (var i = 0, l = expr.segs.length; i < l; i++) {

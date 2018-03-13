@@ -4,12 +4,10 @@
  */
 
 
-var each = require('../util/each');
 var createANode = require('../parser/create-a-node');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
 var defineComponent = require('./define-component');
-
 
 
 /**
@@ -65,8 +63,8 @@ function compileComponent(ComponentClass) {
 
             /* eslint-disable quotes */
             var componentPropExtra = {
-                'class': { name: 'class', expr: parseText("{{class | _class | _sep(' ')}}") },
-                'style': { name: 'style', expr: parseText("{{style | _style | _sep(';')}}") }
+                'class': {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
+                'style': {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
             };
             /* eslint-enable quotes */
 
@@ -83,7 +81,7 @@ function compileComponent(ComponentClass) {
                 }
             }
 
-            firstChild.props.push(componentPropExtra['class'], componentPropExtra.style);
+            firstChild.props.push(componentPropExtra['class'], componentPropExtra.style); // eslint-disable-line dot-notation
         }
     }
 }

@@ -11,7 +11,7 @@ var escapeHTML = require('../runtime/escape-html');
 var autoCloseTags = require('../browser/auto-close-tags');
 var getANodeProp = require('./get-a-node-prop');
 var isComponent = require('./is-component');
-var getPropHandler = require('./get-prop-handler');
+var handleProp = require('./handle-prop');
 var nodeEvalExpr = require('./node-eval-expr');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var attachings = require('./attachings');
@@ -45,13 +45,11 @@ function elementOwnAttachHTML(buf) {
     var props = this.aNode.hotspot.dynamicProps;
     for (var i = 0, l = props.length; i < l; i++) {
         var prop = props[i];
-
-        //var attr = prop.attr;
         var value = elementIsComponent
             ? evalExpr(prop.expr, this.data, this)
             : nodeEvalExpr(this, prop.expr, 1);
 
-        if (!BOOL_ATTRIBUTES[prop.name] && prop.x) {
+        if (prop.x && !BOOL_ATTRIBUTES[prop.name]) {
             value = escapeHTML(value);
         }
 

@@ -332,6 +332,7 @@ ForNode.prototype._update = function (changes) {
     var newList = nodeEvalExpr(me, forDirective.value);
     var newLen = newList && newList.length || 0;
 
+    /* eslint-disable no-redeclare */
     each(changes, function (change) {
         var relation = changeExprCompare(change.expr, forDirective.value, me.scope);
 
@@ -530,11 +531,9 @@ ForNode.prototype._update = function (changes) {
         var newChildBuf = createHTMLBuffer();
 
         // 对相应的项进行更新
-        var i = 0;
-        var child;
         if (oldChildrenLen === 0 && isOnlyParentChild) {
-            for (; i < newChildrenLen; i++) {
-                child = createForDirectiveChild(me, newList[i], i);
+            for (var i = 0; i < newChildrenLen; i++) {
+                var child = createForDirectiveChild(me, newList[i], i);
                 me.children[i] = child;
                 child._attachHTML(newChildBuf);
             }
@@ -560,8 +559,8 @@ ForNode.prototype._update = function (changes) {
             // }
 
 
-            for (; i < newChildrenLen; i++) {
-                child = me.children[i];
+            for (var i = 0; i < newChildrenLen; i++) {
+                var child = me.children[i];
 
                 if (child) {
                     childrenChanges[i].length && child._update(childrenChanges[i]);
