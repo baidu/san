@@ -38,7 +38,6 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnAttachHTML = require('./element-own-attach-html');
 var warnEventListenMethod = require('./warn-event-listen-method');
 var elementLeave = require('./element-leave');
-var elementToPhase = require('./element-to-phase');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
@@ -298,7 +297,8 @@ Component.prototype.nextTick = nextTick;
  */
 Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
-    if (elementToPhase(this, name)) {
+    if (!this.lifeCycle[name]) {
+        this.lifeCycle = LifeCycle[name] || this.lifeCycle;
         if (typeof this[name] === 'function') {
             this[name]();
         }
