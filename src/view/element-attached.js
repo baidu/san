@@ -40,6 +40,9 @@ function inputOnCompositionStart() {
     this.composing = 1;
 }
 
+function xPropOutputer(xProp, data) {
+    getPropHandler(this, xProp.name).output(this, xProp, data);
+}
 
 /**
  * 完成元素 attached 后的行为
@@ -53,18 +56,12 @@ function elementAttached(element) {
     var data = elementIsComponent ? element.data : element.scope;
 
     // 处理自身变化时双向绑定的逻辑
-    each(element.aNode.props, function (bindInfo) {
-        if (!bindInfo.x) {
-            return;
-        }
-
+    var xProps = element.aNode.hotspot.xProps;
+    for (var i = 0, l = xProps.length; i < l; i++) {
         var el = element._getEl();
-        function outputer() {
-            getPropHandler(element, bindInfo.name).output(element, bindInfo, data);
-        }
+        var xProp = xProps[i];
 
-
-        switch (bindInfo.name) {
+        switch (xProp.name) {
             case 'value':
                 switch (element.tagName) {
                     case 'input':
@@ -77,17 +74,20 @@ function elementAttached(element) {
 
                         element._onEl(
                             ('oninput' in el) ? 'input' : 'propertychange',
-                            function (e) {
-                                if (!this.composing) {
-                                    outputer(e);
+                            (function () {
+                                var outputer = bind(xPropOutputer, element, xProp, data);
+                                return function (e) {
+                                    if (!this.composing) {
+                                        outputer(e);
+                                    }
                                 }
-                            }
+                            })()
                         );
 
                         break;
 
                     case 'select':
-                        element._onEl('change', outputer);
+                        element._onEl('change', bind(xPropOutputer, element, xProp, data));
                         break;
                 }
                 break;
@@ -98,20 +98,20 @@ function elementAttached(element) {
                         switch (el.type) {
                             case 'checkbox':
                             case 'radio':
-                                element._onEl('click', outputer);
+                                element._onEl('click', bind(xPropOutputer, element, xProp, data));
                         }
                 }
                 break;
         }
-
-    });
+    }
 
     // bind events
     var events = elementIsComponent
         ? element.aNode.events.concat(element.nativeEvents)
         : element.aNode.events;
 
-    each(events, function (eventBind) {
+    for (var i = 0, l = events.length; i < l; i++) {
+        var eventBind = events[i];
         var owner = elementIsComponent ? element : element.owner;
         var data = element.data || element.scope;
 
@@ -137,7 +137,7 @@ function elementAttached(element) {
             ),
             eventBind.modifier.capture
         );
-    });
+    }
 
     element._toPhase('attached');
 
