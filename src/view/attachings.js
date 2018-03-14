@@ -33,7 +33,7 @@ var attachings = {
      * 执行 attaching 完成行为
      */
     done: function () {
-        var nodes = attachingNodes;
+        var nodes = attachingNodes.slice(0);
         attachingNodes = [];
 
         for (var i = 0, l = nodes.length; i < l; i++) {
