@@ -10,10 +10,9 @@ var bind = require('../util/bind');
 var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
 var trigger = require('../browser/trigger');
-
+var NodeType = require('./node-type');
 var elementGetTransition = require('./element-get-transition');
 var eventDeclarationListener = require('./event-declaration-listener');
-var isComponent = require('./is-component');
 var getPropHandler = require('./get-prop-handler');
 var warnEventListenMethod = require('./warn-event-listen-method');
 
@@ -49,8 +48,8 @@ function inputOnCompositionStart() {
  */
 function elementAttached(element) {
     element._toPhase('created');
-    var elementIsComponent = isComponent(element);
 
+    var elementIsComponent = element.nodeType === NodeType.CMPT;
     var data = elementIsComponent ? element.data : element.scope;
 
     // 处理自身变化时双向绑定的逻辑

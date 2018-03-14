@@ -5,7 +5,7 @@
 
 var evalArgs = require('../runtime/eval-args');
 var findMethod = require('../runtime/find-method');
-var isComponent = require('./is-component');
+var NodeType = require('./node-type');
 
 /**
  * 获取 element 的 transition 控制对象
@@ -14,7 +14,7 @@ var isComponent = require('./is-component');
  * @return {Object?}
  */
 function elementGetTransition(element) {
-    var aNode = isComponent(element) ? element.givenANode : element.aNode;
+    var aNode = element.nodeType === NodeType.CMPT ? element.givenANode : element.aNode;
     var directive = aNode && aNode.directives.transition;
     var owner = element.owner;
 

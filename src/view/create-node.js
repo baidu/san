@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-
+var NodeType = require('./node-type');
 var isComponent = require('./is-component');
 var TextNode = require('./text-node');
 var Element = require('./element');
@@ -22,8 +22,9 @@ var TemplateNode = require('./template-node');
  * @return {Node}
  */
 function createNode(aNode, parent, scope) {
-    var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
-    scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
+    var parentIsComponent = parent.nodeType === NodeType.CMPT;
+    var owner = parentIsComponent ? parent : (parent.childOwner || parent.owner);
+    scope = scope || (parentIsComponent ? parent.data : (parent.childScope || parent.scope));
 
 
     if (aNode.textExpr) {

@@ -10,7 +10,6 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
@@ -48,7 +47,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
     this.lifeCycle = LifeCycle.start;
     this.children = [];
     this._elFns = {};
-    this.parentComponent = isComponent(parent)
+    this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
 
@@ -116,19 +115,24 @@ Element.prototype._update = function (changes) {
     this._getEl();
     var me = this;
 
-    each(this.aNode.hotspot.dynamicProps, function (prop) {
-        each(changes, function (change) {
-            if (!isDataChangeByElement(change, me, prop.name)
+    var dynamicProps = this.aNode.hotspot.dynamicProps;
+    for (var i = 0, l = dynamicProps.length; i < l; i++) {
+        var prop = dynamicProps[i];
+
+        for (var j = 0, changeLen = changes.length; j < changeLen; j++) {
+            var change = changes[j];
+
+            if (!isDataChangeByElement(change, this, prop.name)
                 && (
-                    changeExprCompare(change.expr, prop.expr, me.scope)
-                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.scope)
+                    changeExprCompare(change.expr, prop.expr, this.scope)
+                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
                 )
             ) {
-                handleProp.prop(me, prop.name, evalExpr(prop.expr, me.scope, me.owner));
-                return false;
+                handleProp.prop(this, prop.name, evalExpr(prop.expr, this.scope, this.owner));
+                break;
             }
-        });
-    });
+        }
+    }
 
     var htmlDirective = this.aNode.directives.html;
     if (htmlDirective) {

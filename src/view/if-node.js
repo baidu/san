@@ -9,7 +9,6 @@ var htmlBufferComment = require('../runtime/html-buffer-comment');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var rinseCondANode = require('./rinse-cond-anode');
-var isComponent = require('./is-component');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
@@ -31,7 +30,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
-    this.parentComponent = isComponent(parent)
+    this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
 

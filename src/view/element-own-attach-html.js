@@ -11,7 +11,7 @@ var escapeHTML = require('../runtime/escape-html');
 var evalExpr = require('../runtime/eval-expr');
 var autoCloseTags = require('../browser/auto-close-tags');
 var getANodeProp = require('./get-a-node-prop');
-var isComponent = require('./is-component');
+var NodeType = require('./node-type');
 var handleProp = require('./handle-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var attachings = require('./attachings');
@@ -39,8 +39,8 @@ function elementOwnAttachHTML(buf) {
         return;
     }
 
-    var elementIsComponent = isComponent(this);
-    htmlBufferPush(buf, '<' + this.tagName + this.aNode.hotspot.staticAttr);
+    var elementIsComponent = this.nodeType === NodeType.CMPT;
+    htmlBufferPush(buf, '<' + tagName + this.aNode.hotspot.staticAttr);
 
     var props = this.aNode.hotspot.dynamicProps;
     for (var i = 0, l = props.length; i < l; i++) {

@@ -16,7 +16,6 @@ var htmlBufferComment = require('../runtime/html-buffer-comment');
 var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
@@ -46,7 +45,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
-    this.parentComponent = isComponent(parent)
+    this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
 

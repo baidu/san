@@ -19,7 +19,6 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
 var componentPreheat = require('./component-preheat');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
@@ -83,13 +82,16 @@ function Component(options) { // eslint-disable-line
     };
 
     this.owner = options.owner;
-    this.parent = options.parent;
     this.scope = options.scope;
     this.el = options.el;
 
-    this.parentComponent = isComponent(options.parent)
-        ? options.parent
-        : options.parent && options.parent.parentComponent,
+    var parent = options.parent;
+    if (parent) {
+        this.parent = parent;
+        this.parentComponent = parent.nodeType === NodeType.CMPT
+            ? parent
+            : parent && parent.parentComponent;
+    }
 
     this.id = guid();
 

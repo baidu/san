@@ -4,7 +4,7 @@
  */
 
 
-var isComponent = require('./is-component');
+var NodeType = require('./node-type');
 var TextNode = require('./text-node');
 var Element = require('./element');
 var SlotNode = require('./slot-node');
@@ -23,8 +23,9 @@ var TemplateNode = require('./template-node');
  * @return {Node}
  */
 function createReverseNode(aNode, reverseWalker, parent, scope) {
-    var owner = isComponent(parent) ? parent : (parent.childOwner || parent.owner);
-    scope = scope || (isComponent(parent) ? parent.data : (parent.childScope || parent.scope));
+    var parentIsComponent = parent.nodeType === NodeType.CMPT;
+    var owner = parentIsComponent ? parent : (parent.childOwner || parent.owner);
+    scope = scope || (parentIsComponent ? parent.data : (parent.childScope || parent.scope));
 
     if (aNode.textExpr) {
         return new TextNode(aNode, owner, scope, parent, reverseWalker);

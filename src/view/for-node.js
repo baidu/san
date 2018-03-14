@@ -24,7 +24,6 @@ var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
@@ -149,7 +148,7 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
-    this.parentComponent = isComponent(parent)
+    this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
 
@@ -333,7 +332,8 @@ ForNode.prototype._update = function (changes) {
     var newLen = newList && newList.length || 0;
 
     /* eslint-disable no-redeclare */
-    each(changes, function (change) {
+    for (var cIndex = 0, cLen = changes.length; cIndex < cLen; cIndex++) {
+        var change = changes[cIndex];
         var relation = changeExprCompare(change.expr, me.param.value, me.scope);
 
         if (!relation) {
@@ -460,7 +460,7 @@ ForNode.prototype._update = function (changes) {
             disposeChildren = disposeChildren.concat(me.children.splice.apply(me.children, spliceArgs));
             childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);
         }
-    });
+    }
 
     var newChildrenLen = this.children.length;
 

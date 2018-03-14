@@ -15,7 +15,6 @@ var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var attachings = require('./attachings');
-var isComponent = require('./is-component');
 var elementUpdateChildren = require('./element-update-children');
 var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
@@ -36,7 +35,7 @@ function TemplateNode(aNode, owner, scope, parent, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
-    this.parentComponent = isComponent(parent)
+    this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
 

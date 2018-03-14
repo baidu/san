@@ -8,7 +8,7 @@ var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
 var evalExpr = require('../runtime/eval-expr');
 var getANodeProp = require('./get-a-node-prop');
-var isComponent = require('./is-component');
+var NodeType = require('./node-type');
 
 
 /**
@@ -232,7 +232,7 @@ var elementPropHandlers = {
                     if ((prop = getANodeProp(parentSelect.aNode, 'value'))
                         && (expr = prop.expr)
                     ) {
-                        selectValue = isComponent(parentSelect)
+                        selectValue = parentSelect.nodeType === NodeType.CMPT
                                 ? evalExpr(expr, parentSelect.data, parentSelect)
                                 : evalExpr(expr, parentSelect.scope, parentSelect.owner)
                             || '';
