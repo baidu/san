@@ -4,6 +4,7 @@
  */
 
 var each = require('../util/each');
+var splitStr2Obj = require('../util/split-str-2-obj');
 var evalExpr = require('../runtime/eval-expr');
 var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferTagStart = require('../runtime/html-buffer-tag-start');
@@ -16,14 +17,9 @@ var handleProp = require('./handle-prop');
 var genElementChildrenHTML = require('./gen-element-children-html');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
+var boolAttrs = require('../browser/bool-attrs');
 
-var BOOL_ATTRIBUTES = {};
-each(
-    'checked,readonly,selected,multiple,disabled'.split(','),
-    function (key) {
-        BOOL_ATTRIBUTES[key] = 1;
-    }
-);
+
 
 /**
  * attach 元素的 HTML
@@ -49,7 +45,7 @@ function elementOwnAttachHTML(buf) {
             ? evalExpr(prop.expr, this.data, this)
             : evalExpr(prop.expr, this.scope, this.owner, 1);
 
-        if (prop.x && !BOOL_ATTRIBUTES[prop.name]) {
+        if (prop.x && !boolAttrs[prop.name]) {
             value = escapeHTML(value);
         }
 
