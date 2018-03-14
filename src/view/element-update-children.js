@@ -12,9 +12,9 @@ var each = require('../util/each');
  * @param {Array} changes 数据变化信息
  */
 function elementUpdateChildren(element, changes) {
-    each(element.children, function (child) {
-        child._update(changes);
-    });
+    for (var i = 0, l = element.children.length; i < l; i++) {
+        element.children[i]._update(changes);
+    }
 }
 
 exports = module.exports = elementUpdateChildren;
