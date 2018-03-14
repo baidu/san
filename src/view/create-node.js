@@ -3,6 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var hotTags = require('../browser/hot-tags');
 var NodeType = require('./node-type');
 var TextNode = require('./text-node');
 var Element = require('./element');
@@ -38,16 +39,10 @@ function createNode(aNode, parent, scope) {
         return new ForNode(aNode, owner, scope, parent);
     }
 
-    var ComponentType = owner.getComponentType(aNode);
-    if (ComponentType) {
-        return new ComponentType({
-            aNode: aNode,
-            owner: owner,
-            scope: scope,
-            parent: parent,
-            subTag: aNode.tagName
-        });
+    if (hotTags[aNode.tagName]) {
+        return new Element(aNode, owner, scope, parent);
     }
+
 
 
     switch (aNode.tagName) {
@@ -56,6 +51,18 @@ function createNode(aNode, parent, scope) {
 
         case 'template':
             return new TemplateNode(aNode, owner, scope, parent);
+
+        default:
+            var ComponentType = owner.getComponentType(aNode);
+            if (ComponentType) {
+                return new ComponentType({
+                    aNode: aNode,
+                    owner: owner,
+                    scope: scope,
+                    parent: parent,
+                    subTag: aNode.tagName
+                });
+            }
     }
 
     return new Element(aNode, owner, scope, parent);

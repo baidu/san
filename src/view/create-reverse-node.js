@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-
+var hotTags = require('../browser/hot-tags');
 var NodeType = require('./node-type');
 var TextNode = require('./text-node');
 var Element = require('./element');
@@ -39,16 +39,8 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
         return new ForNode(aNode, owner, scope, parent, reverseWalker);
     }
 
-    var ComponentType = owner.getComponentType(aNode);
-    if (ComponentType) {
-        return new ComponentType({
-            aNode: aNode,
-            owner: owner,
-            scope: scope,
-            parent: parent,
-            subTag: aNode.tagName,
-            reverseWalker: reverseWalker
-        });
+    if (hotTags[aNode.tagName]) {
+        return new Element(aNode, owner, scope, parent, reverseWalker);
     }
 
     switch (aNode.tagName) {
@@ -57,6 +49,19 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
 
         case 'template':
             return new TemplateNode(aNode, owner, scope, parent, reverseWalker);
+
+        default:
+            var ComponentType = owner.getComponentType(aNode);
+            if (ComponentType) {
+                return new ComponentType({
+                    aNode: aNode,
+                    owner: owner,
+                    scope: scope,
+                    parent: parent,
+                    subTag: aNode.tagName,
+                    reverseWalker: reverseWalker
+                });
+            }
     }
 
     return new Element(aNode, owner, scope, parent, reverseWalker);
