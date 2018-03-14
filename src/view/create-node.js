@@ -4,7 +4,6 @@
  */
 
 var NodeType = require('./node-type');
-var isComponent = require('./is-component');
 var TextNode = require('./text-node');
 var Element = require('./element');
 var SlotNode = require('./slot-node');
