@@ -102,6 +102,18 @@ Element.prototype._getEl = elementOwnGetEl;
 Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
 
+Element.prototype._doneLeave = function () {
+    if (this.leaveOption.dispose) {
+        if (!this.lifeCycle.disposed) {
+            elementDispose(this, this.leaveOption.options);
+        }
+    }
+    else if (this.lifeCycle.attached) {
+        removeEl(this._getEl());
+        this._toPhase('detached');
+    }
+};
+
 /**
  * 视图更新
  *

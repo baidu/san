@@ -706,30 +706,31 @@ Component.prototype.watch = function (dataName, listener) {
  *
  * @param {Object} options 销毁行为的参数
  */
-Component.prototype.dispose = function (options) {
-    var me = this;
-    me._doneLeave = function () {
-        if (!me.lifeCycle.disposed) {
+Component.prototype.dispose = elementOwnDispose;
+
+Component.prototype._doneLeave = function () {
+    if (this.leaveOption.dispose) {
+        if (!this.lifeCycle.disposed) {
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
-            me.slotChildren = null;
+            this.slotChildren = null;
 
-            me.data.unlisten();
-            me.dataChanger = null;
-            me.dataChanges = null;
+            this.data.unlisten();
+            this.dataChanger = null;
+            this.dataChanges = null;
 
-            elementDispose(me, options);
-            me.listeners = null;
+            elementDispose(this, this.leaveOption.options);
+            this.listeners = null;
 
-            me.givenANode = null;
-            me.givenSlots = null;
-            me.givenNamedSlotBinds = null;
+            this.givenANode = null;
+            this.givenSlots = null;
+            this.givenNamedSlotBinds = null;
         }
-    };
-
-    elementLeave(this, options);
+    }
+    else if (this.lifeCycle.attached) {
+        removeEl(this._getEl());
+        this._toPhase('detached');
+    }
 };
-
-
 
 /**
  * 完成组件 attached 后的行为

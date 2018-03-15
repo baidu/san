@@ -21,6 +21,10 @@ function elementOwnDetach() {
     elementLeave(this);
 }
 
+function elementOwnDetach() {
+    this.leaveOption = this.leaveOption || {};
+    elementLeave(this);
+}
 
 
 exports = module.exports = elementOwnDetach;

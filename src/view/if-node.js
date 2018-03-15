@@ -139,7 +139,7 @@ IfNode.prototype._update = function (changes) {
     }
     else {
         var child = me.children[0];
-        me.children.length = 0;
+        me.children = [];
         if (child) {
             child._ondisposed = newChild;
             child.dispose();

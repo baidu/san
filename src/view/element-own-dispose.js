@@ -12,13 +12,7 @@ var elementLeave = require('./element-leave');
  * @param {Object=} options dispose行为参数
  */
 function elementOwnDispose(options) {
-    var me = this;
-    me._doneLeave = function () {
-        if (!me.lifeCycle.disposed) {
-            elementDispose(me, options);
-        }
-    };
-
+    this.leaveOption = {dispose: 1, options: options};
     elementLeave(this, options);
 }
 
