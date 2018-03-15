@@ -15,12 +15,7 @@ var on = require('../browser/on');
 function elementOwnOnEl(name, listener, capture) {
     if (typeof listener === 'function') {
         capture = !!capture;
-
-        if (!this._elFns[name]) {
-            this._elFns[name] = [];
-        }
-        this._elFns[name].push([listener, capture]);
-
+        this._elFns.push([name, listener, capture]);
         on(this._getEl(), name, listener, capture);
     }
 }

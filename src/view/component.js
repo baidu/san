@@ -56,7 +56,7 @@ function Component(options) { // eslint-disable-line
 
     this.lifeCycle = LifeCycle.start;
     this.children = [];
-    this._elFns = {};
+    this._elFns = [];
     this.listeners = {};
     this.slotChildren = [];
 

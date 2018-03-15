@@ -20,14 +20,10 @@ function elementDispose(element, options) {
 
     /* eslint-disable guard-for-in */
     // el 事件解绑
-    for (var key in element._elFns) {
-        var nameListeners = element._elFns[key];
-        var len = nameListeners && nameListeners.length;
-
-        while (len--) {
-            var fn = nameListeners[len];
-            un(element._getEl(), key, fn[0], fn[1]);
-        }
+    var len = element._elFns.length;
+    while (len--) {
+        var fn = element._elFns[len];
+        un(element._getEl(), fn[0], fn[1], fn[2]);
     }
     element._elFns = null;
     /* eslint-enable guard-for-in */

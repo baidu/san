@@ -46,7 +46,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
 
     this.lifeCycle = LifeCycle.start;
     this.children = [];
-    this._elFns = {};
+    this._elFns = [];
     this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
