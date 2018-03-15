@@ -299,8 +299,8 @@ ForNode.prototype._attachHTML = function (buf, onlyChildren) {
  * @param {Array} changes 数据变化信息
  */
 ForNode.prototype._update = function (changes) {
-    var me = this;
 
+    var me = this;
     // 控制列表更新策略是否原样更新的变量
     var originalUpdate = this.aNode.directives.transition;
 
@@ -339,7 +339,7 @@ ForNode.prototype._update = function (changes) {
     /* eslint-disable no-redeclare */
     for (var cIndex = 0, cLen = changes.length; cIndex < cLen; cIndex++) {
         var change = changes[cIndex];
-        var relation = changeExprCompare(change.expr, me.param.value, me.scope);
+        var relation = changeExprCompare(change.expr, this.param.value, this.scope);
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
@@ -349,8 +349,8 @@ ForNode.prototype._update = function (changes) {
             // 变更表达式是list绑定表达式的子项
             // 只需要对相应的子项进行更新
             var changePaths = change.expr.paths;
-            var forLen = me.param.value.paths.length;
-            var changeIndex = +evalExpr(changePaths[forLen], me.scope, me.owner);
+            var forLen = this.param.value.paths.length;
+            var changeIndex = +evalExpr(changePaths[forLen], this.scope, this.owner);
 
             if (isNaN(changeIndex)) {
                 pushToChildrenChanges(change);
@@ -359,7 +359,7 @@ ForNode.prototype._update = function (changes) {
                 change = extend({}, change);
                 change.overview = null;
                 change.expr = createAccessor(
-                    me.param.item.paths.concat(changePaths.slice(forLen + 1))
+                    this.param.item.paths.concat(changePaths.slice(forLen + 1))
                 );
 
                 (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
@@ -367,7 +367,7 @@ ForNode.prototype._update = function (changes) {
 
                 switch (change.type) {
                     case DataChangeType.SET:
-                        me.children[changeIndex].scope._set(
+                        this.children[changeIndex].scope._set(
                             change.expr,
                             change.value,
                             {silent: 1}
@@ -376,7 +376,7 @@ ForNode.prototype._update = function (changes) {
 
 
                     case DataChangeType.SPLICE:
-                        me.children[changeIndex].scope._splice(
+                        this.children[changeIndex].scope._splice(
                             change.expr,
                             [].concat(change.index, change.deleteCount, change.insertions),
                             {silent: 1}
@@ -392,10 +392,10 @@ ForNode.prototype._update = function (changes) {
 
             // 老的比新的多的部分，标记需要dispose
             if (oldChildrenLen > newLen) {
-                disposeChildren = disposeChildren.concat(me.children.slice(newLen));
+                disposeChildren = disposeChildren.concat(this.children.slice(newLen));
 
-                childrenChanges.length = newLen;
-                me.children.length = newLen;
+                childrenChanges = childrenChanges.slice(0, newLen);
+                this.children = this.children.slice(0, newLen);
             }
 
             // 整项变更
@@ -403,7 +403,7 @@ ForNode.prototype._update = function (changes) {
                 (childrenChanges[i] = childrenChanges[i] || []).push({
                     type: DataChangeType.SET,
                     option: change.option,
-                    expr: createAccessor(me.param.item.paths.slice(0)),
+                    expr: createAccessor(this.param.item.paths.slice(0)),
                     value: newList[i]
                 });
 
@@ -412,15 +412,15 @@ ForNode.prototype._update = function (changes) {
                     childrenChanges[i].push(change);
                 }
 
-                if (me.children[i]) {
-                    me.children[i].scope._set(
-                        me.param.item,
+                if (this.children[i]) {
+                    this.children[i].scope._set(
+                        this.param.item,
                         newList[i],
                         {silent: 1}
                     );
                 }
                 else {
-                    me.children[i] = 0;
+                    this.children[i] = 0;
                 }
             }
 
@@ -438,12 +438,12 @@ ForNode.prototype._update = function (changes) {
                 var indexChange = {
                     type: DataChangeType.SET,
                     option: change.option,
-                    expr: me.param.index
+                    expr: this.param.index
                 };
 
-                for (var i = changeStart + deleteCount; i < me.children.length; i++) {
+                for (var i = changeStart + deleteCount; i < this.children.length; i++) {
                     (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
-                    me.children[i] && me.children[i].scope._set(
+                    this.children[i] && this.children[i].scope._set(
                         indexChange.expr,
                         i - deleteCount + insertionsLen,
                         {silent: 1}
@@ -458,7 +458,7 @@ ForNode.prototype._update = function (changes) {
                 childrenChangesSpliceArgs.push([]);
             });
 
-            disposeChildren = disposeChildren.concat(me.children.splice.apply(me.children, spliceArgs));
+            disposeChildren = disposeChildren.concat(this.children.splice.apply(this.children, spliceArgs));
             childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);
         }
     }
@@ -484,7 +484,7 @@ ForNode.prototype._update = function (changes) {
     }
 
     // 清除应该干掉的 child
-    me._doCreateAndUpdate = doCreateAndUpdate;
+    this._doCreateAndUpdate = doCreateAndUpdate;
 
     // 这里不用getTransition，getTransition和scope相关，for和forItem的scope是不同的
     // 所以getTransition结果本身也是不一致的。不如直接判断指令是否存在，如果存在就不进入暴力清除模式
@@ -494,15 +494,16 @@ ForNode.prototype._update = function (changes) {
 
     var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
-    each(disposeChildren, function (child) {
-        if (child) {
-            child._ondisposed = childDisposed;
-            child.dispose({dontDetach: violentClear, noTransition: violentClear});
+    for (var i = 0; i < disposeChildren.length; i++) {
+        var disposeChild = disposeChildren[i];
+        if (disposeChild) {
+            disposeChild._ondisposed = childDisposed;
+            disposeChild.dispose({ dontDetach: violentClear, noTransition: violentClear });
         }
         else {
             childDisposed();
         }
-    });
+    }
 
     if (violentClear) {
         parentEl.innerHTML = '';
@@ -513,6 +514,8 @@ ForNode.prototype._update = function (changes) {
     if (disposeChildCount === 0) {
         doCreateAndUpdate();
     }
+
+
 
     function childDisposed() {
         disposedChildCount++;
