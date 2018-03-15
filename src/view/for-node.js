@@ -264,6 +264,7 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
 ForNode.prototype.detach = function () {
     if (this.lifeCycle.attached) {
         elementDisposeChildren(this, true);
+        this.children = [];
         removeEl(this._getEl());
         this.lifeCycle = LifeCycle.detached;
     }
@@ -303,11 +304,15 @@ ForNode.prototype._update = function (changes) {
     // 控制列表更新策略是否原样更新的变量
     var originalUpdate = this.aNode.directives.transition;
 
-    var childrenChanges = [];
+
     var oldChildrenLen = this.children.length;
-    each(this.children, function () {
-        childrenChanges.push([]);
-    });
+    var childrenChanges = new Array(oldChildrenLen);
+
+    function pushToChildrenChanges(change) {
+        for (var i = 0, l = childrenChanges.length; i < l; i++) {
+            (childrenChanges[i] = childrenChanges[i] || []).push(change);
+        }
+    }
 
     var disposeChildren = [];
 
@@ -338,9 +343,7 @@ ForNode.prototype._update = function (changes) {
 
         if (!relation) {
             // 无关时，直接传递给子元素更新，列表本身不需要动
-            each(childrenChanges, function (childChanges) {
-                childChanges.push(change);
-            });
+            pushToChildrenChanges(change);
         }
         else if (relation > 2) {
             // 变更表达式是list绑定表达式的子项
@@ -350,9 +353,7 @@ ForNode.prototype._update = function (changes) {
             var changeIndex = +evalExpr(changePaths[forLen], me.scope, me.owner);
 
             if (isNaN(changeIndex)) {
-                each(childrenChanges, function (childChanges) {
-                    childChanges.push(change);
-                });
+                pushToChildrenChanges(change);
             }
             else {
                 change = extend({}, change);
@@ -361,7 +362,8 @@ ForNode.prototype._update = function (changes) {
                     me.param.item.paths.concat(changePaths.slice(forLen + 1))
                 );
 
-                childrenChanges[changeIndex].push(change);
+                (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
+                    .push(change);
 
                 switch (change.type) {
                     case DataChangeType.SET:
@@ -398,8 +400,7 @@ ForNode.prototype._update = function (changes) {
 
             // 整项变更
             for (var i = 0; i < newLen; i++) {
-                childrenChanges[i] = childrenChanges[i] || [];
-                childrenChanges[i].push({
+                (childrenChanges[i] = childrenChanges[i] || []).push({
                     type: DataChangeType.SET,
                     option: change.option,
                     expr: createAccessor(me.param.item.paths.slice(0)),
@@ -441,7 +442,7 @@ ForNode.prototype._update = function (changes) {
                 };
 
                 for (var i = changeStart + deleteCount; i < me.children.length; i++) {
-                    childrenChanges[i].push(indexChange);
+                    (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
                     me.children[i] && me.children[i].scope._set(
                         indexChange.expr,
                         i - deleteCount + insertionsLen,
@@ -476,9 +477,10 @@ ForNode.prototype._update = function (changes) {
                 })
             )
         };
-        each(childrenChanges, function (childChanges) {
-            childChanges.push(lengthChange);
-        });
+
+        if (changesIsInDataRef([lengthChange], this.aNode.hotspot.data)) {
+            pushToChildrenChanges(lengthChange);
+        }
     }
 
     // 清除应该干掉的 child
@@ -563,7 +565,7 @@ ForNode.prototype._update = function (changes) {
                 var child = me.children[i];
 
                 if (child) {
-                    childrenChanges[i].length && child._update(childrenChanges[i]);
+                    childrenChanges[i] && child._update(childrenChanges[i]);
                 }
                 else {
                     newChildBuf = newChildBuf || createHTMLBuffer();

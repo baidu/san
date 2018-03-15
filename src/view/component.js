@@ -655,6 +655,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  */
 Component.prototype._repaintChildren = function () {
     elementDisposeChildren(this, {dontDetach: true, noTransition: true});
+    this.children = [];
 
     this._contentReady = 0;
     this.slotChildren = [];

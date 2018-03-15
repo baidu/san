@@ -16,6 +16,17 @@ var getANodeProp = require('./get-a-node-prop');
 function componentPreheat(ComponentClass) {
     var stack = [];
 
+    function recordHotspotData(refs, notContentData) {
+        var len = stack.length;
+        each(stack, function (aNode, index) {
+            if (!notContentData || index !== len - 1) {
+                each(refs, function (ref) {
+                    aNode.hotspot.data[ref] = 1;
+                });
+            }
+        });
+    }
+
     function analyseANodeHotspot(aNode) {
         if (!aNode.hotspot) {
             stack.push(aNode);
@@ -39,7 +50,7 @@ function componentPreheat(ComponentClass) {
                 /* eslint-disable guard-for-in */
                 for (var key in aNode.directives) {
                     var directive = aNode.directives[key];
-                    recordHotspotData(analyseExprDataHotspot(directive.value));
+                    recordHotspotData(analyseExprDataHotspot(directive.value), key !== 'html');
                 }
                 /* eslint-enable guard-for-in */
 
@@ -55,11 +66,16 @@ function componentPreheat(ComponentClass) {
 
                 // === analyse hotspot props: start
                 aNode.hotspot.dynamicProps = [];
+                aNode.hotspot.xProps = [];
                 aNode.hotspot.staticAttr = '';
                 aNode.hotspot.props = {};
 
                 each(aNode.props, function (prop, index) {
                     aNode.hotspot.props[prop.name] = index;
+
+                    if (prop.name === 'id') {
+                        aNode.hotspot.id = prop;
+                    }
 
                     if (prop.expr.value != null
                         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
@@ -67,6 +83,9 @@ function componentPreheat(ComponentClass) {
                         aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.name, prop.expr.value) || '';
                     }
                     else {
+                        if (prop.x) {
+                            aNode.hotspot.xProps.push(prop);
+                        }
                         aNode.hotspot.dynamicProps.push(prop);
                     }
                 });
@@ -92,13 +111,7 @@ function componentPreheat(ComponentClass) {
         }
     }
 
-    function recordHotspotData(refs) {
-        each(stack, function (aNode) {
-            each(refs, function (ref) {
-                aNode.hotspot.data[ref] = 1;
-            });
-        });
-    }
+
 
     analyseANodeHotspot(ComponentClass.prototype.aNode);
 }

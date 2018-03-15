@@ -16,8 +16,6 @@ function elementDisposeChildren(element, options) {
         while (len--) {
             children[len].dispose(options);
         }
-
-        children.length = 0;
     }
 }
 
