@@ -709,7 +709,7 @@ Component.prototype.watch = function (dataName, listener) {
 Component.prototype.dispose = elementOwnDispose;
 
 Component.prototype._doneLeave = function () {
-    if (this.leaveOption.dispose) {
+    if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
             this.slotChildren = null;
@@ -718,7 +718,7 @@ Component.prototype._doneLeave = function () {
             this.dataChanger = null;
             this.dataChanges = null;
 
-            elementDispose(this, this.leaveOption.options);
+            elementDispose(this, this.leaveOption);
             this.listeners = null;
 
             this.givenANode = null;

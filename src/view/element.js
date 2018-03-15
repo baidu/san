@@ -103,9 +103,9 @@ Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
 
 Element.prototype._doneLeave = function () {
-    if (this.leaveOption.dispose) {
+    if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
-            elementDispose(this, this.leaveOption.options);
+            elementDispose(this, this.leaveOption);
         }
     }
     else if (this.lifeCycle.attached) {

@@ -12,7 +12,8 @@ var elementLeave = require('./element-leave');
  * @param {Object=} options dispose行为参数
  */
 function elementOwnDispose(options) {
-    this.leaveOption = {dispose: 1, options: options};
+    this.leaveDispose = 1;
+    this.leaveOption = options;
     elementLeave(this, options);
 }
 

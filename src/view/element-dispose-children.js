@@ -11,11 +11,9 @@
  */
 function elementDisposeChildren(element, options) {
     var children = element.children;
-    if (children instanceof Array) {
-        var len = children.length;
-        while (len--) {
-            children[len].dispose(options);
-        }
+    var len = children && children.length;
+    while (len--) {
+        children[len].dispose(options);
     }
 }
 

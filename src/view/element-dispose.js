@@ -18,7 +18,6 @@ var nodeDispose = require('./node-dispose');
 function elementDispose(element, options) {
     elementDisposeChildren(element, {dontDetach: true, noTransition: true});
 
-    /* eslint-disable guard-for-in */
     // el 事件解绑
     var len = element._elFns.length;
     while (len--) {
@@ -26,7 +25,6 @@ function elementDispose(element, options) {
         un(element._getEl(), fn[0], fn[1], fn[2]);
     }
     element._elFns = null;
-    /* eslint-enable guard-for-in */
 
 
     if (!options || !options.dontDetach || !element.parent) {
