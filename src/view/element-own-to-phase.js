@@ -3,6 +3,9 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+
+var LifeCycle = require('./life-cycle');
+
 /**
  * 使元素节点到达相应的生命周期
  *

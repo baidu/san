@@ -20,6 +20,7 @@ var htmlBufferComment = require('../runtime/html-buffer-comment');
 var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var evalExpr = require('../runtime/eval-expr');
+var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
@@ -293,6 +294,8 @@ ForNode.prototype._attachHTML = function (buf, onlyChildren) {
     }
 };
 
+/* eslint-disable fecs-max-statements */
+
 /**
  * 视图更新函数
  *
@@ -453,10 +456,10 @@ ForNode.prototype._update = function (changes) {
 
             var spliceArgs = [changeStart, deleteCount];
             var childrenChangesSpliceArgs = [changeStart, deleteCount];
-            each(change.insertions, function (insertion, index) {
+            for (var i = 0, l = change.insertions.length; i < l; i++) {
                 spliceArgs.push(0);
                 childrenChangesSpliceArgs.push([]);
-            });
+            }
 
             disposeChildren = disposeChildren.concat(this.children.splice.apply(this.children, spliceArgs));
             childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);

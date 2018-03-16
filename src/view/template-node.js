@@ -70,7 +70,8 @@ TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
 /**
  * 销毁释放
  *
- * @param {Object=} options dispose行为参数
+ * @param {boolean=} noDetach 是否不要把节点从dom移除
+ * @param {boolean=} noTransition 是否不显示过渡动画效果
  */
 TemplateNode.prototype.dispose = function (noDetach, noTransition) {
     elementDisposeChildren(this, noDetach, noTransition);

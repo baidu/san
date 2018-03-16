@@ -1,6 +1,5 @@
 /**
  * @file 在下一个时间周期运行任务
- * @description
  * @author errorrik(errorrik@gmail.com)
  */
 
@@ -9,7 +8,6 @@
 
 
 var bind = require('./bind');
-var each = require('./each');
 
 /**
  * 下一个周期要执行的任务列表

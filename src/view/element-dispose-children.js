@@ -7,7 +7,8 @@
  * 销毁释放元素的子元素
  *
  * @param {Object} element 元素节点
- * @param {Object} options 销毁节点的参数
+ * @param {boolean=} noDetach 是否不要把节点从dom移除
+ * @param {boolean=} noTransition 是否不显示过渡动画效果
  */
 function elementDisposeChildren(element, noDetach, noTransition) {
     var children = element.children;

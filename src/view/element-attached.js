@@ -4,8 +4,6 @@
  */
 
 
-
-var each = require('../util/each');
 var bind = require('../util/bind');
 var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
@@ -44,6 +42,15 @@ function xPropOutputer(xProp, data) {
     getPropHandler(this, xProp.name).output(this, xProp, data);
 }
 
+function inputXPropOutputer(element, xProp, data) {
+    var outputer = bind(xPropOutputer, element, xProp, data);
+    return function (e) {
+        if (!this.composing) {
+            outputer(e);
+        }
+    };
+}
+
 /**
  * 完成元素 attached 后的行为
  *
@@ -54,6 +61,8 @@ function elementAttached(element) {
 
     var elementIsComponent = element.nodeType === NodeType.CMPT;
     var data = elementIsComponent ? element.data : element.scope;
+
+    /* eslint-disable no-redeclare */
 
     // 处理自身变化时双向绑定的逻辑
     var xProps = element.aNode.hotspot.xProps;
@@ -74,14 +83,7 @@ function elementAttached(element) {
 
                         element._onEl(
                             ('oninput' in el) ? 'input' : 'propertychange',
-                            (function () {
-                                var outputer = bind(xPropOutputer, element, xProp, data);
-                                return function (e) {
-                                    if (!this.composing) {
-                                        outputer(e);
-                                    }
-                                }
-                            })()
+                            inputXPropOutputer(element, xProp, data)
                         );
 
                         break;
@@ -113,7 +115,6 @@ function elementAttached(element) {
     for (var i = 0, l = events.length; i < l; i++) {
         var eventBind = events[i];
         var owner = elementIsComponent ? element : element.owner;
-        var data = element.data || element.scope;
 
         // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
         // 依此指定eventBind.expr.name位于owner还是owner.owner上

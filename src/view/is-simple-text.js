@@ -4,7 +4,6 @@
  */
 
 
-var each = require('../util/each');
 var ExprType = require('../parser/expr-type');
 
 /**

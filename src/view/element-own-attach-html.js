@@ -3,9 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
-var splitStr2Obj = require('../util/split-str-2-obj');
-var evalExpr = require('../runtime/eval-expr');
 var htmlBufferPush = require('../runtime/html-buffer-push');
 var htmlBufferTagStart = require('../runtime/html-buffer-tag-start');
 var escapeHTML = require('../runtime/escape-html');

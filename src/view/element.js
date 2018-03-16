@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
+var removeEl = require('../browser/remove-el');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
@@ -24,6 +25,7 @@ var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
+var elementDispose = require('./element-dispose');
 var elementInitTagName = require('./element-init-tag-name');
 var handleProp = require('./handle-prop');
 var warnSetHTML = require('./warn-set-html');

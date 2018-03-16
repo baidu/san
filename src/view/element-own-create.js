@@ -4,6 +4,13 @@
  */
 
 
+var each = require('../util/each');
+var evalExpr = require('../runtime/eval-expr');
+var createEl = require('../browser/create-el');
+var handleProp = require('./handle-prop');
+var LifeCycle = require('./life-cycle');
+var NodeType = require('./node-type');
+
 /**
  * 创建节点对应的 HTMLElement 主元素
  */

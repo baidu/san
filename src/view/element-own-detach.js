@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var removeEl = require('../browser/remove-el');
 var elementLeave = require('./element-leave');
 
 /**

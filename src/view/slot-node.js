@@ -120,7 +120,8 @@ SlotNode.prototype.nodeType = NodeType.SLOT;
 /**
  * 销毁释放 slot
  *
- * @param {Object=} options dispose行为参数
+ * @param {boolean=} noDetach 是否不要把节点从dom移除
+ * @param {boolean=} noTransition 是否不显示过渡动画效果
  */
 SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childOwner = null;

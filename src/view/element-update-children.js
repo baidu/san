@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
 
 /**
  * 更新元素的子元素视图
