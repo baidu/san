@@ -122,11 +122,11 @@ SlotNode.prototype.nodeType = NodeType.SLOT;
  *
  * @param {Object=} options dispose行为参数
  */
-SlotNode.prototype.dispose = function (options) {
+SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childOwner = null;
     this.childScope = null;
 
-    elementDisposeChildren(this, options);
+    elementDisposeChildren(this, noDetach, noTransition);
     nodeDispose(this);
 };
 

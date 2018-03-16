@@ -105,7 +105,11 @@ Element.prototype._onEl = elementOwnOnEl;
 Element.prototype._doneLeave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
-            elementDispose(this, this.leaveOption);
+            elementDispose(
+                this,
+                this.disposeNoDetach,
+                this.disposeNoTransition
+            );
         }
     }
     else if (this.lifeCycle.attached) {

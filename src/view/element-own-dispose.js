@@ -11,10 +11,12 @@ var elementLeave = require('./element-leave');
  *
  * @param {Object=} options dispose行为参数
  */
-function elementOwnDispose(options) {
+function elementOwnDispose(noDetach, noTransition) {
     this.leaveDispose = 1;
-    this.leaveOption = options;
-    elementLeave(this, options);
+    this.disposeNoDetach = noDetach;
+    this.disposeNoTransition = noTransition;
+
+    elementLeave(this);
 }
 
 exports = module.exports = elementOwnDispose;

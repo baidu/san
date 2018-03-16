@@ -263,7 +263,7 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
  */
 ForNode.prototype.detach = function () {
     if (this.lifeCycle.attached) {
-        elementDisposeChildren(this, true);
+        elementDisposeChildren(this);
         this.children = [];
         removeEl(this._getEl());
         this.lifeCycle = LifeCycle.detached;
@@ -498,7 +498,7 @@ ForNode.prototype._update = function (changes) {
         var disposeChild = disposeChildren[i];
         if (disposeChild) {
             disposeChild._ondisposed = childDisposed;
-            disposeChild.dispose({ dontDetach: violentClear, noTransition: violentClear });
+            disposeChild.dispose(violentClear, violentClear);
         }
         else {
             childDisposed();
@@ -506,9 +506,12 @@ ForNode.prototype._update = function (changes) {
     }
 
     if (violentClear) {
-        parentEl.innerHTML = '';
+        // cloneNode + replaceChild is faster
+        // parentEl.innerHTML = '';
+        var replaceNode = parentEl.cloneNode(false);
+        parentEl.parentNode.replaceChild(replaceNode, parentEl);
         this.el = nodeCreateStump(this);
-        parentEl.appendChild(this.el);
+        replaceNode.appendChild(this.el);
     }
 
     if (disposeChildCount === 0) {

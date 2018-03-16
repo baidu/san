@@ -72,9 +72,8 @@ TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
  *
  * @param {Object=} options dispose行为参数
  */
-TemplateNode.prototype.dispose = function (options) {
-    elementDisposeChildren(this, options);
-
+TemplateNode.prototype.dispose = function (noDetach, noTransition) {
+    elementDisposeChildren(this, noDetach, noTransition);
     nodeDispose(this);
 };
 

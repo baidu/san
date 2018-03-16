@@ -110,7 +110,7 @@ Data.prototype.get = function (expr, callee) {
     }
     else {
         for (var i = 1, l = paths.length; value != null && i < l; i++) {
-            value = value[evalExpr(paths[i], callee)];
+            value = value[paths[i].value || evalExpr(paths[i], callee)];
         }
     }
 

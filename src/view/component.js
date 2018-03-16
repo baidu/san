@@ -654,7 +654,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
  */
 Component.prototype._repaintChildren = function () {
-    elementDisposeChildren(this, {dontDetach: true, noTransition: true});
+    elementDisposeChildren(this, 1, 1);
     this.children = [];
 
     this._contentReady = 0;
@@ -718,7 +718,11 @@ Component.prototype._doneLeave = function () {
             this.dataChanger = null;
             this.dataChanges = null;
 
-            elementDispose(this, this.leaveOption);
+            elementDispose(
+                this,
+                this.disposeNoDetach,
+                this.disposeNoTransition
+            );
             this.listeners = null;
 
             this.givenANode = null;
