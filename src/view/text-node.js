@@ -16,7 +16,6 @@ var NodeType = require('./node-type');
 var getNodeStump = require('./get-node-stump');
 var warnSetHTML = require('./warn-set-html');
 var isEndStump = require('./is-end-stump');
-var isSimpleText = require('./is-simple-text');
 var getNodePath = require('./get-node-path');
 
 
@@ -34,8 +33,6 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
-
-    this._simple = isSimpleText(aNode);
 
     // #[begin] reverse
     if (reverseWalker) {
@@ -67,7 +64,7 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
 
                 case 3:
                     reverseWalker.goNext();
-                    if (this._simple) {
+                    if (!this.aNode.textExpr.complex) {
                         this.el = currentNode;
                     }
                     break;
@@ -109,7 +106,7 @@ TextNode.prototype._getEl = function () {
         return this.el;
     }
 
-    if (this._simple) {
+    if (!this.aNode.textExpr.complex) {
         var parent = this.parent;
         var prev;
 
@@ -160,13 +157,13 @@ TextNode.prototype._getEl = function () {
 TextNode.prototype._attachHTML = function (buf) {
     this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
 
-    if (!this._simple) {
+    if (this.aNode.textExpr.complex) {
         htmlBufferComment(buf, this.id);
     }
 
     htmlBufferPush(buf, this.content);
 
-    if (!this._simple) {
+    if (this.aNode.textExpr.complex) {
         htmlBufferComment(buf, this.id);
     }
 };
@@ -197,10 +194,7 @@ TextNode.prototype._update = function (changes) {
                 this.content = text;
                 var rawText = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
-                if (this._simple) {
-                    el[textUpdateProp] = rawText;
-                }
-                else {
+                if (this.aNode.textExpr.complex) {
                     var startRemoveEl = this.sel.nextSibling;
                     var parentEl = el.parentNode;
 
@@ -218,6 +212,9 @@ TextNode.prototype._update = function (changes) {
                     parentEl.insertBefore(tempFlag, el);
                     tempFlag.insertAdjacentHTML('beforebegin', text);
                     parentEl.removeChild(tempFlag);
+                }
+                else {
+                    el[textUpdateProp] = rawText;
                 }
             }
 

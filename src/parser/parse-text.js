@@ -39,9 +39,14 @@ function parseText(source, delimiters) {
     var walker = new Walker(source);
     var beforeIndex = 0;
 
-    var segs = [];
+    var expr = {
+        type: ExprType.TEXT,
+        segs: [],
+        raw: source
+    };
+
     function pushStringToSeg(text) {
-        text && segs.push({
+        text && expr.segs.push({
             type: ExprType.STRING,
             value: text
         });
@@ -52,20 +57,20 @@ function parseText(source, delimiters) {
             beforeIndex,
             walker.index - exprMatch[0].length
         ));
-        segs.push(parseInterp(exprMatch[1]));
+
+        var interp = parseInterp(exprMatch[1]);
+        expr.complex = expr.complex || interp.raw;
+
+        expr.segs.push(interp);
         beforeIndex = walker.index;
     }
 
     pushStringToSeg(walker.cut(beforeIndex));
 
-    var expr = {
-        type: ExprType.TEXT,
-        segs: segs,
-        raw: source
-    };
 
-    if (segs.length === 1 && segs[0].type === ExprType.STRING) {
-        expr.value = segs[0].value;
+
+    if (expr.segs.length === 1 && expr.segs[0].type === ExprType.STRING) {
+        expr.value = expr.segs[0].value;
     }
 
     return expr;

@@ -14,7 +14,6 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var postComponentBinds = require('./post-component-binds');
 var rinseCondANode = require('./rinse-cond-anode');
-var isSimpleText = require('./is-simple-text');
 var getANodeProp = require('./get-a-node-prop');
 
 // #[begin] ssr
@@ -277,9 +276,7 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
-        var isSimple = isSimpleText(aNode);
-
-        if (!isSimple) {
+        if (aNode.textExpr.complex) {
             sourceBuffer.joinString(serializeStump('text'));
         }
 
@@ -291,7 +288,7 @@ var aNodeCompiler = {
             sourceBuffer.joinString(value);
         }
 
-        if (!isSimple) {
+        if (aNode.textExpr.complex) {
             sourceBuffer.joinString(serializeStumpEnd('text'));
         }
     },
