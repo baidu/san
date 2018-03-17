@@ -4,8 +4,6 @@
  */
 
 
-
-var each = require('../util/each');
 var evalExpr = require('../runtime/eval-expr');
 
 /**
@@ -18,10 +16,9 @@ var evalExpr = require('../runtime/eval-expr');
  */
 function evalArgs(args, data, owner) {
     var result = [];
-
-    each(args, function (arg) {
-        result.push(evalExpr(arg, data, owner));
-    });
+    for (var i = 0; i < args.length; i++) {
+        result.push(evalExpr(args[i], data, owner));
+    }
 
     return result;
 }

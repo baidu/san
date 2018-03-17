@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
 var evalExpr = require('../runtime/eval-expr');
 
 /**
@@ -16,10 +15,10 @@ var evalExpr = require('../runtime/eval-expr');
  */
 function findMethod(source, nameExpr, data) {
     var method = source;
-    each(nameExpr.paths, function (pathExpr) {
-        method = method[evalExpr(pathExpr, data)];
-        return method != null;
-    });
+
+    for (var i = 0; method != null && i < nameExpr.paths.length; i++) {
+        method = method[evalExpr(nameExpr.paths[i], data)];
+    }
 
     return method;
 }

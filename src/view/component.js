@@ -354,9 +354,10 @@ Component.prototype.un = function (name, listener) {
  * @param {Object} event 事件对象
  */
 Component.prototype.fire = function (name, event) {
+    var me = this;
     each(this.listeners[name], function (listener) {
-        listener.fn.call(this, event);
-    }, this);
+        listener.fn.call(me, event);
+    });
 };
 
 /**

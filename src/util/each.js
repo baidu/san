@@ -10,14 +10,9 @@ var bind = require('./bind');
  *
  * @param {Array} array 数组源
  * @param {function(Any,number):boolean} iterator 遍历函数
- * @param {Object=} thisArg this指向对象
  */
-function each(array, iterator, thisArg) {
+function each(array, iterator) {
     if (array && array.length > 0) {
-        if (thisArg) {
-            iterator = bind(iterator, thisArg);
-        }
-
         for (var i = 0, l = array.length; i < l; i++) {
             if (iterator(array[i], i) === false) {
                 break;

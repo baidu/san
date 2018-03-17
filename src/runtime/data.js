@@ -8,7 +8,6 @@ var evalExpr = require('./eval-expr');
 var DataChangeType = require('./data-change-type');
 var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
-var each = require('../util/each');
 var guid = require('../util/guid');
 var dataCache = require('./data-cache');
 
@@ -83,9 +82,9 @@ Data.prototype.fire = function (change) {
         return;
     }
 
-    each(this.listeners, function (listener) {
-        listener.call(this, change);
-    }, this);
+    for (var i = 0; i < this.listeners.length; i++) {
+        this.listeners[i].call(this, change);
+    }
 };
 
 /**
