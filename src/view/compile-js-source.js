@@ -276,7 +276,7 @@ var aNodeCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      */
     compileText: function (aNode, sourceBuffer) {
-        if (aNode.textExpr.complex) {
+        if (aNode.textExpr.original) {
             sourceBuffer.joinString(serializeStump('text'));
         }
 
@@ -288,7 +288,7 @@ var aNodeCompiler = {
             sourceBuffer.joinString(value);
         }
 
-        if (aNode.textExpr.complex) {
+        if (aNode.textExpr.original) {
             sourceBuffer.joinString(serializeStumpEnd('text'));
         }
     },

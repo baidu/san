@@ -80,7 +80,7 @@ var compileExprSource = {
             code += '])';
         });
 
-        if (!interpExpr.raw) {
+        if (!interpExpr.original) {
             return 'escapeHTML(' + code + ')';
         }
 

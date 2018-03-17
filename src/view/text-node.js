@@ -64,7 +64,7 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
 
                 case 3:
                     reverseWalker.goNext();
-                    if (!this.aNode.textExpr.complex) {
+                    if (!this.aNode.textExpr.original) {
                         this.el = currentNode;
                     }
                     break;
@@ -106,7 +106,7 @@ TextNode.prototype._getEl = function () {
         return this.el;
     }
 
-    if (!this.aNode.textExpr.complex) {
+    if (!this.aNode.textExpr.original) {
         var parent = this.parent;
         var prev;
 
@@ -157,13 +157,13 @@ TextNode.prototype._getEl = function () {
 TextNode.prototype._attachHTML = function (buf) {
     this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
 
-    if (this.aNode.textExpr.complex) {
+    if (this.aNode.textExpr.original) {
         htmlBufferComment(buf, this.id);
     }
 
     htmlBufferPush(buf, this.content);
 
-    if (this.aNode.textExpr.complex) {
+    if (this.aNode.textExpr.original) {
         htmlBufferComment(buf, this.id);
     }
 };
@@ -194,7 +194,7 @@ TextNode.prototype._update = function (changes) {
                 this.content = text;
                 var rawText = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
-                if (this.aNode.textExpr.complex) {
+                if (this.aNode.textExpr.original) {
                     var startRemoveEl = this.sel.nextSibling;
                     var parentEl = el.parentNode;
 

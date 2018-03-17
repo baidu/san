@@ -9,6 +9,8 @@ var DataChangeType = require('./data-change-type');
 var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
 var each = require('../util/each');
+var guid = require('../util/guid');
+var dataCache = require('./data-cache');
 
 /**
  * 数据类
@@ -18,6 +20,7 @@ var each = require('../util/each');
  * @param {Model?} parent 父级数据容器
  */
 function Data(data, parent) {
+    this.id = guid();
     this.parent = parent;
     this.raw = data || {};
     this.listeners = [];
@@ -188,6 +191,7 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
+    dataCache.clear();
     this.raw = immutableSet(this.raw, expr.paths, value, this);
     this.fire({
         type: DataChangeType.SET,
@@ -330,6 +334,7 @@ Data.prototype.splice = function (expr, args, option) {
 
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
+        dataCache.clear();
         this.raw = immutableSet(this.raw, expr.paths, newArray, this);
 
         this.fire({

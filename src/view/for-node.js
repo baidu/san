@@ -35,6 +35,7 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
+var dataCache = require('../runtime/data-cache');
 
 
 /**
@@ -47,6 +48,7 @@ var warnSetHTML = require('./warn-set-html');
  * @param {number} index 当前项的索引
  */
 function ForItemData(forElement, item, index) {
+    this.id = guid();
     this.parent = forElement.scope;
     this.raw = {};
     this.listeners = [];
@@ -112,7 +114,7 @@ each(
         ForItemData.prototype['_' + method] = Data.prototype[method];
         ForItemData.prototype[method] = function (expr) {
             expr = this.exprResolve(parseExpr(expr));
-
+            dataCache.clear();
             this.parent[method].apply(
                 this.parent,
                 [expr].concat(Array.prototype.slice.call(arguments, 1))
@@ -574,7 +576,9 @@ ForNode.prototype._update = function (changes) {
                 var child = me.children[i];
 
                 if (child) {
-                    childrenChanges[i] && child._update(childrenChanges[i]);
+                    if (childrenChanges[i]) {
+                        child._update(childrenChanges[i]);
+                    }
                 }
                 else {
                     newChildBuf = newChildBuf || createHTMLBuffer();

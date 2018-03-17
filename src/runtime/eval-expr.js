@@ -7,6 +7,7 @@ var ExprType = require('../parser/expr-type');
 var DEFAULT_FILTERS = require('./default-filters');
 var escapeHTML = require('./escape-html');
 var evalArgs = require('./eval-args');
+var dataCache = require('./data-cache');
 
 /**
  * 计算表达式的值
@@ -22,101 +23,130 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
         return expr.value;
     }
 
-    switch (expr.type) {
-        case ExprType.UNARY:
-            return !evalExpr(expr.expr, data, owner);
+    var value;
 
-        case ExprType.BINARY:
-            var leftValue = evalExpr(expr.segs[0], data, owner);
-            var rightValue = evalExpr(expr.segs[1], data, owner);
+    if (expr.type !== ExprType.TEXT) {
+        value = dataCache.get(data, expr);
+    }
+
+    if (value == null) {
+        switch (expr.type) {
+            case ExprType.UNARY:
+                value = !evalExpr(expr.expr, data, owner);
+                break;
+
+            case ExprType.BINARY:
+                var leftValue = evalExpr(expr.segs[0], data, owner);
+                var rightValue = evalExpr(expr.segs[1], data, owner);
 
 
-            /* eslint-disable eqeqeq */
-            switch (expr.operator) {
-                case 37:
-                    return leftValue % rightValue;
-                case 43:
-                    return leftValue + rightValue;
-                case 45:
-                    return leftValue - rightValue;
-                case 42:
-                    return leftValue * rightValue;
-                case 47:
-                    return leftValue / rightValue;
-                case 60:
-                    return leftValue < rightValue;
-                case 62:
-                    return leftValue > rightValue;
-                case 76:
-                    return leftValue && rightValue;
-                case 94:
-                    return leftValue != rightValue;
-                case 121:
-                    return leftValue <= rightValue;
-                case 122:
-                    return leftValue == rightValue;
-                case 123:
-                    return leftValue >= rightValue;
-                case 155:
-                    return leftValue !== rightValue;
-                case 183:
-                    return leftValue === rightValue;
-                case 248:
-                    return leftValue || rightValue;
-            }
-            /* eslint-enable eqeqeq */
-            return;
+                /* eslint-disable eqeqeq */
+                switch (expr.operator) {
+                    case 37:
+                        value = leftValue % rightValue;
+                        break;
+                    case 43:
+                        value = leftValue + rightValue;
+                        break;
+                    case 45:
+                        value = leftValue - rightValue;
+                        break;
+                    case 42:
+                        value = leftValue * rightValue;
+                        break;
+                    case 47:
+                        value = leftValue / rightValue;
+                        break;
+                    case 60:
+                        value = leftValue < rightValue;
+                        break;
+                    case 62:
+                        value = leftValue > rightValue;
+                        break;
+                    case 76:
+                        value = leftValue && rightValue;
+                        break;
+                    case 94:
+                        value = leftValue != rightValue;
+                        break;
+                    case 121:
+                        value = leftValue <= rightValue;
+                        break;
+                    case 122:
+                        value = leftValue == rightValue;
+                        break;
+                    case 123:
+                        value = leftValue >= rightValue;
+                        break;
+                    case 155:
+                        value = leftValue !== rightValue;
+                        break;
+                    case 183:
+                        value = leftValue === rightValue;
+                        break;
+                    case 248:
+                        value = leftValue || rightValue;
+                        break;
+                }
+                /* eslint-enable eqeqeq */
+                break;
 
-        case ExprType.TERTIARY:
-            return evalExpr(
-                expr.segs[evalExpr(expr.segs[0], data, owner) ? 1 : 2],
-                data,
-                owner
-            );
+            case ExprType.TERTIARY:
+                value = evalExpr(
+                    expr.segs[evalExpr(expr.segs[0], data, owner) ? 1 : 2],
+                    data,
+                    owner
+                );
+                break;
 
-        case ExprType.ACCESSOR:
-            return data.get(expr);
+            case ExprType.ACCESSOR:
+                value = data.get(expr);
+                break;
 
-        case ExprType.INTERP:
-            var value = evalExpr(expr.expr, data, owner);
+            case ExprType.INTERP:
+                value = evalExpr(expr.expr, data, owner);
 
-            if (owner) {
-                for (var i = 0, l = expr.filters.length; i < l; i++) {
-                    var filter = expr.filters[i];
+                if (owner) {
+                    for (var i = 0, l = expr.filters.length; i < l; i++) {
+                        var filter = expr.filters[i];
 
-                    /* eslint-disable no-use-before-define */
-                    var filterName = filter.name.paths[0].value;
-                    var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
-                    /* eslint-enable no-use-before-define */
+                        /* eslint-disable no-use-before-define */
+                        var filterName = filter.name.paths[0].value;
+                        var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
+                        /* eslint-enable no-use-before-define */
 
-                    if (typeof filterFn === 'function') {
-                        value = filter.args.length
-                            ? filterFn.apply(owner, [value].concat(evalArgs(filter.args, data, owner)))
-                            : filterFn(value);
+                        if (typeof filterFn === 'function') {
+                            value = filter.args.length
+                                ? filterFn.apply(owner, [value].concat(evalArgs(filter.args, data, owner)))
+                                : filterFn(value);
+                        }
                     }
                 }
-            }
 
-            if (value == null) {
-                value = '';
-            }
+                if (value == null) {
+                    value = '';
+                }
 
-            // escape html
-            if (escapeInterpHtml && !expr.raw) {
-                value = escapeHTML(value);
-            }
+                break;
 
-            return value;
+            /* eslint-disable no-redeclare */
+            case ExprType.TEXT:
+                var buf = '';
+                for (var i = 0, l = expr.segs.length; i < l; i++) {
+                    var seg = expr.segs[i];
+                    buf += seg.value || evalExpr(seg, data, owner, escapeInterpHtml);
+                }
+                return buf;
+        }
 
-        /* eslint-disable no-redeclare */
-        case ExprType.TEXT:
-            var buf = '';
-            for (var i = 0, l = expr.segs.length; i < l; i++) {
-                var seg = expr.segs[i];
-                buf += seg.value || evalExpr(seg, data, owner, escapeInterpHtml);
-            }
-            return buf;
+        dataCache.set(data, expr, value);
     }
+
+    if (expr.type === ExprType.INTERP && escapeInterpHtml && !expr.original) {
+        value = escapeHTML(value);
+    }
+
+    return value;
 }
 
 exports = module.exports = evalExpr;

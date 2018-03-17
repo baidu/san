@@ -59,7 +59,7 @@ function parseText(source, delimiters) {
         ));
 
         var interp = parseInterp(exprMatch[1]);
-        expr.complex = expr.complex || interp.raw;
+        expr.original = expr.original || interp.original;
 
         expr.segs.push(interp);
         beforeIndex = walker.index;

@@ -20,7 +20,8 @@ function parseInterp(source) {
     var interp = {
         type: ExprType.INTERP,
         expr: readTertiaryExpr(walker),
-        filters: []
+        filters: [],
+        raw: source
     };
 
     while (walker.goUntil(124)) { // |
@@ -29,7 +30,7 @@ function parseInterp(source) {
             case 'html':
                 break;
             case 'raw':
-                interp.raw = 1;
+                interp.original = 1;
                 break;
             default:
                 interp.filters.push(callExpr);
