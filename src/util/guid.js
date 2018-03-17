@@ -18,7 +18,7 @@ var guidIndex = 1;
  * @inner
  * @type {string}
  */
-var guidPrefix = (new Date()).getTime().toString(16).slice(7);
+var guidPrefix = (new Date()).getTime().toString(16).slice(8);
 
 /**
  * 获取唯一id
@@ -27,7 +27,7 @@ var guidPrefix = (new Date()).getTime().toString(16).slice(7);
  * @return {string} 唯一id
  */
 function guid() {
-    return '_san_' + guidPrefix + (guidIndex++);
+    return '_' + guidPrefix + (guidIndex++);
 }
 
 exports = module.exports = guid;
