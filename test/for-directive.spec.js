@@ -525,7 +525,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data push after attach", function (done) {
+    it("data push after attach, simple loop", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -560,7 +560,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data push after attach", function (done) {
+    it("data push after attach, nest loop", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><ul san-for="col in cols">'
                 + '<li san-for="item in col.list" title="{{item.title}}">{{item.title}}</li>'
