@@ -361,11 +361,17 @@ ForNode.prototype._update = function (changes) {
                 pushToChildrenChanges(change);
             }
             else {
-                change = extend({}, change);
-                change.overview = null;
-                change.expr = createAccessor(
-                    this.param.item.paths.concat(changePaths.slice(forLen + 1))
-                );
+                change = {
+                    type: change.type,
+                    expr: createAccessor(
+                        this.param.item.paths.concat(changePaths.slice(forLen + 1))
+                    ),
+                    value: change.value,
+                    index: change.index,
+                    deleteCount: change.deleteCount,
+                    insertions: change.insertions,
+                    option: change.option
+                };
 
                 (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
                     .push(change);
@@ -437,9 +443,9 @@ ForNode.prototype._update = function (changes) {
             var changeStart = change.index;
             var deleteCount = change.deleteCount;
             var insertionsLen = change.insertions.length;
+            var newCount = insertionsLen - deleteCount;
 
-            // 处理由于splice带来的某些项index变化
-            if (insertionsLen !== deleteCount) {
+            if (newCount) {
                 var indexChange = {
                     type: DataChangeType.SET,
                     option: change.option,
@@ -451,20 +457,41 @@ ForNode.prototype._update = function (changes) {
                     this.children[i] && this.children[i].scope._set(
                         indexChange.expr,
                         i - deleteCount + insertionsLen,
-                        {silent: 1}
+                        { silent: 1 }
                     );
                 }
             }
 
-            var spliceArgs = [changeStart, deleteCount];
-            var childrenChangesSpliceArgs = [changeStart, deleteCount];
-            for (var i = 0, l = change.insertions.length; i < l; i++) {
-                spliceArgs.push(0);
-                childrenChangesSpliceArgs.push([]);
+            var deleteLen = deleteCount;
+            while (deleteLen--) {
+                if (deleteLen < insertionsLen) {
+                    var i = changeStart + deleteLen;
+                    // update
+                    (childrenChanges[i] = childrenChanges[i] || []).push({
+                        type: DataChangeType.SET,
+                        option: change.option,
+                        expr: createAccessor(this.param.item.paths.slice(0)),
+                        value: newList[i]
+                    });
+                    if (this.children[i]) {
+                        this.children[i].scope._set(
+                            this.param.item,
+                            newList[i],
+                            { silent: 1 }
+                        );
+                    }
+                }
             }
 
-            disposeChildren = disposeChildren.concat(this.children.splice.apply(this.children, spliceArgs));
-            childrenChanges.splice.apply(childrenChanges, childrenChangesSpliceArgs);
+            if (newCount < 0) {
+                disposeChildren = disposeChildren.concat(this.children.splice(changeStart + insertionsLen, -newCount));
+                childrenChanges.splice(changeStart + insertionsLen, -newCount);
+            }
+            else if (newCount > 0) {
+                var spliceArgs = [changeStart + deleteCount, 0].concat(new Array(newCount));
+                this.children.splice.apply(this.children, spliceArgs);
+                childrenChanges.splice.apply(childrenChanges, spliceArgs);
+            }
         }
     }
 
@@ -496,8 +523,6 @@ ForNode.prototype._update = function (changes) {
     // var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
     var violentClear = !originalUpdate && isOnlyParentChild && newChildrenLen === 0;
 
-
-    var disposeChildCount = disposeChildren.length;
     var disposedChildCount = 0;
     for (var i = 0; i < disposeChildren.length; i++) {
         var disposeChild = disposeChildren[i];
@@ -519,15 +544,14 @@ ForNode.prototype._update = function (changes) {
         replaceNode.appendChild(this.el);
     }
 
-    if (disposeChildCount === 0) {
+    if (disposeChildren.length === 0) {
         doCreateAndUpdate();
     }
 
 
-
     function childDisposed() {
         disposedChildCount++;
-        if (disposedChildCount === disposeChildCount
+        if (disposedChildCount === disposeChildren.length
             && doCreateAndUpdate === me._doCreateAndUpdate
         ) {
             doCreateAndUpdate();
@@ -546,9 +570,7 @@ ForNode.prototype._update = function (changes) {
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
             for (var i = 0; i < newChildrenLen; i++) {
-                var child = createForDirectiveChild(me, newList[i], i);
-                me.children[i] = child;
-                child._attachHTML(newChildBuf);
+                (me.children[i] = createForDirectiveChild(me, newList[i], i))._attachHTML(newChildBuf);
             }
             outputHTMLBuffer(newChildBuf, parentEl);
             me.el = nodeCreateStump(me);
@@ -576,14 +598,11 @@ ForNode.prototype._update = function (changes) {
                 var child = me.children[i];
 
                 if (child) {
-                    if (childrenChanges[i]) {
-                        child._update(childrenChanges[i]);
-                    }
+                    childrenChanges[i] && child._update(childrenChanges[i]);
                 }
                 else {
                     newChildBuf = newChildBuf || createHTMLBuffer();
-                    child = me.children[i] = createForDirectiveChild(me, newList[i], i);
-                    child._attachHTML(newChildBuf);
+                    (me.children[i] = createForDirectiveChild(me, newList[i], i))._attachHTML(newChildBuf);
 
                     // flush new children html
                     var nextChild = me.children[i + 1];
