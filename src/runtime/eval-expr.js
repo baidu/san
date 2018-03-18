@@ -23,11 +23,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
         return expr.value;
     }
 
-    var value;
-
-    if (expr.type !== ExprType.TEXT) {
-        value = dataCache.get(data, expr);
-    }
+    var value = dataCache.get(data, expr);
 
     if (value == null) {
         switch (expr.type) {
@@ -38,7 +34,6 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
             case ExprType.BINARY:
                 var leftValue = evalExpr(expr.segs[0], data, owner);
                 var rightValue = evalExpr(expr.segs[1], data, owner);
-
 
                 /* eslint-disable eqeqeq */
                 switch (expr.operator) {

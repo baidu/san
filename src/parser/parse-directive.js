@@ -84,9 +84,7 @@ function parseDirective(aNode, name, value, options) {
     var parser = directiveParsers[name];
 
     if (parser) {
-        var result = parser(value, options);
-        result.raw = value;
-        aNode.directives[name] = result;
+        (aNode.directives[name] = parser(value, options)).raw = value;
     }
 }
 

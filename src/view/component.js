@@ -675,7 +675,7 @@ Component.prototype._repaintChildren = function () {
 Component.prototype._dataChanger = function (change) {
     if (this.lifeCycle.painting || this.lifeCycle.created) {
         if (!this.dataChanges) {
-            nextTick(bind(this._update, this));
+            nextTick(this._update, this);
             this.dataChanges = [];
         }
 

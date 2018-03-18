@@ -41,8 +41,7 @@ function parseText(source, delimiters) {
 
     var expr = {
         type: ExprType.TEXT,
-        segs: [],
-        raw: source
+        segs: []
     };
 
     function pushStringToSeg(text) {
