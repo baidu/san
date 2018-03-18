@@ -39,12 +39,8 @@ var isNativePromise = typeof Promise === 'function' && /native code/.test(Promis
  *
  * @inner
  * @param {Function} fn 要运行的任务函数
- * @param {Object=} thisArg this指向对象
  */
-function nextTick(fn, thisArg) {
-    if (thisArg) {
-        fn = bind(fn, thisArg);
-    }
+function nextTick(fn) {
     nextTasks.push(fn);
 
     if (nextHandler) {

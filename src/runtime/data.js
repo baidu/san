@@ -237,22 +237,20 @@ Data.prototype.merge = function (expr, source, option) {
     // #[end]
 
     for (var key in source) {
-        if (source.hasOwnProperty(key)) {
-            this.set(
-                createAccessor(
-                    expr.paths.concat(
-                        [
-                            {
-                                type: ExprType.STRING,
-                                value: key
-                            }
-                        ]
-                    )
-                ),
-                source[key],
-                option
-            );
-        }
+        this.set(
+            createAccessor(
+                expr.paths.concat(
+                    [
+                        {
+                            type: ExprType.STRING,
+                            value: key
+                        }
+                    ]
+                )
+            ),
+            source[key],
+            option
+        );
     }
 };
 
