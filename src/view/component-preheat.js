@@ -27,6 +27,7 @@ function componentPreheat(ComponentClass) {
         });
     }
 
+
     function analyseANodeHotspot(aNode) {
         if (!aNode.hotspot) {
             stack.push(aNode);
@@ -137,12 +138,7 @@ function analyseExprDataHotspot(expr) {
             refs.push(paths[0].value);
 
             if (paths.length > 1) {
-                if (!paths[1].value) {
-                    refs.push(paths[0].value + '.*');
-                }
-                else {
-                    refs.push(paths[0].value + '.' + paths[1].value);
-                }
+                refs.push(paths[0].value + '.' + (paths[1].value || '*'));
             }
 
             analyseExprs(paths.slice(1));
