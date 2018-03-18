@@ -40,11 +40,9 @@ function htmlFilterReplacer(c) {
  * @return {string} 替换结果串
  */
 function escapeHTML(source) {
-    if (source == null) {
-        return '';
-    }
-
-    return ('' + source).replace(/[&<>"']/g, htmlFilterReplacer);
+    return source != null
+        ? ('' + source).replace(/[&<>"']/g, htmlFilterReplacer)
+        : '';
 }
 
 exports = module.exports = escapeHTML;

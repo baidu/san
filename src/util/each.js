@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var bind = require('./bind');
 
 /**
  * 遍历数组集合
