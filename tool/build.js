@@ -21,11 +21,6 @@ let editions = {
         ignoreFeatures: ['ssr']
     },
 
-    'dev.min': {
-        ignoreFeatures: ['ssr'],
-        compress: 1
-    },
-
     spa: {
         ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
     },
