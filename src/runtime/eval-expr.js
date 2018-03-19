@@ -113,7 +113,7 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                         if (typeof filterFn === 'function') {
                             value = filter.args.length
                                 ? filterFn.apply(owner, [value].concat(evalArgs(filter.args, data, owner)))
-                                : filterFn(value);
+                                : filterFn.call(owner, value);
                         }
                     }
                 }
