@@ -12,6 +12,7 @@ var emitDevtool = require('../util/emit-devtool');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var createAccessor = require('../parser/create-accessor');
+var postProp = require('../parser/post-prop');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
@@ -24,7 +25,6 @@ var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
 var reverseElementChildren = require('./reverse-element-children');
-var postComponentBinds = require('./post-component-binds');
 var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
 var elementInitTagName = require('./element-init-tag-name');
@@ -154,17 +154,18 @@ function Component(options) { // eslint-disable-line
     );
 
     elementInitTagName(this);
-    // this.props = this.aNode.props;
-    // this.binds = this.aNode.binds || this.aNode.props;
 
-    postComponentBinds(this.binds);
-    this.scope && each(this.binds, function (bind) {
-        var value = evalExpr(bind.expr, me.scope, me.owner);
-        if (typeof value === 'undefined') {
-            // See: https://github.com/ecomfe/san/issues/191
-            return;
+    each(this.binds, function (bind) {
+        postProp(bind);
+
+        if (me.scope) {
+            var value = evalExpr(bind.expr, me.scope, me.owner);
+            if (typeof value === 'undefined') {
+                // See: https://github.com/ecomfe/san/issues/191
+                return;
+            }
+            me.data.set(bind.name, value);
         }
-        me.data.set(bind.name, value);
     });
 
     // #[begin] error

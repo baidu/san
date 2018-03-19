@@ -12,7 +12,6 @@ var cloneDirectives = require('../parser/clone-directives');
 var autoCloseTags = require('../browser/auto-close-tags');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
-var postComponentBinds = require('./post-component-binds');
 var rinseCondANode = require('./rinse-cond-anode');
 var getANodeProp = require('./get-a-node-prop');
 
@@ -527,7 +526,6 @@ var aNodeCompiler = {
 
         var givenData = [];
 
-        postComponentBinds(aNode.props);
         each(component.binds, function (prop) {
             givenData.push(
                 compileExprSource.stringLiteralize(prop.name)
