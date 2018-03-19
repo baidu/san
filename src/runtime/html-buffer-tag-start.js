@@ -12,11 +12,15 @@ var empty = require('../util/empty');
  * @param {Object} buf 字符串连接对象
  * @param {string} id 起始tag的id
  */
-var htmlBufferTagStart = ieOldThan9
+var htmlBufferTagStart =
+    // #[begin] allua
+    ieOldThan9
     ? function (buf, id) {
         buf.tagId = id;
         buf.tagStart = 1;
     }
-    : empty;
+    :
+    // #[end]
+    empty;
 
 exports = module.exports = htmlBufferTagStart;

@@ -13,9 +13,11 @@ var ie = require('./ie');
 //    但是由于上面多个兼容场景都用 < 9 判断，所以字符串连接也沿用
 //    所以结果是IE8下字符串连接用的是数组join的方式
 
+// #[begin] allua
 /**
  * 是否 IE 并且小于 9
  */
 var ieOldThan9 = ie && ie < 9;
+// #[end]
 
 exports = module.exports = ieOldThan9;

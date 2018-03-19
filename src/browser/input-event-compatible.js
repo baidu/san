@@ -7,6 +7,7 @@ var ie = require('./ie');
 var on = require('./on');
 var trigger = require('./trigger');
 
+// #[begin] allua
 if (ie === 9) {
     on(document, 'selectionchange', function () {
         var el = document.activeElement;
@@ -15,3 +16,4 @@ if (ie === 9) {
         }
     });
 }
+// #[end]

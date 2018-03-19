@@ -12,7 +12,13 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
  */
 function createHTMLBuffer() {
     return {
-        raw: ieOldThan9 ? [] : '',
+        raw:
+            // #[begin] allua
+            ieOldThan9
+                ? []
+                :
+            // #[end]
+                '',
         length: 0,
         tagStart: 1,
         insertComments: []

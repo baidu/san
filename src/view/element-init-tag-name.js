@@ -13,10 +13,12 @@ var ieOldThan9 = require('../browser/ie-old-than-9');
 function elementInitTagName(node) {
     node.tagName = node.tagName || node.aNode.tagName || 'div';
 
+    // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
     if (ieOldThan9 && node.tagName.indexOf('-') > 0) {
         node.tagName = 'div';
     }
+    // #[end]
 }
 
 

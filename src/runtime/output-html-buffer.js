@@ -16,7 +16,15 @@ var insertBefore = require('../browser/insert-before');
 function outputHTMLBuffer(buf, target, pos) {
     // html 没内容就不要设置 innerHTML了
     // 这里还能避免在 IE 下 component root 为 input 等元素时设置 innerHTML 报错的问题
-    var html = ieOldThan9 ? buf.raw.join('') : buf.raw;
+    var html =
+        // #[begin] allua
+        ieOldThan9
+            ? buf.raw.join('')
+            :
+
+        // #[end]
+            buf.raw;
+
     if (!html) {
         return;
     }
@@ -29,6 +37,7 @@ function outputHTMLBuffer(buf, target, pos) {
     }
 
     // 处理 ie 低版本下自动过滤 comment 的问题
+    // #[begin] allua
     if (ieOldThan9) {
         var insertComments = buf.insertComments;
         var len = insertComments.length;
@@ -68,6 +77,7 @@ function outputHTMLBuffer(buf, target, pos) {
             insertBefore(commentNode, insertParentEl, insertBeforeEl);
         }
     }
+    // #[end]
 }
 
 exports = module.exports = outputHTMLBuffer;
