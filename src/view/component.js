@@ -141,20 +141,6 @@ function Component(options) { // eslint-disable-line
 
         this.tagName = protoANode.tagName || me.givenANode.tagName;
         this.binds = camelComponentBinds(this.givenANode.props);
-        // this.aNode = createANode({
-        //     tagName: protoANode.tagName || me.givenANode.tagName,
-        //     givenSlots: me.givenSlots,
-
-        //     // 组件的实际结构应为template编译的结构
-        //     children: protoANode.children,
-
-        //     // 合并运行时的一些绑定和事件声明
-        //     props: protoANode.props,
-        //     binds: camelComponentBinds(me.givenANode.props),
-        //     events: protoANode.events.concat(nativeEvents),
-        //     directives: me.givenANode.directives,
-        //     hotspot: protoANode.hotspot
-        // });
     }
 
     this._toPhase('compiled');
