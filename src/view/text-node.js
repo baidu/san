@@ -4,6 +4,7 @@
  */
 
 var each = require('../util/each');
+var isBrowser = require('../browser/is-browser');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var createHTMLBuffer = require('../runtime/create-html-buffer');
@@ -168,7 +169,10 @@ TextNode.prototype._attachHTML = function (buf) {
     }
 };
 
-var textUpdateProp;
+var textUpdateProp = isBrowser
+    && (typeof document.createTextNode('').textContent === 'string'
+        ? 'textContent'
+        : 'data');
 
 /**
  * 更新 text 节点的视图
@@ -179,9 +183,6 @@ TextNode.prototype._update = function (changes) {
     if (this.aNode.textExpr.value) {
         return;
     }
-
-    textUpdateProp = textUpdateProp
-        || typeof document.createTextNode('').textContent === 'string' ? 'textContent' : 'data';
 
     var el = this._getEl();
 
