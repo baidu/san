@@ -213,40 +213,17 @@ var elementPropHandlers = {
     option: {
         value: {
             attr: function (element, name, value) {
-                var attrStr = ' value="' + (value || '') + '"';
-                var parentSelect = element.parent;
-                while (parentSelect) {
-                    if (parentSelect.tagName === 'select') {
-                        break;
-                    }
-
-                    parentSelect = parentSelect.parent;
-                }
-
-
-                if (parentSelect) {
-                    var selectValue = null;
-                    var prop;
-                    var expr;
-
-                    if ((prop = getANodeProp(parentSelect.aNode, 'value'))
-                        && (expr = prop.expr)
-                    ) {
-                        selectValue = parentSelect.nodeType === NodeType.CMPT
-                                ? evalExpr(expr, parentSelect.data, parentSelect)
-                                : evalExpr(expr, parentSelect.scope, parentSelect.owner)
-                            || '';
-                    }
-
-                    if (selectValue === value) {
-                        attrStr += ' selected';
-                    }
-                }
-
-                return attrStr;
+                return ' value="' + (value || '') + '"'
+                    + (isOptionSelected(element, value) ? 'selected' : '');
             },
 
-            prop: defaultElementPropHandler.prop
+            prop: function (element, name, value) {
+                defaultElementPropHandler.prop(element, name, value);
+
+                if (isOptionSelected(element, value)) {
+                    element.el.selected = true;
+                }
+            }
         }
     },
 
@@ -261,6 +238,37 @@ var elementPropHandlers = {
         }
     }
 };
+
+function isOptionSelected(element, value) {
+    var parentSelect = element.parent;
+    while (parentSelect) {
+        if (parentSelect.tagName === 'select') {
+            break;
+        }
+
+        parentSelect = parentSelect.parent;
+    }
+
+
+    if (parentSelect) {
+        var selectValue = null;
+        var prop;
+        var expr;
+
+        if ((prop = getANodeProp(parentSelect.aNode, 'value'))
+            && (expr = prop.expr)
+        ) {
+            selectValue = parentSelect.nodeType === NodeType.CMPT
+                ? evalExpr(expr, parentSelect.data, parentSelect)
+                : evalExpr(expr, parentSelect.scope, parentSelect.owner)
+                || '';
+        }
+
+        if (selectValue === value) {
+            return 1;
+        }
+    }
+}
 
 /**
  * 生成 bool 类型属性绑定操作的变换方法
