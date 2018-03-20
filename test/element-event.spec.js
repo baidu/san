@@ -139,22 +139,22 @@ describe("Element-Event", function () {
         var inCount = 0;
         var outCount = 0;
         var Checkbox = san.defineComponent({
-            template: '<input type="checkbox" on-change="onChange" />',
+            template: '<input type="checkbox" on-click="clicker" />',
 
-            onChange: function () {
+            clicker: function () {
                 inCount++;
-                this.fire('change');
+                this.fire('click');
             }
         });
 
         var MyComponent = san.defineComponent({
-            template: '<div><label><x-checkbox on-change="native:onNativeChange"/>Click me and see console</label></div>',
+            template: '<div><label><x-checkbox on-click="native:onNativeClick"/>Click me and see console</label></div>',
 
             components: {
                 'x-checkbox': Checkbox
             },
 
-            onNativeChange: function () {
+            onNativeClick: function () {
                 outCount++;
             }
         });
