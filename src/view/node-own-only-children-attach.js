@@ -8,6 +8,7 @@ var each = require('../util/each');
 var insertBefore = require('../browser/insert-before');
 var createNode = require('./create-node');
 var nodeCreateStump = require('./node-create-stump');
+var genElementChildren = require('./gen-element-children');
 var attachings = require('./attachings');
 
 
@@ -19,19 +20,13 @@ var attachings = require('./attachings');
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
-    var me = this;
+    this.sel = nodeCreateStump(this);
+    insertBefore(this.sel, parentEl, beforeEl);
 
-    me.sel = nodeCreateStump(me);
-    insertBefore(me.sel, parentEl, beforeEl);
+    genElementChildren(this, parentEl, beforeEl);
 
-    each(this.aNode.children, function (aNodeChild) {
-        var child = createNode(aNodeChild, me);
-        me.children.push(child);
-        child.attach(parentEl, beforeEl);
-    });
-
-    me.el = nodeCreateStump(me);
-    insertBefore(me.el, parentEl, beforeEl);
+    this.el = nodeCreateStump(this);
+    insertBefore(this.el, parentEl, beforeEl);
 
     attachings.done();
 }
