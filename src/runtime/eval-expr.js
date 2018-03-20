@@ -104,16 +104,19 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                 if (owner) {
                     for (var i = 0, l = expr.filters.length; i < l; i++) {
                         var filter = expr.filters[i];
-
-                        /* eslint-disable no-use-before-define */
                         var filterName = filter.name.paths[0].value;
-                        var filterFn = owner.filters[filterName] || DEFAULT_FILTERS[filterName];
-                        /* eslint-enable no-use-before-define */
 
-                        if (typeof filterFn === 'function') {
-                            value = filter.args.length
-                                ? filterFn.apply(owner, [value].concat(evalArgs(filter.args, data, owner)))
-                                : filterFn.call(owner, value);
+                        if (owner.filters[filterName]) {
+                            value = owner.filters[filterName].apply(
+                                owner,
+                                [value].concat(evalArgs(filter.args, data, owner))
+                            );
+                        }
+                        else if (DEFAULT_FILTERS[filterName]) {
+                            value = DEFAULT_FILTERS[filterName](
+                                value,
+                                filter.args[0] ? filter.args[0].value : ''
+                            );
                         }
                     }
                 }
