@@ -160,11 +160,10 @@ function Component(options) { // eslint-disable-line
 
         if (me.scope) {
             var value = evalExpr(bind.expr, me.scope, me.owner);
-            if (typeof value === 'undefined') {
+            if (typeof value !== 'undefined') {
                 // See: https://github.com/ecomfe/san/issues/191
-                return;
+                me.data.set(bind.name, value);
             }
-            me.data.set(bind.name, value);
         }
     });
 
