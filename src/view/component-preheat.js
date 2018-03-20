@@ -7,6 +7,8 @@ var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
 var handleProp = require('./handle-prop');
 var getANodeProp = require('./get-a-node-prop');
+var noSetHTML = require('../browser/no-set-html');
+var ie = require('../browser/ie');
 
 /**
  * 组件预热，分析组件aNode的数据引用等信息
@@ -31,14 +33,24 @@ function componentPreheat(ComponentClass) {
     function analyseANodeHotspot(aNode) {
         if (!aNode.hotspot) {
             stack.push(aNode);
-            aNode.hotspot = {
-                data: {}
-            };
+
 
             if (aNode.textExpr) {
+                aNode.hotspot = {data: {}};
                 recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
             }
             else {
+                aNode.hotspot = {
+                    data: {},
+                    // #[begin] allua
+                    noSetHTML: ie && noSetHTML(aNode),
+                    // #[end]
+                    dynamicProps: [],
+                    xProps: [],
+                    staticAttr: '',
+                    props: {}
+                };
+
                 // === analyse hotspot data: start
                 each(aNode.vars, function (varItem) {
                     recordHotspotData(analyseExprDataHotspot(varItem.expr));
@@ -66,11 +78,6 @@ function componentPreheat(ComponentClass) {
 
 
                 // === analyse hotspot props: start
-                aNode.hotspot.dynamicProps = [];
-                aNode.hotspot.xProps = [];
-                aNode.hotspot.staticAttr = '';
-                aNode.hotspot.props = {};
-
                 each(aNode.props, function (prop, index) {
                     aNode.hotspot.props[prop.name] = index;
 

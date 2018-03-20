@@ -910,13 +910,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data set after attach, for in tr should warning parent(tbody) in chrome", function (done) {
-        // dont run this spec in ie
-        if (/msie/i.test(navigator.userAgent)) {
-            done();
-            return;
-        }
-
+    it("data set after attach, for directive in tr tag", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><table><thead><tr><th>name</th><th>email</th></tr></thead>' +
                 '<tbody><tr title="{{p.name}}" san-for="p,i in persons"><td>{{p.name}}</td><td>{{p.email}}</td></tr></tbody></table></div>'
@@ -1467,11 +1461,6 @@ describe("ForDirective", function () {
     });
 
     it("in no tbody declaration, may append in right position", function (done) {
-        if (/msie/i.test(navigator.userAgent)) {
-            done();
-            return;
-        }
-
         var MyComponent = san.defineComponent({
             template: '<table cellpadding="0" cellspacing="0" width="100">'
                 + '<tr><th san-for="item in schema">{{item.label}}</th></tr>'

@@ -35,6 +35,7 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
+var isSetHTMLNotAllow = require('./is-set-html-not-allow');
 var dataCache = require('../runtime/data-cache');
 
 
@@ -230,32 +231,30 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
         prevEl = nextPrev;
     }
 
-    if (!prevEl) {
-        this._attachHTML(buf, 1);
-        // #[begin] error
-        warnSetHTML(parentEl);
+    if (
+        // #[begin] allua
+        isSetHTMLNotAllow(this)
+        ||
         // #[end]
-
-        outputHTMLBuffer(buf, parentEl, 'afterbegin');
-    }
-    else if (prevEl.nodeType === 1) {
-        this._attachHTML(buf, 1);
-        // #[begin] error
-        warnSetHTML(parentEl);
-        // #[end]
-
-        outputHTMLBuffer(buf, prevEl, 'afterend');
-    }
-    else {
+        prevEl && prevEl.nodeType !== 1
+    ) {
+        var me = this;
         each(
             evalExpr(this.param.value, this.scope, this.owner),
             function (item, i) {
-                var child = createForDirectiveChild(this, item, i);
-                this.children.push(child);
+                var child = createForDirectiveChild(me, item, i);
+                me.children.push(child);
                 child.attach(parentEl, el);
-            },
-            this
+            }
         );
+    }
+    else if (!prevEl) {
+        this._attachHTML(buf, 1);
+        outputHTMLBuffer(buf, parentEl, 'afterbegin');
+    }
+    else {
+        this._attachHTML(buf, 1);
+        outputHTMLBuffer(buf, prevEl, 'afterend');
     }
 
     attachings.done();
@@ -593,6 +592,9 @@ ForNode.prototype._update = function (changes) {
             //     attachStump = child;
             // }
 
+            // #[begin] allua
+            var setHTMLNotAllow = isSetHTMLNotAllow(me);
+            // #[end]
 
             for (var i = 0; i < newChildrenLen; i++) {
                 var child = me.children[i];
@@ -601,17 +603,47 @@ ForNode.prototype._update = function (changes) {
                     childrenChanges[i] && child._update(childrenChanges[i]);
                 }
                 else {
+                    me.children[i] = createForDirectiveChild(me, newList[i], i);
                     newChildBuf = newChildBuf || createHTMLBuffer();
-                    (me.children[i] = createForDirectiveChild(me, newList[i], i))._attachHTML(newChildBuf);
+
+                    // #[begin] allua
+                    if (setHTMLNotAllow) {
+                        var newChildStart = i;
+                    }
+                    else {
+                    // #[end]
+
+                        me.children[i]._attachHTML(newChildBuf);
+
+                    // #[begin] allua
+                    }
+                    // #[end]
+
 
                     // flush new children html
                     var nextChild = me.children[i + 1];
                     if (i === newChildrenLen - 1 || nextChild) {
-                        outputHTMLBufferBefore(
-                            newChildBuf,
-                            parentEl,
-                            nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el) || me.el
-                        );
+                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el)
+                            || me.el;
+
+                        // #[begin] allua
+                        if (setHTMLNotAllow) {
+                            for (; newChildStart <= i; newChildStart++) {
+                                me.children[newChildStart].attach(parentEl, beforeEl);
+                            }
+                        }
+                        else {
+                        // #[end]
+
+                            outputHTMLBufferBefore(
+                                newChildBuf,
+                                parentEl,
+                                beforeEl
+                            );
+
+                        // #[begin] allua
+                        }
+                        // #[end]
 
                         newChildBuf = null;
                     }

@@ -1083,11 +1083,6 @@ describe("Form TwoWay Binding", function () {
     });
 
     it("select as component root element", function (done) {
-        if (/msie/i.test(navigator.userAgent)) {
-            done();
-            return;
-        }
-
         var MyComponent = san.defineComponent({
             template: '<select value="{=online=}">'
                 +   '<option value="errorrik">errorrik</option>'

@@ -7,7 +7,7 @@ var createHTMLBuffer = require('../runtime/create-html-buffer');
 var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var insertBefore = require('../browser/insert-before');
 var genElementChildrenHTML = require('./gen-element-children-html');
-var warnSetHTML = require('./warn-set-html');
+var genElementChildren = require('./gen-element-children');
 
 /**
  * 将元素attach到页面
@@ -21,14 +21,18 @@ function elementAttach(element, parentEl, beforeEl) {
     insertBefore(element.el, parentEl, beforeEl);
 
     if (!element._contentReady) {
-        var buf = createHTMLBuffer();
-        genElementChildrenHTML(element, buf);
-
-        // #[begin] error
-        warnSetHTML(element.el);
+        // #[begin] allua
+        if (element.aNode.hotspot.noSetHTML) {
+            genElementChildren(element);
+        }
+        else {
         // #[end]
-
-        outputHTMLBuffer(buf, element.el);
+            var buf = createHTMLBuffer();
+            genElementChildrenHTML(element, buf);
+            outputHTMLBuffer(buf, element.el);
+        // #[begin] allua
+        }
+        // #[end]
 
         element._contentReady = 1;
     }
