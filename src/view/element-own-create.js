@@ -20,8 +20,6 @@ function elementOwnCreate() {
         this.el = createEl(this.tagName);
         var isComponent = this.nodeType === NodeType.CMPT;
 
-        var hasIdDeclaration;
-
         var me = this;
         each(this.aNode.props, function (prop) {
             var value = isComponent
@@ -31,12 +29,11 @@ function elementOwnCreate() {
             handleProp.prop(me, prop.name, value);
 
             if (prop.name === 'id') {
-                me._elId = value;
-                hasIdDeclaration = true;
+                return;
             }
         });
 
-        hasIdDeclaration || (this.el.id = this.id);
+        this.el.id = this._getElId();
 
         this._toPhase('created');
     }

@@ -3243,5 +3243,44 @@ describe("Component", function () {
             done();
         });
     });
+
+    it("id can be pass and change", function (done) {
+        var Button = san.defineComponent({
+            template: '<button>btn</button>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-btn': Button
+            },
+            template: '<div><x-btn id="b-{{name}}"/></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'er'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = document.getElementById('b-er');
+        expect(btn.tagName).toBe('BUTTON');
+
+        myComponent.data.set('name', 'san');
+
+        san.nextTick(function () {
+            expect(document.getElementById('b-er') == null).toBeTruthy();
+            expect(btn === document.getElementById('b-san')).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });
 

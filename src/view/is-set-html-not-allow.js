@@ -3,7 +3,7 @@
 // #[begin] allua
 function isSetHTMLNotAllow(node) {
     node = node.parent;
-    while (node) {debugger
+    while (node) {
         switch (node.nodeType) {
             case NodeType.ELEM:
             case NodeType.CMPT:

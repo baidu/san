@@ -38,25 +38,20 @@ function elementOwnAttachHTML(buf) {
     var props = this.aNode.hotspot.dynamicProps;
     for (var i = 0, l = props.length; i < l; i++) {
         var prop = props[i];
-        var value = elementIsComponent
-            ? evalExpr(prop.expr, this.data, this)
-            : evalExpr(prop.expr, this.scope, this.owner, 1);
+        if (!prop.id) {
+            var value = elementIsComponent
+                ? evalExpr(prop.expr, this.data, this)
+                : evalExpr(prop.expr, this.scope, this.owner, 1);
 
-        if (prop.x && !boolAttrs[prop.name]) {
-            value = escapeHTML(value);
+            if (prop.x && !boolAttrs[prop.name]) {
+                value = escapeHTML(value);
+            }
+
+            htmlBufferPush(buf, handleProp.attr(this, prop.name, value) || '');
         }
-
-        htmlBufferPush(buf, handleProp.attr(this, prop.name, value) || '');
     }
 
-    var idProp = getANodeProp(this.aNode, 'id');
-    if (idProp) {
-        this._elId = elementIsComponent
-            ? evalExpr(idProp.expr, this.data, this)
-            : evalExpr(idProp.expr, this.scope, this.owner, 1);
-    }
-
-    var id = this._elId || this.id;
+    var id = this._getElId();
     htmlBufferPush(buf, ' id="' + id + '"' + '>');
     if (!autoCloseTags[tagName]) {
         htmlBufferTagStart(buf, id);

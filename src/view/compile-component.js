@@ -61,12 +61,11 @@ function compileComponent(ComponentClass) {
                 firstChild.tagName = null;
             }
 
-            /* eslint-disable quotes */
             var componentPropExtra = {
-                'class': {name: 'class', expr: parseText("{{class | _class | _sep(' ')}}")},
-                'style': {name: 'style', expr: parseText("{{style | _style | _sep(';')}}")}
+                'class': {name: 'class', expr: parseText('{{class | _class | _sep(" ")}}')},
+                'style': {name: 'style', expr: parseText('{{style | _style | _sep(";")}}')},
+                'id': {name: 'id', expr: parseText('{{id}}')}
             };
-            /* eslint-enable quotes */
 
             var len = firstChild.props.length;
             while (len--) {
@@ -76,12 +75,19 @@ function compileComponent(ComponentClass) {
                 if (extra) {
                     firstChild.props.splice(len, 1);
                     componentPropExtra[prop.name] = prop;
-                    prop.expr.segs.push(extra.expr.segs[0]);
-                    prop.expr.value = null;
+
+                    if (prop.name !== 'id') {
+                        prop.expr.segs.push(extra.expr.segs[0]);
+                        prop.expr.value = null;
+                    }
                 }
             }
 
-            firstChild.props.push(componentPropExtra['class'], componentPropExtra.style); // eslint-disable-line dot-notation
+            firstChild.props.push(
+                componentPropExtra['class'], // eslint-disable-line dot-notation
+                componentPropExtra.style,
+                componentPropExtra.id
+            );
         }
     }
 }

@@ -82,10 +82,11 @@ function componentPreheat(ComponentClass) {
                     aNode.hotspot.props[prop.name] = index;
 
                     if (prop.name === 'id') {
-                        aNode.hotspot.id = prop;
+                        prop.id = true;
+                        aNode.hotspot.idProp = prop;
+                        aNode.hotspot.dynamicProps.push(prop);
                     }
-
-                    if (prop.expr.value != null
+                    else if (prop.expr.value != null
                         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
                     ) {
                         aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.name, prop.expr.value) || '';

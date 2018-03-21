@@ -32,6 +32,7 @@ var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnGetEl = require('./element-own-get-el');
+var elementOwnGetElId = require('./element-own-get-el-id');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
@@ -208,7 +209,7 @@ function Component(options) { // eslint-disable-line
         var currentNode = walker.current;
         if (currentNode && currentNode.nodeType === 1) {
             this.el = currentNode;
-            this.el.id = this.id;
+            this.el.id = this._getElId();
             walker.goNext();
         }
 
@@ -739,6 +740,7 @@ Component.prototype.detach = elementOwnDetach;
 Component.prototype._attachHTML = elementOwnAttachHTML;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
+Component.prototype._getElId = elementOwnGetElId;
 Component.prototype._onEl = elementOwnOnEl;
 
 

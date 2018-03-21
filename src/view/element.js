@@ -22,6 +22,7 @@ var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnGetEl = require('./element-own-get-el');
+var elementOwnGetElId = require('./element-own-get-el-id');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementAttached = require('./element-attached');
@@ -81,7 +82,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
         }
 
         this.el = currentNode;
-        this.el.id = this.id;
+        this.el.id = this._getElId();
         reverseWalker.goNext();
 
         reverseElementChildren(this);
@@ -90,6 +91,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
     }
     // #[end]
 }
+
 
 
 Element.prototype.nodeType = NodeType.ELEM;
@@ -101,6 +103,7 @@ Element.prototype.dispose = elementOwnDispose;
 Element.prototype._attachHTML = elementOwnAttachHTML;
 Element.prototype._create = elementOwnCreate;
 Element.prototype._getEl = elementOwnGetEl;
+Element.prototype._getElId = elementOwnGetElId;
 Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
 

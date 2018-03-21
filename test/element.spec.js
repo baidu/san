@@ -711,4 +711,34 @@ describe("Element", function () {
             done();
         });
     });
+
+    it("id prop can change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><a id="a-{{name}}">{{name}}</a></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'er'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = document.getElementById('a-er');
+        expect(a.tagName).toBe('A');
+
+        myComponent.data.set('name', 'san');
+
+        san.nextTick(function () {
+            expect(document.getElementById('a-er') == null).toBeTruthy();
+            expect(a === document.getElementById('a-san')).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });
