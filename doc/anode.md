@@ -5,34 +5,32 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
-[template 简述](#user-content-template-简述)  
-　　[插值语法](#user-content-插值)  
-　　[普通属性语法](#user-content-普通属性)  
-　　[双向绑定语法](#user-content-双向绑定)  
-　　[指令语法](#user-content-指令)  
-[表达式](#user-content-表达式)  
-　　[表达式类型](#user-content-表达式类型)  
-　　[STRING](#user-content-string)  
-　　[NUMBER](#user-content-number)  
-　　[BOOL](#user-content-bool)  
-　　[ACCESSOR](#user-content-accessor)  
-　　[INTERP](#user-content-interp)  
-　　[CALL](#user-content-call)  
-　　[TEXT](#user-content-text)  
-　　[BINARY](#user-content-binary)  
-　　[UNARY](#user-content-unary)  
-　　[TERTIARY](#user-content-tertiary)  
-[ANode 与相关类型结构](#user-content-anode-与相关类型结构)  
-　　[ANode](#user-content-anode)  
-　　[IndexedList](#user-content-indexedlist)  
-[模板解析结果](#user-content-模板解析结果)  
-　　[文本](#user-content-文本)  
-　　[属性](#user-content-属性)  
-　　[双向绑定](#user-content-双向绑定)  
-　　[复杂的插值](#user-content-复杂的插值)  
-　　[事件绑定](#user-content-事件绑定)  
-　　[条件指令](#user-content-条件指令)  
-　　[循环指令](#user-content-循环指令)  
+[template 简述](#user-content-template-简述)
+　　[插值语法](#user-content-插值)
+　　[普通属性语法](#user-content-普通属性)
+　　[双向绑定语法](#user-content-双向绑定)
+　　[指令语法](#user-content-指令)
+[表达式](#user-content-表达式)
+　　[表达式类型](#user-content-表达式类型)
+　　[STRING](#user-content-string)
+　　[NUMBER](#user-content-number)
+　　[BOOL](#user-content-bool)
+　　[ACCESSOR](#user-content-accessor)
+　　[INTERP](#user-content-interp)
+　　[CALL](#user-content-call)
+　　[TEXT](#user-content-text)
+　　[BINARY](#user-content-binary)
+　　[UNARY](#user-content-unary)
+　　[TERTIARY](#user-content-tertiary)
+[ANode 的结构](#user-content-anode-的结构)
+[模板解析结果](#user-content-模板解析结果)
+　　[文本](#user-content-文本)
+　　[属性](#user-content-属性)
+　　[双向绑定](#user-content-双向绑定)
+　　[复杂的插值](#user-content-复杂的插值)
+　　[事件绑定](#user-content-事件绑定)
+　　[条件指令](#user-content-条件指令)
+　　[循环指令](#user-content-循环指令)
 
 
 
@@ -283,7 +281,7 @@ exprInfo = {
 
 ### BINARY
 
-二元表达式，支持多种计算和比较，包括 `+ | - | * | ／ | && | || | == | != | === | !== | > | >= | < | <=` 
+二元表达式，支持多种计算和比较，包括 `+ | - | * | ／ | && | || | == | != | === | !== | > | >= | < | <=`
 
 ```javascript
 // operator - 操作符。数值，值为操作符各个 char 的 ascii 之和。比如 == 操作符的 operator 为 61 + 61 = 122
@@ -351,65 +349,48 @@ exprInfo = {
 }
 ```
 
-ANode 与相关类型结构
+ANode 的结构
 ------
 
-此处只说明解析完成返回结果中可能被访问的实例类型。解析过程中用到的 Walker 等类不做说明。
+template 的 parse 直接返回一个 ANode 对象，ANode 对象是一个 plain object。ANode 对象上不包含任何方法，只有属性。
 
-### ANode
 
-template 的 parse 直接返回一个 ANode 类的实例。实例上不包含任何方法，只有属性。
+#### {Object?} textExpr
 
-#### {boolean?} isText
-
-标识当前节点是否为文本节点
-
-#### {string} text
-
-文本节点的文本内容。当 isText 为 true 时有效
-
-#### {Object} textExpr
-
-文本节点的表达式信息对象。当 isText 为 true 时有效，一定是一个 TEXT 表达式
+文本的表达式对象。当前节点为文本节点时该属性存在。
 
 #### {Array.<ANode>} children
 
 ANode 的结构与 HTML 一样，是一个树状结构。children 是当前节点的子节点列表。文本节点该属性无效
 
-#### {IndexedList} props
+#### {Array.<Object>} props
 
 节点的属性绑定信息。文本节点该属性无效
 
 ```javascript
-// 获取 title 属性绑定信息。该信息是一个表达式
-aNode.props.get('title');
-
 // 遍历所有绑定属性
-aNode.props.each(function (bindItem) {
+aNode.props.forEach(function (prop) {
 });
 ```
 
 
-#### {IndexedList} events
+#### {Array.<Object>} events
 
 节点的事件绑定信息。文本节点该属性无效
 
 ```javascript
-// 获取 click 事件绑定信息。该信息是一个表达式
-aNode.events.get('click');
-
 // 遍历所有绑定属性
-aNode.events.each(function (eventItem) {
+aNode.events.forEach(function (event) {
 });
 ```
 
-#### {IndexedList} directives
+#### {Object} directives
 
 节点的指令绑定信息。文本节点该属性无效
 
 ```javascript
 // 获取 if 指令信息。该信息是一个特定的指令信息对象
-aNode.directives.get('if');
+aNode.directives['if'];
 ```
 
 #### {string} tagName
@@ -419,57 +400,13 @@ aNode.directives.get('if');
 
 
 
-### IndexedList
-
-IndexedList 是一个索引列表，添加到列表中的 item，能根据 item 的 name 属性进行索引。IndexedList 提供了一些常用的集合操作的方法。
-
-```javascript
-var list = new IndexedList();
-list.push({name: 'test', text: 'hello'});
-
-// console log {name: 'test', text: 'hello'}
-console.log(list.get('test')); 
-```
-
-ANode 的 props、events、directives 属性因为需要较频繁的根据 name 访问，以及遍历操作，直接使用 Array 或 Object 都会存在弊端，故使用 IndexedList。
-
-#### {void} push({Object} item)
-
-在列表中添加一个 item。
-
-#### {void} each({function(Object, number):boolean}iterator, {Object?}thisArg)
-
-遍历整个索引列表
-
-#### {Object} getAt({number} index)
-
-根据顺序下标获取 item
-
-#### {Object} get({string} name)
-
-根据 name 获取 item
-
-#### {void} removeAt({number} index)
-
-根据顺序下标移除 item
-
-#### {void} remove({string} name)
-
-根据 name 移除 item
-
-#### {IndexedList} concat({IndexedList} other)
-
-连接另外一个 IndexedList，返回一个新的 IndexedList
-
-
 模板解析结果
 ----------
 
 模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `children` 包含节点结构、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
 
-本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 实例结构请参考 [ANode 与相关类型结构](#user-content-anode-与相关类型结构) 章节。
+本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 结构请参考 [ANode 的结构](#user-content-anode-的结构) 章节。
 
-为方便表示，本章节所有示例，`props`、`events`、`directives` 信息全部表示为数组形式，实际上应该是 IndexedList 类型的实例。
 
 ### 文本
 
@@ -481,13 +418,11 @@ ANode 的 props、events、directives 属性因为需要较频繁的根据 name 
 
 ```javascript
 aNode = {
-    "directives": [],
+    "directives": {},
     "props": [],
     "events": [],
     "children": [
         {
-            "isText": true,
-            "text": "Hello {{name}}!",
             "textExpr": {
                 "type": ExprType.TEXT,
                 "segs": [
@@ -531,7 +466,7 @@ aNode = {
 
 ```javascript
 aNode = {
-    "directives": [],
+    "directives": {},
     "props": [
         {
             "name": "title",
@@ -563,8 +498,6 @@ aNode = {
     "events": [],
     "children": [
         {
-            "isText": true,
-            "text": "click here",
             "textExpr": {
                 "type": ExprType.TEXT,
                 "segs": [
@@ -599,7 +532,7 @@ aNode = {
 
 ```javascript
 aNode = {
-    "directives": [],
+    "directives": {},
     "props": [
         {
             "name": "type",
@@ -637,7 +570,7 @@ aNode = {
 ```
 
 ```javascript
-    "directives": [],
+    "directives": {},
     "props": [
         {
             "name": "title",
@@ -753,7 +686,7 @@ aNode = {
 
 ```javascript
 aNode = {
-    "directives": [],
+    "directives": {},
     "props": [
         {
             "name": "type",
@@ -791,8 +724,6 @@ aNode = {
     ],
     "children": [
         {
-            "isText": true,
-            "text": "click here",
             "textExpr": {
                 "type": ExprType.TEXT,
                 "segs": [
@@ -807,7 +738,7 @@ aNode = {
 
 ### 条件指令
 
-if 指令的值是一个表达式信息对象，else 指令的值永远等于 true。
+if 指令的值是一个表达式信息对象，else 指令的值永远等于 true。else 和 elif 对应的节点会被置于同组的 if 下的 elses 属性中。
 
 ```html
 <div>
@@ -818,13 +749,13 @@ if 指令的值是一个表达式信息对象，else 指令的值永远等于 tr
 
 ```javascript
 aNode = {
-    "directives": [],
+    "directives": {},
     "props": [],
     "events": [],
     "children": [
         {
-            "directives": [
-                {
+            "directives": {
+                "if": {
                     "value": {
                         "type": ExprType.ACCESSOR,
                         "paths": [
@@ -833,13 +764,11 @@ aNode = {
                     },
                     "name": "if"
                 }
-            ],
+            },
             "props": [],
             "events": [],
             "children": [
                 {
-                    "isText": true,
-                    "text": "Hello!",
                     "textExpr": {
                         "type": ExprType.TEXT,
                         "segs": [
@@ -848,31 +777,32 @@ aNode = {
                     }
                 }
             ],
-            "tagName": "span"
+            "tagName": "span",
+            "elses": [
+                {
+                    "directives": {
+                        "else": {
+                            "value": true,
+                            "name": "else"
+                        }
+                    },
+                    "props": [],
+                    "events": [],
+                    "children": [
+                        {
+                            "textExpr": {
+                                "type": ExprType.TEXT,
+                                "segs": [
+                                    {"type": ExprType.STRING, "value": "Offline"}
+                                ]
+                            }
+                        }
+                    ],
+                    "tagName": "span"
+                }
+            ]
         },
-        {
-            "directives": [
-                {
-                    "value": true,
-                    "name": "else"
-                }
-            ],
-            "props": [],
-            "events": [],
-            "children": [
-                {
-                    "isText": true,
-                    "text": "Offline",
-                    "textExpr": {
-                        "type": ExprType.TEXT,
-                        "segs": [
-                            {"type": ExprType.STRING, "value": "Offline"}
-                        ]
-                    }
-                }
-            ],
-            "tagName": "span"
-        }
+
     ],
     "tagName": "div"
 }
@@ -884,7 +814,7 @@ aNode = {
 
 - item - 表达式对象，表示循环过程中数据项对应的变量
 - index - 表达式对象，表示循环过程中数据索引对应的变量
-- list - 表达式对象，表示要循环的数据
+- value - 表达式对象，表示要循环的数据
 - name - 恒为 for
 
 ```html
@@ -900,12 +830,20 @@ aNode = {
     "events": [],
     "children": [
         {
-            "isText": true,
-            "text": "\n    "
+            "textExpr": {
+                "type": ExprType.TEXT,
+                "segs": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "\n    "
+                    }
+                ],
+                "value": "\n    "
+            }
         },
         {
-            "directives": [
-                {
+            "directives": {
+                "for": {
                     "item": {
                         type: ExprType.ACCESSOR,
                         paths: [
@@ -918,7 +856,7 @@ aNode = {
                             {"type": ExprType.STRING, "value": "index"}
                         ]
                     }
-                    "list": {
+                    "value": {
                         type: ExprType.ACCESSOR,
                         paths: [
                             {"type": ExprType.STRING, "value": "persons"}
@@ -926,13 +864,11 @@ aNode = {
                     },
                     "name": "for"
                 }
-            ],
+            },
             "props": [],
             "events": [],
             "children": [
                 {
-                    "isText": true,
-                    "text": "{{p.name}} - {{p.email}}",
                     "textExpr": {
                         "type": ExprType.TEXT,
                         "segs": [
@@ -969,8 +905,16 @@ aNode = {
             "tagName": "li"
         },
         {
-            "isText": true,
-            "text": "\n"
+            "textExpr": {
+                "type": ExprType.TEXT,
+                "segs": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "\n"
+                    }
+                ],
+                "value": "\n"
+            }
         }
     ],
     "tagName": "ul"
