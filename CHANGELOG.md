@@ -10,7 +10,9 @@ ChangeLog
 + 【变更】- ANode 部分属性从 IndexedList 改为数组，使 ANode 易于 JSON 序列化
 + 【新特性】- 组件声明时增加 delimiters 的支持，可配置插值两侧的分隔符
 + 【新特性】- 给组件默认添加 getComponentType(aNode) 方法，可支持运行时动态的创建组件
++ 【新特性】- 组件支持外部传入 id 做为 root element 的 id
 + 【优化】- 一些性能优化
++ 【优化】- 部分标签（如select、tr等）在老 ie 下不支持设置 html，创建和更新时使用 create + insert 操作做兼容
 + 【优化】- typescript 定义中添加全局 san 对象的定义
 + 【bug修复】- fire 方法会触发父组件使用 native 修饰符声明的事件
 + 【bug修复】- 为枚举值为布尔类型的枚举属性（如 draggable）赋值字符串时输出与期望不符
