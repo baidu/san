@@ -27,7 +27,6 @@ var elementOwnToPhase = require('./element-own-to-phase');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
-var nodeCreateStump = require('./node-create-stump');
 
 
 /**
@@ -100,14 +99,14 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
     // #[begin] reverse
     if (reverseWalker) {
 
-        this.sel = nodeCreateStump(this);
+        this.sel = document.createComment(this.id);
         insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
         each(this.aNode.children, function (aNodeChild) {
             me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
         });
 
-        this.el = nodeCreateStump(this);
+        this.el = document.createComment(this.id);
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
         attachings.add(this);

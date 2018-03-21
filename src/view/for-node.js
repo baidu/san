@@ -29,7 +29,6 @@ var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
-var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
@@ -539,7 +538,7 @@ ForNode.prototype._update = function (changes) {
         // parentEl.innerHTML = '';
         var replaceNode = parentEl.cloneNode(false);
         parentEl.parentNode.replaceChild(replaceNode, parentEl);
-        this.el = nodeCreateStump(this);
+        this.el = document.createComment(this.id);
         replaceNode.appendChild(this.el);
     }
 
@@ -572,7 +571,7 @@ ForNode.prototype._update = function (changes) {
                 (me.children[i] = createForDirectiveChild(me, newList[i], i))._attachHTML(newChildBuf);
             }
             outputHTMLBuffer(newChildBuf, parentEl);
-            me.el = nodeCreateStump(me);
+            me.el = document.createComment(me.id);
             parentEl.appendChild(me.el);
         }
         else {

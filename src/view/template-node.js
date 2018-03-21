@@ -16,7 +16,6 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
-var nodeCreateStump = require('./node-create-stump');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
@@ -45,7 +44,7 @@ function TemplateNode(aNode, owner, scope, parent, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
-        this.sel = nodeCreateStump(this);
+        this.sel = document.createComment(this.id);
         insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
         var me = this;
@@ -53,7 +52,7 @@ function TemplateNode(aNode, owner, scope, parent, reverseWalker) {
             me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
         });
 
-        this.el = nodeCreateStump(this);
+        this.el = document.createComment(this.id);
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
         attachings.add(this);
