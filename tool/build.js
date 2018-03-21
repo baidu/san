@@ -21,6 +21,19 @@ let editions = {
         ignoreFeatures: ['ssr']
     },
 
+    'modern': {
+        ignoreFeatures: ['ssr', 'devtool', 'error', 'allua']
+    },
+
+    'modern.min': {
+        ignoreFeatures: ['ssr', 'devtool', 'error', 'allua'],
+        compress: 1
+    },
+
+    'modern.dev': {
+        ignoreFeatures: ['ssr', 'allua']
+    },
+
     spa: {
         ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
     },
@@ -32,6 +45,19 @@ let editions = {
 
     'spa.dev': {
         ignoreFeatures: ['ssr', 'reverse']
+    },
+
+    'spa.modern': {
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error', 'allua']
+    },
+
+    'spa.modern.min': {
+        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error', 'allua'],
+        compress: 1
+    },
+
+    'spa.modern.dev': {
+        ignoreFeatures: ['ssr', 'reverse', 'allua']
     }
 };
 
