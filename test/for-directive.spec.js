@@ -1831,4 +1831,36 @@ describe("ForDirective", function () {
             done();
         });
     });
+
+    it("noexist item set more than once in a clock", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item.name}} - {{item.company}}</li></ul>'
+        });
+
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.data.set('list', [{ name: 'erik' }]);
+        myComponent.data.set('list[0].company', 'bidu');
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(0);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+            expect(lis[0].innerHTML).toContain('erik - bidu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

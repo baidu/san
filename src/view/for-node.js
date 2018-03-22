@@ -374,23 +374,25 @@ ForNode.prototype._update = function (changes) {
                 (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
                     .push(change);
 
-                switch (change.type) {
-                    case DataChangeType.SET:
-                        this.children[changeIndex].scope._set(
-                            change.expr,
-                            change.value,
-                            {silent: 1}
-                        );
-                        break;
+                if (this.children[changeIndex]) {
+                    switch (change.type) {
+                        case DataChangeType.SET:
+                            this.children[changeIndex].scope._set(
+                                change.expr,
+                                change.value,
+                                {silent: 1}
+                            );
+                            break;
 
 
-                    case DataChangeType.SPLICE:
-                        this.children[changeIndex].scope._splice(
-                            change.expr,
-                            [].concat(change.index, change.deleteCount, change.insertions),
-                            {silent: 1}
-                        );
-                        break;
+                        case DataChangeType.SPLICE:
+                            this.children[changeIndex].scope._splice(
+                                change.expr,
+                                [].concat(change.index, change.deleteCount, change.insertions),
+                                {silent: 1}
+                            );
+                            break;
+                    }
                 }
             }
         }
