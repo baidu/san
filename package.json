@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A Flexible JavaScript Component Framework",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "contributors": [
     {
       "name": "erik",
@@ -22,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ecomfe/san.git"
+    "url": "https://github.com/baidu/san.git"
   },
   "scripts": {
     "dev": "node ./tool/dev.js",
