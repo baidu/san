@@ -246,6 +246,35 @@ describe("Component", function () {
 
     });
 
+    it("life cycle must correct when call dispose after detach immediately", function () {
+        var P = san.defineComponent({
+            template: '<p><slot/></p>'
+        })
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-p': P
+            },
+
+            template: '<div><h3>title</h3><x-p s-ref="p">content</x-p></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var myP = myComponent.ref('p');
+
+        expect(myComponent.lifeCycle.attached).toBeTruthy();
+        expect(myP.lifeCycle.attached).toBeTruthy();
+
+        myComponent.detach();
+        myComponent.dispose();
+
+        expect(myComponent.lifeCycle.disposed).toBeTruthy();
+        expect(myP.lifeCycle.disposed).toBeTruthy();
+    });
+
     it("owner and child component life cycle, and el is ready when attached", function () {
         var uState = {};
         var U = san.defineComponent({

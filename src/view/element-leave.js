@@ -13,7 +13,7 @@ var elementGetTransition = require('./element-get-transition');
  */
 function elementLeave(element) {
     var lifeCycle = element.lifeCycle;
-    if (lifeCycle.leaving || !lifeCycle.attached) {
+    if (lifeCycle.leaving) {
         return;
     }
 
