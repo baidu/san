@@ -51,7 +51,7 @@ function compileComponent(ComponentClass) {
             var firstChild = aNode.children[0];
 
             // #[begin] error
-            if (aNode.children.length !== 1 || firstChild.isText) {
+            if (aNode.children.length !== 1 || firstChild.textExpr) {
                 throw new Error('[SAN FATAL] template must have a root element.');
             }
             // #[end]
