@@ -74,6 +74,24 @@ var defaultElementPropHandler = {
     }
 };
 
+var boolPropHandler = {
+    attr: function (element, value, name, prop) {
+        // 因为元素的attr值必须经过html escape，否则可能有漏洞
+        // 所以这里直接对假值字符串形式进行处理
+        // NaN之类非主流的就先不考虑了
+        if (prop && prop.raw === ''
+            || value && value !== 'false' && value !== '0'
+        ) {
+            return ' ' + name;
+        }
+    },
+
+    prop: function (element, value, name) {
+        var propName = HTML_ATTR_PROP_MAP[name] || name;
+        element.el[propName] = !!(value && value !== 'false' && value !== '0');
+    }
+};
+
 /* eslint-disable fecs-properties-quote */
 /**
  * 默认的属性设置变换方法
@@ -111,19 +129,19 @@ var defaultElementPropHandlers = {
         prop: empty
     },
 
-    readonly: genBoolPropHandler('readonly'),
-    disabled: genBoolPropHandler('disabled'),
-    autofocus: genBoolPropHandler('autofocus'),
-    required: genBoolPropHandler('required'),
-    draggable: genBoolPropHandler('draggable')
+    readonly: boolPropHandler,
+    disabled: boolPropHandler,
+    autofocus: boolPropHandler,
+    required: boolPropHandler,
+
+    // draggable attribute 是枚举类型，但 property 接受 boolean
+    draggable: {
+        attr: defaultElementPropHandler.attr,
+        prop: boolPropHandler.prop
+    }
 };
 /* eslint-enable fecs-properties-quote */
 
-// draggable attribute 是枚举类型，但 property 接受 boolean
-// 所以这里声明 bool prop，然后 attr 置回来
-defaultElementPropHandlers.draggable.attr = defaultElementPropHandler.attr;
-
-var checkedPropHandler = genBoolPropHandler('checked');
 var analInputChecker = {
     checkbox: contains,
     radio: function (a, b) {
@@ -144,35 +162,37 @@ function analInputCheckedState(element, value, oper) {
                 bindChecked.hintExpr = bindValue.expr;
             }
 
-            var checkedState = analInputChecker[type](
+            return !!analInputChecker[type](
                 value,
                 evalExpr(bindValue.expr, element.scope, element.owner)
             );
-
-            switch (oper) {
-                case 'attr':
-                    return checkedState ? ' checked="checked"' : '';
-
-                case 'prop':
-                    element.el.checked = checkedState;
-                    return;
-            }
         }
     }
-
-    return checkedPropHandler[oper](element, value, 'checked');
 }
 
 var elementPropHandlers = {
     input: {
-        multiple: genBoolPropHandler('multiple'),
+        multiple: boolPropHandler,
         checked: {
-            attr: function (element, value) {
-                return analInputCheckedState(element, value, 'attr');
+            attr: function (element, value, name, prop) {
+                var state = analInputCheckedState(element, value);
+
+                return boolPropHandler.attr(
+                    element,
+                    state != null ? state : value,
+                    'checked',
+                    prop
+                );
             },
 
             prop: function (element, value) {
-                analInputCheckedState(element, value, 'prop');
+                var state = analInputCheckedState(element, value);
+
+                boolPropHandler.prop(
+                    element,
+                    state != null ? state : value,
+                    'checked'
+                );
             },
 
             output: function (element, bindInfo, data) {
@@ -268,33 +288,6 @@ function isOptionSelected(element, value) {
             return 1;
         }
     }
-}
-
-/**
- * 生成 bool 类型属性绑定操作的变换方法
- *
- * @inner
- * @param {string} attrName 属性名
- * @return {Object}
- */
-function genBoolPropHandler(attrName) {
-    return {
-        attr: function (element, value, name, prop) {
-            // 因为元素的attr值必须经过html escape，否则可能有漏洞
-            // 所以这里直接对假值字符串形式进行处理
-            // NaN之类非主流的就先不考虑了
-            if (prop && prop.raw === ''
-                || value && value !== 'false' && value !== '0'
-            ) {
-                return ' ' + attrName;
-            }
-        },
-
-        prop: function (element, value, name) {
-            var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
-            element.el[propName] = !!(value && value !== 'false' && value !== '0');
-        }
-    };
 }
 
 
