@@ -97,7 +97,6 @@ function parseTemplate(source, options) {
             }
 
             if (closeIndex > 0) {
-                stack.length = closeIndex;
                 stackIndex = closeIndex - 1;
                 currentNode = stack[stackIndex];
             }
