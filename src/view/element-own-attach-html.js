@@ -47,7 +47,7 @@ function elementOwnAttachHTML(buf) {
                 value = escapeHTML(value);
             }
 
-            htmlBufferPush(buf, handleProp.attr(this, prop.name, value) || '');
+            htmlBufferPush(buf, handleProp.attr(this, value, prop) || '');
         }
     }
 

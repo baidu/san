@@ -89,7 +89,7 @@ function componentPreheat(ComponentClass) {
                     else if (prop.expr.value != null
                         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
                     ) {
-                        aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.name, prop.expr.value) || '';
+                        aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.expr.value, prop) || '';
                     }
                     else {
                         if (prop.x) {

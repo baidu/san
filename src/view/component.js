@@ -577,8 +577,8 @@ Component.prototype._update = function (changes) {
                 ) {
                     handleProp.prop(
                         me,
-                        prop.name,
-                        evalExpr(prop.expr, me.data, me)
+                        evalExpr(prop.expr, me.data, me),
+                        prop
                     );
 
                     return false;

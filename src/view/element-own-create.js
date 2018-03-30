@@ -22,14 +22,12 @@ function elementOwnCreate() {
 
         var me = this;
         each(this.aNode.props, function (prop) {
-            var value = isComponent
-                ? evalExpr(prop.expr, me.data, me)
-                : evalExpr(prop.expr, me.scope, me.owner);
+            if (prop.name !== 'id') {
+                var value = isComponent
+                    ? evalExpr(prop.expr, me.data, me)
+                    : evalExpr(prop.expr, me.scope, me.owner);
 
-            handleProp.prop(me, prop.name, value);
-
-            if (prop.name === 'id') {
-                return;
+                handleProp.prop(me, value, prop);
             }
         });
 

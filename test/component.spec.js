@@ -3311,5 +3311,32 @@ describe("Component", function () {
             done();
         });
     });
+
+    it("static bind name is a bool attr name", function () {
+        var Button = san.defineComponent({
+            template: '<a><b s-if="required">btn</b></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-btn': Button
+            },
+            template: '<div><x-btn required="true"/></div>'
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.innerHTML).toContain('btn');
+
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
 

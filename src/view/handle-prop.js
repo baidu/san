@@ -9,12 +9,14 @@ var getPropHandler = require('./get-prop-handler');
  * 处理元素属性操作
  */
 var handleProp = {
-    attr: function (element, name, value) {
-        return getPropHandler(element, name).attr(element, name, value);
+    attr: function (element, value, prop) {
+        var name = prop.name;
+        return getPropHandler(element, name).attr(element, value, name, prop);
     },
 
-    prop: function (element, name, value) {
-        getPropHandler(element, name).prop(element, name, value);
+    prop: function (element, value, prop) {
+        var name = prop.name;
+        getPropHandler(element, name).prop(element, value, name, prop);
     }
 };
 

@@ -37,13 +37,13 @@ var HTML_ATTR_PROP_MAP = {
  * @type {Object}
  */
 var defaultElementPropHandler = {
-    attr: function (element, name, value) {
+    attr: function (element, value, name) {
         if (value != null) {
             return ' ' + name + '="' + value + '"';
         }
     },
 
-    prop: function (element, name, value) {
+    prop: function (element, value, name) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
         var el = element.el;
 
@@ -83,25 +83,25 @@ var defaultElementPropHandler = {
  */
 var defaultElementPropHandlers = {
     style: {
-        attr: function (element, name, value) {
+        attr: function (element, value) {
             if (value) {
                 return ' style="' + value + '"';
             }
         },
 
-        prop: function (element, name, value) {
+        prop: function (element, value) {
             element.el.style.cssText = value;
         }
     },
 
     'class': { // eslint-disable-line
-        attr: function (element, name, value) {
+        attr: function (element, value) {
             if (value) {
                 return ' class="' + value + '"';
             }
         },
 
-        prop: function (element, name, value) {
+        prop: function (element, value) {
             element.el.className = value;
         }
     },
@@ -160,18 +160,18 @@ function analInputCheckedState(element, value, oper) {
         }
     }
 
-    return checkedPropHandler[oper](element, 'checked', value);
+    return checkedPropHandler[oper](element, value, 'checked');
 }
 
 var elementPropHandlers = {
     input: {
         multiple: genBoolPropHandler('multiple'),
         checked: {
-            attr: function (element, name, value) {
+            attr: function (element, value) {
                 return analInputCheckedState(element, value, 'attr');
             },
 
-            prop: function (element, name, value) {
+            prop: function (element, value) {
                 analInputCheckedState(element, value, 'prop');
             },
 
@@ -212,13 +212,13 @@ var elementPropHandlers = {
 
     option: {
         value: {
-            attr: function (element, name, value) {
+            attr: function (element, value) {
                 return ' value="' + (value || '') + '"'
                     + (isOptionSelected(element, value) ? 'selected' : '');
             },
 
-            prop: function (element, name, value) {
-                defaultElementPropHandler.prop(element, name, value);
+            prop: function (element, value, name) {
+                defaultElementPropHandler.prop(element, value, name);
 
                 if (isOptionSelected(element, value)) {
                     element.el.selected = true;
@@ -230,7 +230,7 @@ var elementPropHandlers = {
     select: {
         value: {
             attr: empty,
-            prop: function (element, name, value) {
+            prop: function (element, value) {
                 element.el.value = value || '';
             },
 
@@ -279,11 +279,10 @@ function isOptionSelected(element, value) {
  */
 function genBoolPropHandler(attrName) {
     return {
-        attr: function (element, name, value) {
+        attr: function (element, value, name, prop) {
             // 因为元素的attr值必须经过html escape，否则可能有漏洞
             // 所以这里直接对假值字符串形式进行处理
             // NaN之类非主流的就先不考虑了
-            var prop = getANodeProp(element.aNode, name);
             if (prop && prop.raw === ''
                 || value && value !== 'false' && value !== '0'
             ) {
@@ -291,7 +290,7 @@ function genBoolPropHandler(attrName) {
             }
         },
 
-        prop: function (element, name, value) {
+        prop: function (element, value, name) {
             var propName = HTML_ATTR_PROP_MAP[attrName] || attrName;
             element.el[propName] = !!(value && value !== 'false' && value !== '0');
         }

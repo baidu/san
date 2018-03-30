@@ -149,7 +149,7 @@ Element.prototype._update = function (changes) {
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
                 )
             ) {
-                handleProp.prop(this, prop.name, evalExpr(prop.expr, this.scope, this.owner));
+                handleProp.prop(this, evalExpr(prop.expr, this.scope, this.owner), prop);
                 break;
             }
         }
