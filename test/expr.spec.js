@@ -554,4 +554,19 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("no whitespace binary in number literals", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{1+1|tobe(2)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
 });

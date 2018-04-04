@@ -14,7 +14,7 @@ var ExprType = require('./expr-type');
  * @return {Object}
  */
 function readNumber(walker) {
-    var match = walker.match(/\s*(-?[0-9]+(.[0-9]+)?)/g);
+    var match = walker.match(/\s*(-?[0-9]+(\.[0-9]+)?)/g);
 
     return {
         type: ExprType.NUMBER,
