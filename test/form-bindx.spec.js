@@ -33,7 +33,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + input.id, 'input', 'test' + (+new Date()));
+        triggerEvent(input, 'input', 'test' + (+new Date()));
         setTimeout(doneSpec, 500);
 
     });
@@ -76,7 +76,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 100);
         }
 
-        triggerEvent('#' + inputs[0].id, 'input', '<a>sb</a>');
+        triggerEvent(inputs[0], 'input', '<a>sb</a>');
         setTimeout(doneSpec, 200);
 
     });
@@ -142,7 +142,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + input.id, 'input', inputValue);
+        triggerEvent(input, 'input', inputValue);
         setTimeout(doneSpec, 500);
 
     });
@@ -166,7 +166,7 @@ describe("Form TwoWay Binding", function () {
         expect(textarea.value).toBe(defName);
 
         doneSpec();
-        triggerEvent('#' + textarea.id, 'input', 'added2')
+        triggerEvent(textarea, 'input', 'added2')
 
 
         function doneSpec() {
@@ -208,7 +208,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[1].value).toBe('varsha');
         expect(inputs[2].value).toBe('firede');
 
-        triggerEvent('#' + inputs[1].id , 'input', 'added3');
+        triggerEvent(inputs[1], 'input', 'added3');
 
         doneSpec();
         function doneSpec() {
@@ -267,7 +267,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + inputs[1].id , 'input', 'test');
+        triggerEvent(inputs[1], 'input', 'test');
         setTimeout(doneSpec, 500);
 
     });
@@ -342,7 +342,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + inputs[1].id, 'input', 'test')
+        triggerEvent(inputs[1], 'input', 'test')
         setTimeout(doneSpec, 500);
 
     });
@@ -374,7 +374,7 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            triggerEvent('#'+ inputs[1].id, 'input', 'test');
+            triggerEvent(inputs[1], 'input', 'test');
             setTimeout(doneSpec, 500);
 
         });
@@ -427,7 +427,7 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[2].value).toBe('varsha');
             expect(inputs[3].value).toBe('firede');
 
-            triggerEvent('#' + inputs[1].id, 'input', 'test');
+            triggerEvent(inputs[1], 'input', 'test');
 
             setTimeout(doneSpec, 500);
 
@@ -486,7 +486,7 @@ describe("Form TwoWay Binding", function () {
             expect(inputs[0].value).toBe('errorrik');
             expect(inputs[1].value).toBe('varsha');
 
-            triggerEvent('#' + inputs[1].id, 'input', 'test');
+            triggerEvent(inputs[1], 'input', 'test');
             setTimeout(doneSpec, 500);
         });
 
@@ -574,7 +574,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + inputs[0].id, 'click');
+        triggerEvent(inputs[0], 'click');
 
         setTimeout(doneSpec, 500);
 
@@ -672,7 +672,7 @@ describe("Form TwoWay Binding", function () {
         expect(inputs[0].checked).toBe(true);
         expect(inputs[1].checked).toBe(false);
 
-        triggerEvent('#' + inputs[1].id, 'click');
+        triggerEvent(inputs[1], 'click');
         setTimeout(doneSpec, 500);
 
         function doneSpec() {
@@ -733,7 +733,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + inputs[1].id, 'click');
+        triggerEvent(inputs[1], 'click');
 
         setTimeout(doneSpec, 500);
 
@@ -788,7 +788,7 @@ describe("Form TwoWay Binding", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + inputs[0].id, 'click');
+        triggerEvent(inputs[0], 'click');
 
         setTimeout(doneSpec, 500);
 
@@ -820,7 +820,7 @@ describe("Form TwoWay Binding", function () {
         expect(wrap.getElementsByTagName('b')[0].title).toBe('firede');
 
 
-        triggerEvent('#' + select.id, 'select', 0);
+        triggerEvent(select, 'select', 0);
         setTimeout(doneSpec, 500);
 
 
@@ -868,7 +868,7 @@ describe("Form TwoWay Binding", function () {
         expect(select.selectedIndex).toBe(1);
         expect(wrap.getElementsByTagName('b')[0].title).toBe('firede');
 
-        triggerEvent('#' + select.id, 'select', 0);
+        triggerEvent(select, 'select', 0);
         setTimeout(doneSpec, 500);
 
         function doneSpec() {
@@ -1166,7 +1166,7 @@ describe("Form TwoWay Binding", function () {
             expect(input.value).toBe('two');
             expect(select.selectedIndex).toBe(1);
 
-            triggerEvent('#' + input.id, 'input', '22222');
+            triggerEvent(input, 'input', '22222');
 
             setTimeout(function () {
                 expect(input.value).toBe('two22222');
@@ -1224,7 +1224,7 @@ describe("Form TwoWay Binding", function () {
             expect(bs[0].title).toBe('hello');
             expect(inputs[0].value).toBe('hello');
 
-            triggerEvent('#' + inputs[1].id, 'input', 'san');
+            triggerEvent(inputs[1], 'input', 'san');
 
             setTimeout(function () {
                 expect(inputs[1].value).toBe('san');

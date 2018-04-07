@@ -45,7 +45,7 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + span.id, 'click');
+        triggerEvent(span, 'click');
 
         doneSpec();
 
@@ -83,8 +83,8 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + span.id, 'click');
-        triggerEvent('#' + spanNoArgs.id, 'click');
+        triggerEvent(span, 'click');
+        triggerEvent(spanNoArgs, 'click');
         doneSpec();
     });
 
@@ -130,8 +130,8 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
         // 两次点击，期望只有第一次nativeEvent的点击生效
-        triggerEvent('#' + nativeChildEl.id, 'click');
-        triggerEvent('#' + childEl.id, 'click');
+        triggerEvent(nativeChildEl, 'click');
+        triggerEvent(childEl, 'click');
         doneSpec();
     });
 
@@ -180,7 +180,7 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + input.id, 'click');
+        triggerEvent(input, 'click');
         doneSpec();
     });
 
@@ -233,9 +233,9 @@ describe("Element-Event", function () {
             }
             setTimeout(doneSpec, 500);
         }
-        triggerEvent('#' + aBtn.id, 'click');
-        triggerEvent('#' + bBtn.id, 'click');
-        triggerEvent('#' + cBtn.id, 'click');
+        triggerEvent(aBtn, 'click');
+        triggerEvent(bBtn, 'click');
+        triggerEvent(cBtn, 'click');
         doneSpec();
     });
 
@@ -287,7 +287,7 @@ describe("Element-Event", function () {
             setTimeout(doneSpec, 500);
         }
 
-        triggerEvent('#' + span.id, 'click');
+        triggerEvent(span, 'click');
 
         doneSpec();
 

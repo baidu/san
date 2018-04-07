@@ -679,7 +679,7 @@ describe("Slot", function () {
         expect(ps[0].title).toBe('oldone');
 
         var buttons = wrap.getElementsByTagName('button');
-        triggerEvent('#' + buttons[0].id, 'click');
+        triggerEvent(buttons[0], 'click');
 
         setTimeout(function () {
             var ps = wrap.getElementsByTagName('p');
@@ -831,7 +831,7 @@ describe("Slot", function () {
         expect(us[1].title.indexOf('123') >= 0).toBeFalsy();
 
         var button = wrap.getElementsByTagName('button')[0];
-        triggerEvent('#' + button.id, 'click');
+        triggerEvent(button, 'click');
 
 
         setTimeout(function () {

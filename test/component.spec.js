@@ -797,7 +797,7 @@ describe("Component", function () {
         }
 
         var span = wrap.getElementsByTagName('span')[0];
-        triggerEvent('#' + span.id, 'click');
+        triggerEvent(span, 'click');
 
         doneSpec();
     });
@@ -2372,7 +2372,7 @@ describe("Component", function () {
         }
 
 
-        triggerEvent('#' + wrap.firstChild.getElementsByTagName('*')[0].id, 'click');
+        triggerEvent(wrap.firstChild.getElementsByTagName('*')[0], 'click');
 
         detect();
     });

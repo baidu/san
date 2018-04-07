@@ -1400,7 +1400,7 @@ describe("ForDirective", function () {
         expect(clickValue).toBe(0);
 
         var lis = wrap.getElementsByTagName('li');
-        triggerEvent('#' + lis[0].id, 'click');
+        triggerEvent(lis[0], 'click');
 
         san.nextTick(function () {
             expect(clickValue > 0).toBeTruthy();
