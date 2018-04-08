@@ -52,7 +52,7 @@
             myComponent2.attach(wrap);
 
             var bs = wrap.getElementsByTagName('b');
-            expect(bs[0].id === bs[1].id).toBeFalsy();
+            expect(!bs[0].id || bs[0].id !== bs[1].id).toBeTruthy();
 
             myComponent.dispose();
             myComponent2.dispose();

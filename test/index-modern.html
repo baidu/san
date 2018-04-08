@@ -17,49 +17,6 @@
 
     <!-- include source files here... -->
     <script src="../dist/san.spa.modern.dev.js"></script>
-    <script src="lib/esl.js"></script>
-    <script>
-    require.config({
-        paths: {
-            san: '../dist/san'
-        }
-    });
-
-    (function () {
-        var boot = window.onload;
-        window.onload = function () {
-            require(['san'], boot);
-        };
-    })();
-
-    describe("Conflict", function () {
-
-        it("different san instance should not gen same id element", function () {
-            var MyComponent = san.defineComponent({
-                template: '<b>aaa</b>'
-            });
-
-            var MyComponent2 = require('san').defineComponent({
-                template: '<b>aaa2</b>'
-            });
-
-            var myComponent = new MyComponent();
-            var myComponent2 = new MyComponent2();
-
-            var wrap = document.createElement('div');
-            document.body.appendChild(wrap);
-            myComponent.attach(wrap);
-            myComponent2.attach(wrap);
-
-            var bs = wrap.getElementsByTagName('b');
-            expect(bs[0].id === bs[1].id).toBeFalsy();
-
-            myComponent.dispose();
-            myComponent2.dispose();
-            document.body.removeChild(wrap);
-        });
-    });
-    </script>
 
     <!-- include spec files here... -->
 

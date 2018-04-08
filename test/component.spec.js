@@ -1102,7 +1102,7 @@ describe("Component", function () {
         });
 
         var selectValue;
-        var itemId;
+        var item;
         var SelectItem = san.defineComponent({
             template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
 
@@ -1113,7 +1113,7 @@ describe("Component", function () {
             },
 
             attached: function () {
-                itemId = this.id;
+                item = this.el;
                 this.dispatch('UI:select-item-attached');
             },
 
@@ -1168,7 +1168,7 @@ describe("Component", function () {
         }
 
         detectDone();
-        triggerEvent('#' + itemId, 'click');
+        triggerEvent(item, 'click');
 
     });
 
@@ -1208,7 +1208,7 @@ describe("Component", function () {
         };
 
         var selectValue;
-        var itemId;
+        var item;
         var SelectItem = san.defineComponent({
             template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
 
@@ -1219,7 +1219,7 @@ describe("Component", function () {
             },
 
             attached: function () {
-                itemId = this.id;
+                item = this.el;
                 this.dispatch('UI:select-item-attached');
             },
 
@@ -1274,7 +1274,7 @@ describe("Component", function () {
         }
 
         detectDone();
-        triggerEvent('#' + itemId, 'click');
+        triggerEvent(item, 'click');
 
     });
 
@@ -1324,7 +1324,7 @@ describe("Component", function () {
         });
 
         var selectValue;
-        var itemId;
+        var item;
         var SelectItem = san.defineComponent({
             template: '<li on-click="select" style="{{value === selectValue ? \'border: 1px solid red\' : \'\'}}"><slot></slot></li>',
 
@@ -1336,7 +1336,7 @@ describe("Component", function () {
             },
 
             attached: function () {
-                itemId = this.id;
+                item = this.el;
                 this.dispatch('UI:select-item-attached');
             },
 
@@ -1401,7 +1401,7 @@ describe("Component", function () {
         }
 
         detectDone();
-        triggerEvent('#' + itemId, 'click');
+        triggerEvent(item, 'click');
 
     });
 
@@ -2481,17 +2481,12 @@ describe("Component", function () {
     it("outer event and inner event should not confilct", function (done) {
         var innerClick;
         var outerClick;
-        var btnId;
         var Button = san.defineComponent({
             template: '<button on-click="clicker">test</button>',
 
             clicker: function () {
                 innerClick = 1;
                 this.fire('click')
-            },
-
-            attached: function () {
-                btnId = this.id;
             }
         });
 
@@ -2524,7 +2519,7 @@ describe("Component", function () {
             document.body.removeChild(wrap);
         }
 
-        triggerEvent('#' + btnId, 'click');
+        triggerEvent(wrap.getElementsByTagName('button')[0], 'click');
 
         setTimeout(doneSpec, 500);
     });
