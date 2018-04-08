@@ -193,7 +193,6 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 
 ForNode.prototype.nodeType = NodeType.FOR;
 ForNode.prototype._create = nodeOwnCreateStump;
-ForNode.prototype._getEl = nodeOwnGetStumpEl;
 ForNode.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
@@ -208,52 +207,12 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
 
     // paint list
     var el = this.el || parentEl.firstChild;
-    var prevEl = el && el.previousSibling;
-    var buf = createHTMLBuffer();
-
-    prev: while (prevEl) {
-        var nextPrev = prevEl.previousSibling;
-        switch (prevEl.nodeType) {
-            case 1:
-                break prev;
-
-            case 3:
-                if (!/^\s*$/.test(prevEl.textContent)) {
-                    break prev;
-                }
-
-                removeEl(prevEl);
-                break;
-
-        }
-
-        prevEl = nextPrev;
-    }
-
-    if (
-        // #[begin] allua
-        isSetHTMLNotAllow(this)
-        ||
-        // #[end]
-        prevEl && prevEl.nodeType !== 1
-    ) {
-        var me = this;
-        each(
-            evalExpr(this.param.value, this.scope, this.owner),
-            function (item, i) {
-                var child = createForDirectiveChild(me, item, i);
-                me.children.push(child);
-                child.attach(parentEl, el);
-            }
-        );
-    }
-    else if (!prevEl) {
-        this._attachHTML(buf, 1);
-        outputHTMLBuffer(buf, parentEl, 'afterbegin');
-    }
-    else {
-        this._attachHTML(buf, 1);
-        outputHTMLBuffer(buf, prevEl, 'afterend');
+    var data = evalExpr(this.param.value, this.scope, this.owner);
+    var len = data && data.length || 0;
+    for (var i = 0; i < len; i++) {
+        var child = createForDirectiveChild(this, data[i], i);
+        this.children.push(child);
+        child.attach(parentEl, el);
     }
 
     attachings.done();
@@ -266,7 +225,7 @@ ForNode.prototype.detach = function () {
     if (this.lifeCycle.attached) {
         elementDisposeChildren(this);
         this.children = [];
-        removeEl(this._getEl());
+        removeEl(this.el);
         this.lifeCycle = LifeCycle.detached;
     }
 };
@@ -319,7 +278,6 @@ ForNode.prototype._update = function (changes) {
 
     var disposeChildren = [];
 
-    this._getEl();
 
     // 判断列表是否父元素下唯一的元素
     // 如果是的话，可以做一些更新优化
@@ -327,8 +285,8 @@ ForNode.prototype._update = function (changes) {
     var parentFirstChild = parentEl.firstChild;
     var parentLastChild = parentEl.lastChild;
     var isOnlyParentChild = oldChildrenLen > 0 // 有孩子时
-            && parentFirstChild === this.children[0]._getEl()
-            && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1]._getEl())
+            && parentFirstChild === this.children[0].el
+            && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1].el)
         || oldChildrenLen === 0 // 无孩子时
             && parentFirstChild === this.el
             && parentLastChild === this.el;
@@ -570,7 +528,8 @@ ForNode.prototype._update = function (changes) {
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
             for (var i = 0; i < newChildrenLen; i++) {
-                (me.children[i] = createForDirectiveChild(me, newList[i], i))._attachHTML(newChildBuf);
+                me.children[i] = createForDirectiveChild(me, newList[i], i);
+                me.children[i].attach(parentEl);
             }
             outputHTMLBuffer(newChildBuf, parentEl);
             me.el = document.createComment(me.id);
@@ -597,59 +556,79 @@ ForNode.prototype._update = function (changes) {
             var setHTMLNotAllow = isSetHTMLNotAllow(me);
             // #[end]
 
-            for (var i = 0; i < newChildrenLen; i++) {
-                var child = me.children[i];
+            var beforeEl = me.el;
+            while (newChildrenLen--) {
+                var child = me.children[newChildrenLen];
 
                 if (child) {
-                    childrenChanges[i] && child._update(childrenChanges[i]);
+
+                    childrenChanges[newChildrenLen] && child._update(childrenChanges[newChildrenLen]);
                 }
                 else {
-                    me.children[i] = createForDirectiveChild(me, newList[i], i);
-                    newChildBuf = newChildBuf || createHTMLBuffer();
-
-                    // #[begin] allua
-                    if (setHTMLNotAllow) {
-                        var newChildStart = i;
-                    }
-                    else {
-                    // #[end]
-
-                        me.children[i]._attachHTML(newChildBuf);
-
-                    // #[begin] allua
-                    }
-                    // #[end]
-
-
-                    // flush new children html
-                    var nextChild = me.children[i + 1];
-                    if (i === newChildrenLen - 1 || nextChild) {
-                        var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el)
-                            || me.el;
-
-                        // #[begin] allua
-                        if (setHTMLNotAllow) {
-                            for (; newChildStart <= i; newChildStart++) {
-                                me.children[newChildStart].attach(parentEl, beforeEl);
-                            }
-                        }
-                        else {
-                        // #[end]
-
-                            outputHTMLBufferBefore(
-                                newChildBuf,
-                                parentEl,
-                                beforeEl
-                            );
-
-                        // #[begin] allua
-                        }
-                        // #[end]
-
-                        newChildBuf = null;
-                    }
+                    child = createForDirectiveChild(me, newList[newChildrenLen], newChildrenLen);
+                    child.attach(parentEl, beforeEl);
+                    me.children[newChildrenLen] = child;
                 }
+
+                beforeEl = child.sel || child.el;
             }
+            // for (var i = 0; i < newChildrenLen; i++) {
+            //     var child = me.children[i];
+
+            //     if (child) {
+            //         childrenChanges[i] && child._update(childrenChanges[i]);
+            //     }
+            //     else {
+            //         me.children[i] = createForDirectiveChild(me, newList[i], i);
+
+            //         var nextChild = me.children[i + 1];
+            //         var beforeEl = nextChild && (nextChild.sel || nextChild.el) || me.el;
+            //         me.children[i].attach(parentEl, beforeEl);
+                    // newChildBuf = newChildBuf || createHTMLBuffer();
+
+                    // // #[begin] allua
+                    // if (setHTMLNotAllow) {
+                    //     var newChildStart = i;
+                    // }
+                    // else {
+                    // // #[end]
+
+                    //     me.children[i]._attachHTML(newChildBuf);
+
+                    // // #[begin] allua
+                    // }
+                    // // #[end]
+
+
+                    // // flush new children html
+                    // var nextChild = me.children[i + 1];
+                    // if (i === newChildrenLen - 1 || nextChild) {
+                    //     var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el)
+                    //         || me.el;
+
+                    //     // #[begin] allua
+                    //     if (setHTMLNotAllow) {
+                    //         for (; newChildStart <= i; newChildStart++) {
+                    //             me.children[newChildStart].attach(parentEl, beforeEl);
+                    //         }
+                    //     }
+                    //     else {
+                    //     // #[end]
+
+                    //         outputHTMLBufferBefore(
+                    //             newChildBuf,
+                    //             parentEl,
+                    //             beforeEl
+                    //         );
+
+                    //     // #[begin] allua
+                    //     }
+                    //     // #[end]
+
+                    //     newChildBuf = null;
+                    // }
+                // }
+            // }
         }
 
         attachings.done();

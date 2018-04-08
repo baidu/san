@@ -17,21 +17,27 @@ var NodeType = require('./node-type');
 function elementOwnCreate() {
     if (!this.lifeCycle.created) {
         this.lifeCycle = LifeCycle.painting;
-        this.el = createEl(this.tagName);
+
         var isComponent = this.nodeType === NodeType.CMPT;
+        var sourceNode = this.aNode.hotspot.sourceNode;
+        var props = this.aNode.props;
 
-        var me = this;
-        each(this.aNode.props, function (prop) {
-            if (prop.name !== 'id') {
-                var value = isComponent
-                    ? evalExpr(prop.expr, me.data, me)
-                    : evalExpr(prop.expr, me.scope, me.owner);
+        if (sourceNode) {
+            this.el = sourceNode.cloneNode();
+            props = this.aNode.hotspot.dynamicProps;
+        }
+        else {
+            this.el = createEl(this.tagName);
+        }
 
-                handleProp.prop(me, value, prop);
-            }
-        });
+        for (var i = 0, l = props.length; i < l; i++) {
+            var prop = props[i];
+            var value = isComponent
+                ? evalExpr(prop.expr, this.data, this)
+                : evalExpr(prop.expr, this.scope, this.owner);
 
-        this.el.id = this._getElId();
+            handleProp.prop(this, value, prop);
+        }
 
         this._toPhase('created');
     }

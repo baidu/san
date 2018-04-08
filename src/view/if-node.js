@@ -70,16 +70,11 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
 }
 
 IfNode.prototype.nodeType = NodeType.IF;
-IfNode.prototype._getEl = nodeOwnGetStumpEl;
+
+IfNode.prototype._create = nodeOwnCreateStump;
 IfNode.prototype.dispose = nodeOwnSimpleDispose;
 
-
-/**
- * attach元素的html
- *
- * @param {Object} buf html串存储对象
- */
-IfNode.prototype._attachHTML = function (buf) {
+IfNode.prototype.attach = function (parentEl, beforeEl) {
     var me = this;
     var elseIndex;
     var child;
@@ -102,12 +97,15 @@ IfNode.prototype._attachHTML = function (buf) {
 
     if (child) {
         me.children[0] = child;
-        child._attachHTML(buf);
+        child.attach(parentEl, beforeEl);
         me.elseIndex = elseIndex;
     }
 
-    htmlBufferComment(buf, this.id);
+
+    this._create();
+    insertBefore(this.el, parentEl, beforeEl);
 };
+
 
 /**
  * 视图更新函数
@@ -155,7 +153,7 @@ IfNode.prototype._update = function (changes) {
         if (typeof elseIndex !== 'undefined') {
             var child = createNode(rinseCondANode(childANode), me);
             var parentEl = getNodeStumpParent(me);
-            child.attach(parentEl, me._getEl() || parentEl.firstChild);
+            child.attach(parentEl, me.el);
 
             me.children[0] = child;
         }

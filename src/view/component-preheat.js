@@ -40,6 +40,11 @@ function componentPreheat(ComponentClass) {
                 recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
             }
             else {
+                var sourceNode;
+                if (!/^(template|slot)$/i.test(aNode.tagName)) {
+                    sourceNode = createEl(aNode.tagName);
+                }
+
                 aNode.hotspot = {
                     data: {},
                     // #[begin] allua
@@ -48,8 +53,10 @@ function componentPreheat(ComponentClass) {
                     dynamicProps: [],
                     xProps: [],
                     staticAttr: '',
-                    props: {}
+                    props: {},
+                    sourceNode: sourceNode
                 };
+
 
                 // === analyse hotspot data: start
                 each(aNode.vars, function (varItem) {
@@ -89,7 +96,8 @@ function componentPreheat(ComponentClass) {
                     else if (prop.expr.value != null
                         && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
                     ) {
-                        aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.expr.value, prop) || '';
+                        sourceNode && sourceNode.setAttribute(prop.name, prop.expr.value);
+                        // aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.expr.value, prop) || '';
                     }
                     else {
                         if (prop.x) {

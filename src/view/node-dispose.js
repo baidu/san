@@ -11,6 +11,7 @@
  */
 function nodeDispose(node) {
     node.el = null;
+    node.sel = null;
     node.owner = null;
     node.scope = null;
     node.aNode = null;

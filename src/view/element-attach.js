@@ -21,18 +21,32 @@ function elementAttach(element, parentEl, beforeEl) {
     insertBefore(element.el, parentEl, beforeEl);
 
     if (!element._contentReady) {
-        // #[begin] allua
-        if (element.aNode.hotspot.noSetHTML) {
-            genElementChildren(element);
+        // // #[begin] allua
+        // if (element.aNode.hotspot.noSetHTML) {
+        //     genElementChildren(element);
+        // }
+        // else {
+        // // #[end]
+        //     var buf = createHTMLBuffer();
+        //     genElementChildrenHTML(element, buf);
+        //     outputHTMLBuffer(buf, element.el);
+        // // #[begin] allua
+        // }
+        // // #[end]
+
+        var htmlDirective = element.aNode.directives.html;
+
+        if (htmlDirective) {
+            element.el.innerHTML = evalExpr(htmlDirective.value, element.scope, element.owner);
         }
         else {
-        // #[end]
-            var buf = createHTMLBuffer();
-            genElementChildrenHTML(element, buf);
-            outputHTMLBuffer(buf, element.el);
-        // #[begin] allua
+            var aNodeChildren = element.aNode.children;
+            for (var i = 0; i < aNodeChildren.length; i++) {
+                var child = createNode(aNodeChildren[i], element);
+                element.children.push(child);
+                child.attach(element.el);
+            }
         }
-        // #[end]
 
         element._contentReady = 1;
     }

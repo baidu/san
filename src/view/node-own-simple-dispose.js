@@ -16,7 +16,7 @@ function nodeOwnSimpleDispose(noDetach) {
     elementDisposeChildren(this, noDetach, 1);
 
     if (!noDetach) {
-        removeEl(this._getEl());
+        removeEl(this.el);
     }
 
     nodeDispose(this);

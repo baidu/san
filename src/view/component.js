@@ -643,7 +643,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
  */
 Component.prototype._repaintChildren = function () {
-    elementDisposeChildren(this, 1, 1);
+    elementDisposeChildren(this, 0, 1);
     this.children = [];
 
     this._contentReady = 0;

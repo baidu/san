@@ -86,9 +86,10 @@ var boolPropHandler = {
         }
     },
 
-    prop: function (element, value, name) {
+    prop: function (element, value, name, prop) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
-        element.el[propName] = !!(value && value !== 'false' && value !== '0');
+        element.el[propName] = !!(prop && prop.raw === ''
+            || value && value !== 'false' && value !== '0');
     }
 };
 

@@ -132,21 +132,7 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
 
 SlotNode.prototype.attach = nodeOwnOnlyChildrenAttach;
 SlotNode.prototype._toPhase = elementOwnToPhase;
-SlotNode.prototype._getEl = nodeOwnGetStumpEl;
 SlotNode.prototype._attached = nodeOwnSimpleAttached;
-
-/**
- * attach元素的html
- *
- * @param {Object} buf html串存储对象
- */
-SlotNode.prototype._attachHTML = function (buf) {
-    htmlBufferComment(buf, this.id);
-    genElementChildrenHTML(this, buf);
-    htmlBufferComment(buf, this.id);
-
-    attachings.add(this);
-};
 
 /**
  * 视图更新函数

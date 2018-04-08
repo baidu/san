@@ -84,9 +84,24 @@ TextNode.prototype.nodeType = NodeType.TEXT;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 TextNode.prototype.attach = function (parentEl, beforeEl) {
-    var buf = createHTMLBuffer();
-    this._attachHTML(buf);
-    outputHTMLBufferBefore(buf, parentEl, beforeEl);
+    this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner);
+
+    if (this.aNode.textExpr.original) {
+        this.sel = document.createComment(this.id);
+        insertBefore(this.sel, parentEl, beforeEl);
+
+        this.el = document.createComment(this.id);
+        insertBefore(this.el, parentEl, beforeEl);
+
+        var tempFlag = document.createElement('script');
+        parentEl.insertBefore(tempFlag, this.el);
+        tempFlag.insertAdjacentHTML('beforebegin', this.content);
+        parentEl.removeChild(tempFlag);
+    }
+    else {
+        this.el = document.createTextNode(this.content);
+        insertBefore(this.el, parentEl, beforeEl);
+    }
 };
 
 /**
@@ -95,78 +110,7 @@ TextNode.prototype.attach = function (parentEl, beforeEl) {
 TextNode.prototype.dispose = function () {
     this._prev = null;
     this.el = null;
-};
-
-/**
- * 获取文本节点对应的主元素
- *
- * @return {HTMLComment|HTMLTextNode}
- */
-TextNode.prototype._getEl = function () {
-    if (this.el) {
-        return this.el;
-    }
-
-    if (!this.aNode.textExpr.original) {
-        var parent = this.parent;
-        var prev;
-
-        var me = this;
-        each(parent.children, function (child, i) {
-            if (child === me) {
-                return false;
-            }
-
-            prev = child;
-        });
-
-        var parentEl = parent._getEl();
-        if (parentEl.nodeType !== 1) {
-            parentEl = parentEl.parentNode;
-        }
-
-        var prevEl = prev && prev._getEl() && prev.el.nextSibling;
-        if (!prevEl) {
-            switch (parent.nodeType) {
-                case NodeType.TPL:
-                case NodeType.SLOT:
-                    prevEl = parent.sel.nextSibling;
-                    break;
-                default:
-                    prevEl = parentEl.firstChild;
-            }
-        }
-
-
-        if (this.content) {
-            this.el = prevEl;
-        }
-        else {
-            this.el = document.createTextNode('');
-            insertBefore(this.el, parentEl, prevEl);
-        }
-    }
-
-    return getNodeStump(this);
-},
-
-/**
- * attach text 节点的 html
- *
- * @param {Object} buf html串存储对象
- */
-TextNode.prototype._attachHTML = function (buf) {
-    this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
-
-    if (this.aNode.textExpr.original) {
-        htmlBufferComment(buf, this.id);
-    }
-
-    htmlBufferPush(buf, this.content);
-
-    if (this.aNode.textExpr.original) {
-        htmlBufferComment(buf, this.id);
-    }
+    this.sel = null;
 };
 
 var textUpdateProp = isBrowser
@@ -184,22 +128,19 @@ TextNode.prototype._update = function (changes) {
         return;
     }
 
-    var el = this._getEl();
-
     var len = changes ? changes.length : 0;
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
-            var text = evalExpr(this.aNode.textExpr, this.scope, this.owner, 1);
+            var text = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
             if (text !== this.content) {
                 this.content = text;
-                var rawText = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
                 if (this.aNode.textExpr.original) {
                     var startRemoveEl = this.sel.nextSibling;
-                    var parentEl = el.parentNode;
+                    var parentEl = this.el.parentNode;
 
-                    while (startRemoveEl !== el) {
+                    while (startRemoveEl !== this.el) {
                         var removeTarget = startRemoveEl;
                         startRemoveEl = startRemoveEl.nextSibling;
                         removeEl(removeTarget);
@@ -210,12 +151,12 @@ TextNode.prototype._update = function (changes) {
                     // #[end]
 
                     var tempFlag = document.createElement('script');
-                    parentEl.insertBefore(tempFlag, el);
+                    parentEl.insertBefore(tempFlag, this.el);
                     tempFlag.insertAdjacentHTML('beforebegin', text);
                     parentEl.removeChild(tempFlag);
                 }
                 else {
-                    el[textUpdateProp] = rawText;
+                    this.el[textUpdateProp] = text;
                 }
             }
 

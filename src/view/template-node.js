@@ -79,20 +79,6 @@ TemplateNode.prototype.dispose = function (noDetach, noTransition) {
 
 
 TemplateNode.prototype._toPhase = elementOwnToPhase;
-TemplateNode.prototype._getEl = nodeOwnGetStumpEl;
-
-/**
- * attach 元素的 html
- *
- * @param {Object} buf html串存储对象
- */
-TemplateNode.prototype._attachHTML = function (buf) {
-    htmlBufferComment(buf, this.id);
-    genElementChildrenHTML(this, buf);
-    htmlBufferComment(buf, this.id);
-
-    attachings.add(this);
-};
 
 TemplateNode.prototype._attached = nodeOwnSimpleAttached;
 
