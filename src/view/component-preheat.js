@@ -9,6 +9,7 @@ var handleProp = require('./handle-prop');
 var getANodeProp = require('./get-a-node-prop');
 var noSetHTML = require('../browser/no-set-html');
 var ie = require('../browser/ie');
+var isBrowser = require('../browser/is-browser');
 
 /**
  * 组件预热，分析组件aNode的数据引用等信息
@@ -41,7 +42,7 @@ function componentPreheat(ComponentClass) {
             }
             else {
                 var sourceNode;
-                if (!/^(template|slot)$/i.test(aNode.tagName)) {
+                if (isBrowser && !/^(template|slot)$/i.test(aNode.tagName)) {
                     sourceNode = createEl(aNode.tagName);
                 }
 
