@@ -177,13 +177,6 @@ var elementPropHandlers = {
         }
     },
 
-    textarea: {
-        value: {
-            prop: defaultElementPropHandler.prop,
-            output: defaultElementPropHandler.output
-        }
-    },
-
     option: {
         value: {
             prop: function (el, value, name, element) {

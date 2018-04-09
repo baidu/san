@@ -36,7 +36,7 @@ function elementOwnCreate() {
                 ? evalExpr(prop.expr, this.data, this)
                 : evalExpr(prop.expr, this.scope, this.owner);
 
-            handleProp.prop(this, value, prop);
+            handleProp(this, value, prop);
         }
 
         this._toPhase('created');
