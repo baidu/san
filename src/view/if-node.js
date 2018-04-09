@@ -63,6 +63,9 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
                 }
             });
         }
+
+        this._create();
+        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
     }
     // #[end]
 }

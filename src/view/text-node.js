@@ -37,6 +37,7 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
             switch (currentNode.nodeType) {
                 case 8:
                     if (currentNode.data === 's-text') {
+                        this.sel = currentNode;
                         currentNode.data = this.id;
                         reverseWalker.goNext();
 
@@ -48,6 +49,7 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
                             }
 
                             if (isEndStump(currentNode, 'text')) {
+                                this.el = currentNode;
                                 reverseWalker.goNext();
                                 currentNode.data = this.id;
                                 break;
@@ -65,6 +67,10 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
                     }
                     break;
             }
+        }
+        else {
+            this.el = document.createTextNode('');
+            insertBefore(this.el, reverseWalker.target, reverseWalker.current);
         }
     }
     // #[end]
