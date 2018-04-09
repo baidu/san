@@ -12,7 +12,7 @@ it("scoped slot by given content has event listen", function (done) {
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
 
-        triggerEvent('#' + wrap.getElementsByTagName('u')[0].id, 'click');
+        triggerEvent(wrap.getElementsByTagName('u')[0], 'click');
         setTimeout(function () {
             expect(clickInfo.email).toBe('erik168@163.com');
             expect(clickInfo.outer).toBeTruthy();

@@ -9,6 +9,7 @@ it("render component with san-if, init true, update soon", function (done) {
     var p1lis = dds[1].getElementsByTagName('li');
     expect(p1lis[0].title).toBe('2345678');
     expect(p1lis[1].title).toBe('23456789');
+    expect(myComponent.lifeCycle.attached).toBeTruthy();
 
     myComponent.data.set('cond', false);
     myComponent.data.set('persons[1].name', 'leeight');

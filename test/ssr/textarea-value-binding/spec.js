@@ -22,7 +22,7 @@ it("two way binding textarea value", function (done) {
         setTimeout(doneSpec, 500);
     }
 
-    triggerEvent('#' + input.id, 'input', 'test' + (+new Date()));
+    triggerEvent(input, 'input', 'test' + (+new Date()));
     setTimeout(doneSpec, 500);
 
 });

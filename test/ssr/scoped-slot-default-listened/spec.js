@@ -7,7 +7,7 @@ it("scoped slot by default content has event listen", function (done) {
     san.nextTick(function () {
         expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com');
 
-        triggerEvent('#' + wrap.getElementsByTagName('p')[0].id, 'click');
+        triggerEvent(wrap.getElementsByTagName('p')[0], 'click');
         setTimeout(function () {
             expect(clickInfo.email).toBe('erik168@163.com');
             expect(clickInfo.outer).toBeFalsy();
