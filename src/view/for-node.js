@@ -24,7 +24,6 @@ var attachings = require('./attachings');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
-var getNodeStumpParent = require('./get-node-stump-parent');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var elementDisposeChildren = require('./element-dispose-children');

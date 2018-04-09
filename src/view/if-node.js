@@ -10,7 +10,6 @@ var NodeType = require('./node-type');
 var rinseCondANode = require('./rinse-cond-anode');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
-var getNodeStumpParent = require('./get-node-stump-parent');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
