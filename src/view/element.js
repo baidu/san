@@ -20,7 +20,6 @@ var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
-var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnGetElId = require('./element-own-get-el-id');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
@@ -100,7 +99,6 @@ Element.prototype.attach = elementOwnAttach;
 Element.prototype.detach = elementOwnDetach;
 Element.prototype.dispose = elementOwnDispose;
 Element.prototype._create = elementOwnCreate;
-Element.prototype._getEl = elementOwnGetEl;
 Element.prototype._getElId = elementOwnGetElId;
 Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
@@ -116,7 +114,7 @@ Element.prototype._doneLeave = function () {
         }
     }
     else if (this.lifeCycle.attached) {
-        removeEl(this._getEl());
+        removeEl(this.el);
         this._toPhase('detached');
     }
 };
@@ -131,7 +129,6 @@ Element.prototype._update = function (changes) {
         return;
     }
 
-    this._getEl();
     var me = this;
 
     var dynamicProps = this.aNode.hotspot.dynamicProps;

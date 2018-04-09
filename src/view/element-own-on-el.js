@@ -16,7 +16,7 @@ function elementOwnOnEl(name, listener, capture) {
     if (typeof listener === 'function') {
         capture = !!capture;
         this._elFns.push([name, listener, capture]);
-        on(this._getEl(), name, listener, capture);
+        on(this.el, name, listener, capture);
     }
 }
 

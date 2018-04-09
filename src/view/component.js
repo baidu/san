@@ -31,7 +31,6 @@ var elementInitTagName = require('./element-init-tag-name');
 var elementAttached = require('./element-attached');
 var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
-var elementOwnGetEl = require('./element-own-get-el');
 var elementOwnGetElId = require('./element-own-get-el-id');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnCreate = require('./element-own-create');
@@ -467,7 +466,7 @@ Component.prototype.ref = function (name) {
                 case NodeType.ELEM:
                     ref = element.aNode.directives.ref;
                     if (ref && evalExpr(ref.value, element.scope, owner) === name) {
-                        refTarget = element._getEl();
+                        refTarget = element.el;
                     }
                     break;
 
@@ -719,7 +718,7 @@ Component.prototype._doneLeave = function () {
         }
     }
     else if (this.lifeCycle.attached) {
-        removeEl(this._getEl());
+        removeEl(this.el);
         this._toPhase('detached');
     }
 };
@@ -730,14 +729,12 @@ Component.prototype._doneLeave = function () {
  * @param {Object} element 元素节点
  */
 Component.prototype._attached = function () {
-    this._getEl();
     elementAttached(this);
 };
 
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;
 Component.prototype._create = elementOwnCreate;
-Component.prototype._getEl = elementOwnGetEl;
 Component.prototype._getElId = elementOwnGetElId;
 Component.prototype._onEl = elementOwnOnEl;
 

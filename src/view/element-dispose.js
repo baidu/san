@@ -22,14 +22,14 @@ function elementDispose(element) {
     var len = element._elFns.length;
     while (len--) {
         var fn = element._elFns[len];
-        un(element._getEl(), fn[0], fn[1], fn[2]);
+        un(element.el, fn[0], fn[1], fn[2]);
     }
     element._elFns = null;
 
 
     // 如果没有parent，说明是一个root component，一定要从dom树中remove
     if (!element.disposeNoDetach || !element.parent) {
-        removeEl(element._getEl());
+        removeEl(element.el);
     }
 
     if (element._toPhase) {
