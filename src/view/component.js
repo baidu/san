@@ -28,7 +28,7 @@ var reverseElementChildren = require('./reverse-element-children');
 var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
 var elementInitTagName = require('./element-init-tag-name');
-var elementAttached = require('./element-attached');
+var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -726,9 +726,7 @@ Component.prototype._doneLeave = function () {
  *
  * @param {Object} element 元素节点
  */
-Component.prototype._attached = function () {
-    elementAttached(this);
-};
+Component.prototype._attached = elementOwnAttached;
 
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;

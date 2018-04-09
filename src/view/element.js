@@ -22,7 +22,7 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
-var elementAttached = require('./element-attached');
+var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
 var elementInitTagName = require('./element-init-tag-name');
 var handleProp = require('./handle-prop');
@@ -167,8 +167,6 @@ Element.prototype._update = function (changes) {
 /**
  * 执行完成attached状态的行为
  */
-Element.prototype._attached = function () {
-    elementAttached(this);
-};
+Element.prototype._attached = elementOwnAttached;
 
 exports = module.exports = Element;

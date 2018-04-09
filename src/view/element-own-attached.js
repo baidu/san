@@ -56,51 +56,51 @@ function inputXPropOutputer(element, xProp, data) {
  *
  * @param {Object} element 元素节点
  */
-function elementAttached(element) {
-    element._toPhase('created');
+function elementOwnAttached() {
+    this._toPhase('created');
 
-    var elementIsComponent = element.nodeType === NodeType.CMPT;
-    var data = elementIsComponent ? element.data : element.scope;
+    var isComponent = this.nodeType === NodeType.CMPT;
+    var data = isComponent ? this.data : this.scope;
 
     /* eslint-disable no-redeclare */
 
     // 处理自身变化时双向绑定的逻辑
-    var xProps = element.aNode.hotspot.xProps;
+    var xProps = this.aNode.hotspot.xProps;
     for (var i = 0, l = xProps.length; i < l; i++) {
-        var el = element.el;
+        var el = this.el;
         var xProp = xProps[i];
 
         switch (xProp.name) {
             case 'value':
-                switch (element.tagName) {
+                switch (this.tagName) {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
-                            element._onEl('change', inputOnCompositionEnd);
-                            element._onEl('compositionstart', inputOnCompositionStart);
-                            element._onEl('compositionend', inputOnCompositionEnd);
+                            this._onEl('change', inputOnCompositionEnd);
+                            this._onEl('compositionstart', inputOnCompositionStart);
+                            this._onEl('compositionend', inputOnCompositionEnd);
                         }
 
-                        element._onEl(
+                        this._onEl(
                             ('oninput' in el) ? 'input' : 'propertychange',
-                            inputXPropOutputer(element, xProp, data)
+                            inputXPropOutputer(this, xProp, data)
                         );
 
                         break;
 
                     case 'select':
-                        element._onEl('change', bind(xPropOutputer, element, xProp, data));
+                        this._onEl('change', bind(xPropOutputer, this, xProp, data));
                         break;
                 }
                 break;
 
             case 'checked':
-                switch (element.tagName) {
+                switch (this.tagName) {
                     case 'input':
                         switch (el.type) {
                             case 'checkbox':
                             case 'radio':
-                                element._onEl('click', bind(xPropOutputer, element, xProp, data));
+                                this._onEl('click', bind(xPropOutputer, this, xProp, data));
                         }
                 }
                 break;
@@ -108,26 +108,26 @@ function elementAttached(element) {
     }
 
     // bind events
-    var events = elementIsComponent
-        ? element.aNode.events.concat(element.nativeEvents)
-        : element.aNode.events;
+    var events = isComponent
+        ? this.aNode.events.concat(this.nativeEvents)
+        : this.aNode.events;
 
     for (var i = 0, l = events.length; i < l; i++) {
         var eventBind = events[i];
-        var owner = elementIsComponent ? element : element.owner;
+        var owner = isComponent ? this : this.owner;
 
         // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
         // 依此指定eventBind.expr.name位于owner还是owner.owner上
         if (eventBind.modifier.native) {
             owner = owner.owner;
-            data = element.scope || owner.data;
+            data = this.scope || owner.data;
         }
 
         // #[begin] error
         warnEventListenMethod(eventBind, owner);
         // #[end]
 
-        element._onEl(
+        this._onEl(
             eventBind.name,
             bind(
                 eventDeclarationListener,
@@ -140,18 +140,18 @@ function elementAttached(element) {
         );
     }
 
-    element._toPhase('attached');
+    this._toPhase('attached');
 
 
-    if (element._isInitFromEl) {
-        element._isInitFromEl = false;
+    if (this._isInitFromEl) {
+        this._isInitFromEl = false;
     }
     else {
-        var transition = elementGetTransition(element);
+        var transition = elementGetTransition(this);
         if (transition && transition.enter) {
-            transition.enter(element.el, empty);
+            transition.enter(el, empty);
         }
     }
 }
 
-exports = module.exports = elementAttached;
+exports = module.exports = elementOwnAttached;
