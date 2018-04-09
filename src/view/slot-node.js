@@ -12,13 +12,11 @@ var evalExpr = require('../runtime/eval-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
-var htmlBufferComment = require('../runtime/html-buffer-comment');
 var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
-var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeDispose = require('./node-dispose');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
@@ -26,7 +24,6 @@ var elementUpdateChildren = require('./element-update-children');
 var elementOwnToPhase = require('./element-own-to-phase');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 
 /**

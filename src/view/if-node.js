@@ -5,7 +5,6 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
-var htmlBufferComment = require('../runtime/html-buffer-comment');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var rinseCondANode = require('./rinse-cond-anode');
@@ -14,7 +13,6 @@ var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * if 指令节点类
@@ -152,8 +150,8 @@ IfNode.prototype._update = function (changes) {
     function newChild() {
         if (typeof elseIndex !== 'undefined') {
             var child = createNode(rinseCondANode(childANode), me);
-            var parentEl = getNodeStumpParent(me);
-            child.attach(parentEl, me.el);
+            // var parentEl = getNodeStumpParent(me);
+            child.attach(me.el.parentNode, me.el);
 
             me.children[0] = child;
         }

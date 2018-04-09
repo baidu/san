@@ -15,10 +15,6 @@ var cloneDirectives = require('../parser/clone-directives');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
-var createHTMLBuffer = require('../runtime/create-html-buffer');
-var htmlBufferComment = require('../runtime/html-buffer-comment');
-var outputHTMLBuffer = require('../runtime/output-html-buffer');
-var outputHTMLBufferBefore = require('../runtime/output-html-buffer-before');
 var evalExpr = require('../runtime/eval-expr');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var removeEl = require('../browser/remove-el');
@@ -31,10 +27,8 @@ var createReverseNode = require('./create-reverse-node');
 var getNodeStumpParent = require('./get-node-stump-parent');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 var elementDisposeChildren = require('./element-dispose-children');
 var warnSetHTML = require('./warn-set-html');
-var isSetHTMLNotAllow = require('./is-set-html-not-allow');
 var dataCache = require('../runtime/data-cache');
 
 
@@ -230,29 +224,6 @@ ForNode.prototype.detach = function () {
     }
 };
 
-
-/**
- * attach元素的html
- *
- * @param {Object} buf html串存储对象
- * @param {boolean} onlyChildren 是否只attach列表本身html，不包括stump部分
- */
-ForNode.prototype._attachHTML = function (buf, onlyChildren) {
-    var me = this;
-    each(
-        evalExpr(this.param.value, this.scope, this.owner),
-        function (item, i) {
-            var child = createForDirectiveChild(me, item, i);
-            me.children.push(child);
-            child._attachHTML(buf);
-        }
-    );
-
-    if (!onlyChildren) {
-        htmlBufferComment(buf, me.id);
-    }
-};
-
 /* eslint-disable fecs-max-statements */
 
 /**
@@ -281,7 +252,7 @@ ForNode.prototype._update = function (changes) {
 
     // 判断列表是否父元素下唯一的元素
     // 如果是的话，可以做一些更新优化
-    var parentEl = getNodeStumpParent(this);
+    var parentEl = this.el.parentNode;
     var parentFirstChild = parentEl.firstChild;
     var parentLastChild = parentEl.lastChild;
     var isOnlyParentChild = oldChildrenLen > 0 // 有孩子时
@@ -522,40 +493,17 @@ ForNode.prototype._update = function (changes) {
             return;
         }
 
-
-        var newChildBuf = createHTMLBuffer();
-
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
             for (var i = 0; i < newChildrenLen; i++) {
                 me.children[i] = createForDirectiveChild(me, newList[i], i);
                 me.children[i].attach(parentEl);
             }
-            outputHTMLBuffer(newChildBuf, parentEl);
             me.el = document.createComment(me.id);
             parentEl.appendChild(me.el);
         }
         else {
             // 如果不attached则直接创建，如果存在则调用更新函数
-
-            // var attachStump = this;
-
-            // while (newChildrenLen--) {
-            //     var child = me.children[newChildrenLen];
-            //     if (child.lifeCycle.attached) {
-            //         childrenChanges[newChildrenLen].length && child._update(childrenChanges[newChildrenLen]);
-            //     }
-            //     else {
-            //         child.attach(parentEl, attachStump._getEl() || parentEl.firstChild);
-            //     }
-
-            //     attachStump = child;
-            // }
-
-            // #[begin] allua
-            var setHTMLNotAllow = isSetHTMLNotAllow(me);
-            // #[end]
-
             var beforeEl = me.el;
             while (newChildrenLen--) {
                 var child = me.children[newChildrenLen];
@@ -572,63 +520,6 @@ ForNode.prototype._update = function (changes) {
 
                 beforeEl = child.sel || child.el;
             }
-            // for (var i = 0; i < newChildrenLen; i++) {
-            //     var child = me.children[i];
-
-            //     if (child) {
-            //         childrenChanges[i] && child._update(childrenChanges[i]);
-            //     }
-            //     else {
-            //         me.children[i] = createForDirectiveChild(me, newList[i], i);
-
-            //         var nextChild = me.children[i + 1];
-            //         var beforeEl = nextChild && (nextChild.sel || nextChild.el) || me.el;
-            //         me.children[i].attach(parentEl, beforeEl);
-                    // newChildBuf = newChildBuf || createHTMLBuffer();
-
-                    // // #[begin] allua
-                    // if (setHTMLNotAllow) {
-                    //     var newChildStart = i;
-                    // }
-                    // else {
-                    // // #[end]
-
-                    //     me.children[i]._attachHTML(newChildBuf);
-
-                    // // #[begin] allua
-                    // }
-                    // // #[end]
-
-
-                    // // flush new children html
-                    // var nextChild = me.children[i + 1];
-                    // if (i === newChildrenLen - 1 || nextChild) {
-                    //     var beforeEl = nextChild && nextChild._getEl() && (nextChild.sel || nextChild.el)
-                    //         || me.el;
-
-                    //     // #[begin] allua
-                    //     if (setHTMLNotAllow) {
-                    //         for (; newChildStart <= i; newChildStart++) {
-                    //             me.children[newChildStart].attach(parentEl, beforeEl);
-                    //         }
-                    //     }
-                    //     else {
-                    //     // #[end]
-
-                    //         outputHTMLBufferBefore(
-                    //             newChildBuf,
-                    //             parentEl,
-                    //             beforeEl
-                    //         );
-
-                    //     // #[begin] allua
-                    //     }
-                    //     // #[end]
-
-                    //     newChildBuf = null;
-                    // }
-                // }
-            // }
         }
 
         attachings.done();

@@ -39,7 +39,7 @@ function inputOnCompositionStart() {
 }
 
 function xPropOutputer(xProp, data) {
-    getPropHandler(this, xProp.name).output(this, xProp, data);
+    getPropHandler(this.tagName, xProp.name).output(this, xProp, data);
 }
 
 function inputXPropOutputer(element, xProp, data) {

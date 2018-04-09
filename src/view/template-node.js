@@ -6,10 +6,8 @@
 var each = require('../util/each');
 var guid = require('../util/guid');
 var insertBefore = require('../browser/insert-before');
-var htmlBufferComment = require('../runtime/html-buffer-comment');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
-var genElementChildrenHTML = require('./gen-element-children-html');
 var nodeDispose = require('./node-dispose');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
@@ -18,7 +16,6 @@ var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
-var nodeOwnGetStumpEl = require('./node-own-get-stump-el');
 
 /**
  * template 节点类

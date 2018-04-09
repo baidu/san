@@ -42,15 +42,12 @@ function componentPreheat(ComponentClass) {
             }
             else {
                 var sourceNode;
-                if (isBrowser && !/^(template|slot)$/i.test(aNode.tagName)) {
+                if (isBrowser && !/^(template|slot|select|input|option)$/i.test(aNode.tagName)) {
                     sourceNode = createEl(aNode.tagName);
                 }
 
                 aNode.hotspot = {
                     data: {},
-                    // #[begin] allua
-                    noSetHTML: ie && noSetHTML(aNode),
-                    // #[end]
                     dynamicProps: [],
                     xProps: [],
                     staticAttr: '',
@@ -94,11 +91,10 @@ function componentPreheat(ComponentClass) {
                         aNode.hotspot.idProp = prop;
                         aNode.hotspot.dynamicProps.push(prop);
                     }
-                    else if (prop.expr.value != null
-                        && !/^(template|input|textarea|select|option)$/.test(aNode.tagName)
-                    ) {
-                        sourceNode && sourceNode.setAttribute(prop.name, prop.expr.value);
-                        // aNode.hotspot.staticAttr += handleProp.attr(aNode, prop.expr.value, prop) || '';
+                    else if (prop.expr.value != null) {
+                        if (sourceNode) {
+                            getPropHandler(aNode.tagName, prop.name).prop(sourceNode, prop.expr.value, prop.name, aNode);
+                        }
                     }
                     else {
                         if (prop.x) {

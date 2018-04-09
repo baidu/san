@@ -3,10 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var createHTMLBuffer = require('../runtime/create-html-buffer');
-var outputHTMLBuffer = require('../runtime/output-html-buffer');
 var insertBefore = require('../browser/insert-before');
-var genElementChildrenHTML = require('./gen-element-children-html');
 var genElementChildren = require('./gen-element-children');
 
 /**
@@ -21,19 +18,6 @@ function elementAttach(element, parentEl, beforeEl) {
     insertBefore(element.el, parentEl, beforeEl);
 
     if (!element._contentReady) {
-        // // #[begin] allua
-        // if (element.aNode.hotspot.noSetHTML) {
-        //     genElementChildren(element);
-        // }
-        // else {
-        // // #[end]
-        //     var buf = createHTMLBuffer();
-        //     genElementChildrenHTML(element, buf);
-        //     outputHTMLBuffer(buf, element.el);
-        // // #[begin] allua
-        // }
-        // // #[end]
-
         var htmlDirective = element.aNode.directives.html;
 
         if (htmlDirective) {

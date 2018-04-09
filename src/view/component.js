@@ -38,7 +38,6 @@ var elementOwnCreate = require('./element-own-create');
 var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
-var elementOwnAttachHTML = require('./element-own-attach-html');
 var warnEventListenMethod = require('./warn-event-listen-method');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
@@ -737,7 +736,6 @@ Component.prototype._attached = function () {
 
 Component.prototype.attach = elementOwnAttach;
 Component.prototype.detach = elementOwnDetach;
-Component.prototype._attachHTML = elementOwnAttachHTML;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._getEl = elementOwnGetEl;
 Component.prototype._getElId = elementOwnGetElId;

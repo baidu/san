@@ -37,15 +37,8 @@ var HTML_ATTR_PROP_MAP = {
  * @type {Object}
  */
 var defaultElementPropHandler = {
-    attr: function (element, value, name) {
-        if (value != null) {
-            return ' ' + name + '="' + value + '"';
-        }
-    },
-
-    prop: function (element, value, name) {
+    prop: function (el, value, name, element) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
-        var el = element.el;
 
         // input 的 type 是个特殊属性，其实也应该用 setAttribute
         // 但是 type 不应该运行时动态改变，否则会有兼容性问题
@@ -75,20 +68,9 @@ var defaultElementPropHandler = {
 };
 
 var boolPropHandler = {
-    attr: function (element, value, name, prop) {
-        // 因为元素的attr值必须经过html escape，否则可能有漏洞
-        // 所以这里直接对假值字符串形式进行处理
-        // NaN之类非主流的就先不考虑了
-        if (prop && prop.raw === ''
-            || value && value !== 'false' && value !== '0'
-        ) {
-            return ' ' + name;
-        }
-    },
-
-    prop: function (element, value, name, prop) {
+    prop: function (el, value, name, element, prop) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
-        element.el[propName] = !!(prop && prop.raw === ''
+        el[propName] = !!(prop && prop.raw === ''
             || value && value !== 'false' && value !== '0');
     }
 };
@@ -102,31 +84,18 @@ var boolPropHandler = {
  */
 var defaultElementPropHandlers = {
     style: {
-        attr: function (element, value) {
-            if (value) {
-                return ' style="' + value + '"';
-            }
-        },
-
-        prop: function (element, value) {
-            element.el.style.cssText = value;
+        prop: function (el, value) {
+            el.style.cssText = value;
         }
     },
 
     'class': { // eslint-disable-line
-        attr: function (element, value) {
-            if (value) {
-                return ' class="' + value + '"';
-            }
-        },
-
-        prop: function (element, value) {
-            element.el.className = value;
+        prop: function (el, value) {
+            el.className = value;
         }
     },
 
     slot: {
-        attr: empty,
         prop: empty
     },
 
@@ -134,12 +103,7 @@ var defaultElementPropHandlers = {
     disabled: boolPropHandler,
     autofocus: boolPropHandler,
     required: boolPropHandler,
-
-    // draggable attribute 是枚举类型，但 property 接受 boolean
-    draggable: {
-        attr: defaultElementPropHandler.attr,
-        prop: boolPropHandler.prop
-    }
+    draggable: boolPropHandler
 };
 /* eslint-enable fecs-properties-quote */
 
@@ -175,24 +139,14 @@ var elementPropHandlers = {
     input: {
         multiple: boolPropHandler,
         checked: {
-            attr: function (element, value, name, prop) {
-                var state = analInputCheckedState(element, value);
-
-                return boolPropHandler.attr(
-                    element,
-                    state != null ? state : value,
-                    'checked',
-                    prop
-                );
-            },
-
-            prop: function (element, value) {
+            prop: function (el, value, name, element) {
                 var state = analInputCheckedState(element, value);
 
                 boolPropHandler.prop(
-                    element,
+                    el,
                     state != null ? state : value,
-                    'checked'
+                    'checked',
+                    element
                 );
             },
 
@@ -225,7 +179,6 @@ var elementPropHandlers = {
 
     textarea: {
         value: {
-            attr: empty,
             prop: defaultElementPropHandler.prop,
             output: defaultElementPropHandler.output
         }
@@ -233,16 +186,11 @@ var elementPropHandlers = {
 
     option: {
         value: {
-            attr: function (element, value) {
-                return ' value="' + (value || '') + '"'
-                    + (isOptionSelected(element, value) ? 'selected' : '');
-            },
-
-            prop: function (element, value, name) {
-                defaultElementPropHandler.prop(element, value, name);
+            prop: function (el, value, name, element) {
+                defaultElementPropHandler.prop(el, value, name, element);
 
                 if (isOptionSelected(element, value)) {
-                    element.el.selected = true;
+                    el.selected = true;
                 }
             }
         }
@@ -250,9 +198,8 @@ var elementPropHandlers = {
 
     select: {
         value: {
-            attr: empty,
-            prop: function (element, value) {
-                element.el.value = value || '';
+            prop: function (el, value) {
+               el.value = value || '';
             },
 
             output: defaultElementPropHandler.output
@@ -299,16 +246,16 @@ function isOptionSelected(element, value) {
  * @param {string} name 属性名
  * @return {Object}
  */
-function getPropHandler(element, name) {
-    var tagPropHandlers = elementPropHandlers[element.tagName];
+function getPropHandler(tagName, attrName) {
+    var tagPropHandlers = elementPropHandlers[tagName];
     if (!tagPropHandlers) {
-        tagPropHandlers = elementPropHandlers[element.tagName] = {};
+        tagPropHandlers = elementPropHandlers[tagName] = {};
     }
 
-    var propHandler = tagPropHandlers[name];
+    var propHandler = tagPropHandlers[attrName];
     if (!propHandler) {
-        propHandler = defaultElementPropHandlers[name] || defaultElementPropHandler;
-        tagPropHandlers[name] = propHandler;
+        propHandler = defaultElementPropHandlers[attrName] || defaultElementPropHandler;
+        tagPropHandlers[attrName] = propHandler;
     }
 
     return propHandler;
