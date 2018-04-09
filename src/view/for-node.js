@@ -492,32 +492,42 @@ ForNode.prototype._update = function (changes) {
             return;
         }
 
+
+        var beforeEl = me.el;
+
         // 对相应的项进行更新
         if (oldChildrenLen === 0 && isOnlyParentChild) {
             for (var i = 0; i < newChildrenLen; i++) {
                 me.children[i] = createForDirectiveChild(me, newList[i], i);
-                me.children[i].attach(parentEl);
+                me.children[i].attach(parentEl, beforeEl);
             }
-            me.el = document.createComment(me.id);
-            parentEl.appendChild(me.el);
         }
         else {
             // 如果不attached则直接创建，如果存在则调用更新函数
-            var beforeEl = me.el;
-            while (newChildrenLen--) {
-                var child = me.children[newChildrenLen];
+            var j = -1;
+            for (var i = 0; i < newChildrenLen; i++) {
+                var child = me.children[i];
 
                 if (child) {
-
-                    childrenChanges[newChildrenLen] && child._update(childrenChanges[newChildrenLen]);
+                    childrenChanges[i] && child._update(childrenChanges[i]);
                 }
                 else {
-                    child = createForDirectiveChild(me, newList[newChildrenLen], newChildrenLen);
-                    child.attach(parentEl, beforeEl);
-                    me.children[newChildrenLen] = child;
-                }
+                    if (j < i) {
+                        j = i + 1;
+                        beforeEl = null;
+                        while (j < newChildrenLen) {
+                            var nextChild = me.children[j];
+                            if (nextChild) {
+                                beforeEl = nextChild.sel || nextChild.el;
+                                break;
+                            }
+                            j++;
+                        }
+                    }
 
-                beforeEl = child.sel || child.el;
+                    me.children[i] = createForDirectiveChild(me, newList[i], i);
+                    me.children[i].attach(parentEl, beforeEl || me.el);
+                }
             }
         }
 
