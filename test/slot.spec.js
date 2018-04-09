@@ -2134,8 +2134,8 @@ describe("Slot", function () {
                 expect(lis[0].innerHTML).toContain('erik168@163.com');
                 expect(lis[4].innerHTML).toContain('otakustay@gmail.com');
 
-                // myComponent.dispose();
-                // document.body.removeChild(wrap);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
                 done();
             });
 
