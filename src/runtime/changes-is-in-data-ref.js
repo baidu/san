@@ -13,9 +13,9 @@ var each = require('../util/each');
  * @return {boolean}
  */
 function changesIsInDataRef(changes, dataRef) {
-    var result;
+    for (var i = 0; i < changes.length; i++) {
+        var change = changes[i];
 
-    each(changes, function (change) {
         if (!change.overview) {
             var paths = change.expr.paths;
             change.overview = paths[0].value;
@@ -26,14 +26,13 @@ function changesIsInDataRef(changes, dataRef) {
             }
         }
 
-        result = dataRef[change.overview]
+        if (dataRef[change.overview]
             || change.wildOverview && dataRef[change.wildOverview]
-            || change.extOverview && dataRef[change.extOverview];
-
-        return !result;
-    });
-
-    return result;
+            || change.extOverview && dataRef[change.extOverview]
+        ) {
+            return true;
+        }
+    }
 }
 
 exports = module.exports = changesIsInDataRef;
