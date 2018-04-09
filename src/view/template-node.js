@@ -12,9 +12,7 @@ var nodeDispose = require('./node-dispose');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementOwnToPhase = require('./element-own-to-phase');
-var attachings = require('./attachings');
 var elementUpdateChildren = require('./element-update-children');
-var nodeOwnSimpleAttached = require('./node-own-simple-attached');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 /**
@@ -52,7 +50,7 @@ function TemplateNode(aNode, owner, scope, parent, reverseWalker) {
         this.el = document.createComment(this.id);
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
-        attachings.add(this);
+        this._toPhase('attached');
     }
     // #[end]
 }
@@ -76,8 +74,6 @@ TemplateNode.prototype.dispose = function (noDetach, noTransition) {
 
 
 TemplateNode.prototype._toPhase = elementOwnToPhase;
-
-TemplateNode.prototype._attached = nodeOwnSimpleAttached;
 
 /**
  * 视图更新函数

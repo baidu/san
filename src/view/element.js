@@ -10,7 +10,6 @@ var removeEl = require('../browser/remove-el');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
-var attachings = require('./attachings');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
@@ -83,7 +82,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
 
         reverseElementChildren(this);
 
-        attachings.add(this);
+        this._attached();
     }
     // #[end]
 }

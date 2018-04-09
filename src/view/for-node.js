@@ -20,7 +20,6 @@ var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
-var attachings = require('./attachings');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
@@ -207,8 +206,6 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
         this.children.push(child);
         child.attach(parentEl, el);
     }
-
-    attachings.done();
 };
 
 /**
@@ -530,8 +527,6 @@ ForNode.prototype._update = function (changes) {
                 }
             }
         }
-
-        attachings.done();
     }
 };
 

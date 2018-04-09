@@ -20,7 +20,6 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var compileComponent = require('./compile-component');
 var componentPreheat = require('./component-preheat');
 var LifeCycle = require('./life-cycle');
-var attachings = require('./attachings');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var eventDeclarationListener = require('./event-declaration-listener');
@@ -196,9 +195,8 @@ function Component(options) { // eslint-disable-line
 
     // #[begin] reverse
     if (this.el) {
-        attachings.add(this);
         reverseElementChildren(this);
-        attachings.done();
+        this._attached();
     }
 
     var walker = options.reverseWalker;
@@ -211,7 +209,7 @@ function Component(options) { // eslint-disable-line
 
         reverseElementChildren(this);
 
-        attachings.add(me);
+        this._attached();
     }
     // #[end]
 }
@@ -645,7 +643,6 @@ Component.prototype._repaintChildren = function () {
     this._contentReady = 0;
     this.slotChildren = [];
     elementAttach(this);
-    attachings.done();
 };
 
 

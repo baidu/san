@@ -8,7 +8,6 @@ var each = require('../util/each');
 var insertBefore = require('../browser/insert-before');
 var createNode = require('./create-node');
 var genElementChildren = require('./gen-element-children');
-var attachings = require('./attachings');
 
 
 /**
@@ -27,7 +26,7 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     this.el = document.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
 
-    attachings.done();
+    this._toPhase('attached');
 }
 
 exports = module.exports = nodeOwnOnlyChildrenAttach;
