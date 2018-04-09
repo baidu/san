@@ -50,7 +50,6 @@ function componentPreheat(ComponentClass) {
                     data: {},
                     dynamicProps: [],
                     xProps: [],
-                    staticAttr: '',
                     props: {},
                     sourceNode: sourceNode
                 };
@@ -124,8 +123,6 @@ function componentPreheat(ComponentClass) {
             stack.pop();
         }
     }
-
-
 
     analyseANodeHotspot(ComponentClass.prototype.aNode);
 }
