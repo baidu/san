@@ -691,7 +691,7 @@ describe("IfDirective", function () {
         expect(/three/.test(ps[2].innerHTML)).toBeTruthy();
 
         var wrapHTML = wrap.innerHTML.toLowerCase();
-        expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
+        expect(wrapHTML.indexOf('<h3') < wrapHTML.indexOf('<p')).toBeTruthy();
         myComponent.data.set('cond', false);
 
         san.nextTick(function () {
@@ -709,7 +709,7 @@ describe("IfDirective", function () {
                 expect(/three/.test(ps[2].innerHTML)).toBeTruthy();
 
                 var wrapHTML = wrap.innerHTML.toLowerCase();
-                expect(wrapHTML.indexOf('<h3 ') < wrapHTML.indexOf('<p ')).toBeTruthy();
+                expect(wrapHTML.indexOf('<h3') < wrapHTML.indexOf('<p')).toBeTruthy();
                 myComponent.dispose();
                 document.body.removeChild(wrap);
                 done();
