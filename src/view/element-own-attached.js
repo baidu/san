@@ -67,7 +67,6 @@ function elementOwnAttached() {
     // 处理自身变化时双向绑定的逻辑
     var xProps = this.aNode.hotspot.xProps;
     for (var i = 0, l = xProps.length; i < l; i++) {
-        var el = this.el;
         var xProp = xProps[i];
 
         switch (xProp.name) {
@@ -82,7 +81,7 @@ function elementOwnAttached() {
                         }
 
                         this._onEl(
-                            ('oninput' in el) ? 'input' : 'propertychange',
+                            ('oninput' in this.el) ? 'input' : 'propertychange',
                             inputXPropOutputer(this, xProp, data)
                         );
 
@@ -97,7 +96,7 @@ function elementOwnAttached() {
             case 'checked':
                 switch (this.tagName) {
                     case 'input':
-                        switch (el.type) {
+                        switch (this.el.type) {
                             case 'checkbox':
                             case 'radio':
                                 this._onEl('click', bind(xPropOutputer, this, xProp, data));
@@ -149,7 +148,7 @@ function elementOwnAttached() {
     else {
         var transition = elementGetTransition(this);
         if (transition && transition.enter) {
-            transition.enter(el, empty);
+            transition.enter(this.el, empty);
         }
     }
 }
