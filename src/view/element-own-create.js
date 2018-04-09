@@ -11,6 +11,12 @@ var handleProp = require('./handle-prop');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 
+var emptyPropWhenCreate = {
+    'class': 1,
+    'style': 1,
+    'id': 1
+};
+
 /**
  * 创建节点对应的 HTMLElement 主元素
  */
@@ -36,7 +42,9 @@ function elementOwnCreate() {
                 ? evalExpr(prop.expr, this.data, this)
                 : evalExpr(prop.expr, this.scope, this.owner);
 
-            handleProp(this, value, prop);
+            if (value || !emptyPropWhenCreate[prop.name]) {
+                handleProp(this, value, prop);
+            }
         }
 
         this._toPhase('created');
