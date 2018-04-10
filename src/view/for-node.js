@@ -298,28 +298,24 @@ ForNode.prototype._update = function (changes) {
                     .push(change);
 
                 if (this.children[changeIndex]) {
-                    switch (change.type) {
-                        case DataChangeType.SET:
-                            this.children[changeIndex].scope._set(
-                                change.expr,
-                                change.value,
-                                {silent: 1}
-                            );
-                            break;
-
-
-                        case DataChangeType.SPLICE:
-                            this.children[changeIndex].scope._splice(
-                                change.expr,
-                                [].concat(change.index, change.deleteCount, change.insertions),
-                                {silent: 1}
-                            );
-                            break;
+                    if (change.type === DataChangeType.SPLICE) {
+                        this.children[changeIndex].scope._splice(
+                            change.expr,
+                            [].concat(change.index, change.deleteCount, change.insertions),
+                            { silent: 1 }
+                        );
+                    }
+                    else {
+                        this.children[changeIndex].scope._set(
+                            change.expr,
+                            change.value,
+                            { silent: 1 }
+                        );
                     }
                 }
             }
         }
-        else if (change.type === DataChangeType.SET) {
+        else if (change.type !== DataChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
 

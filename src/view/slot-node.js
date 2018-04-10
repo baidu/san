@@ -169,7 +169,7 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                         return;
                     }
 
-                    if (change.type === DataChangeType.SET) {
+                    if (change.type !== DataChangeType.SPLICE) {
                         scopedChanges.push({
                             type: DataChangeType.SET,
                             expr: createAccessor([

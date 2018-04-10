@@ -13,11 +13,6 @@ var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
 var postProp = require('./post-prop');
 
-var DEFAULT_EVENT_ARGS = [
-    createAccessor([
-        {type: ExprType.STRING, value: '$event'}
-    ])
-];
 
 /**
  * 解析抽象节点属性
@@ -59,7 +54,11 @@ function integrateAttr(aNode, name, value, options) {
                 value = value.slice(colonIndex + 1);
             }
 
-            event.expr = parseCall(value, DEFAULT_EVENT_ARGS);
+            event.expr = parseCall(value, [
+                createAccessor([
+                    { type: ExprType.STRING, value: '$event' }
+                ])
+            ]);
             break;
 
         case 'san':
