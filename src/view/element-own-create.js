@@ -4,7 +4,6 @@
  */
 
 
-var each = require('../util/each');
 var evalExpr = require('../runtime/eval-expr');
 var createEl = require('../browser/create-el');
 var handleProp = require('./handle-prop');

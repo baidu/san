@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
 
 /**
  * 判断变更数组是否影响到数据引用摘要

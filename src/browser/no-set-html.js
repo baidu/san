@@ -13,7 +13,7 @@
  * @return {boolean}
  */
 function noSetHTML(el) {
-    return /^(col|colgroup|frameset|style|table|tbody|tfoot|thead|tr|select)$/i.test(el.tagName)
+    return /^(col|colgroup|frameset|style|table|tbody|tfoot|thead|tr|select)$/i.test(el.tagName);
 }
 
 exports = module.exports = noSetHTML;

@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var each = require('../util/each');
 var isBrowser = require('../browser/is-browser');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');

@@ -236,7 +236,7 @@ Data.prototype.merge = function (expr, source, option) {
     }
     // #[end]
 
-    for (var key in source) {
+    for (var key in source) { // eslint-disable-line
         this.set(
             createAccessor(
                 expr.paths.concat(

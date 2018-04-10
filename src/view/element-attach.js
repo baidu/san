@@ -3,8 +3,9 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var createNode = require('./create-node');
+var evalExpr = require('../runtime/eval-expr');
 var insertBefore = require('../browser/insert-before');
-var genElementChildren = require('./gen-element-children');
 
 /**
  * 将元素attach到页面

@@ -192,7 +192,7 @@ var elementPropHandlers = {
     select: {
         value: {
             prop: function (el, value) {
-               el.value = value || '';
+                el.value = value || '';
             },
 
             output: defaultElementPropHandler.output
@@ -235,8 +235,8 @@ function isOptionSelected(element, value) {
 /**
  * 获取属性处理对象
  *
- * @param {Element} element 元素实例
- * @param {string} name 属性名
+ * @param {string} tagName 元素tag
+ * @param {string} attrName 属性名
  * @return {Object}
  */
 function getPropHandler(tagName, attrName) {

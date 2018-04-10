@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var extend = require('../util/extend');
 var inherits = require('../util/inherits');
 var each = require('../util/each');
 var guid = require('../util/guid');
@@ -26,7 +25,6 @@ var createReverseNode = require('./create-reverse-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var elementDisposeChildren = require('./element-dispose-children');
-var warnSetHTML = require('./warn-set-html');
 var dataCache = require('../runtime/data-cache');
 
 
@@ -382,7 +380,7 @@ ForNode.prototype._update = function (changes) {
                     this.children[i] && this.children[i].scope._set(
                         indexChange.expr,
                         i - deleteCount + insertionsLen,
-                        { silent: 1 }
+                        {silent: 1}
                     );
                 }
             }
@@ -402,7 +400,7 @@ ForNode.prototype._update = function (changes) {
                         this.children[i].scope._set(
                             this.param.item,
                             newList[i],
-                            { silent: 1 }
+                            {silent: 1}
                         );
                     }
                 }

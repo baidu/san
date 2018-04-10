@@ -5,10 +5,9 @@
 
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
-var handleProp = require('./handle-prop');
+var createEl = require('../browser/create-el');
+var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
-var noSetHTML = require('../browser/no-set-html');
-var ie = require('../browser/ie');
 var isBrowser = require('../browser/is-browser');
 
 /**
@@ -92,7 +91,8 @@ function componentPreheat(ComponentClass) {
                     }
                     else if (prop.expr.value != null) {
                         if (sourceNode) {
-                            getPropHandler(aNode.tagName, prop.name).prop(sourceNode, prop.expr.value, prop.name, aNode);
+                            getPropHandler(aNode.tagName, prop.name)
+                                .prop(sourceNode, prop.expr.value, prop.name, aNode);
                         }
                     }
                     else {
