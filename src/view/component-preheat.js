@@ -41,7 +41,7 @@ function componentPreheat(ComponentClass) {
             }
             else {
                 var sourceNode;
-                if (isBrowser && !/^(template|slot|select|input|option)$/i.test(aNode.tagName)) {
+                if (isBrowser && aNode.tagName && !/^(template|slot|select|input|option)$/i.test(aNode.tagName)) {
                     sourceNode = createEl(aNode.tagName);
                 }
 

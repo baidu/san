@@ -3333,5 +3333,51 @@ describe("Component", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+    it("root tag name is template, default to div", function () {
+        var Layer = san.defineComponent({
+            template: '<template><div s-if="open"></div></template>',
+            initData: function () {
+                return {
+                    open: false
+                };
+            },
+            attached: function () {
+                if (this.el.parentNode !== document.body) {
+                    document.body.appendChild(this.el);
+                }
+            },
+            detached: function () {
+                this.el.parentNode.removeChild(this.el);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<template>'
+                + '<x-layer s-ref="lay" open="{{open}}" />'
+                + '<button on-click="onClick">Show Layer</button>'
+                + '</template>',
+            components: {
+                'x-layer': Layer
+            },
+            onClick: function () {
+                this.data.set('open', true);
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.tagName).toBe('DIV');
+        expect(/^(x-layer|div)$/i.test(myComponent.ref('lay').el.tagName)).toBeTruthy();
+
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
 
