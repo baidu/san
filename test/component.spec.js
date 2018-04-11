@@ -3379,5 +3379,94 @@ describe("Component", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+    it("set data when value equals origin value, view cannot be updated because immutable", function (done) {
+        var Panel = san.defineComponent({
+            template: '<u>{{h}}</u>',
+            attached: function () {
+                this.data.set('h', 50);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<x-panel h="{{ph}}" />'
+                + '</div>',
+            components: {
+                'x-panel': Panel
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                ph: 100
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.innerHTML).toBe('100');
+
+        myComponent.nextTick(function () {
+            expect(u.innerHTML).toBe('50');
+            myComponent.data.set('ph', 100);
+
+            myComponent.nextTick(function () {
+                expect(u.innerHTML).toBe('50');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        })
+    });
+
+    it("set data force when value equals origin value, view should be updated", function (done) {
+        var Panel = san.defineComponent({
+            template: '<u>{{h}}</u>',
+            attached: function () {
+                this.data.set('h', 50);
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<x-panel h="{{ph}}" />'
+                + '</div>',
+            components: {
+                'x-panel': Panel
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                ph: 100
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.innerHTML).toBe('100');
+
+        myComponent.nextTick(function () {
+            expect(u.innerHTML).toBe('50');
+            myComponent.data.set('ph', 100, {force: 1});
+
+            myComponent.nextTick(function () {
+                expect(u.innerHTML).toBe('100');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        })
+    });
 });
 

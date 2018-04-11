@@ -186,7 +186,7 @@ Data.prototype.set = function (expr, value, option) {
     }
     // #[end]
 
-    if (this.get(expr) === value) {
+    if (this.get(expr) === value && !option.force) {
         return;
     }
 
@@ -263,8 +263,6 @@ Data.prototype.merge = function (expr, source, option) {
  * @param {boolean} option.silent 静默设置，不触发变更事件
  */
 Data.prototype.apply = function (expr, fn, option) {
-    option = option || {};
-
     // #[begin] error
     var exprRaw = expr;
     // #[end]
@@ -288,13 +286,7 @@ Data.prototype.apply = function (expr, fn, option) {
     }
     // #[end]
 
-    var value = fn(oldValue);
-
-    if (oldValue === value) {
-        return;
-    }
-
-    this.set(expr, value, option);
+    this.set(expr, fn(oldValue), option);
 };
 
 /**
