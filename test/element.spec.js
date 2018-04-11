@@ -741,4 +741,20 @@ describe("Element", function () {
             done();
         });
     });
+
+    it("html entity in text should decode collectly", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div data-text="&lt;&amp;ddddd&quot;&gt;&#39;&#x00021;"></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.getAttribute('data-text')).toBe('<&ddddd">\'!');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });

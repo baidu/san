@@ -5,7 +5,6 @@
 
 var ExprType = require('../parser/expr-type');
 var DEFAULT_FILTERS = require('./default-filters');
-var escapeHTML = require('./escape-html');
 var evalArgs = require('./eval-args');
 var dataCache = require('./data-cache');
 
@@ -15,10 +14,9 @@ var dataCache = require('./data-cache');
  * @param {Object} expr 表达式对象
  * @param {Data} data 数据容器对象
  * @param {Component=} owner 所属组件环境
- * @param {boolean?} escapeInterpHtml 是否对插值进行html转义
  * @return {*}
  */
-function evalExpr(expr, data, owner, escapeInterpHtml) {
+function evalExpr(expr, data, owner) {
     if (expr.value != null) {
         return expr.value;
     }
@@ -132,16 +130,12 @@ function evalExpr(expr, data, owner, escapeInterpHtml) {
                 var buf = '';
                 for (var i = 0, l = expr.segs.length; i < l; i++) {
                     var seg = expr.segs[i];
-                    buf += seg.value || evalExpr(seg, data, owner, escapeInterpHtml);
+                    buf += seg.value || evalExpr(seg, data, owner);
                 }
                 return buf;
         }
 
         dataCache.set(data, expr, value);
-    }
-
-    if (expr.type === ExprType.INTERP && escapeInterpHtml && !expr.original) {
-        value = escapeHTML(value);
     }
 
     return value;

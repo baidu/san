@@ -35,7 +35,6 @@
     // require('./runtime/change-expr-compare');
     // require('./runtime/data-change-type');
     // require('./runtime/data');
-    // require('./runtime/escape-html');
     // require('./runtime/default-filters');
     // require('./runtime/eval-expr');
     // require('./view/life-cycle');
