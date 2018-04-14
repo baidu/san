@@ -81,8 +81,11 @@ var directiveParsers = {
  * @param {Array?} options.delimiters 插值分隔符列表
  */
 function parseDirective(aNode, name, value, options) {
-    var parser = directiveParsers[name];
+    if (name === 'else-if') {
+        name = 'elif';
+    }
 
+    var parser = directiveParsers[name];
     if (parser) {
         (aNode.directives[name] = parser(value, options)).raw = value;
     }
