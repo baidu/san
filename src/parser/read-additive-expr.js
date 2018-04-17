@@ -15,18 +15,24 @@ var readMultiplicativeExpr = require('./read-multiplicative-expr');
  */
 function readAdditiveExpr(walker) {
     var expr = readMultiplicativeExpr(walker);
-    walker.goUntil();
 
-    var code = walker.currentCode();
-    switch (code) {
-        case 43: // +
-        case 45: // -
-            walker.go(1);
-            return {
-                type: ExprType.BINARY,
-                operator: code,
-                segs: [expr, readAdditiveExpr(walker)]
-            };
+    while (1) {
+        walker.goUntil();
+        var code = walker.currentCode();
+
+        switch (code) {
+            case 43: // +
+            case 45: // -
+                walker.go(1);
+                expr = {
+                    type: ExprType.BINARY,
+                    operator: code,
+                    segs: [expr, readMultiplicativeExpr(walker)]
+                };
+                continue;
+        }
+
+        break;
     }
 
     return expr;

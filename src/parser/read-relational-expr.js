@@ -28,7 +28,7 @@ function readRelationalExpr(walker) {
             return {
                 type: ExprType.BINARY,
                 operator: code,
-                segs: [expr, readRelationalExpr(walker)]
+                segs: [expr, readAdditiveExpr(walker)]
             };
     }
 
