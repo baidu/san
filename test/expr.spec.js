@@ -569,4 +569,29 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("use san.Data and san.evalExpr", function () {
+        var parentData = new san.Data({
+            val1: 1,
+            val2: 1,
+            val3: 3,
+            val4: 4
+        });
+        var data = new san.Data({
+            val1: 3,
+            val2: 4,
+            arr: [1,2,3,4]
+        }, parentData);
+
+        expect(san.evalExpr(san.parseExpr('val1+val2'), data)).toBe(7);
+        expect(san.evalExpr(san.parseExpr('val3+val4'), data)).toBe(7);
+
+        expect(san.evalExpr(san.parseExpr('arr[val1] - arr[0] + 5'), data)).toBe(8);
+        expect(san.evalExpr(san.parseExpr('arr[val3] - arr[0] + 5'), data)).toBe(8);
+
+        data.push('arr', 100);
+
+        expect(san.evalExpr(san.parseExpr('arr[val2]-arr[0]+5'), data)).toBe(104);
+        expect(san.evalExpr(san.parseExpr('arr[val4]-arr[0]+5'), data)).toBe(104);
+    });
+
 });

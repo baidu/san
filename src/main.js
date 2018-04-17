@@ -34,9 +34,7 @@
     // require('./parser/parse-template');
     // require('./runtime/change-expr-compare');
     // require('./runtime/data-change-type');
-    // require('./runtime/data');
     // require('./runtime/default-filters');
-    // require('./runtime/eval-expr');
     // require('./view/life-cycle');
     // require('./view/node-type');
     // require('./view/get-prop-handler');
@@ -59,6 +57,8 @@
     var defineComponent = require('./view/define-component');
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
+    var Data = require('./runtime/data');
+    var evalExpr = require('./runtime/eval-expr');
     var DataTypes = require('./util/data-types');
 
 
@@ -173,6 +173,25 @@
          * @param {Function} fn 要运行的函数
          */
         nextTick: nextTick,
+
+        /**
+         * 数据类
+         *
+         * @class
+         * @param {Object?} data 初始数据
+         * @param {Data?} parent 父级数据对象
+         */
+        Data: Data,
+
+        /**
+         * 计算表达式的值
+         *
+         * @param {Object} expr 表达式对象
+         * @param {Data} data 数据对象
+         * @param {Component=} owner 组件对象，用于表达式中filter的执行
+         * @return {*}
+         */
+        evalExpr: evalExpr,
 
         /**
          * 构建类之间的继承关系
