@@ -43,11 +43,11 @@ var defaultElementPropHandler = {
         // input 的 type 是个特殊属性，其实也应该用 setAttribute
         // 但是 type 不应该运行时动态改变，否则会有兼容性问题
         // 所以这里直接就不管了
-        if (svgTags[element.tagName] || !(propName in el)) {
-            el.setAttribute(name, value);
+        if (propName in el) {
+            el[propName] = value == null ? '' : value;
         }
         else {
-            el[propName] = value == null ? '' : value;
+            el.setAttribute(name, value);
         }
 
         // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
@@ -64,6 +64,12 @@ var defaultElementPropHandler = {
                 prop: bindInfo.name
             }
         });
+    }
+};
+
+var svgPropHandler = {
+    prop: function (el, value, name) {
+        el.setAttribute(name, value);
     }
 };
 
@@ -240,6 +246,10 @@ function isOptionSelected(element, value) {
  * @return {Object}
  */
 function getPropHandler(tagName, attrName) {
+    if (svgTags[tagName]) {
+        return svgPropHandler;
+    }
+
     var tagPropHandlers = elementPropHandlers[tagName];
     if (!tagPropHandlers) {
         tagPropHandlers = elementPropHandlers[tagName] = {};

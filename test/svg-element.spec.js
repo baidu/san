@@ -8,10 +8,11 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
         beforeEach(function(done) {
 
             var MyComponent = san.defineComponent({
-                template: '<svg viewBox="0 0 96 96"><rect width="{{size}}" height="{{size}}" /></svg>',
+                template: '<svg viewBox="0 0 96 96" class="{{svgClass}}"><rect width="{{size}}" height="{{size}}" /></svg>',
                 initData: function() {
                     return {
-                        size: 50
+                        size: 50,
+                        svgClass: 'cool'
                     };
                 }
             });
@@ -38,6 +39,7 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
 
             var svg = wrap.getElementsByTagName('svg')[0];
             expect(svg.getAttribute('viewBox')).toBe('0 0 96 96');
+            expect(svg.getAttribute('class')).toBe('cool');
 
         });
 
@@ -47,8 +49,12 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
             var rect = wrap.getElementsByTagName('rect')[0];
             var size = 100;
             myComponent.data.set('size', size);
+            myComponent.data.set('svgClass', 'hot');
 
             san.nextTick(function() {
+                var svg = wrap.getElementsByTagName('svg')[0];
+                expect(svg.getAttribute('class')).toBe('hot');
+
                 expect(+rect.getAttribute('width')).toBe(size);
                 done();
             });
