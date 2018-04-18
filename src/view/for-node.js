@@ -390,12 +390,12 @@ ForNode.prototype._update = function (changes) {
                         type: DataChangeType.SET,
                         option: change.option,
                         expr: createAccessor(this.param.item.paths.slice(0)),
-                        value: newList[i]
+                        value: change.insertions[deleteLen]
                     });
                     if (this.children[i]) {
                         this.children[i].scope._set(
                             this.param.item,
-                            newList[i],
+                            change.insertions[deleteLen],
                             {silent: 1}
                         );
                     }

@@ -1785,6 +1785,54 @@ describe("ForDirective", function () {
         });
     });
 
+
+    it("splice more than once", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(10);
+        expect(lis[0].innerHTML).toContain('1');
+        expect(lis[1].innerHTML).toContain('2');
+
+        myComponent.data.splice('list', [0, 5, 5, 1, 2, 3, 4]);
+        myComponent.data.splice('list', [0, 0, 11, 12]);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(12);
+            expect(lis[0].innerHTML).toContain('11');
+            expect(lis[1].innerHTML).toContain('12');
+            expect(lis[2].innerHTML).toContain('5');
+            expect(lis[3].innerHTML).toContain('1');
+            expect(lis[4].innerHTML).toContain('2');
+            expect(lis[5].innerHTML).toContain('3');
+            expect(lis[6].innerHTML).toContain('4');
+            expect(lis[7].innerHTML).toContain('6');
+            expect(lis[8].innerHTML).toContain('7');
+            expect(lis[9].innerHTML).toContain('8');
+            expect(lis[10].innerHTML).toContain('9');
+            expect(lis[11].innerHTML).toContain('10');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("with component, splice more than once", function (done) {
 
         var A = san.defineComponent({
