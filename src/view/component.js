@@ -94,9 +94,16 @@ function Component(options) { // eslint-disable-line
 
     // #[begin] reverse
     if (this.el) {
-        var firstChild = this.el.firstChild;
-        if (firstChild && firstChild.nodeType === 8) {
-            var stumpMatch = firstChild.data.match(/^\s*s-data:([\s\S]+)?$/);
+        var firstCommentNode;
+        each(this.el.childNodes, function (node) {
+            if (8 === node.nodeType) {
+                firstCommentNode = node;
+                return false;
+            }
+        });
+
+        if (firstCommentNode) {
+            var stumpMatch = firstCommentNode.data.match(/^\s*s-data:([\s\S]+)?$/);
             if (stumpMatch) {
                 var stumpText = stumpMatch[1];
 
@@ -105,7 +112,7 @@ function Component(options) { // eslint-disable-line
                     'return ' + stumpText.replace(/^[\s\n]*/, '')
                 ))();
 
-                removeEl(firstChild);
+                removeEl(firstCommentNode);
             }
         }
     }
