@@ -33,7 +33,7 @@ function decodeHTMLEntity(source) {
             return String.fromCharCode(parseInt(code, 16));
         })
         .replace(/&([a-z]+);/ig, function (match, code) {
-            return ENTITY_DECODE_MAP[code];
+            return ENTITY_DECODE_MAP[code] || match;
         });
 }
 
