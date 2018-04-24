@@ -6,6 +6,7 @@
 var Walker = require('./walker');
 var ExprType = require('./expr-type');
 var parseInterp = require('./parse-interp');
+var decodeHTMLEntity = require('../util/decode-html-entity');
 
 /**
  * 对字符串进行可用于new RegExp的字面化
@@ -47,7 +48,7 @@ function parseText(source, delimiters) {
     function pushStringToSeg(text) {
         text && expr.segs.push({
             type: ExprType.STRING,
-            value: decodeHTML(text)
+            value: decodeHTMLEntity(text)
         });
     }
 
@@ -73,21 +74,6 @@ function parseText(source, delimiters) {
     }
 
     return expr;
-}
-
-function decodeHTML(source) {
-    return source
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&quot;/g, '\"')
-        .replace(/&#([0-9]+);/g, function (match, code) {
-            return String.fromCharCode(+code);
-        })
-        .replace(/&#x([0-9a-f]+);/ig, function (match, code) {
-            return String.fromCharCode(parseInt(code, 16));
-        })
-        .replace(/&amp;/g, '&');
 }
 
 exports = module.exports = parseText;
