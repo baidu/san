@@ -757,4 +757,25 @@ describe("Element", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+    it("html entity support is limited", function () {
+        var entityStr = '&#39;&#x00021;&emsp;&ensp;&thinsp;&copy;&reg;&zwnj;&zwj;&lt;&nbsp;&gt;&quot;';
+        var MyComponent = san.defineComponent({
+            template: '<u>' + entityStr + '</u>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var compare = document.createElement('u');
+        compare.innerHTML = entityStr;
+        document.body.appendChild(compare);
+
+        expect(myComponent.el.offsetWidth).toBe(compare.offsetWidth);
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+        document.body.removeChild(compare);
+    });
 });
