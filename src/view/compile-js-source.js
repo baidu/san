@@ -279,13 +279,7 @@ var aNodeCompiler = {
             sourceBuffer.joinString(serializeStump('text'));
         }
 
-        var value = aNode.textExpr.value;
-        if (value == null) {
-            sourceBuffer.joinExpr(aNode.textExpr);
-        }
-        else {
-            sourceBuffer.joinString(value);
-        }
+        sourceBuffer.joinExpr(aNode.textExpr);
 
         if (aNode.textExpr.original) {
             sourceBuffer.joinString(serializeStumpEnd('text'));

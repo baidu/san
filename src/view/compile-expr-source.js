@@ -154,7 +154,7 @@ var compileExprSource = {
                     + ':' + compileExprSource.expr(expr.segs[2]);
 
             case ExprType.STRING:
-                return compileExprSource.stringLiteralize(expr.value);
+                return compileExprSource.stringLiteralize(expr.literal || expr.value);
 
             case ExprType.NUMBER:
                 return expr.value;
