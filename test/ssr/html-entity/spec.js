@@ -7,7 +7,7 @@ it("html entity support is limited", function () {
 
     expect(myComponent.el.offsetWidth).toBe(compare.offsetWidth);
 
-    //myComponent.dispose();
-    //document.body.removeChild(wrap);
-    //document.body.removeChild(compare);
+    myComponent.dispose();
+    document.body.removeChild(wrap);
+    document.body.removeChild(compare);
 });
