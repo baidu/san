@@ -817,6 +817,49 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data splice after attach, with negative start", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            { name: 'one', email: 'one@gmail.com' },
+            { name: 'two', email: 'two@gmail.com' },
+            { name: 'three', email: 'three@gmail.com' },
+            { name: 'four', email: 'four@gmail.com' },
+            { name: 'five', email: 'five@gmail.com' }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(7);
+        expect(lis[1].getAttribute('title')).toBe('one 1/5');
+        expect(lis[2].getAttribute('title')).toBe('two 2/5');
+
+        myComponent.data.splice('persons', [
+            -4, 3,
+            { name: 'six', email: 'six@gmail.com' },
+            { name: 'seven', email: 'seven@gmail.com' }
+        ]);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].getAttribute('title')).toBe('one 1/4');
+            expect(lis[2].getAttribute('title')).toBe('six 2/4');
+            expect(lis[3].getAttribute('title')).toBe('seven 3/4');
+            expect(lis[4].getAttribute('title')).toBe('five 4/4');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("data set after attach", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'

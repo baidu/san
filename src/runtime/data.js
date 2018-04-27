@@ -317,8 +317,15 @@ Data.prototype.splice = function (expr, args, option) {
 
     if (target instanceof Array) {
         var index = args[0];
-        if (index < 0 || index > target.length) {
-            return;
+        var len = target.length;
+        if (index > len) {
+            index = len;
+        }
+        else if (index < 0) {
+            index = len + index;
+            if (index < 0) {
+                index = 0;
+            }
         }
 
         var newArray = target.slice(0);
