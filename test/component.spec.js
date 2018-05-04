@@ -3468,5 +3468,102 @@ describe("Component", function () {
             });
         })
     });
+
+    it("has only s-bind declaration", function (done) {
+        var Article = san.defineComponent({
+            template: '<div><h3>{{title}}</h3><h4 s-if="subtitle">{{subtitle}}</h4><p>{{content}}</p></div>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Article
+            },
+            template: '<div><x-a s-bind="article" /></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                article: {
+                    title: 'Hello',
+                    subtitle: 'San',
+                    content: 'framework'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        var h4 = wrap.getElementsByTagName('h4')[0];
+        var p = wrap.getElementsByTagName('p')[0];
+        expect(h3.innerHTML).toContain('Hello');
+        expect(h4.innerHTML).toContain('San');
+        expect(p.innerHTML).toContain('framework');
+
+        myComponent.data.set('article.subtitle', '');
+        myComponent.data.set('article.title', 'HeySan');
+        myComponent.nextTick(function () {
+            expect(h3.innerHTML).toContain('HeySan');
+            expect(wrap.getElementsByTagName('h4').length).toBe(0);
+            expect(p.innerHTML).toContain('framework');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+
+    it("has s-bind with other attr, confilct", function (done) {
+        var Article = san.defineComponent({
+            template: '<div><h3>{{title}}</h3><h4 s-if="subtitle">{{subtitle}}</h4><p>{{content}}</p></div>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Article
+            },
+            template: '<div><x-a s-bind="article" title="{{title}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                article: {
+                    title: 'Hello',
+                    subtitle: 'San',
+                    content: 'framework'
+                },
+
+                title: 'Hey'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h3 = wrap.getElementsByTagName('h3')[0];
+        var h4 = wrap.getElementsByTagName('h4')[0];
+        var p = wrap.getElementsByTagName('p')[0];
+        expect(h3.innerHTML).toContain('Hey');
+        expect(h4.innerHTML).toContain('San');
+        expect(p.innerHTML).toContain('framework');
+
+        myComponent.data.set('article.subtitle', '');
+        myComponent.data.set('article.title', 'Bye');
+        myComponent.nextTick(function () {
+            expect(h3.innerHTML).toContain('Hey');
+            expect(wrap.getElementsByTagName('h4').length).toBe(0);
+            expect(p.innerHTML).toContain('framework');
+
+            myComponent.data.set('title', 'What');
+            myComponent.nextTick(function () {
+                expect(h3.innerHTML).toContain('What');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
 });
 
