@@ -778,4 +778,86 @@ describe("Element", function () {
         document.body.removeChild(wrap);
         document.body.removeChild(compare);
     });
+
+    it("element has only s-bind attr", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input s-bind="inputProps"><u>{{inputProps.value}}</u></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                inputProps: {
+                    type: 'text',
+                    value: 'hello'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var input = wrap.getElementsByTagName('input')[0];
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(input.value).toBe('hello');
+        expect(u.innerHTML).toContain('hello');
+
+        myComponent.data.set('inputProps.value', 'mygod');
+        myComponent.nextTick(function () {
+            expect(input.value).toBe('mygod');
+            expect(u.innerHTML).toContain('mygod');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("element has s-bind with other attr, confilct", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><a s-bind="aProps" target="{{target}}">link</a></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                aProps: {
+                    title: 'link',
+                    href: 'http://www.baidu.com/',
+                    target: '_top',
+                    'data-test': 'test'
+                },
+                target: '_blank'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(a.title).toBe('link');
+        expect(a.target).toBe('_blank');
+        expect(a.href).toContain('baidu');
+        expect(a.getAttribute('data-test')).toContain('test');
+
+        myComponent.data.set('aProps', {
+            href: 'https://github.com/',
+            target: '_self'
+        });
+        myComponent.nextTick(function () {
+            expect(a.title).toBeFalsy();
+            expect(a.target).toBe('_blank');
+            expect(a.href).toContain('github');
+            expect(a.getAttribute('data-test')).toBeFalsy();
+
+            myComponent.data.set('target', 'test');
+            myComponent.nextTick(function () {
+                expect(a.target).toBe('test');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
 });
