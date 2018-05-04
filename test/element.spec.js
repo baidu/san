@@ -779,7 +779,7 @@ describe("Element", function () {
         document.body.removeChild(compare);
     });
 
-    it("element has only s-bind attr", function (done) {
+    it("has only s-bind attr", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><input s-bind="inputProps"><u>{{inputProps.value}}</u></div>'
         });
@@ -813,7 +813,7 @@ describe("Element", function () {
 
     });
 
-    it("element has s-bind with other attr, confilct", function (done) {
+    it("has s-bind with other attr, confilct", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><a s-bind="aProps" target="{{target}}">link</a></div>'
         });
