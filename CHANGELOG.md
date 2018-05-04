@@ -5,6 +5,7 @@ ChangeLog
 3.5.8
 -------
 
++ 【新特性】- 数据的 splice 方法支持 startIndex 参数为负值
 + 【优化】- element 更新时，普通 attribute 的空值设置为空字符串
 
 
