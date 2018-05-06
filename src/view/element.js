@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
+var unionKeys = require('../util/union-keys');
 var removeEl = require('../browser/remove-el');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
@@ -53,6 +54,10 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
     this.id = guid();
 
     elementInitTagName(this);
+
+    if (aNode.directives.bind) {
+        this._spreadData = evalExpr(aNode.directives.bind.value, this.scope, this.owner);
+    }
 
     this._toPhase('inited');
 
@@ -125,8 +130,31 @@ Element.prototype._update = function (changes) {
         return;
     }
 
-    var me = this;
+    // update s-bind
+    var bindDirective = this.aNode.directives.bind;
+    if (bindDirective) {
+        var len = changes.length;
+        while (len--) {
+            if (changeExprCompare(changes[len].expr, bindDirective.value, this.scope)) {
+                var newBindData = evalExpr(bindDirective.value, this.scope, this.owner);
+                var keys = unionKeys(newBindData, this._spreadData);
 
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    var propValue = newBindData[key];
+
+                    if (!(key in this.aNode.hotspot.props) && propValue !== this._spreadData[key]) {
+                        getPropHandler(this.tagName, key).prop(this.el, propValue, key, this);
+                    }
+                }
+
+                this._spreadData = newBindData;
+                break;
+            }
+        }
+    }
+
+    // update prop
     var dynamicProps = this.aNode.hotspot.dynamicProps;
     for (var i = 0, l = dynamicProps.length; i < l; i++) {
         var prop = dynamicProps[i];
@@ -146,17 +174,20 @@ Element.prototype._update = function (changes) {
         }
     }
 
+    // update content
     var htmlDirective = this.aNode.directives.html;
     if (htmlDirective) {
-        each(changes, function (change) {
-            if (changeExprCompare(change.expr, htmlDirective.value, me.scope)) {
+        var len = changes.length;
+        while (len--) {
+            if (changeExprCompare(changes[len].expr, htmlDirective.value, this.scope)) {
                 // #[begin] error
-                warnSetHTML(me.el);
+                warnSetHTML(this.el);
                 // #[end]
-                me.el.innerHTML = evalExpr(htmlDirective.value, me.scope, me.owner);
+
+                this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
                 return false;
             }
-        });
+        }
     }
     else {
         elementUpdateChildren(this, changes);

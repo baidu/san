@@ -53,9 +53,8 @@ var elementSourceCompiler = {
      * @param {string} tagName 标签名
      * @param {Array} props 属性列表
      * @param {string?} extraProp 额外的属性串
-     * @param {boolean?} isClose 是否闭合
      */
-    tagStart: function (sourceBuffer, tagName, props, extraProp, isClose) {
+    tagStart: function (sourceBuffer, tagName, props, extraProp, bindDirective) {
         sourceBuffer.joinString('<' + tagName);
         sourceBuffer.joinString(extraProp || '');
 
@@ -164,7 +163,40 @@ var elementSourceCompiler = {
             }
         });
 
-        sourceBuffer.joinString(isClose ? '/>' : '>');
+        if (bindDirective) {
+            sourceBuffer.addRaw(
+                '(function ($bindObj) {for (var $key in $bindObj) {'
+                + 'var $value = $bindObj[$key];'
+            );
+
+            if (tagName === 'textarea') {
+                sourceBuffer.addRaw(
+                    'if ($key === "value") {'
+                    + 'continue;'
+                    + '}'
+                );
+            }
+
+            sourceBuffer.addRaw('switch ($key) {\n'
+                + 'case "readonly":\n'
+                + 'case "disabled":\n'
+                + 'case "multiple":\n'
+                + 'case "multiple":\n'
+                + 'html += boolAttrFilter($key, escapeHTML($value));\n'
+                + 'break;\n'
+                + 'default:\n'
+                + 'html += attrFilter($key, escapeHTML($value));'
+                + '}'
+            );
+
+            sourceBuffer.addRaw(
+                '}})('
+                + compileExprSource.expr(bindDirective.value)
+                + ');'
+            );
+        }
+
+        sourceBuffer.joinString('>');
     },
     /* eslint-enable max-params */
 
@@ -471,7 +503,8 @@ var aNodeCompiler = {
             sourceBuffer,
             aNode.tagName,
             aNode.props,
-            extra.prop
+            extra.prop,
+            aNode.directives.bind
         );
 
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
@@ -528,11 +561,20 @@ var aNodeCompiler = {
             );
         });
 
+        var givenDataHTML = '{' + givenData.join(',\n') + '}';
+        if (aNode.directives.bind){
+            givenDataHTML = 'extend('
+                + compileExprSource.expr(aNode.directives.bind.value)
+                 + ', '
+                + givenDataHTML
+                + ')';
+        }
+
         sourceBuffer.addRaw('html += (');
         sourceBuffer.addRendererStart();
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
         sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')({' + givenData.join(',\n') + '}, componentCtx, $givenSlots);');
+        sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $givenSlots);');
         sourceBuffer.addRaw('$givenSlots = null;');
     }
 };
@@ -573,7 +615,8 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
         sourceBuffer,
         component.tagName,
         component.aNode.props,
-        extraProp
+        extraProp,
+        component.aNode.directives.bind
     );
 
     if (!component.owner) {

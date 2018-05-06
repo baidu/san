@@ -66,7 +66,7 @@ function componentPreheat(ComponentClass) {
                 /* eslint-disable guard-for-in */
                 for (var key in aNode.directives) {
                     var directive = aNode.directives[key];
-                    recordHotspotData(analyseExprDataHotspot(directive.value), key !== 'html');
+                    recordHotspotData(analyseExprDataHotspot(directive.value), !/^(html|bind)$/.test(key));
                 }
                 /* eslint-enable guard-for-in */
 
