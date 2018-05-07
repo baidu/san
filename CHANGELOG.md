@@ -8,6 +8,7 @@ ChangeLog
 + 【新特性】- 数据的 splice 方法支持 startIndex 参数为负值
 + 【新特性】- 支持 s-bind 指令，用于组件的泛数据传入和元素的泛属性设置
 + 【优化】- element 更新时，普通 attribute 的空值设置为空字符串
++ 【bug修复】- created 中进行数组数据操作，视图在下一个时钟周期被不正确的更新
 
 
 3.5.7
