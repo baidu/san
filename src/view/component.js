@@ -297,6 +297,7 @@ Component.prototype._toPhase = function (name) {
         if (typeof this[name] === 'function') {
             this[name]();
         }
+        this['_after' + name] = 1;
 
         // 通知devtool
         // #[begin] devtool
@@ -689,7 +690,7 @@ Component.prototype._repaintChildren = function () {
  * @param {Object} change 数据变化信息
  */
 Component.prototype._dataChanger = function (change) {
-    if (this.lifeCycle.painting || this.lifeCycle.created) {
+    if (this.lifeCycle.created && this._aftercreated) {
         if (!this.dataChanges) {
             nextTick(this._update, this);
             this.dataChanges = [];

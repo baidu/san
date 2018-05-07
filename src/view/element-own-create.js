@@ -21,8 +21,6 @@ var emptyPropWhenCreate = {
  */
 function elementOwnCreate() {
     if (!this.lifeCycle.created) {
-        this.lifeCycle = LifeCycle.painting;
-
         var isComponent = this.nodeType === NodeType.CMPT;
         var sourceNode = this.aNode.hotspot.sourceNode;
         var props = this.aNode.props;

@@ -28,13 +28,6 @@ var LifeCycle = {
         inited: true
     },
 
-    painting: {
-        is: lifeCycleOwnIs,
-        compiled: true,
-        inited: true,
-        painting: true
-    },
-
     created: {
         is: lifeCycleOwnIs,
         compiled: true,

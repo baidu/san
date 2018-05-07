@@ -3565,5 +3565,34 @@ describe("Component", function () {
         });
 
     });
+
+    it("modify data in created, dont refresh view in next tick", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item}}</li></ul>',
+
+            initData: function () {
+                return {
+                    list: []
+                };
+            },
+            created: function () {
+                this.data.push('list', 1);
+            }
+
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('li').length).toBe(1);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 });
 
