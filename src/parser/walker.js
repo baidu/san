@@ -67,6 +67,7 @@ Walker.prototype.charCode = function (index) {
 
 /**
  * 向前读取字符，直到遇到指定字符再停止
+ * 未指定字符时，当遇到第一个非空格、制表符的字符停止
  *
  * @param {number=} charCode 指定字符的code
  * @return {boolean} 当指定字符时，返回是否碰到指定的字符
@@ -75,7 +76,9 @@ Walker.prototype.goUntil = function (charCode) {
     var code;
     while (this.index < this.len && (code = this.currentCode())) {
         switch (code) {
+            // 空格 space
             case 32:
+            // 制表符 tab
             case 9:
                 this.index++;
                 break;
@@ -107,4 +110,3 @@ Walker.prototype.match = function (reg) {
 };
 
 exports = module.exports = Walker;
-
