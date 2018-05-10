@@ -18,7 +18,7 @@ function readNumber(walker) {
 
     return {
         type: ExprType.NUMBER,
-        value: match[1] - 0
+        value: +match[1]
     };
 }
 

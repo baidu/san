@@ -31,6 +31,7 @@ function readString(walker) {
     var literal = walker.cut(startIndex, walker.index);
     return {
         type: ExprType.STRING,
+        // 处理字符转义
         value: (new Function('return ' + literal))()
     };
 }
