@@ -92,6 +92,21 @@ function evalExpr(expr, data, owner) {
                 );
                 break;
 
+            case ExprType.ARRAY:
+                value = [];
+                for (var i = 0, l = expr.items.length; i < l; i++) {
+                    var item = expr.items[i];
+                    var itemValue = evalExpr(item.expr, data, owner);
+
+                    if (item.spread) {
+                        itemValue && (value = value.concat(itemValue));
+                    }
+                    else {
+                        value.push(itemValue);
+                    }
+                }
+                break;
+
             case ExprType.ACCESSOR:
                 value = data.get(expr);
                 break;

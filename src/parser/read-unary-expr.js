@@ -26,10 +26,13 @@ function readUnaryExpr(walker) {
                 type: ExprType.UNARY,
                 expr: readUnaryExpr(walker)
             };
+
         case 34: // "
         case 39: // '
             return readString(walker);
-        case 45: // number
+
+        // number
+        case 45:
         case 48:
         case 49:
         case 50:
@@ -41,8 +44,30 @@ function readUnaryExpr(walker) {
         case 56:
         case 57:
             return readNumber(walker);
+
         case 40: // (
             return readParenthesizedExpr(walker);
+
+        // array literal
+        case 91: // [
+            walker.go(1);
+            var arrItems = [];
+            while (!walker.goUntil(93)) { // ]
+                var item = {};
+                arrItems.push(item);
+
+                if (walker.currentCode() === 46 && walker.match(/\.\.\.\s*/g)) {
+                    item.spread = true;
+                }
+
+                item.expr = readTertiaryExpr(walker);
+                walker.goUntil(44); // ,
+            }
+
+            return {
+                type: ExprType.ARRAY,
+                items: arrItems
+            };
     }
 
     return readAccessor(walker);

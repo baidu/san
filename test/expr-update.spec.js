@@ -656,4 +656,97 @@ describe("Expression Update Detect", function () {
             done();
         });
     });
+
+    it("array literal", function (done) {
+        var List = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item}}</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-l': List
+            },
+            template: '<div><x-l list="{{[1, true, \'erik\', four, five + four + \'2\']}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                four: 4,
+                five: 5
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(5);
+
+        expect(lis[0].innerHTML).toBe('1');
+        expect(lis[1].innerHTML).toBe('true');
+        expect(lis[2].innerHTML).toBe('erik');
+        expect(lis[3].innerHTML).toBe('4');
+        expect(lis[4].innerHTML).toBe('92');
+        myComponent.data.set('four', 40);
+        myComponent.data.set('five', 15);
+        san.nextTick(function () {
+
+            expect(lis[3].innerHTML).toBe('40');
+            expect(lis[4].innerHTML).toBe('552');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("array literal with spread", function (done) {
+        var List = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item}}</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-l': List
+            },
+            template: '<div><x-l list="{{[1, true, ...ext, \'erik\', ...ext2]}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                ext2: []
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(3);
+
+        expect(lis[0].innerHTML).toBe('1');
+        expect(lis[1].innerHTML).toBe('true');
+        expect(lis[2].innerHTML).toBe('erik');
+        myComponent.data.set('ext', [3, 4]);
+        myComponent.data.set('ext2', [5, 6]);
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(7);
+
+            expect(lis[0].innerHTML).toBe('1');
+            expect(lis[1].innerHTML).toBe('true');
+            expect(lis[4].innerHTML).toBe('erik');
+            expect(lis[2].innerHTML).toBe('3');
+            expect(lis[3].innerHTML).toBe('4');
+
+            expect(lis[5].innerHTML).toBe('5');
+            expect(lis[6].innerHTML).toBe('6');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });

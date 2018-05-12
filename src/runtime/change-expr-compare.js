@@ -82,6 +82,15 @@ function changeExprCompare(changeExpr, expr, data) {
         case ExprType.TERTIARY:
             return changeExprCompareExprs(changeExpr, expr.segs, data);
 
+        case ExprType.ARRAY:
+            for (var i = 0, l = expr.items.length; i < l; i++) {
+                if (changeExprCompare(changeExpr, expr.items[i].expr, data)) {
+                    return 1;
+                }
+            }
+
+            return 0;
+
         case ExprType.INTERP:
             if (!changeExprCompare(changeExpr, expr.expr, data)) {
                 var filterResult;
