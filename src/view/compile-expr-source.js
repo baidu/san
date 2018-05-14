@@ -109,6 +109,43 @@ var compileExprSource = {
     },
 
     /**
+     * 生成数组字面量代码
+     *
+     * @param {Object} arrayExpr 数组字面量表达式对象
+     * @return {string}
+     */
+    array: function (arrayExpr) {
+        var code = [];
+
+        each(expr.items, function (item) {
+            code.push((item.spread ? '...' : '') + compileExprSource.expr(item.expr));
+        });
+
+        return '[\n' + code.join(',\n') + '\n]';
+    },
+
+    /**
+     * 生成对象字面量代码
+     *
+     * @param {Object} objExpr 对象字面量表达式对象
+     * @return {string}
+     */
+    object: function (objExpr) {
+        var code = [];
+
+        each(expr.items, function (item) {
+            if (item.spread) {
+                code.push('...' + compileExprSource.expr(item.expr));
+            }
+            else {
+                code.push(compileExprSource.expr(item.name) + ':' + compileExprSource.expr(item.expr));
+            }
+        });
+
+        return '{\n' + code.join(',\n') + '\n}';
+    },
+
+    /**
      * 二元表达式操作符映射表
      *
      * @type {Object}
@@ -170,6 +207,12 @@ var compileExprSource = {
 
             case ExprType.TEXT:
                 return compileExprSource.text(expr);
+
+            case ExprType.ARRAY:
+                return compileExprSource.array(expr);
+
+            case ExprType.OBJECT:
+                return compileExprSource.object(expr);
         }
     }
 };
