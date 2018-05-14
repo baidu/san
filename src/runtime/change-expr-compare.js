@@ -83,6 +83,7 @@ function changeExprCompare(changeExpr, expr, data) {
             return changeExprCompareExprs(changeExpr, expr.segs, data);
 
         case ExprType.ARRAY:
+        case ExprType.OBJECT:
             for (var i = 0, l = expr.items.length; i < l; i++) {
                 if (changeExprCompare(changeExpr, expr.items[i].expr, data)) {
                     return 1;

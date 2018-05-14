@@ -53,16 +53,25 @@ function parseText(source, delimiters) {
         });
     }
 
+    var delimEndLen = delimiters[1].length;
     while ((exprMatch = walker.match(exprStartReg)) != null) {
+        var interpSource = exprMatch[1];
+        var interpLen = exprMatch[0].length;
+        if (walker.cut(walker.index + 1 - delimEndLen, walker.index + 1) === delimiters[1]) {
+            interpSource += walker.cut(walker.index, walker.index + 1);
+            walker.go(1);
+            interpLen++;
+        }
+
         pushStringToSeg(walker.cut(
             beforeIndex,
-            walker.index - exprMatch[0].length
+            walker.index - interpLen
         ));
 
-        var interp = parseInterp(exprMatch[1]);
+        var interp = parseInterp(interpSource);
         expr.original = expr.original || interp.original;
-
         expr.segs.push(interp);
+
         beforeIndex = walker.index;
     }
 

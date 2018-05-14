@@ -749,4 +749,104 @@ describe("Expression Update Detect", function () {
             done();
         });
     });
+
+    it("object literal", function (done) {
+        var Article = san.defineComponent({
+            template: '<div><h3>{{a.title}}</h3><b s-if="a.hot">hot</b><div s-if="a.author"><u>{{a.author.name}}</u><a>{{a.author.email}}</a></div><p>{{a.content}}</p></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Article
+            },
+            template: '<div><x-a a="{{{title: aTitle, hot: true, author:aAuthor, content: aContent}}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                aTitle: 'san',
+                aAuthor: {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                },
+                aContent: 'framework'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('framework');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrik@gmail.com');
+
+        myComponent.data.set('aAuthor', null);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('framework');
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
+            expect(wrap.getElementsByTagName('a').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("object literal with spread", function (done) {
+        var Article = san.defineComponent({
+            template: '<div><h3>{{a.title}}</h3><b s-if="a.hot">hot</b><div s-if="a.author"><u>{{a.author.name}}</u><a>{{a.author.email}}</a></div><p>{{a.content}}</p></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Article
+            },
+            template: '<div><x-a a="{{{author:aAuthor, ...article}}}"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                article: {
+                    title: 'san',
+                    content: 'framework'
+                },
+
+                aAuthor: {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('framework');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrik@gmail.com');
+
+        myComponent.data.set('aAuthor', null);
+        myComponent.data.set('article.content', 'component');
+        san.nextTick(function () {
+
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('component');
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
+            expect(wrap.getElementsByTagName('a').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });

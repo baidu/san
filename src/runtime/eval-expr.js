@@ -4,6 +4,7 @@
  */
 
 var ExprType = require('../parser/expr-type');
+var extend = require('../util/extend');
 var DEFAULT_FILTERS = require('./default-filters');
 var evalArgs = require('./eval-args');
 var dataCache = require('./data-cache');
@@ -103,6 +104,21 @@ function evalExpr(expr, data, owner) {
                     }
                     else {
                         value.push(itemValue);
+                    }
+                }
+                break;
+
+            case ExprType.OBJECT:
+                value = {};
+                for (var i = 0, l = expr.items.length; i < l; i++) {
+                    var item = expr.items[i];
+                    var itemValue = evalExpr(item.expr, data, owner);
+
+                    if (item.spread) {
+                        itemValue && extend(value, itemValue);
+                    }
+                    else {
+                        value[evalExpr(item.name, data, owner)] = itemValue;
                     }
                 }
                 break;

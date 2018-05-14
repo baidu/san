@@ -68,6 +68,41 @@ function readUnaryExpr(walker) {
                 type: ExprType.ARRAY,
                 items: arrItems
             };
+
+        // object literal
+        case 123: // {
+            walker.go(1);
+            var objItems = [];
+
+            while (!walker.goUntil(125)) { // }
+                var item = {};
+                objItems.push(item);
+
+                if (walker.currentCode() === 46 && walker.match(/\.\.\.\s*/g)) {
+                    item.spread = true;
+                    item.expr = readTertiaryExpr(walker);
+                }
+                else {
+                    item.name = readUnaryExpr(walker);
+                    if (walker.goUntil(58)) { // :
+                        item.expr = readTertiaryExpr(walker)
+                    }
+                    else {
+                        item.expr = item.name;
+                    }
+
+                    if (item.name.type === ExprType.ACCESSOR) {
+                        item.name = item.name.paths[0];
+                    }
+                }
+
+                walker.goUntil(44); // ,
+            }
+
+            return {
+                type: ExprType.OBJECT,
+                items: objItems
+            };
     }
 
     return readAccessor(walker);
