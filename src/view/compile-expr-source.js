@@ -117,7 +117,7 @@ var compileExprSource = {
     array: function (arrayExpr) {
         var code = [];
 
-        each(expr.items, function (item) {
+        each(arrayExpr.items, function (item) {
             code.push((item.spread ? '...' : '') + compileExprSource.expr(item.expr));
         });
 
@@ -133,7 +133,7 @@ var compileExprSource = {
     object: function (objExpr) {
         var code = [];
 
-        each(expr.items, function (item) {
+        each(objExpr.items, function (item) {
             if (item.spread) {
                 code.push('...' + compileExprSource.expr(item.expr));
             }
