@@ -7,5 +7,7 @@ exports = module.exports = {
     aAuthor: {
         name: 'erik',
         email: 'errorrik@gmail.com'
-    }
+    },
+
+    from: 'hk'
 };

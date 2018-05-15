@@ -799,14 +799,14 @@ describe("Expression Update Detect", function () {
 
     it("object literal with spread", function (done) {
         var Article = san.defineComponent({
-            template: '<div><h3>{{a.title}}</h3><b s-if="a.hot">hot</b><div s-if="a.author"><u>{{a.author.name}}</u><a>{{a.author.email}}</a></div><p>{{a.content}}</p></div>'
+            template: '<div><h3>{{a.title}}</h3><h4>{{a.from}}</h4><b s-if="a.hot">hot</b><div s-if="a.author"><u>{{a.author.name}}</u><a>{{a.author.email}}</a></div><p>{{a.content}}</p></div>'
         });
 
         var MyComponent = san.defineComponent({
             components: {
                 'x-a': Article
             },
-            template: '<div><x-a a="{{{author:aAuthor, ...article}}}"/></div>'
+            template: '<div><x-a a="{{{author:aAuthor, from, ...article}}}"/></div>'
         });
         var myComponent = new MyComponent({
             data: {
@@ -818,7 +818,9 @@ describe("Expression Update Detect", function () {
                 aAuthor: {
                     name: 'erik',
                     email: 'errorrik@gmail.com'
-                }
+                },
+
+                from: 'hk'
             }
         });
 
@@ -827,17 +829,20 @@ describe("Expression Update Detect", function () {
         myComponent.attach(wrap);
 
         expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+        expect(wrap.getElementsByTagName('h4')[0].innerHTML).toBe('hk');
         expect(wrap.getElementsByTagName('b').length).toBe(0);
         expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('framework');
         expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik');
         expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrik@gmail.com');
 
         myComponent.data.set('aAuthor', null);
+        myComponent.data.set('from', 'bj');
         myComponent.data.set('article.content', 'component');
         san.nextTick(function () {
 
 
             expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('san');
+            expect(wrap.getElementsByTagName('h4')[0].innerHTML).toBe('bj');
             expect(wrap.getElementsByTagName('b').length).toBe(0);
             expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('component');
             expect(wrap.getElementsByTagName('u').length).toBe(0);
