@@ -349,6 +349,112 @@ exprInfo = {
 }
 ```
 
+### ARRAY LITERAL
+
+数组字面量，支持数组展开。
+
+```javascript
+// [name, 'text', ...ext, true]
+// items - 数组项列表。expr 为数组项表达式，spread 代表是否为展开项
+exprInfo = {
+    type: ExprType.ARRAY,
+    items: [
+        {
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "name"
+                    }
+                ]
+            }
+        },
+        {
+            "expr": {
+                "type": ExprType.STRING,
+                "value": "text"
+            }
+        },
+        {
+            "spread": true,
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "ext"
+                    }
+                ]
+            }
+        },
+        {
+            "expr": {
+                "type": ExprType.BOOL,
+                "value": true
+            }
+        }
+    ]
+}
+```
+
+### OBJECT LITERAL
+
+对象字面量，支持对象展开。
+
+```javascript
+// {name: realName, email, ...ext}
+// items - 对象项列表。name 为项 name 表达式， expr 为项 value 表达式，spread 代表是否为展开项
+exprInfo = {
+    "type": ExprType.OBJECT,
+    "items": [
+        {
+            "name": {
+                "type": ExprType.STRING,
+                "value": "name"
+            },
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "realName"
+                    }
+                ]
+            }
+        },
+        {
+            "name": {
+                "type": ExprType.STRING,
+                "value": "email"
+            },
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "email"
+                    }
+                ]
+            }
+        },
+        {
+            "spread": true,
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "ext"
+                    }
+                ]
+            }
+        }
+    ],
+    "raw": "{name: realName, email, ...ext}"
+}
+```
+
 ANode 的结构
 ------
 
