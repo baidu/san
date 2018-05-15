@@ -132,7 +132,9 @@ var ExprType = {
     TEXT: 7,
     BINARY: 8,
     UNARY: 9,
-    TERTIARY: 10
+    TERTIARY: 10,
+    ARRAY: 11,
+    OBJECT: 12
 };
 ```
 
