@@ -2,6 +2,12 @@
 ChangeLog
 ========
 
+3.5.9
+-------
+
++ 【新特性】- 表达式支持 array literal 和 object literal
+
+
 3.5.8
 -------
 
