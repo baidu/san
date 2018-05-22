@@ -2,6 +2,13 @@
 ChangeLog
 ========
 
+
+3.5.10
+-------
+
++ 【优化】- 调整 getComponentType 逻辑，删除之前无用的 hotTags 优化
+
+
 3.5.9
 -------
 
