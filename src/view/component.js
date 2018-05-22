@@ -228,11 +228,6 @@ function Component(options) { // eslint-disable-line
 }
 
 
-
-Component.prototype.getComponentType = function (aNode) {
-    return this.components[aNode.tagName];
-};
-
 /**
  * 初始化创建组件外部传入的插槽对象
  *

@@ -48,7 +48,7 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
         default:
             var ComponentType = owner.getComponentType
                 ? owner.getComponentType(aNode)
-                : this.components[aNode.tagName];
+                : owner.components[aNode.tagName];
 
             if (ComponentType) {
                 return new ComponentType({

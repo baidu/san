@@ -290,7 +290,9 @@ var aNodeCompiler = {
             compileMethod = 'compileTemplate';
         }
         else {
-            var ComponentType = owner.getComponentType(aNode);
+            var ComponentType = owner.getComponentType
+                ? owner.getComponentType(aNode)
+                : owner.components[aNode.tagName];
             if (ComponentType) {
                 compileMethod = 'compileComponent';
                 extra.ComponentClass = ComponentType;
