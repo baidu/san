@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var hotTags = require('../browser/hot-tags');
 var NodeType = require('./node-type');
 var TextNode = require('./text-node');
 var Element = require('./element');
@@ -39,10 +38,6 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
         return new ForNode(aNode, owner, scope, parent, reverseWalker);
     }
 
-    if (hotTags[aNode.tagName]) {
-        return new Element(aNode, owner, scope, parent, reverseWalker);
-    }
-
     switch (aNode.tagName) {
         case 'slot':
             return new SlotNode(aNode, owner, scope, parent, reverseWalker);
@@ -51,7 +46,10 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
             return new TemplateNode(aNode, owner, scope, parent, reverseWalker);
 
         default:
-            var ComponentType = owner.getComponentType(aNode);
+            var ComponentType = owner.getComponentType
+                ? owner.getComponentType(aNode)
+                : this.components[aNode.tagName];
+
             if (ComponentType) {
                 return new ComponentType({
                     aNode: aNode,
