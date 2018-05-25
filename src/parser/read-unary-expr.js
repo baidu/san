@@ -83,7 +83,18 @@ function readUnaryExpr(walker) {
                     item.expr = readTertiaryExpr(walker);
                 }
                 else {
+                    // #[begin] error
+                    var walkerIndexBeforeName = walker.index;
+                    // #[end]
+
                     item.name = readUnaryExpr(walker);
+
+                    // #[begin] error
+                    if (item.name.type > 4) {
+                        throw new Error('[SAN FATAL] unexpect object name: ' + walker.cut(walkerIndexBeforeName, walker.index));
+                    }
+                    // #[end]
+
                     if (walker.goUntil(58)) { // :
                         item.expr = readTertiaryExpr(walker)
                     }

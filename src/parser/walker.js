@@ -96,17 +96,17 @@ Walker.prototype.goUntil = function (charCode) {
  * 向前读取符合规则的字符片段，并返回规则匹配结果
  *
  * @param {RegExp} reg 字符片段的正则表达式
- * @return {Array}
+ * @param {boolean} isMatchStart 是否必须匹配当前位置
+ * @return {Array?}
  */
-Walker.prototype.match = function (reg) {
+Walker.prototype.match = function (reg, isMatchStart) {
     reg.lastIndex = this.index;
 
     var match = reg.exec(this.source);
-    if (match) {
+    if (match && (!isMatchStart || this.index === match.index)) {
         this.index = reg.lastIndex;
+        return match;
     }
-
-    return match;
 };
 
 exports = module.exports = Walker;

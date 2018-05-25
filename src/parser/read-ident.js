@@ -13,7 +13,14 @@
  * @return {string}
  */
 function readIdent(walker) {
-    var match = walker.match(/\s*([\$0-9a-z_]+)/ig);
+    var match = walker.match(/\s*([\$0-9a-z_]+)/ig, 1);
+
+    // #[begin] error
+    if (!match) {
+        throw new Error('[SAN FATAL] expect an ident: ' + walker.cut(walker.index));
+    }
+    // #[end]
+
     return match[1];
 }
 
