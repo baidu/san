@@ -14,9 +14,18 @@ var NodeType = require('./node-type');
  * @return {Object?}
  */
 function elementGetTransition(element) {
-    var aNode = element.nodeType === NodeType.CMPT ? element.givenANode : element.aNode;
-    var directive = aNode && aNode.directives.transition;
+    var directive = element.aNode.directives.transition;
     var owner = element.owner;
+
+    if (element.nodeType === NodeType.CMPT) {
+        var cmptGivenTransition = element.givenANode && element.givenANode.directives.transition;
+        if (cmptGivenTransition) {
+            directive = cmptGivenTransition;
+        }
+        else {
+            owner = element;
+        }
+    }
 
     var transition;
     if (directive && owner) {

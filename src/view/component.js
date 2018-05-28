@@ -66,6 +66,11 @@ function Component(options) { // eslint-disable-line
     this.filters = this.filters || clazz.filters || {};
     this.computed = this.computed || clazz.computed || {};
     this.messages = this.messages || clazz.messages || {};
+
+    if (options.transition) {
+        this.transition = options.transition;
+    }
+
     this.subTag = options.subTag;
 
     // compile

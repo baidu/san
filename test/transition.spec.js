@@ -166,6 +166,191 @@ describe("Transition", function () {
         expect(attached > 0).toBeTruthy();
     });
 
+
+    it("s-transition in root element, attach and detach and dispose", function (done) {
+        var attached = 0;
+        var disposed;
+        var detached;
+
+        var MyComponent = san.defineComponent({
+            template: '<div style="height:110px;line-height:110px" s-transition="myTrans">content</div>',
+
+            myTrans: {
+                enter: function (el, enterDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '110px';
+                            enterDone();
+
+                            san.nextTick(function () {
+                                if (attached > 1) {
+                                    myComponent.dispose();
+                                    expect(disposed).not.toBeTruthy();
+                                }
+                                else {
+                                    myComponent.detach();
+                                    expect(detached).not.toBeTruthy();
+                                }
+                            });
+                            return;
+                        }
+
+                        el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, leaveDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '10px';
+                            leaveDone();
+
+                            expect(detached).toBeTruthy();
+                            if (attached > 1) {
+                                expect(disposed).toBeTruthy();
+                                document.body.removeChild(wrap);
+                                done();
+                            }
+                            else {
+                                expect(disposed).not.toBeTruthy();
+                                detached = false;
+                                myComponent.attach(wrap);
+                            }
+                            return;
+                        }
+
+                        el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                }
+            },
+
+            attached: function () {
+                attached++;
+            },
+
+            disposed: function () {
+                disposed = true;
+            },
+
+            detached: function () {
+                detached = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(attached > 0).toBeTruthy();
+    });
+
+    it("transition option, attach and detach and dispose", function (done) {
+        var attached = 0;
+        var disposed;
+        var detached;
+
+        var MyComponent = san.defineComponent({
+            template: '<div style="height:110px;line-height:110px">content</div>',
+
+            attached: function () {
+                attached++;
+            },
+
+            disposed: function () {
+                disposed = true;
+            },
+
+            detached: function () {
+                detached = true;
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            transition: {
+                enter: function (el, enterDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '110px';
+                            enterDone();
+
+                            san.nextTick(function () {
+                                if (attached > 1) {
+                                    myComponent.dispose();
+                                    expect(disposed).not.toBeTruthy();
+                                }
+                                else {
+                                    myComponent.detach();
+                                    expect(detached).not.toBeTruthy();
+                                }
+                            });
+                            return;
+                        }
+
+                        el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, leaveDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '10px';
+                            leaveDone();
+
+                            expect(detached).toBeTruthy();
+                            if (attached > 1) {
+                                expect(disposed).toBeTruthy();
+                                document.body.removeChild(wrap);
+                                done();
+                            }
+                            else {
+                                expect(disposed).not.toBeTruthy();
+                                detached = false;
+                                myComponent.attach(wrap);
+                            }
+                            return;
+                        }
+
+                        el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(attached > 0).toBeTruthy();
+    });
+
     it("directive apply if, init false", function (done) {
         var enterFinish;
         var leaveFinish;
@@ -1127,13 +1312,179 @@ describe("Transition", function () {
         }
     });
 
+    it("directive apply for with component should override inner root element s-transition", function (done) {
+        var enterFinish = 0;
+        var leaveFinish = 0;
+
+        var Label = san.defineComponent({
+            template: '<span title="{{title}}" s-transition="myTrans">{{title}}</span>',
+
+            myTrans: {
+                enter: function (el, enterDone) {
+                    el.setAttribute('data-test', 'fail');
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '110px';
+                            enterFinish++;
+                            enterDone();
+                            return;
+                        }
+
+                        el.style.fontSize = '110px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, leaveDone) {
+                    el.setAttribute('data-test', 'fail');
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '10px';
+                            leaveFinish++;
+                            leaveDone();
+                            return;
+                        }
+
+                        el.style.fontSize = '10px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label
+            },
+
+            template: '<div style="height:110px;line-height:110px"><x-label s-for="item in list" s-transition="trans" title="{{item}}"/></div>',
+
+            trans: {
+                enter: function (el, enterDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '110px';
+                            enterFinish++;
+                            enterDone();
+                            return;
+                        }
+
+                        el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                },
+
+                leave: function (el, leaveDone) {
+                    var steps = 20;
+                    var currentStep = 0;
+
+                    function goStep() {
+                        if (currentStep >= steps) {
+                            el.style.fontSize = '10px';
+                            leaveFinish++;
+                            leaveDone();
+                            return;
+                        }
+
+                        el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
+                        setTimeout(goStep, 16);
+                    }
+
+                    goStep();
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [1, 2, 3, 4]
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans.length).toBe(4);
+        expect(spans[0].getAttribute('data-test')).not.toBe('fail');
+        expect(enterFinish === 0).toBeTruthy();
+
+        whenListEnterFinish();
+
+        function whenListEnterFinish() {
+            if (enterFinish === 4) {
+                myComponent.data.push('list', 5);
+                myComponent.data.splice('list', [1, 2]);
+                myComponent.data.unshift('list', 6);
+                myComponent.data.push('list', 7);
+
+                san.nextTick(function () {
+                    var spans = wrap.getElementsByTagName('span');
+                    expect(spans.length).toBe(4);
+                    expect(spans[0].getAttribute('data-test')).not.toBe('fail');
+                    expect(leaveFinish === 0).toBeTruthy();
+                    whenListItemDisposeFinish();
+                });
+
+                return;
+            }
+
+            setTimeout(whenListEnterFinish, 50);
+        }
+
+        function whenListItemDisposeFinish() {
+            if (leaveFinish === 2) {
+                var spans = wrap.getElementsByTagName('span');
+                expect(spans.length).toBe(5);
+                expect(spans[0].getAttribute('data-test')).not.toBe('fail');
+                expect(spans[0].innerHTML).toBe('6');
+                expect(spans[4].innerHTML).toBe('7');
+                whenAllEnter();
+
+                return;
+            }
+
+            setTimeout(whenListItemDisposeFinish, 10);
+        }
+
+        function whenAllEnter() {
+            if (enterFinish === 7) {
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+
+                return;
+            }
+
+            setTimeout(whenAllEnter, 50);
+        }
+    });
+
     it("function should be creator, can access component data", function (done) {
         var enterFinish;
         var leaveFinish;
-    
+
         var MyComponent = san.defineComponent({
             template: '<div style="height:110px;line-height:110px"><span s-if="num > 10000" title="biiig" s-transition="ifTrans(needTrans)">biiig</span></div>',
-    
+
             ifTrans: function (enabled) {
                 return {
                     enter: function (el, enterDone) {
@@ -1143,10 +1494,10 @@ describe("Transition", function () {
                             enterDone();
                             return;
                         }
-    
+
                         var steps = 20;
                         var currentStep = 0;
-    
+
                         function goStep() {
                             if (currentStep >= steps) {
                                 el.style.fontSize = '110px';
@@ -1154,14 +1505,14 @@ describe("Transition", function () {
                                 enterDone();
                                 return;
                             }
-    
+
                             el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
                             setTimeout(goStep, 16);
                         }
-    
+
                         goStep();
                     },
-    
+
                     leave: function (el, leaveDone) {
                         if (!enabled) {
                             el.style.fontSize = '10px';
@@ -1169,10 +1520,10 @@ describe("Transition", function () {
                             leaveDone();
                             return;
                         }
-    
+
                         var steps = 20;
                         var currentStep = 0;
-    
+
                         function goStep() {
                             if (currentStep >= steps) {
                                 el.style.fontSize = '10px';
@@ -1180,50 +1531,50 @@ describe("Transition", function () {
                                 leaveDone();
                                 return;
                             }
-    
+
                             el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
                             setTimeout(goStep, 16);
                         }
-    
+
                         goStep();
                     }
                 };
             }
         });
-    
-    
+
+
         var myComponent = new MyComponent({
             data: {
                 needTrans: true,
                 num: 300
             }
         });
-    
-    
+
+
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-    
+
         var spans = wrap.getElementsByTagName('span');
         expect(spans.length).toBe(0);
-    
+
         myComponent.data.set('num', 30000);
-    
+
         san.nextTick(function () {
             var spans = wrap.getElementsByTagName('span');
             expect(spans.length).toBe(1);
             expect(enterFinish).not.toBeTruthy();
             whenEnterFinish();
         });
-    
+
         function whenEnterFinish() {
             if (enterFinish) {
                 myComponent.data.set('needTrans', false);
                 myComponent.data.set('num', 100);
-    
+
                 san.nextTick(function () {
                     expect(leaveFinish).toBeTruthy();
-    
+
                     myComponent.dispose();
                     document.body.removeChild(wrap);
                     done();
@@ -1231,18 +1582,18 @@ describe("Transition", function () {
                 });
                 return;
             }
-    
+
             setTimeout(whenEnterFinish, 50);
         }
     });
-    
+
     it("directive transition found in deep object", function (done) {
         var enterFinish;
         var leaveFinish;
-    
+
         var MyComponent = san.defineComponent({
             template: '<div style="height:110px;line-height:110px"><span s-if="num > 10000" title="biiig" s-transition="trans.ifcreator(needTrans)">biiig</span></div>',
-    
+
             trans: {
                 ifcreator: function (enabled) {
                     return {
@@ -1253,10 +1604,10 @@ describe("Transition", function () {
                                 enterDone();
                                 return;
                             }
-    
+
                             var steps = 20;
                             var currentStep = 0;
-    
+
                             function goStep() {
                                 if (currentStep >= steps) {
                                     el.style.fontSize = '110px';
@@ -1264,14 +1615,14 @@ describe("Transition", function () {
                                     enterDone();
                                     return;
                                 }
-    
+
                                 el.style.fontSize = 10 + 100 / steps * currentStep++ + 'px';
                                 setTimeout(goStep, 16);
                             }
-    
+
                             goStep();
                         },
-    
+
                         leave: function (el, leaveDone) {
                             if (!enabled) {
                                 el.style.fontSize = '10px';
@@ -1279,10 +1630,10 @@ describe("Transition", function () {
                                 leaveDone();
                                 return;
                             }
-    
+
                             var steps = 20;
                             var currentStep = 0;
-    
+
                             function goStep() {
                                 if (currentStep >= steps) {
                                     el.style.fontSize = '10px';
@@ -1290,50 +1641,50 @@ describe("Transition", function () {
                                     leaveDone();
                                     return;
                                 }
-    
+
                                 el.style.fontSize = 110 - 100 / steps * currentStep++ + 'px';
                                 setTimeout(goStep, 16);
                             }
-    
+
                             goStep();
                         }
                     };
                 }
             }
         });
-    
-    
+
+
         var myComponent = new MyComponent({
             data: {
                 num: 300
             }
         });
-    
-    
+
+
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-    
+
         var spans = wrap.getElementsByTagName('span');
         expect(spans.length).toBe(0);
-    
+
         myComponent.data.set('num', 30000);
-    
+
         san.nextTick(function () {
             var spans = wrap.getElementsByTagName('span');
             expect(spans.length).toBe(1);
             expect(enterFinish).toBeTruthy();
-            
+
             myComponent.data.set('needTrans', true);
             myComponent.data.set('num', 100);
-    
+
             san.nextTick(function () {
                 expect(leaveFinish).not.toBeTruthy();
-    
+
                 whenLeaveFinish();
             });
         });
-    
+
         function whenLeaveFinish() {
             if (leaveFinish) {
                 myComponent.dispose();
@@ -1341,7 +1692,7 @@ describe("Transition", function () {
                 done();
                 return;
             }
-    
+
             setTimeout(whenLeaveFinish, 50);
         }
     });
