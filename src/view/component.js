@@ -18,6 +18,7 @@ var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
+var DataChangeType = require('../runtime/data-change-type');
 var compileComponent = require('./compile-component');
 var componentPreheat = require('./component-preheat');
 var LifeCycle = require('./life-cycle');
@@ -41,6 +42,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
+
 
 
 
@@ -548,28 +550,44 @@ Component.prototype._update = function (changes) {
                 var relation;
                 var setExpr = bindItem.name;
                 var updateExpr = bindItem.expr;
+                var changeInfo = {
+                    type: DataChangeType.SET,
+                    option: {
+                        target: {
+                            id: me.owner.id
+                        }
+                    }
+                };
+                var isSplice;
 
                 if (!isDataChangeByElement(change, me, setExpr)
                     && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
                 ) {
-                    if (relation > 2) {
-                        setExpr = createAccessor(
-                            [
-                                {
-                                    type: ExprType.STRING,
-                                    value: setExpr
-                                }
-                            ].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                        );
-
-                        updateExpr = changeExpr;
-                    }
-
-                    me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
-                        target: {
-                            id: me.owner.id
+                    if (relation >= 2) {
+                        if (relation > 2) {
+                            setExpr = createAccessor(
+                                [
+                                    {
+                                        type: ExprType.STRING,
+                                        value: setExpr
+                                    }
+                                ].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                            );
+                            updateExpr = changeExpr;
                         }
-                    });
+                        isSplice = change.type === DataChangeType.SPLICE;
+                    }
+                    changeInfo.expr = setExpr;
+                    if (isSplice) {
+                        changeInfo.type = DataChangeType.SPLICE;
+                        changeInfo.index = change.index;
+                        changeInfo.deleteCount = change.deleteCount;
+                        changeInfo.insertions = change.insertions;
+                    } else {
+                        // for-node中 传递给子项的index变化信息对象value属性并没有值,所以这里需要重新计算
+                        changeInfo.value = evalExpr(updateExpr, me.scope, me.owner);
+                    }
+                    me.data.change(changeInfo);
                 }
             });
 
