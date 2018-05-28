@@ -1954,4 +1954,43 @@ describe("ForDirective", function () {
             done();
         });
     });
+
+
+    it("component can track owner splice change ", function (done) {
+
+        var List = san.defineComponent({
+            template: '<ul><li s-for="item in list">{{item}}</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-list': List
+            },
+
+            template: '<div><x-list list="{{list}}" /></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [1, 2, 3]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var li = wrap.getElementsByTagName('li')[0];
+        expect(li.innerHTML).toBe('1');
+
+        myComponent.data.unshift('list', 9);
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('li')[0].innerHTML).toBe('9');
+            var fli = wrap.getElementsByTagName('li')[1];
+            expect(fli === li).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
