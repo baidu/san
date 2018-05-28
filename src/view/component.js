@@ -550,44 +550,36 @@ Component.prototype._update = function (changes) {
                 var relation;
                 var setExpr = bindItem.name;
                 var updateExpr = bindItem.expr;
-                var changeInfo = {
-                    type: DataChangeType.SET,
-                    option: {
-                        target: {
-                            id: me.owner.id
-                        }
-                    }
-                };
-                var isSplice;
 
                 if (!isDataChangeByElement(change, me, setExpr)
                     && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
                 ) {
-                    if (relation >= 2) {
-                        if (relation > 2) {
-                            setExpr = createAccessor(
-                                [
-                                    {
-                                        type: ExprType.STRING,
-                                        value: setExpr
-                                    }
-                                ].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                            );
-                            updateExpr = changeExpr;
-                        }
-                        isSplice = change.type === DataChangeType.SPLICE;
+                    if (relation > 2) {
+                        setExpr = createAccessor(
+                            [
+                                {
+                                    type: ExprType.STRING,
+                                    value: setExpr
+                                }
+                            ].concat(changeExpr.paths.slice(updateExpr.paths.length))
+                        );
+                        updateExpr = changeExpr;
                     }
-                    changeInfo.expr = setExpr;
-                    if (isSplice) {
-                        changeInfo.type = DataChangeType.SPLICE;
-                        changeInfo.index = change.index;
-                        changeInfo.deleteCount = change.deleteCount;
-                        changeInfo.insertions = change.insertions;
-                    } else {
-                        // for-node中 传递给子项的index变化信息对象value属性并没有值,所以这里需要重新计算
-                        changeInfo.value = evalExpr(updateExpr, me.scope, me.owner);
+
+                    if (relation >= 2 && change.type === DataChangeType.SPLICE) {
+                        me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
+                            target: {
+                                id: me.owner.id
+                            }
+                        });
                     }
-                    me.data.change(changeInfo);
+                    else {
+                        me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
+                            target: {
+                                id: me.owner.id
+                            }
+                        });
+                    }
                 }
             });
 

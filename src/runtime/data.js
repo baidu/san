@@ -452,30 +452,4 @@ Data.prototype.remove = function (expr, value, option) {
     }
 };
 
-/**
- * 根据数据变化的信息进行数据变更操作
- *
- * @param {Object} change 数据变化信息
- */
-Data.prototype.change = function(change) {
-    if (change.type === DataChangeType.SPLICE) {
-        var target = this.get(change.expr);
-
-        if (target instanceof Array) {
-            this.splice(
-                change.expr,
-                [].concat(change.index, change.deleteCount, change.insertions),
-                change.option
-            );
-        }
-    }
-    else {
-        this.set(
-            change.expr,
-            change.value,
-            change.option
-        );
-    }
-};
-
 exports = module.exports = Data;
