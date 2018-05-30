@@ -36,7 +36,6 @@ function elementDispose(element) {
         element._toPhase('detached');
     }
 
-    element._spreadData = null;
     nodeDispose(element);
 }
 

@@ -17,6 +17,8 @@ var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var nodeDispose = require('./node-dispose');
+var nodeSBindInit = require('./node-s-bind-init');
+var nodeSBindUpdate = require('./node-s-bind-update');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var elementUpdateChildren = require('./element-update-children');
@@ -72,11 +74,19 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
 
     // calc scoped slot vars
     realANode.vars = aNode.vars;
-    var initData = {};
-    each(realANode.vars, function (varItem) {
-        me.isScoped = true;
-        initData[varItem.name] = evalExpr(varItem.expr, scope, owner);
-    });
+    realANode.directives = aNode.directives;
+
+    var initData;
+    if (nodeSBindInit(this, aNode.directives.bind)) {
+        initData = extend({}, me._sbindData);
+    }
+
+    if (realANode.vars) {
+        initData = initData || {};
+        each(realANode.vars, function (varItem) {
+            initData[varItem.name] = evalExpr(varItem.expr, scope, owner);
+        });
+    }
 
     // child owner & child scope
     if (this.isInserted) {
@@ -84,7 +94,8 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
         this.childScope = owner.scope;
     }
 
-    if (this.isScoped) {
+    if (initData) {
+        this.isScoped = true;
         this.childScope = new Data(initData, this.childScope || this.scope);
     }
 
@@ -150,12 +161,35 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
     }
     else {
         if (this.isScoped) {
+            var varKeys = {};
             each(this.aNode.vars, function (varItem) {
+                varKeys[varItem.name] = 1;
                 me.childScope.set(varItem.name, evalExpr(varItem.expr, me.scope, me.owner));
             });
 
-
             var scopedChanges = [];
+
+            nodeSBindUpdate(
+                this,
+                this.aNode.directives.bind,
+                changes,
+                function (name, value) {
+                    if (varKeys[name]) {
+                        return;
+                    }
+
+                    me.childScope.set(name, value);
+                    scopedChanges.push({
+                        type: DataChangeType.SET,
+                        expr: createAccessor([
+                            { type: ExprType.STRING, value: name }
+                        ]),
+                        value: value,
+                        option: {}
+                    });
+                }
+            );
+
             each(changes, function (change) {
                 if (!me.isInserted) {
                     scopedChanges.push(change);

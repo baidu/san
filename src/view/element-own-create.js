@@ -33,8 +33,8 @@ function elementOwnCreate() {
             this.el = createEl(this.tagName);
         }
 
-        for (var key in this._spreadData) {
-            getPropHandler(this.tagName, key).prop(this.el, this._spreadData[key], key, this);
+        for (var key in this._sbindData) {
+            getPropHandler(this.tagName, key).prop(this.el, this._sbindData[key], key, this);
         }
 
         for (var i = 0, l = props.length; i < l; i++) {

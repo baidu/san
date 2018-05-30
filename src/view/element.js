@@ -25,6 +25,8 @@ var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
 var elementInitTagName = require('./element-init-tag-name');
+var nodeSBindInit = require('./node-s-bind-init');
+var nodeSBindUpdate = require('./node-s-bind-update');
 var handleProp = require('./handle-prop');
 var warnSetHTML = require('./warn-set-html');
 var getNodePath = require('./get-node-path');
@@ -55,9 +57,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
 
     elementInitTagName(this);
 
-    if (aNode.directives.bind) {
-        this._spreadData = evalExpr(aNode.directives.bind.value, this.scope, this.owner);
-    }
+    nodeSBindInit(this, aNode.directives.bind);
 
     this._toPhase('inited');
 
@@ -131,28 +131,19 @@ Element.prototype._update = function (changes) {
     }
 
     // update s-bind
-    var bindDirective = this.aNode.directives.bind;
-    if (bindDirective) {
-        var len = changes.length;
-        while (len--) {
-            if (changeExprCompare(changes[len].expr, bindDirective.value, this.scope)) {
-                var newBindData = evalExpr(bindDirective.value, this.scope, this.owner);
-                var keys = unionKeys(newBindData, this._spreadData);
-
-                for (var i = 0; i < keys.length; i++) {
-                    var key = keys[i];
-                    var propValue = newBindData[key];
-
-                    if (!(key in this.aNode.hotspot.props) && propValue !== this._spreadData[key]) {
-                        getPropHandler(this.tagName, key).prop(this.el, propValue, key, this);
-                    }
-                }
-
-                this._spreadData = newBindData;
-                break;
+    var me = this;
+    nodeSBindUpdate(
+        this,
+        this.aNode.directives.bind,
+        changes,
+        function (name, value) {
+            if (name in me.aNode.hotspot.props) {
+                return;
             }
+
+            getPropHandler(me.tagName, name).prop(me.el, value, name, me);
         }
-    }
+    );
 
     // update prop
     var dynamicProps = this.aNode.hotspot.dynamicProps;

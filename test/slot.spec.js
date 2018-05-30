@@ -1887,6 +1887,93 @@ describe("Slot", function () {
         })
     });
 
+    it("scoped by default content with s-bind", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot s-bind="{n:data.name, email: data.email, sex: data.sex ? \'male\' : \'female\'}"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"/></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('p')[0].innerHTML).toBe('errorrik,male,erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+
+    it("scoped by given content with s-bind and var-", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" s-bind="{n:data.name, email: \'no@no.com\', sex: \'shemale\'}" var-email="data.email" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test">{{email}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        email: 'errorrik@gmail.com'
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.set('man.email', 'erik168@163.com');
+        myComponent.data.set('man.name', 'erik');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('erik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('erik168@163.com');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("deep", function (done) {
         var Panel = san.defineComponent({
             template: '<div><slot/></div>'

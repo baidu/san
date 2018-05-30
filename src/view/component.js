@@ -8,7 +8,6 @@ var each = require('../util/each');
 var guid = require('../util/guid');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
-var unionKeys = require('../util/union-keys');
 var emitDevtool = require('../util/emit-devtool');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
@@ -28,6 +27,8 @@ var eventDeclarationListener = require('./event-declaration-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
+var nodeSBindInit = require('./node-s-bind-init');
+var nodeSBindUpdate = require('./node-s-bind-update');
 var elementInitTagName = require('./element-init-tag-name');
 var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
@@ -155,9 +156,7 @@ function Component(options) { // eslint-disable-line
         this.binds = camelComponentBinds(this.givenANode.props);
 
         // init s-bind data
-        if (this.givenANode.directives.bind && this.scope) {
-            this._spreadData = evalExpr(this.givenANode.directives.bind.value, this.scope, this.owner);
-        }
+        nodeSBindInit(this, this.givenANode.directives.bind);
     }
 
     this._toPhase('compiled');
@@ -166,7 +165,7 @@ function Component(options) { // eslint-disable-line
     this.data = new Data(
         extend(
             typeof this.initData === 'function' && this.initData() || {},
-            options.data || this._spreadData
+            options.data || this._sbindData
         )
     );
 
@@ -520,33 +519,23 @@ Component.prototype._update = function (changes) {
     };
 
     if (changes) {
-        var bindDirective = this.givenANode.directives.bind;
-        if (bindDirective) {
-            var len = changes.length;
-            while (len--) {
-
-                if (changeExprCompare(changes[len].expr, bindDirective.value, this.scope)) {
-                    var newBindData = evalExpr(bindDirective.value, this.scope, this.owner);
-                    var keys = unionKeys(newBindData, this._spreadData);
-
-                    for (var i = 0, l = keys.length; i < l; i++) {
-                        var key = keys[i];
-
-                        if (!(key in this.givenANode.hotspot.props) && newBindData[key] !== this._spreadData[key]) {
-                            me.data.set(key, newBindData[key], {
-                                target: {
-                                    id: me.owner.id
-                                }
-                            });
-                        }
-                    }
-
-                    this._spreadData = newBindData;
-                    break;
+        nodeSBindUpdate(
+            this,
+            this.givenANode.directives.bind,
+            changes,
+            function (name, value) {
+                if (name in me.givenANode.hotspot.props) {
+                    return;
                 }
 
+                me.data.set(name, value, {
+                    target: {
+                        id: me.owner.id
+                    }
+                });
             }
-        }
+        );
+
 
         each(changes, function (change) {
             var changeExpr = change.expr;
