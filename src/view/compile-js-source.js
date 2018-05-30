@@ -463,8 +463,14 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('if (!$isInserted) { $givenSlot.push($defaultSlotRender); }');
 
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
-        if (aNode.vars) {
+
+        if (aNode.vars || aNode.directives.bind) {
             sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};'); // eslint-disable-line
+
+            if (aNode.directives.bind) {
+                sourceBuffer.addRaw('extend($slotCtx.data, ' + compileExprSource.expr(aNode.directives.bind.value) + ');'); // eslint-disable-line
+            }
+
             each(aNode.vars, function (varItem) {
                 sourceBuffer.addRaw(
                     '$slotCtx.data["' + varItem.name + '"] = '
