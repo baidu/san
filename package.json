@@ -48,21 +48,21 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "opener": "~1.4.0",
+    "art-template": "^4.10.2",
     "colors": "^1.0.3",
-    "watch": "^1.0.2",
     "http-server": "^0.9.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
+    "opener": "~1.4.0",
+    "swig": "^1.4.2",
+    "uglify-js": "^2.8.29",
+    "watch": "^1.0.2",
     "wdio-jasmine-framework": "^0.3.0",
     "wdio-sauce-service": "^0.3.1",
     "wdio-spec-reporter": "^0.1.0",
-    "webdriverio": "^4.2.16",
-    "uglify-js": "^2.8.22",
-    "swig": "^1.4.2",
-    "art-template": "^4.10.2"
+    "webdriverio": "^4.2.16"
   }
 }
