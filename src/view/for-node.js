@@ -417,7 +417,7 @@ ForNode.prototype._update = function (changes) {
     var newChildrenLen = this.children.length;
 
     // 标记 length 是否发生变化
-    if (newChildrenLen !== oldChildrenLen) {
+    if (newChildrenLen !== oldChildrenLen && this.param.value.paths) {
         var lengthChange = {
             type: DataChangeType.SET,
             option: {},

@@ -1993,4 +1993,40 @@ describe("ForDirective", function () {
             done();
         });
     });
+
+    it("for array literal", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="item in [1, 2, three, ...other]">{{item}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                three: 3,
+                other: []
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(3)
+        expect(lis[2].innerHTML).toBe('3');
+
+        myComponent.data.set('three', 33);
+        myComponent.data.set('other', [44,55]);
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(5)
+            expect(lis[2].innerHTML).toBe('33');
+            expect(lis[3].innerHTML).toBe('44');
+            expect(lis[4].innerHTML).toBe('55');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

@@ -9,6 +9,7 @@ var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var readAccessor = require('./read-accessor');
+var readUnaryExpr = require('./read-unary-expr');
 
 /**
  * 指令解析器
@@ -19,14 +20,19 @@ var readAccessor = require('./read-accessor');
 var directiveParsers = {
     'for': function (value) {
         var walker = new Walker(value);
-        var match = walker.match(/^\s*([\$0-9a-z_]+)(\s*,\s*([\$0-9a-z_]+))?\s+in\s+/ig);
+        var match = walker.match(/^\s*([\$0-9a-z_]+)(\s*,\s*([\$0-9a-z_]+))?\s+in\s+/ig, 1);
 
         if (match) {
-            return {
+            var directive = {
                 item: parseExpr(match[1]),
                 index: parseExpr(match[3] || '$index'),
-                value: readAccessor(walker)
+                value: readUnaryExpr(walker)
             };
+
+            // if (walker.match(/\s+trackby\s+/ig, 1)) {
+            //     directive.trackBy = readAccessor(walker);
+            // }
+            return directive;
         }
 
         // #[begin] error
