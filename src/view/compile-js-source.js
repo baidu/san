@@ -400,12 +400,13 @@ var aNodeCompiler = {
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
-        var listName = compileExprSource.dataAccess(forDirective.value);
+        var listName = guid();
 
         if (indexName === '$index') {
             indexName = guid();
         }
 
+        sourceBuffer.addRaw('var ' + listName + ' = ' + compileExprSource.expr(forDirective.value) + ';');
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
             + indexName + ' < ' + listName + '.length; '
