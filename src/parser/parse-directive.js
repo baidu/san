@@ -29,9 +29,9 @@ var directiveParsers = {
                 value: readUnaryExpr(walker)
             };
 
-            // if (walker.match(/\s+trackby\s+/ig, 1)) {
-            //     directive.trackBy = readAccessor(walker);
-            // }
+            if (walker.match(/\s+trackby\s+/ig, 1)) {
+                directive.trackBy = readAccessor(walker);
+            }
             return directive;
         }
 
