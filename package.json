@@ -30,7 +30,7 @@
     "pretest": "npm run build && node ./test/ssr/build-test.js",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
-    "test:coverage": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run --coverage",
+    "test:coverage": "npm run test -- -- --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
     "test:types": "tsc -p ./types/test/tsconfig.json",
