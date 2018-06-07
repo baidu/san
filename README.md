@@ -32,7 +32,7 @@ $ npm i san
 CDN:
 
 ```html
-<script src="https://unpkg.com/san@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/san@latest/dist/san.min.js"></script>
 ```
 
 [Dist Files Infomation](https://github.com/baidu/san/tree/master/dist)
@@ -46,7 +46,7 @@ CDN:
 
 <head>
     <title>Quick Start</title>
-    <script src="https://unpkg.com/san@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/san@latest/dist/san.min.js"></script>
 </head>
 
 <body>
