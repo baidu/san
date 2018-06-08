@@ -2029,4 +2029,128 @@ describe("ForDirective", function () {
             done();
         });
     });
+
+    it("set outer data directly", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="member in org.members"><u>{{org.name}}</u><b>{{member}}</b></li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                org: {
+                    name: 'efe',
+                    members: [
+                        'errorrik',
+                        'leeight',
+                        'otakustay'
+                    ]
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        var us = wrap.getElementsByTagName('u');
+        expect(bs.length).toBe(3);
+        expect(bs[0].innerHTML).toBe('errorrik');
+        expect(bs[1].innerHTML).toBe('leeight');
+        expect(bs[2].innerHTML).toBe('otakustay');
+        expect(us[0].innerHTML).toBe('efe');
+        expect(us[1].innerHTML).toBe('efe');
+        expect(us[2].innerHTML).toBe('efe');
+
+        myComponent.data.set('org', {
+            name: 'fe',
+            members: [
+                'errorrik',
+                'otakustay',
+                'dafrok'
+            ]
+        });
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            var us = wrap.getElementsByTagName('u');
+            expect(bs.length).toBe(3);
+            expect(bs[0].innerHTML).toBe('errorrik');
+            expect(bs[1].innerHTML).toBe('otakustay');
+            expect(bs[2].innerHTML).toBe('dafrok');
+            expect(us[0].innerHTML).toBe('fe');
+            expect(us[1].innerHTML).toBe('fe');
+            expect(us[2].innerHTML).toBe('fe');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("set outer data directly with trackBy", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="member in org.members trackBy member"><u>{{org.name}}</u><b>{{member}}</b></li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                org: {
+                    name: 'efe',
+                    members: [
+                        'errorrik',
+                        'leeight',
+                        'otakustay'
+                    ]
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        var us = wrap.getElementsByTagName('u');
+        expect(bs.length).toBe(3);
+        expect(bs[0].innerHTML).toBe('errorrik');
+        expect(bs[1].innerHTML).toBe('leeight');
+        expect(bs[2].innerHTML).toBe('otakustay');
+        expect(us[0].innerHTML).toBe('efe');
+        expect(us[1].innerHTML).toBe('efe');
+        expect(us[2].innerHTML).toBe('efe');
+
+
+        var lis = wrap.getElementsByTagName('li');
+        var errEl = lis[0];
+        var otaEl = lis[2];
+
+        myComponent.data.set('org', {
+            name: 'fe',
+            members: [
+                'errorrik',
+                'otakustay',
+                'dafrok'
+            ]
+        });
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            var us = wrap.getElementsByTagName('u');
+            expect(bs.length).toBe(3);
+            expect(bs[0].innerHTML).toBe('errorrik');
+            expect(bs[1].innerHTML).toBe('otakustay');
+            expect(bs[2].innerHTML).toBe('dafrok');
+            expect(us[0].innerHTML).toBe('fe');
+            expect(us[1].innerHTML).toBe('fe');
+            expect(us[2].innerHTML).toBe('fe');
+
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis[0]).toBe(errEl);
+            expect(lis[1]).toBe(otaEl);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
