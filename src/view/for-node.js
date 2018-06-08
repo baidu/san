@@ -365,7 +365,7 @@ ForNode.prototype._update = function (changes) {
                         if (newIndex && oldIndex) {
                             lcsFlag = Math.max(lcsFlags[oldIndex - 1][newIndex], lcsFlags[oldIndex][newIndex - 1]);
                             if (newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]) {
-                                lcsFlag++;
+                                lcsFlag = lcsFlags[oldIndex - 1][newIndex - 1] + 1;
                             }
                         }
 
@@ -375,8 +375,8 @@ ForNode.prototype._update = function (changes) {
 
                 newIndex--;
                 oldIndex--;
-                while (newIndex && oldIndex) {
-                    if (oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]) {
+                while (1) {
+                    if (oldIndex && newIndex && oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]) {
                         newIndex--;
                         oldIndex--;
 
@@ -395,16 +395,19 @@ ForNode.prototype._update = function (changes) {
                             (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push(change);
                         }
                     }
-                    else if (lcsFlags[oldIndex - 1][newIndex] >= lcsFlags[oldIndex][newIndex - 1]) {
+                    else if (newIndex && (!oldIndex || lcsFlags[oldIndex][newIndex - 1] >= lcsFlags[oldIndex - 1][newIndex])) {
+                        newIndex--;
+                        childrenChanges.splice(oldIndex, 0, 0);
+                        this.children.splice(oldIndex, 0, 0);
+                    }
+                    else if (oldIndex && (!newIndex || lcsFlags[oldIndex][newIndex - 1] < lcsFlags[oldIndex - 1][newIndex])) {
                         oldIndex--;
                         disposeChildren.push(this.children[oldIndex]);
                         childrenChanges.splice(oldIndex, 1);
                         this.children.splice(oldIndex, 1);
                     }
                     else {
-                        newIndex--;
-                        childrenChanges.splice(oldIndex, 0, 0);
-                        this.children.splice(oldIndex, 0, 0);
+                        break;
                     }
                 }
             }
