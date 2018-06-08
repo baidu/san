@@ -2,10 +2,12 @@
 ChangeLog
 ========
 
+
 3.6.1
 -------
 
 + 【新特性】- for 指令支持对 array literal 进行遍历
++ 【新特性】- for 指令支持 trackBy
 
 
 3.6.0
