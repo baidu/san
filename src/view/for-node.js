@@ -363,10 +363,9 @@ ForNode.prototype._update = function (changes) {
                     for (newIndex = 0; newIndex <= newLen; newIndex++) {
                         var lcsFlag = 0;
                         if (newIndex && oldIndex) {
-                            lcsFlag = Math.max(lcsFlags[oldIndex - 1][newIndex], lcsFlags[oldIndex][newIndex - 1]);
-                            if (newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]) {
-                                lcsFlag = lcsFlags[oldIndex - 1][newIndex - 1] + 1;
-                            }
+                            lcsFlag = newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]
+                                ? lcsFlags[oldIndex - 1][newIndex - 1] + 1
+                                : Math.max(lcsFlags[oldIndex - 1][newIndex], lcsFlags[oldIndex][newIndex - 1]);
                         }
 
                         lcsFlags[oldIndex].push(lcsFlag);
