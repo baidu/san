@@ -162,11 +162,31 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 
     this.param = aNode.directives['for']; // eslint-disable-line dot-notation
 
+    // init trackBy key function
+    var trackBy = this.param.trackBy;
+    if (trackBy && trackBy.type === ExprType.ACCESSOR && trackBy.paths[0].value === this.param.item.raw) {
+        var keyLiteral = [];
+        each(trackBy.paths, function (path) {
+            if (path.value) {
+                keyLiteral.push(path.value);
+            }
+            else {
+                keyLiteral = null;
+                return false;
+            }
+        });
+
+        if (keyLiteral) {
+            this.getItemKey = new Function(keyLiteral[0], 'return ' + keyLiteral.join('.'));
+        }
+    }
+
     // #[begin] reverse
     if (reverseWalker) {
         var me = this;
+        this.listData = evalExpr(this.param.value, this.scope, this.owner) || [];
         each(
-            evalExpr(this.param.value, this.scope, this.owner),
+            this.listData,
             function (item, i) {
                 var itemScope = new ForItemData(me, item, i);
                 var child = createReverseNode(me.itemANode, reverseWalker, me, itemScope);
@@ -197,10 +217,12 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
 
     // paint list
     var el = this.el || parentEl.firstChild;
-    var data = evalExpr(this.param.value, this.scope, this.owner);
-    var len = data && data.length || 0;
+    var listData = evalExpr(this.param.value, this.scope, this.owner) || [];
+    var len = listData.length;
+
+    this.listData = listData;
     for (var i = 0; i < len; i++) {
-        var child = createForDirectiveChild(this, data[i], i);
+        var child = createForDirectiveChild(this, listData[i], i);
         this.children.push(child);
         child.attach(parentEl, el);
     }
@@ -259,8 +281,8 @@ ForNode.prototype._update = function (changes) {
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
-    var newList = evalExpr(this.param.value, this.scope, this.owner);
-    var newLen = newList && newList.length || 0;
+    var newList = evalExpr(this.param.value, this.scope, this.owner) || [];
+    var newLen = newList.length;
 
     /* eslint-disable no-redeclare */
     for (var cIndex = 0, cLen = changes.length; cIndex < cLen; cIndex++) {
@@ -319,38 +341,106 @@ ForNode.prototype._update = function (changes) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
 
+            if (this.getItemKey && newLen && oldChildrenLen) {
+                var lcsFlags = [];
+                var newListKeys = [];
+                var oldListKeys = [];
 
-            // 老的比新的多的部分，标记需要dispose
-            if (oldChildrenLen > newLen) {
-                disposeChildren = disposeChildren.concat(this.children.slice(newLen));
-
-                childrenChanges = childrenChanges.slice(0, newLen);
-                this.children = this.children.slice(0, newLen);
-            }
-
-            // 整项变更
-            for (var i = 0; i < newLen; i++) {
-                (childrenChanges[i] = childrenChanges[i] || []).push({
-                    type: DataChangeType.SET,
-                    option: change.option,
-                    expr: createAccessor(this.param.item.paths.slice(0)),
-                    value: newList[i]
+                each(newList, function (item) {
+                    newListKeys.push(me.getItemKey(item));
                 });
 
-                // 对list更上级数据的直接设置
-                if (relation < 2) {
-                    childrenChanges[i].push(change);
+                each(this.listData, function (item) {
+                    oldListKeys.push(me.getItemKey(item));
+                });
+
+
+                var newIndex;
+                var oldIndex;
+                for (oldIndex = 0; oldIndex <= oldChildrenLen; oldIndex++) {
+                    lcsFlags.push([]);
+
+                    for (newIndex = 0; newIndex <= newLen; newIndex++) {
+                        var lcsFlag = 0;
+                        if (newIndex && oldIndex) {
+                            lcsFlag = Math.max(lcsFlags[oldIndex - 1][newIndex], lcsFlags[oldIndex][newIndex - 1]);
+                            if (newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]) {
+                                lcsFlag++;
+                            }
+                        }
+
+                        lcsFlags[oldIndex].push(lcsFlag);
+                    }
                 }
 
-                if (this.children[i]) {
-                    this.children[i].scope._set(
-                        this.param.item,
-                        newList[i],
-                        {silent: 1}
-                    );
+                newIndex--;
+                oldIndex--;
+                while (newIndex && oldIndex) {
+                    if (oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]) {
+                        newIndex--;
+                        oldIndex--;
+
+                        // 如果数据本身引用发生变化，设置变更
+                        if (this.listData[oldIndex] !== newList[newIndex]) {
+                            (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
+                                type: DataChangeType.SET,
+                                option: change.option,
+                                expr: createAccessor(this.param.item.paths.slice(0)),
+                                value: newList[newIndex]
+                            });
+                        }
+
+                        // 对list更上级数据的直接设置
+                        if (relation < 2) {
+                            (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push(change);
+                        }
+                    }
+                    else if (lcsFlags[oldIndex - 1][newIndex] >= lcsFlags[oldIndex][newIndex - 1]) {
+                        oldIndex--;
+                        disposeChildren.push(this.children[oldIndex]);
+                        childrenChanges.splice(oldIndex, 1);
+                        this.children.splice(oldIndex, 1);
+                    }
+                    else {
+                        newIndex--;
+                        childrenChanges.splice(oldIndex, 0, 0);
+                        this.children.splice(oldIndex, 0, 0);
+                    }
                 }
-                else {
-                    this.children[i] = 0;
+            }
+            else {
+                // 老的比新的多的部分，标记需要dispose
+                if (oldChildrenLen > newLen) {
+                    disposeChildren = disposeChildren.concat(this.children.slice(newLen));
+
+                    childrenChanges = childrenChanges.slice(0, newLen);
+                    this.children = this.children.slice(0, newLen);
+                }
+
+                // 整项变更
+                for (var i = 0; i < newLen; i++) {
+                    (childrenChanges[i] = childrenChanges[i] || []).push({
+                        type: DataChangeType.SET,
+                        option: change.option,
+                        expr: createAccessor(this.param.item.paths.slice(0)),
+                        value: newList[i]
+                    });
+
+                    // 对list更上级数据的直接设置
+                    if (relation < 2) {
+                        childrenChanges[i].push(change);
+                    }
+
+                    if (this.children[i]) {
+                        this.children[i].scope._set(
+                            this.param.item,
+                            newList[i],
+                            {silent: 1}
+                        );
+                    }
+                    else {
+                        this.children[i] = 0;
+                    }
                 }
             }
 
@@ -433,6 +523,8 @@ ForNode.prototype._update = function (changes) {
             pushToChildrenChanges(lengthChange);
         }
     }
+
+    this.listData = newList;
 
     // 清除应该干掉的 child
     this._doCreateAndUpdate = doCreateAndUpdate;
