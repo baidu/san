@@ -162,25 +162,6 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 
     this.param = aNode.directives['for']; // eslint-disable-line dot-notation
 
-    // init trackBy key function
-    var trackBy = this.param.trackBy;
-    if (trackBy && trackBy.type === ExprType.ACCESSOR && trackBy.paths[0].value === this.param.item.raw) {
-        var keyLiteral = [];
-        each(trackBy.paths, function (path) {
-            if (path.value) {
-                keyLiteral.push(path.value);
-            }
-            else {
-                keyLiteral = null;
-                return false;
-            }
-        });
-
-        if (keyLiteral) {
-            this.getItemKey = new Function(keyLiteral[0], 'return ' + keyLiteral.join('.'));
-        }
-    }
-
     // #[begin] reverse
     if (reverseWalker) {
         var me = this;
@@ -341,17 +322,18 @@ ForNode.prototype._update = function (changes) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
 
-            if (this.getItemKey && newLen && oldChildrenLen) {
+            var getItemKey = this.aNode.hotspot.getForKey;
+            if (getItemKey && newLen && oldChildrenLen) {
                 var lcsFlags = [];
                 var newListKeys = [];
                 var oldListKeys = [];
 
                 each(newList, function (item) {
-                    newListKeys.push(me.getItemKey(item));
+                    newListKeys.push(getItemKey(item));
                 });
 
                 each(this.listData, function (item) {
-                    oldListKeys.push(me.getItemKey(item));
+                    oldListKeys.push(getItemKey(item));
                 });
 
 
