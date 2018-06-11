@@ -1,26 +1,35 @@
+var_1: &cache_key san-dependency-cache-{{ .Branch }}-{{ checksum "package.json" }}
+
+anchor_1: &job_defaults
+  working_directory: ~/san
+  docker:
+    - image: circleci/node:8.11.1
+
+
+
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.11.1
+    <<: *job_defaults
 
-    working_directory: ~/baidu/san
+    filters:
+      branches:
+        ignore:
+          - /feature-.*/
 
     steps:
       - checkout
 
       - restore_cache:
-          keys:
-          - san-dependency-cache-{{ checksum "package.json" }}
+          key: *cache_key
 
       - run:
           name: install-npm-wee
           command: npm install
 
       - save_cache:
-          paths:
-            - node_modules
-          key: san-dependency-cache-{{ checksum "package.json" }}
+          path: node_modules
+          key: *cache_key
         
       - run:
         name: test & coverage
