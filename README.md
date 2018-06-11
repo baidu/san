@@ -87,7 +87,8 @@ CDN:
 - [san-devtool](https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md) - Chrome DevTool extension
 - [san-router](https://github.com/baidu/san-router) - SPA Router
 - [san-store](https://github.com/baidu/san-store) - Application States Management
-- [san-update](https://github.com/baidu/san-update) - Immutable Data Update Library
+- [san-update](https://github.com/baidu/san-update) - Immutable Data Update
+- [san-factory](https://github.com/baidu/san-factory) - Component register and instantiation
 - [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
 - [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
 
