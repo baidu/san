@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.11.1
+
+    working_directory: ~/baidu/san
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - san-dependency-cache-{{ checksum "package.json" }}
+
+      - run:
+          name: install-npm-wee
+          command: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: san-dependency-cache-{{ checksum "package.json" }}
+        
+      - run:
+        name: test & coverage
+        command: npm run test:coverage
+      
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests
+
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+      
+      - store_test_results:
+          path: test-results.xml
