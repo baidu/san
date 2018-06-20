@@ -80,6 +80,10 @@ Walker.prototype.goUntil = function (charCode) {
             case 32:
             // 制表符 tab
             case 9:
+            // \r
+            case 13:
+            // \n
+            case 10:
                 this.index++;
                 break;
             default:
