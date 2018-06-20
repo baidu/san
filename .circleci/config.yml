@@ -6,7 +6,7 @@ anchor_1: &job_defaults
     - image: circleci/node:8.11.2-browsers
       environment:
         CHROME_BIN: "/usr/bin/google-chrome"
-        COVERALLS_REPO_TOKEN: qJpQUpl7kyMzgclmsF2y5advWQlG66xl1
+        COVERALLS_REPO_TOKEN: kqAWthJaNY2gKsoAZTvlhQ2yLDCI7TxYH
 
 version: 2
 jobs:
@@ -24,7 +24,7 @@ jobs:
           command: npm install
 
       - save_cache:
-          paths: 
+          paths:
             - node_modules
           key: *cache_key
 
