@@ -4,7 +4,7 @@
  */
 
 
-var evalExpr = require('../runtime/eval-expr');
+var evalExpr = require('./eval-expr');
 
 /**
  * 为函数调用计算参数数组的值
