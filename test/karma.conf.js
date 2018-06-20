@@ -85,8 +85,13 @@ module.exports = function(config) {
     configuration.reporters.push('coverage');
     configuration.preprocessors['dist/san.dev.js'] = 'coverage';
     configuration.coverageReporter = {
-        type : 'html',
-        dir : 'coverage/'
+        reporters:[{
+            type : 'html',
+            subdir : 'coverage/'
+        },{
+            type: 'lcov',
+            subdir: 'report-lcov'
+        }]
     };
 
   }

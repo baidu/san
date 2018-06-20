@@ -1,0 +1,33 @@
+var_1: &cache_key san-dependency-cache-{{ .Branch }}-{{ checksum "package.json" }}
+
+anchor_1: &job_defaults
+  working_directory: ~/san
+  docker:
+    - image: circleci/node:8.11.2-browsers
+      environment:
+        CHROME_BIN: "/usr/bin/google-chrome"
+        COVERALLS_REPO_TOKEN: qJpQUpl7kyMzgclmsF2y5advWQlG66xl1
+
+version: 2
+jobs:
+  build:
+    <<: *job_defaults
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: *cache_key
+
+      - run:
+          name: install-npm-wee
+          command: npm install
+
+      - save_cache:
+          paths: 
+            - node_modules
+          key: *cache_key
+
+      - run:
+          name: test & coverage
+          command: npm run test:coverage
