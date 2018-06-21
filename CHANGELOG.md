@@ -8,6 +8,7 @@ ChangeLog
 
 + 【新特性】- for 指令支持对 array literal 进行遍历
 + 【新特性】- for 指令支持 trackBy
++ 【优化】- 支持换行作为空白字符的表达式解析
 
 
 3.6.0
