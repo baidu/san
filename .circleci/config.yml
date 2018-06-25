@@ -3,19 +3,15 @@ var_1: &cache_key san-dependency-cache-{{ .Branch }}-{{ checksum "package.json" 
 anchor_1: &job_defaults
   working_directory: ~/san
   docker:
-    - image: circleci/node:8.11.1
-
-
+    - image: circleci/node:8.11.2-browsers
+      environment:
+        CHROME_BIN: "/usr/bin/google-chrome"
+        COVERALLS_REPO_TOKEN: kqAWthJaNY2gKsoAZTvlhQ2yLDCI7TxYH
 
 version: 2
 jobs:
   build:
     <<: *job_defaults
-
-    filters:
-      branches:
-        ignore:
-          - /feature-.*/
 
     steps:
       - checkout
@@ -28,20 +24,10 @@ jobs:
           command: npm install
 
       - save_cache:
-          path: node_modules
+          paths:
+            - node_modules
           key: *cache_key
-        
-      - run:
-        name: test & coverage
-        command: npm run test:coverage
-      
-      - store_artifacts:
-          path: test-results.xml
-          prefix: tests
 
-      - store_artifacts:
-          path: coverage
-          prefix: coverage
-      
-      - store_test_results:
-          path: test-results.xml
+      - run:
+          name: test & coverage
+          command: npm run test:coverage

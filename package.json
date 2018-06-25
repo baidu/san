@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A Flexible JavaScript Component Framework",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "contributors": [
     {
       "name": "erik",
@@ -30,7 +30,7 @@
     "pretest": "npm run build && node ./test/ssr/build-test.js",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/karma/bin/karma start ./test/karma.conf.js --single-run",
-    "test:coverage": "npm run test -- -- --coverage",
+    "test:coverage": "npm run test -- -- --coverage && cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
     "test:types": "tsc -p ./types/test/tsconfig.json",
@@ -48,21 +48,22 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "opener": "~1.4.0",
+    "art-template": "^4.10.2",
     "colors": "^1.0.3",
-    "watch": "^1.0.2",
+    "coveralls": "^3.0.1",
     "http-server": "^0.9.0",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
+    "opener": "~1.4.0",
+    "swig": "^1.4.2",
+    "uglify-js": "^2.8.22",
+    "watch": "^1.0.2",
     "wdio-jasmine-framework": "^0.3.0",
     "wdio-sauce-service": "^0.3.1",
     "wdio-spec-reporter": "^0.1.0",
-    "webdriverio": "^4.2.16",
-    "uglify-js": "^2.8.22",
-    "swig": "^1.4.2",
-    "art-template": "^4.10.2"
+    "webdriverio": "^4.2.16"
   }
 }
