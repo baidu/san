@@ -407,6 +407,9 @@ var aNodeCompiler = {
         }
 
         sourceBuffer.addRaw('var ' + listName + ' = ' + compileExprSource.expr(forDirective.value) + ';');
+        sourceBuffer.addRaw('if (' + listName + ' instanceof Array) {');
+
+        // for array
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
             + indexName + ' < ' + listName + '.length; '
@@ -421,6 +424,25 @@ var aNodeCompiler = {
                 owner
             )
         );
+        sourceBuffer.addRaw('}');
+
+        sourceBuffer.addRaw('} else if (typeof ' + listName + ' === "object") {');
+
+        // for object
+        sourceBuffer.addRaw('for ('
+            + 'var ' + indexName + ' in ' + listName + ') {'
+        );
+        sourceBuffer.addRaw('componentCtx.data.' + indexName + '=' + indexName + ';');
+        sourceBuffer.addRaw('componentCtx.data.' + itemName + '= ' + listName + '[' + indexName + '];');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                forElementANode,
+                sourceBuffer,
+                owner
+            )
+        );
+        sourceBuffer.addRaw('}');
+
         sourceBuffer.addRaw('}');
     },
 
