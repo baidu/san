@@ -429,9 +429,8 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('} else if (typeof ' + listName + ' === "object") {');
 
         // for object
-        sourceBuffer.addRaw('for ('
-            + 'var ' + indexName + ' in ' + listName + ') {'
-        );
+        sourceBuffer.addRaw('for (var ' + indexName + ' in ' + listName + ') {');
+        sourceBuffer.addRaw('if (' + listName + '[' + indexName + '] != null) {');
         sourceBuffer.addRaw('componentCtx.data.' + indexName + '=' + indexName + ';');
         sourceBuffer.addRaw('componentCtx.data.' + itemName + '= ' + listName + '[' + indexName + '];');
         sourceBuffer.addRaw(
@@ -441,6 +440,7 @@ var aNodeCompiler = {
                 owner
             )
         );
+        sourceBuffer.addRaw('}');
         sourceBuffer.addRaw('}');
 
         sourceBuffer.addRaw('}');
