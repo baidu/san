@@ -1238,4 +1238,117 @@ describe("Form TwoWay Binding", function () {
             }, 400);
         });
     });
+
+    it("dynamic input type: radio", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online}}</b>'
+                + '<label><input type="{{inputType}}" value="errorrik" checked="{=online=}" name="onliner">errorrik</label>'
+                + '<label><input type="{{inputType}}" value="varsha" checked="{=online=}" name="onliner">varsha</label>'
+                + '<label><input type="{{inputType}}" value="firede" checked="{=online=}" name="onliner">firede</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 'varsha',
+                    inputType: 'radio'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+        expect(inputs[2].checked).toBe(false);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('varsha')).toBe(0);
+
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+            if (online !== 'varsha') {
+                var bEl = wrap.getElementsByTagName('b')[0];
+                expect(bEl.innerHTML.indexOf(online) >= 0).toBe(true);
+
+                var inputs = wrap.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = inputs[i];
+                    expect(input.checked).toBe(online === input.value);
+                }
+
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent(inputs[0], 'click');
+
+        setTimeout(doneSpec, 500);
+
+    });
+
+    it("dynamic input type: checkbox", function (done) {
+        var MyComponent = san.defineComponent({
+            template: ''
+                + '<ul><li san-for="item in items">'
+                + '<u>{{item.label}} - {{item.values}}</u>'
+                + '<label san-for="box in item.datasource">'
+                + '<input type="{{inputType}}" value="{{box.value}}" checked="{=item.values=}"> {{box.title}}'
+                + '</label>'
+                + '</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                inputType: 'checkbox',
+                items: [
+                    {
+                        label: 'A',
+                        datasource: [
+                            {
+                                title: 'foo',
+                                value: 'foo'
+                            },
+                            {
+                                title: 'bar',
+                                value: 'bar'
+                            }
+                        ],
+                        values: ['foo']
+                    }
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(true);
+        expect(inputs[1].checked).toBe(false);
+
+        triggerEvent(inputs[1], 'click');
+        setTimeout(doneSpec, 500);
+
+        function doneSpec() {
+            var inputs = wrap.getElementsByTagName('input');
+            expect(inputs[0].checked).toBe(true);
+            expect(inputs[1].checked).toBe(true);
+            expect(myComponent.data.get('items[0].values')).toContain('foo');
+            expect(myComponent.data.get('items[0].values')).toContain('bar');
+
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }
+
+    });
 });

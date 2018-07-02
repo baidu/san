@@ -163,7 +163,7 @@ var elementPropHandlers = {
                 var bindType = getANodeProp(element.aNode, 'type') || {};
 
                 if (bindValue && bindType) {
-                    switch (bindType.raw) {
+                    switch (el.type.toLowerCase()) {
                         case 'checkbox':
                             data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
                             return;
