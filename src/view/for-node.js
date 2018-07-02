@@ -165,9 +165,9 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
     // #[begin] reverse
     if (reverseWalker) {
         var me = this;
-        this.listData = evalExpr(this.param.value, this.scope, this.owner) || [];
-        each(
-            this.listData,
+        this.listData = evalExpr(this.param.value, this.scope, this.owner);
+        eachForData(
+            this,
             function (item, i) {
                 var itemScope = new ForItemData(me, item, i);
                 var child = createReverseNode(me.itemANode, reverseWalker, me, itemScope);
@@ -186,6 +186,23 @@ ForNode.prototype.nodeType = NodeType.FOR;
 ForNode.prototype._create = nodeOwnCreateStump;
 ForNode.prototype.dispose = nodeOwnSimpleDispose;
 
+function eachForData(forNode, fn) {
+    var listData = forNode.listData;
+
+    if (listData instanceof Array) {
+        for (var i = 0; i < listData.length; i++) {
+            fn(listData[i], i);
+        }
+    }
+    else if (listData && typeof listData === 'object') {
+        for (var i in listData) {
+            if (listData.hasOwnProperty(i)) {
+                (listData[i] != null) && fn(listData[i], i);
+            }
+        }
+    }
+}
+
 /**
  * 将元素attach到页面的行为
  *
@@ -195,18 +212,20 @@ ForNode.prototype.dispose = nodeOwnSimpleDispose;
 ForNode.prototype.attach = function (parentEl, beforeEl) {
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
+    this.listData = evalExpr(this.param.value, this.scope, this.owner);
 
-    // paint list
-    var el = this.el || parentEl.firstChild;
-    var listData = evalExpr(this.param.value, this.scope, this.owner) || [];
-    var len = listData.length;
+    this._attach();
+};
 
-    this.listData = listData;
-    for (var i = 0; i < len; i++) {
-        var child = createForDirectiveChild(this, listData[i], i);
-        this.children.push(child);
-        child.attach(parentEl, el);
-    }
+ForNode.prototype._attach = function () {
+    var me = this;
+    var parentEl = me.el.parentNode;
+
+    eachForData(this, function (value, i) {
+        var child = createForDirectiveChild(me, value, i);
+        me.children.push(child);
+        child.attach(parentEl, me.el);
+    });
 };
 
 /**
@@ -229,12 +248,106 @@ ForNode.prototype.detach = function () {
  * @param {Array} changes 数据变化信息
  */
 ForNode.prototype._update = function (changes) {
+    var listData = evalExpr(this.param.value, this.scope, this.owner);
+    var oldIsArr = this.listData instanceof Array;
+    var newIsArr = listData instanceof Array;
+
+    if (this.children.length) {
+        if (!listData || newIsArr && listData.length === 0) {
+            this._disposeChildren();
+            this.listData = listData;
+            return;
+        }
+
+        // 就是这么暴力
+        // 不推荐使用for遍历object，用的话自己负责
+        if (oldIsArr !== newIsArr || !newIsArr) {
+            this.listData = listData;
+            var me = this;
+            this._disposeChildren(null, function () {
+                me._attach();
+            });
+            return;
+        }
+
+        this._updateArray(changes, listData);
+        this.listData = listData;
+    }
+    else {
+        this.listData = listData;
+        this._attach();
+    }
+};
+
+
+ForNode.prototype._disposeChildren = function (children, callback) {
+    var parentEl = this.el.parentNode;
+    var parentFirstChild = parentEl.firstChild;
+    var parentLastChild = parentEl.lastChild;
+
+    var len = this.children.length;
+
+    var violentClear = !this.aNode.directives.transition
+        && !children
+        // 是否 parent 的唯一 child
+        && (len
+                && parentFirstChild === this.children[0].el
+                && (parentLastChild === this.el
+                    || parentLastChild === this.children[len - 1].el)
+            || len === 0
+                && parentFirstChild === this.el
+                && parentLastChild === this.el
+        );
+
+    if (!children) {
+        children = this.children;
+        this.children = [];
+    }
+
 
     var me = this;
-    // 控制列表更新策略是否原样更新的变量
-    var originalUpdate = this.aNode.directives.transition;
+    var disposedChildCount = 0;
+    len = children.length;
+    if (!len) {
+        childDisposed();
+    }
+    else {
+        for (var i = 0; i < len; i++) {
+            var disposeChild = children[i];
+            if (disposeChild) {
+                disposeChild._ondisposed = childDisposed;
+                disposeChild.dispose(violentClear, violentClear);
+            }
+            else {
+                childDisposed();
+            }
+        }
+    }
 
+    function childDisposed() {
+        disposedChildCount++;
+        if (disposedChildCount >= len) {
+            if (violentClear) {
+                // cloneNode + replaceChild is faster
+                // parentEl.innerHTML = '';
+                var replaceNode = parentEl.cloneNode(false);
+                parentEl.parentNode.replaceChild(replaceNode, parentEl);
+                me.el = document.createComment(me.id);
+                replaceNode.appendChild(me.el);
+            }
 
+            callback && callback();
+        }
+    }
+};
+
+/**
+ * 数组类型的视图更新
+ *
+ * @param {Array} changes 数据变化信息
+ * @param {Array} newList 新数组数据
+ */
+ForNode.prototype._updateArray = function (changes, newList) {
     var oldChildrenLen = this.children.length;
     var childrenChanges = new Array(oldChildrenLen);
 
@@ -246,27 +359,14 @@ ForNode.prototype._update = function (changes) {
 
     var disposeChildren = [];
 
-
-    // 判断列表是否父元素下唯一的元素
-    // 如果是的话，可以做一些更新优化
-    var parentEl = this.el.parentNode;
-    var parentFirstChild = parentEl.firstChild;
-    var parentLastChild = parentEl.lastChild;
-    var isOnlyParentChild = oldChildrenLen > 0 // 有孩子时
-            && parentFirstChild === this.children[0].el
-            && (parentLastChild === this.el || parentLastChild === this.children[oldChildrenLen - 1].el)
-        || oldChildrenLen === 0 // 无孩子时
-            && parentFirstChild === this.el
-            && parentLastChild === this.el;
-
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
-    var newList = evalExpr(this.param.value, this.scope, this.owner) || [];
+    // var newList = evalExpr(this.param.value, this.scope, this.owner) || [];
     var newLen = newList.length;
 
     /* eslint-disable no-redeclare */
-    for (var cIndex = 0, cLen = changes.length; cIndex < cLen; cIndex++) {
+    for (var cIndex = 0; cIndex < changes.length; cIndex++) {
         var change = changes[cIndex];
         var relation = changeExprCompare(change.expr, this.param.value, this.scope);
 
@@ -324,6 +424,7 @@ ForNode.prototype._update = function (changes) {
 
             var getItemKey = this.aNode.hotspot.getForKey;
             if (getItemKey && newLen && oldChildrenLen) {
+                // 如果设置了trackBy，用lcs更新。开始 ====
                 var lcsFlags = [];
                 var newListKeys = [];
                 var oldListKeys = [];
@@ -391,17 +492,17 @@ ForNode.prototype._update = function (changes) {
                         break;
                     }
                 }
+                // 如果设置了trackBy，用lcs更新。结束 ====
             }
             else {
                 // 老的比新的多的部分，标记需要dispose
                 if (oldChildrenLen > newLen) {
                     disposeChildren = disposeChildren.concat(this.children.slice(newLen));
-
                     childrenChanges = childrenChanges.slice(0, newLen);
                     this.children = this.children.slice(0, newLen);
                 }
 
-                // 整项变更
+                // 剩下的部分整项变更
                 for (var i = 0; i < newLen; i++) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
@@ -508,93 +609,52 @@ ForNode.prototype._update = function (changes) {
         }
     }
 
-    this.listData = newList;
-
-    // 清除应该干掉的 child
+    // 执行视图更新，先删再刷新
     this._doCreateAndUpdate = doCreateAndUpdate;
 
-    // 这里不用getTransition，getTransition和scope相关，for和forItem的scope是不同的
-    // 所以getTransition结果本身也是不一致的。不如直接判断指令是否存在，如果存在就不进入暴力清除模式
-    // var violentClear = isOnlyParentChild && newChildrenLen === 0 && !elementGetTransition(me);
-    var violentClear = !originalUpdate && isOnlyParentChild && newChildrenLen === 0;
-
-    var disposedChildCount = 0;
-    for (var i = 0; i < disposeChildren.length; i++) {
-        var disposeChild = disposeChildren[i];
-        if (disposeChild) {
-            disposeChild._ondisposed = childDisposed;
-            disposeChild.dispose(violentClear, violentClear);
-        }
-        else {
-            childDisposed();
-        }
-    }
-
-    if (violentClear) {
-        // cloneNode + replaceChild is faster
-        // parentEl.innerHTML = '';
-        var replaceNode = parentEl.cloneNode(false);
-        parentEl.parentNode.replaceChild(replaceNode, parentEl);
-        this.el = document.createComment(this.id);
-        replaceNode.appendChild(this.el);
-    }
-
+    var me = this;
     if (disposeChildren.length === 0) {
         doCreateAndUpdate();
     }
-
-
-    function childDisposed() {
-        disposedChildCount++;
-        if (disposedChildCount === disposeChildren.length
-            && doCreateAndUpdate === me._doCreateAndUpdate
-        ) {
-            doCreateAndUpdate();
-        }
+    else {
+        this._disposeChildren(disposeChildren, function () {
+            if (doCreateAndUpdate === me._doCreateAndUpdate) {
+                doCreateAndUpdate();
+            }
+        });
     }
 
     function doCreateAndUpdate() {
         me._doCreateAndUpdate = null;
-        if (violentClear) {
-            return;
-        }
-
 
         var beforeEl = me.el;
+        var parentEl = beforeEl.parentNode;
 
         // 对相应的项进行更新
-        if (oldChildrenLen === 0 && isOnlyParentChild) {
-            for (var i = 0; i < newChildrenLen; i++) {
-                me.children[i] = createForDirectiveChild(me, newList[i], i);
-                me.children[i].attach(parentEl, beforeEl);
+        // 如果不attached则直接创建，如果存在则调用更新函数
+        var j = -1;
+        for (var i = 0; i < newChildrenLen; i++) {
+            var child = me.children[i];
+
+            if (child) {
+                childrenChanges[i] && child._update(childrenChanges[i]);
             }
-        }
-        else {
-            // 如果不attached则直接创建，如果存在则调用更新函数
-            var j = -1;
-            for (var i = 0; i < newChildrenLen; i++) {
-                var child = me.children[i];
-
-                if (child) {
-                    childrenChanges[i] && child._update(childrenChanges[i]);
-                }
-                else {
-                    if (j < i) {
-                        j = i + 1;
-                        beforeEl = null;
-                        while (j < newChildrenLen) {
-                            var nextChild = me.children[j];
-                            if (nextChild) {
-                                beforeEl = nextChild.sel || nextChild.el;
-                                break;
-                            }
-                            j++;
+            else {
+                if (j < i) {
+                    j = i + 1;
+                    beforeEl = null;
+                    while (j < newChildrenLen) {
+                        var nextChild = me.children[j];
+                        if (nextChild) {
+                            beforeEl = nextChild.sel || nextChild.el;
+                            break;
                         }
+                        j++;
                     }
-
-                    me.children[i] = createForDirectiveChild(me, newList[i], i);
-                    me.children[i].attach(parentEl, beforeEl || me.el);
                 }
+
+                me.children[i] = createForDirectiveChild(me, newList[i], i);
+                me.children[i].attach(parentEl, beforeEl || me.el);
             }
         }
     }
