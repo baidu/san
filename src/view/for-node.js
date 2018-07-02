@@ -186,6 +186,13 @@ ForNode.prototype.nodeType = NodeType.FOR;
 ForNode.prototype._create = nodeOwnCreateStump;
 ForNode.prototype.dispose = nodeOwnSimpleDispose;
 
+/**
+ * 对 for 节点数据进行遍历
+ *
+ * @inner
+ * @param {ForNode} forNode for节点对象
+ * @param {Function} fn 数据遍历函数
+ */
 function eachForData(forNode, fn) {
     var listData = forNode.listData;
 
@@ -214,10 +221,13 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
     insertBefore(this.el, parentEl, beforeEl);
     this.listData = evalExpr(this.param.value, this.scope, this.owner);
 
-    this._attach();
+    this._createChildren();
 };
 
-ForNode.prototype._attach = function () {
+/**
+ * 创建子元素
+ */
+ForNode.prototype._createChildren = function () {
     var me = this;
     var parentEl = me.el.parentNode;
 
@@ -265,7 +275,7 @@ ForNode.prototype._update = function (changes) {
             this.listData = listData;
             var me = this;
             this._disposeChildren(null, function () {
-                me._attach();
+                me._createChildren();
             });
             return;
         }
@@ -275,11 +285,16 @@ ForNode.prototype._update = function (changes) {
     }
     else {
         this.listData = listData;
-        this._attach();
+        this._createChildren();
     }
 };
 
-
+/**
+ * 销毁释放子元素
+ *
+ * @param {Array?} children 要销毁的子元素，默认为自身的children
+ * @param {Function} callback 释放完成的回调函数
+ */
 ForNode.prototype._disposeChildren = function (children, callback) {
     var parentEl = this.el.parentNode;
     var parentFirstChild = parentEl.firstChild;
