@@ -19,7 +19,7 @@ var svgTags = splitStr2Obj(''
     // text
     + 'text,tspan,tref,textpath,'
     // other
-    + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
+    + 'marker,pattern,clippath,mask,filter,cursor,view,animate,foreignObject,'
     // font
     + 'font,font-face,glyph,missing-glyph');
 
