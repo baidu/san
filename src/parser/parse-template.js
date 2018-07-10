@@ -58,7 +58,9 @@ function parseTemplate(source, options) {
 
     while ((tagMatch = walker.match(tagReg)) != null) {
         var tagEnd = tagMatch[1];
-        var tagName = tagMatch[2].toLowerCase();
+        // 对 foreignObject 做特殊处理
+        var tagName = tagMatch[2];
+        (tagName !== 'foreignObject') && (tagName = tagName.toLowerCase());
 
         pushTextNode(source.slice(
             beforeLastIndex,
