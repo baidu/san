@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var splitStr2Obj = require('../util/split-str-2-obj');
+var splitCamelStr2Obj = require('../util/split-camel-str-2-obj');
 
 /**
  * svgTags
@@ -11,7 +11,7 @@ var splitStr2Obj = require('../util/split-str-2-obj');
  * @see https://www.w3.org/TR/SVG/svgdtd.html 只取常用
  * @type {Object}
  */
-var svgTags = splitStr2Obj(''
+var svgTags = splitCamelStr2Obj(''
     // structure
     + 'svg,g,defs,desc,metadata,symbol,use,'
     // image & shape
@@ -19,8 +19,11 @@ var svgTags = splitStr2Obj(''
     // text
     + 'text,tspan,tref,textpath,'
     // other
-    + 'marker,pattern,clippath,mask,filter,cursor,view,animate,foreignObject,'
+    + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
     // font
-    + 'font,font-face,glyph,missing-glyph');
+    + 'font,font-face,glyph,missing-glyph,'
+    // camel
+    + 'animateColor,animateMotion,animateTransform,textPath,foreignObject'
+);
 
 exports = module.exports = svgTags;

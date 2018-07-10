@@ -13,7 +13,7 @@ var svgTags = require('./svg-tags');
  */
 function createEl(tagName) {
     if (svgTags[tagName]) {
-        return document.createElementNS('http://www.w3.org/2000/svg', tagName);
+        return document.createElementNS('http://www.w3.org/2000/svg', svgTags[tagName]);
     }
 
     return document.createElement(tagName);
