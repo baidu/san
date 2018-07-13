@@ -16,7 +16,7 @@ function splitStr2Obj(source) {
     each(
         source.split(','),
         function (key) {
-            result[key] = 1;
+            result[key] = key;
         }
     );
     return result;

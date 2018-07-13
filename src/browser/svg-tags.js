@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var splitCamelStr2Obj = require('../util/split-camel-str-2-obj');
+var splitStr2Obj = require('../util/split-str-2-obj');
 
 /**
  * svgTags
@@ -11,7 +11,7 @@ var splitCamelStr2Obj = require('../util/split-camel-str-2-obj');
  * @see https://www.w3.org/TR/SVG/svgdtd.html 只取常用
  * @type {Object}
  */
-var svgTags = splitCamelStr2Obj(''
+var svgTags = splitStr2Obj(''
     // structure
     + 'svg,g,defs,desc,metadata,symbol,use,'
     // image & shape
