@@ -25,7 +25,7 @@ function parseInterp(source) {
     };
 
     while (walker.goUntil(124)) { // |
-        var callExpr = readCall(walker);
+        var callExpr = readCall(walker, []);
         switch (callExpr.name.paths[0].value) {
             case 'html':
                 break;

@@ -6,7 +6,7 @@
 var ExprType = require('./expr-type');
 var readString = require('./read-string');
 var readNumber = require('./read-number');
-var readAccessor = require('./read-accessor');
+var readCall = require('./read-call');
 var readParenthesizedExpr = require('./read-parenthesized-expr');
 
 
@@ -116,7 +116,7 @@ function readUnaryExpr(walker) {
             };
     }
 
-    return readAccessor(walker);
+    return readCall(walker);
 }
 
 exports = module.exports = readUnaryExpr;

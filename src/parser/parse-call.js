@@ -5,6 +5,7 @@
 
 
 var Walker = require('./walker');
+var ExprType = require('./expr-type');
 var readCall = require('./read-call');
 
 /**
@@ -16,6 +17,15 @@ var readCall = require('./read-call');
  */
 function parseCall(source, defaultArgs) {
     var expr = readCall(new Walker(source), defaultArgs);
+
+    if (expr.type !== ExprType.CALL) {
+        expr = {
+            type: ExprType.CALL,
+            name: expr,
+            args: defaultArgs || []
+        };
+    }
+
     expr.raw = source;
     return expr;
 }
