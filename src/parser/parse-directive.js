@@ -29,7 +29,7 @@ var directiveParsers = {
                 value: readUnaryExpr(walker)
             };
 
-            if (walker.match(/\s+trackby\s+/ig, 1)) {
+            if (walker.match(/\s*trackby\s+/ig, 1)) {
                 var start = walker.index;
                 directive.trackBy = readAccessor(walker);
                 directive.trackBy.raw = walker.cut(start, walker.index);
