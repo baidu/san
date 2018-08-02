@@ -519,7 +519,7 @@ Component.prototype._update = function (changes) {
     };
 
     if (changes) {
-        nodeSBindUpdate(
+        this.givenANode && nodeSBindUpdate(
             this,
             this.givenANode.directives.bind,
             changes,
