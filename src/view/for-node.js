@@ -415,8 +415,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     option: change.option
                 };
 
-                (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
-                    .push(change);
+                childrenChanges[changeIndex].push(change);
 
                 if (this.children[changeIndex]) {
                     if (change.type === DataChangeType.SPLICE) {
