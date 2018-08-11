@@ -400,6 +400,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 pushToChildrenChanges(change);
             }
             else {
+                (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
+                    .push(change);
+
                 change = {
                     type: change.type,
                     expr: createAccessor(
