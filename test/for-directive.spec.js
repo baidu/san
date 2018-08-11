@@ -892,6 +892,54 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data set after attach, use list[index] in interp", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{persons[i].name}} {{i+1}}/{{persons.length}}">{{persons[i].name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: [
+                    { name: 'errorrik', email: 'errorrik@gmail.com' },
+                    { name: 'varsha', email: 'wangshuonpu@163.com' }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
+
+        myComponent.data.set('persons[0]', { name: 'erik', email: 'erik168@163.com' });
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(4);
+            expect(lis[1].getAttribute('title')).toBe('erik 1/2');
+            expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
+
+            expect(lis[2].getAttribute('title')).toBe('varsha 2/2');
+            expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+
+            myComponent.data.set('persons[1].name', 'wsh');
+
+            san.nextTick(function () {
+                expect(lis.length).toBe(4);
+                expect(lis[1].getAttribute('title')).toBe('erik 1/2');
+                expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
+
+                expect(lis[2].getAttribute('title')).toBe('wsh 2/2');
+                expect(lis[2].innerHTML.indexOf('wsh - wangshuonpu@163.com')).toBe(0);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("data set null after attach, has no sibling", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li></ul>'
