@@ -27,7 +27,16 @@ function evalExpr(expr, data, owner) {
     if (value == null) {
         switch (expr.type) {
             case ExprType.UNARY:
-                value = !evalExpr(expr.expr, data, owner);
+                value = evalExpr(expr.expr, data, owner);
+                switch (expr.op) {
+                    case 33:
+                        value = !value;
+                        break;
+
+                    case 45:
+                        value = 0 - value;
+                        break;
+                }
                 break;
 
             case ExprType.BINARY:
