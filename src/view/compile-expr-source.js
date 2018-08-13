@@ -178,7 +178,12 @@ var compileExprSource = {
     expr: function (expr) {
         switch (expr.type) {
             case ExprType.UNARY:
-                return '!' + compileExprSource.expr(expr.expr);
+                switch (expr.op) {
+                    case 33:
+                        return '!' + compileExprSource.expr(expr.expr);
+                    case 45:
+                        return '-' + compileExprSource.expr(expr.expr);
+                }
 
             case ExprType.BINARY:
                 return compileExprSource.expr(expr.segs[0])
