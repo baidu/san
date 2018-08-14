@@ -25,7 +25,7 @@ function readUnaryExpr(walker) {
             return {
                 type: ExprType.UNARY,
                 expr: readUnaryExpr(walker),
-                op: 33
+                operator: 33
             };
 
         case 34: // "

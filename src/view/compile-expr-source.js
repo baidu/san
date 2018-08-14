@@ -178,7 +178,7 @@ var compileExprSource = {
     expr: function (expr) {
         switch (expr.type) {
             case ExprType.UNARY:
-                switch (expr.op) {
+                switch (expr.operator) {
                     case 33:
                         return '!' + compileExprSource.expr(expr.expr);
                     case 45:

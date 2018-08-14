@@ -27,7 +27,7 @@ function readNumber(walker) {
         return {
             type: ExprType.UNARY,
             expr: readUnaryExpr(walker),
-            op: 45
+            operator: 45
         };
     }
 }

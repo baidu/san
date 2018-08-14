@@ -28,7 +28,7 @@ function evalExpr(expr, data, owner) {
         switch (expr.type) {
             case ExprType.UNARY:
                 value = evalExpr(expr.expr, data, owner);
-                switch (expr.op) {
+                switch (expr.operator) {
                     case 33:
                         value = !value;
                         break;
