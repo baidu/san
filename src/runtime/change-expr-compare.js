@@ -51,14 +51,15 @@ function changeExprCompare(changeExpr, expr, data) {
             var result = 1;
             for (var i = 0; i < pathsLen; i++) {
                 var pathExpr = paths[i];
+                var pathExprValue = pathExpr.value;
 
-                if (changeExprCompare(changeExpr, pathExpr, data)) {
+                if (pathExprValue == null && changeExprCompare(changeExpr, pathExpr, data)) {
                     return 1;
                 }
 
                 if (result && i < changeLen
                     /* eslint-disable eqeqeq */
-                    && (pathExpr.value || evalExpr(pathExpr, data))
+                    && (pathExprValue || evalExpr(pathExpr, data))
                         != (changePaths[i].value || evalExpr(changePaths[i], data))
                     /* eslint-enable eqeqeq */
                 ) {
