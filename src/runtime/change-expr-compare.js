@@ -44,17 +44,15 @@ function changeExprCompare(changeExpr, expr, data) {
     switch (expr.type) {
         case ExprType.ACCESSOR:
             var paths = expr.paths;
-            var len = paths.length;
+            var pathsLen = paths.length;
             var changePaths = changeExpr.paths;
             var changeLen = changePaths.length;
 
             var result = 1;
-            for (var i = 0; i < len; i++) {
+            for (var i = 0; i < pathsLen; i++) {
                 var pathExpr = paths[i];
 
-                if (pathExpr.type === ExprType.ACCESSOR
-                    && changeExprCompare(changeExpr, pathExpr, data)
-                ) {
+                if (changeExprCompare(changeExpr, pathExpr, data)) {
                     return 1;
                 }
 
@@ -69,7 +67,7 @@ function changeExprCompare(changeExpr, expr, data) {
             }
 
             if (result) {
-                result = Math.max(1, changeLen - len + 2);
+                result = Math.max(1, changeLen - pathsLen + 2);
             }
             return result;
 
