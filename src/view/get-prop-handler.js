@@ -106,10 +106,6 @@ var defaultElementPropHandlers = {
         prop: empty
     },
 
-    readonly: boolPropHandler,
-    disabled: boolPropHandler,
-    autofocus: boolPropHandler,
-    required: boolPropHandler,
     draggable: boolPropHandler
 };
 /* eslint-enable fecs-properties-quote */
@@ -181,7 +177,11 @@ var elementPropHandlers = {
 
                 defaultElementPropHandler.output(element, bindInfo, data);
             }
-        }
+        },
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
     },
 
     option: {
@@ -203,7 +203,23 @@ var elementPropHandlers = {
             },
 
             output: defaultElementPropHandler.output
-        }
+        },
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
+    },
+
+    textarea: {
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
+    },
+
+    button: {
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler
     }
 };
 
