@@ -74,4 +74,36 @@ describe("Template Tag", function () {
             done();
         });
     });
+
+    it("with if", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><u>Hello {{name}}!</u><template s-if="num">11111</template> <template s-else>22222</template></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.innerHTML).toContain('22222');
+        expect(wrap.innerHTML).not.toContain('11111');
+        myComponent.data.set('num', 100);
+
+        san.nextTick(function () {
+            expect(wrap.innerHTML).not.toContain('22222');
+            expect(wrap.innerHTML).toContain('11111');
+
+            myComponent.data.set('num', 0);
+
+            san.nextTick(function () {
+                expect(wrap.innerHTML).toContain('22222');
+                expect(wrap.innerHTML).not.toContain('11111');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            })
+        });
+    });
 });
