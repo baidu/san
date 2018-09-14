@@ -13,6 +13,7 @@ var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var insertBefore = require('../browser/insert-before');
+var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
@@ -133,6 +134,11 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childScope = null;
 
     elementDisposeChildren(this, noDetach, noTransition);
+
+    if (!noDetach) {
+        removeEl(this.el);
+        removeEl(this.sel);
+    }
     nodeDispose(this);
 };
 

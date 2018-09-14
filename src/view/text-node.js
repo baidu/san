@@ -107,7 +107,12 @@ TextNode.prototype.attach = function (parentEl, beforeEl) {
 /**
  * 销毁 text 节点
  */
-TextNode.prototype.dispose = function () {
+TextNode.prototype.dispose = function (noDetach) {
+    if (!noDetach) {
+        removeEl(this.el);
+        removeEl(this.sel);
+    }
+
     this._prev = null;
     this.el = null;
     this.sel = null;
