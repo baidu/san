@@ -860,4 +860,46 @@ describe("Element", function () {
         });
 
     });
+
+    it("disabled attr for normal element", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><a disabled checked>san</a></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+
+        // ie 是个 bt，什么元素都能 disabled
+        if (!/msie/i.test(navigator.userAgent)) {
+            expect(a.hasAttribute('disabled')).toBeTruthy();
+        }
+        expect(a.hasAttribute('checked')).toBeTruthy();
+
+        expect(a.disabled).toBeFalsy();
+        expect(a.checked).toBeFalsy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("disabled attr for form element", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><button disabled>san</button></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(btn.disabled).toBeTruthy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
