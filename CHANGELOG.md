@@ -6,6 +6,7 @@ ChangeLog
 -------
 
 + 【优化】- 将 button 归为动态创建元素，兼容 ie8- 下 type 属性无法动态变更
++ 【优化】- disabled / readonly 等表单 bool 属性用于普通元素时，原样保留 attribute
 + 【bug修复】- template 中包含 if-else，当条件变更时，视图刷新可能有残留
 
 
