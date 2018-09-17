@@ -635,36 +635,33 @@ Component.prototype._update = function (changes) {
 
 Component.prototype._updateBindxOwner = function (dataChanges) {
     var me = this;
-
-    if (this.owner) {
-        each(dataChanges, function (change) {
-            each(me.binds, function (bindItem) {
-                var changeExpr = change.expr;
-                if (bindItem.x
-                    && !isDataChangeByElement(change, me.owner)
-                    && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
-                ) {
-                    var updateScopeExpr = bindItem.expr;
-                    if (changeExpr.paths.length > 1) {
-                        updateScopeExpr = createAccessor(
-                            bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                        );
-                    }
-
-                    me.scope.set(
-                        updateScopeExpr,
-                        evalExpr(changeExpr, me.data, me),
-                        {
-                            target: {
-                                id: me.id,
-                                prop: bindItem.name
-                            }
-                        }
+    each(dataChanges, function (change) {
+        each(me.binds, function (bindItem) {
+            var changeExpr = change.expr;
+            if (bindItem.x
+                && !isDataChangeByElement(change, me.owner)
+                && changeExprCompare(changeExpr, parseExpr(bindItem.name), me.data)
+            ) {
+                var updateScopeExpr = bindItem.expr;
+                if (changeExpr.paths.length > 1) {
+                    updateScopeExpr = createAccessor(
+                        bindItem.expr.paths.concat(changeExpr.paths.slice(1))
                     );
                 }
-            });
+
+                me.scope.set(
+                    updateScopeExpr,
+                    evalExpr(changeExpr, me.data, me),
+                    {
+                        target: {
+                            id: me.id,
+                            prop: bindItem.name
+                        }
+                    }
+                );
+            }
         });
-    }
+    });
 };
 
 /**
