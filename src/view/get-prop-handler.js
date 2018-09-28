@@ -39,7 +39,7 @@ var HTML_ATTR_PROP_MAP = {
 var defaultElementPropHandler = {
     prop: function (el, value, name, element) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
-        value = value == null ? '' : value
+        value = value == null ? '' : value;
 
         // input 的 type 是个特殊属性，其实也应该用 setAttribute
         // 但是 type 不应该运行时动态改变，否则会有兼容性问题

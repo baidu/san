@@ -106,6 +106,8 @@ TextNode.prototype.attach = function (parentEl, beforeEl) {
 
 /**
  * 销毁 text 节点
+ *
+ * @param {boolean=} noDetach 是否不要把节点从dom移除
  */
 TextNode.prototype.dispose = function (noDetach) {
     if (!noDetach) {

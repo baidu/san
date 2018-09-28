@@ -422,14 +422,14 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         this.children[changeIndex].scope._splice(
                             change.expr,
                             [].concat(change.index, change.deleteCount, change.insertions),
-                            { silent: 1 }
+                            {silent: 1}
                         );
                     }
                     else {
                         this.children[changeIndex].scope._set(
                             change.expr,
                             change.value,
-                            { silent: 1 }
+                            {silent: 1}
                         );
                     }
                 }
@@ -494,12 +494,16 @@ ForNode.prototype._updateArray = function (changes, newList) {
                             (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push(change);
                         }
                     }
-                    else if (newIndex && (!oldIndex || lcsFlags[oldIndex][newIndex - 1] >= lcsFlags[oldIndex - 1][newIndex])) {
+                    else if (newIndex
+                        && (!oldIndex || lcsFlags[oldIndex][newIndex - 1] >= lcsFlags[oldIndex - 1][newIndex])
+                    ) {
                         newIndex--;
                         childrenChanges.splice(oldIndex, 0, 0);
                         this.children.splice(oldIndex, 0, 0);
                     }
-                    else if (oldIndex && (!newIndex || lcsFlags[oldIndex][newIndex - 1] < lcsFlags[oldIndex - 1][newIndex])) {
+                    else if (oldIndex
+                        && (!newIndex || lcsFlags[oldIndex][newIndex - 1] < lcsFlags[oldIndex - 1][newIndex])
+                    ) {
                         oldIndex--;
                         disposeChildren.push(this.children[oldIndex]);
                         childrenChanges.splice(oldIndex, 1);

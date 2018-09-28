@@ -8,6 +8,7 @@ var readString = require('./read-string');
 var readNumber = require('./read-number');
 var readCall = require('./read-call');
 var readParenthesizedExpr = require('./read-parenthesized-expr');
+var readTertiaryExpr = require('./read-tertiary-expr');
 
 
 /**
@@ -92,12 +93,15 @@ function readUnaryExpr(walker) {
 
                     // #[begin] error
                     if (item.name.type > 4) {
-                        throw new Error('[SAN FATAL] unexpect object name: ' + walker.cut(walkerIndexBeforeName, walker.index));
+                        throw new Error(
+                            '[SAN FATAL] unexpect object name: '
+                            + walker.cut(walkerIndexBeforeName, walker.index)
+                        );
                     }
                     // #[end]
 
                     if (walker.goUntil(58)) { // :
-                        item.expr = readTertiaryExpr(walker)
+                        item.expr = readTertiaryExpr(walker);
                     }
                     else {
                         item.expr = item.name;

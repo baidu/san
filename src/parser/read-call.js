@@ -11,7 +11,7 @@ var readTertiaryExpr = require('./read-tertiary-expr');
  * 读取调用
  *
  * @param {Walker} walker 源码读取对象
- * @param {Array=} defaultArgs
+ * @param {Array=} defaultArgs 默认参数
  * @return {Object}
  */
 function readCall(walker, defaultArgs) {

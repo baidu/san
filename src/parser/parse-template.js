@@ -59,7 +59,7 @@ function parseTemplate(source, options) {
 
     while ((tagMatch = walker.match(tagReg)) != null) {
         var tagEnd = tagMatch[1];
-        var tagName = tagMatch[2]
+        var tagName = tagMatch[2];
         if (!svgTags[tagName]) {
             tagName = tagName.toLowerCase();
         }
