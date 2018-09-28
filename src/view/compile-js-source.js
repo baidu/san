@@ -52,7 +52,8 @@ var elementSourceCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
      * @param {Array} props 属性列表
-     * @param {string?} extraProp 额外的属性串
+     * @param {string=} extraProp 额外的属性串
+     * @param {Object=} bindDirective bind指令对象
      */
     tagStart: function (sourceBuffer, tagName, props, extraProp, bindDirective) {
         sourceBuffer.joinString('<' + tagName);
@@ -593,7 +594,7 @@ var aNodeCompiler = {
         });
 
         var givenDataHTML = '{' + givenData.join(',\n') + '}';
-        if (aNode.directives.bind){
+        if (aNode.directives.bind) {
             givenDataHTML = 'extend('
                 + compileExprSource.expr(aNode.directives.bind.value)
                  + ', '
