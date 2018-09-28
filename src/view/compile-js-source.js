@@ -609,7 +609,6 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('$givenSlots = null;');
     }
 };
-/* eslint-disable guard-for-in */
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
@@ -635,11 +634,13 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
 
     var eventDeclarations = [];
     for (var key in component.listeners) {
-        each(component.listeners[key], function (listener) {
-            if (listener.declaration) {
-                eventDeclarations.push(listener.declaration);
-            }
-        });
+        if (component.listeners.hasOwnProperty(key)) {
+            each(component.listeners[key], function (listener) {
+                if (listener.declaration) {
+                    eventDeclarations.push(listener.declaration);
+                }
+            });
+        }
     }
 
     elementSourceCompiler.tagStart(
@@ -657,7 +658,6 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     }
 
 
-
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
 }
@@ -668,7 +668,7 @@ var stringifier = {
         var result = '{';
 
         for (var key in source) {
-            if (typeof source[key] === 'undefined') {
+            if (!source.hasOwnProperty(key) || typeof source[key] === 'undefined') {
                 continue;
             }
 
@@ -755,10 +755,12 @@ function genComponentContextCode(component) {
     code.push('filters: {');
     var filterCode = [];
     for (var key in component.filters) {
-        var filter = component.filters[key];
+        if (component.filters.hasOwnProperty(key)) {
+            var filter = component.filters[key];
 
-        if (typeof filter === 'function') {
-            filterCode.push(key + ': ' + filter.toString());
+            if (typeof filter === 'function') {
+                filterCode.push(key + ': ' + filter.toString());
+            }
         }
     }
     code.push(filterCode.join(','));
@@ -778,19 +780,21 @@ function genComponentContextCode(component) {
     code.push('computed: {');
     var computedCode = [];
     for (var key in component.computed) {
-        var computed = component.computed[key];
+        if (component.computed.hasOwnProperty(key)) {
+            var computed = component.computed[key];
 
-        if (typeof computed === 'function') {
-            computedCode.push(key + ': '
-                + computed.toString().replace(
-                    /this.data.get\(([^\)]+)\)/g,
-                    function (match, exprLiteral) {
-                        var exprStr = (new Function('return ' + exprLiteral))();
-                        var expr = parseExpr(exprStr);
+            if (typeof computed === 'function') {
+                computedCode.push(key + ': '
+                    + computed.toString().replace(
+                        /this.data.get\(([^\)]+)\)/g,
+                        function (match, exprLiteral) {
+                            var exprStr = (new Function('return ' + exprLiteral))();
+                            var expr = parseExpr(exprStr);
 
-                        return compileExprSource.expr(expr);
-                    })
-            );
+                            return compileExprSource.expr(expr);
+                        })
+                );
+            }
         }
     }
     code.push(computedCode.join(','));
@@ -800,10 +804,12 @@ function genComponentContextCode(component) {
     code.push('computedNames: [');
     computedCode = [];
     for (var key in component.computed) {
-        var computed = component.computed[key];
+        if (component.computed.hasOwnProperty(key)) {
+            var computed = component.computed[key];
 
-        if (typeof computed === 'function') {
-            computedCode.push('"' + key + '"');
+            if (typeof computed === 'function') {
+                computedCode.push('"' + key + '"');
+            }
         }
     }
     code.push(computedCode.join(','));

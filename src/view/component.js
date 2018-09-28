@@ -198,13 +198,11 @@ function Component(options) { // eslint-disable-line
     // #[end]
 
     this.computedDeps = {};
-    /* eslint-disable guard-for-in */
     for (var expr in this.computed) {
-        if (!this.computedDeps[expr]) {
+        if (this.computed.hasOwnProperty(expr) && !this.computedDeps[expr]) {
             this._calcComputed(expr);
         }
     }
-    /* eslint-enable guard-for-in */
 
     if (!this.dataChanger) {
         this.dataChanger = bind(this._dataChanger, this);
