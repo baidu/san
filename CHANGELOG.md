@@ -2,6 +2,12 @@
 ChangeLog
 ========
 
+3.6.10
+-------
+
++ 【优化】- 对 polyfill 侵入 Object prototype 的环境进行判断处理
+
+
 3.6.9
 -------
 
