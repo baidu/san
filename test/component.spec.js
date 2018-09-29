@@ -2967,6 +2967,49 @@ describe("Component", function () {
         })
     });
 
+    it("data binding name auto camel case, strongly", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span title="{{dataTitle}}">{{dataText}}</span></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label data-title="{{title}}" data-Text="{{text}}"></ui-label></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                title: '1',
+                text: 'one'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+
+        expect(span.title).toBe('1');
+        expect(span.innerHTML.indexOf('one') === 0).toBeTruthy();
+
+        myComponent.data.set('title', '2');
+        myComponent.data.set('text', 'two');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('2');
+            expect(span.innerHTML.indexOf('two') === 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
+
     it("data binding no expr, auto true", function (done) {
         var Label = san.defineComponent({
             template: '<a><u s-if="hasu"></u><span title="{{dataTitle}}">{{dataText}}</span></a>'

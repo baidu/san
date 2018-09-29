@@ -6,6 +6,7 @@ ChangeLog
 -------
 
 + 【优化】- 对 polyfill 侵入 Object prototype 的环境进行判断处理
++ 【优化】- 组件数据绑定将 kabab 转换成 camel 形式时，兼容原名称包含大写字母
 
 
 3.6.9
