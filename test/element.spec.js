@@ -902,4 +902,25 @@ describe("Element", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+    it("type attr for button element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><form action="https://www.baidu.com/><input type="text" value="test" name="kw"><button type="button">nosubmit</button></form></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(btn.getAttribute('type')).toBe('button');
+
+        triggerEvent(btn, 'click');
+        setTimeout(function () {
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }, 2000)
+    });
 });
