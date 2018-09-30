@@ -905,7 +905,7 @@ describe("Element", function () {
 
     it("type attr for button element", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><form action="https://www.baidu.com/><input type="text" value="test" name="kw"><button type="button">nosubmit</button></form></div>'
+            template: '<div><form action="https://www.baidu.com/"><input type="text" value="test" name="kw"><button type="button">nosubmit</button></form></div>'
         });
         var myComponent = new MyComponent();
 
