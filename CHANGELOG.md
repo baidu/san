@@ -7,6 +7,7 @@ ChangeLog
 
 + 【优化】- 对 polyfill 侵入 Object prototype 的环境进行判断处理
 + 【优化】- 组件数据绑定将 kabab 转换成 camel 形式时，兼容原名称包含大写字母
++ 【bug修复】- 声明 button 的 type 属性时，在低版本 ie 下有运行错误，无法绘制
 
 
 3.6.9
