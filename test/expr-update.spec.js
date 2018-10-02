@@ -1072,7 +1072,7 @@ describe("Expression Update Detect", function () {
         });
     });
 
-    it("simple call", function (done) {
+    it("simple call expr", function (done) {
 
         var MyComponent = san.defineComponent({
             template: '<u>Hello {{numText(num, isTrans)}}</u>'
@@ -1104,6 +1104,88 @@ describe("Expression Update Detect", function () {
 
             san.nextTick(function () {
                 expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello san');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
+    it("nest call expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{enhance(num, square(base))}}</u>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            },
+
+            enhance: function (num, times) {
+                return num * times;
+            },
+
+            square: function (num) {
+                return num * num;
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 18');
+
+        myComponent.data.set('num', 4);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 36');
+            myComponent.data.set('base', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 400');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
+    it("call expr in complex expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{10 + base > 0 ? enhance(num, square(base)) : enhance(num, 1)}}</u>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            },
+
+            enhance: function (num, times) {
+                return num * times;
+            },
+
+            square: function (num) {
+                return num * num;
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 28');
+
+        myComponent.data.set('base', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 12');
+            myComponent.data.set('num', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 20');
                 myComponent.dispose();
                 document.body.removeChild(wrap);
 
