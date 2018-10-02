@@ -1071,4 +1071,44 @@ describe("Expression Update Detect", function () {
             done();
         });
     });
+
+    it("simple call", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>Hello {{numText(num, isTrans)}}</u>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2
+            },
+
+            numText: function (num, isTrans) {
+                if (isTrans) {
+                    return num === 2 ? 'er' : 'san';
+                }
+
+                return num;
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello 2');
+
+        myComponent.data.set('isTrans', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello er');
+            myComponent.data.set('num', 3);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello san');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
 });
