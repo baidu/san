@@ -1156,7 +1156,7 @@ describe("Expression Update Detect", function () {
     it("call expr in complex expr", function (done) {
 
         var MyComponent = san.defineComponent({
-            template: '<u>result {{10 + base > 0 ? enhance(num, square(base)) : enhance(num, 1)}}</u>',
+            template: '<u>result {{10 + (base > 0 ? enhance(num, square(base)) : enhance(num, 1))}}</u>',
 
             enhance: function (num, times) {
                 return num * times;
@@ -1197,7 +1197,7 @@ describe("Expression Update Detect", function () {
     it("call expr eval with component instance this", function (done) {
 
         var MyComponent = san.defineComponent({
-            template: '<u>result {{10 + base > 0 ? enhance(num, base) : enhance(num, 1)}}</u>',
+            template: '<u>result {{10 + (base > 0 ? enhance(num, base) : enhance(num, 1))}}</u>',
 
             enhance: function (num, times) {
                 return num * this.square(times);
