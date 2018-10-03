@@ -1193,4 +1193,45 @@ describe("Expression Update Detect", function () {
             });
         });
     });
+
+    it("call expr eval with component instance this", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{10 + base > 0 ? enhance(num, base) : enhance(num, 1)}}</u>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            },
+
+            enhance: function (num, times) {
+                return num * this.square(times);
+            },
+
+            square: function (num) {
+                return num * num;
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 28');
+
+        myComponent.data.set('base', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 12');
+            myComponent.data.set('num', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 20');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
 });
