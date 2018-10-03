@@ -1137,12 +1137,7 @@ describe("IfDirective", function () {
     it("with call expr", function (done) {
 
         var MyComponent = san.defineComponent({
-            template: '<div><u s-if="isWorking(time)">work</u><b s-else>rest</b></div>'
-        });
-        var myComponent = new MyComponent({
-            data: {
-                time: 8
-            },
+            template: '<div><u s-if="isWorking(time)">work</u><b s-else>rest</b></div>',
 
             isWorking: function (time) {
                 if (time < 9 || time > 18) {
@@ -1150,6 +1145,11 @@ describe("IfDirective", function () {
                 }
 
                 return true;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                time: 8
             }
         });
 
