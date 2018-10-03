@@ -1234,4 +1234,48 @@ describe("Expression Update Detect", function () {
             });
         });
     });
+
+    it("call expr with dynamic name accessor", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{op[isUp ? "plus" : "minus"](num1, num2)}}</u>',
+
+            op: {
+                plus: function (a, b) {
+                    return a + b;
+                },
+
+                minus: function (a, b) {
+                    return a - b;
+                }
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                isUp: true,
+                num1: 5,
+                num2: 3
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 8');
+
+        myComponent.data.set('isUp', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 2');
+            myComponent.data.set('num1', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 7');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
 });
