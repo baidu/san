@@ -81,9 +81,9 @@ function Component(options) { // eslint-disable-line
     var me = this;
     var protoANode = clazz.prototype.aNode;
 
-    me.givenANode = options.aNode;
-    me.givenNamedSlotBinds = [];
-    me.givenSlots = {
+    this.givenANode = options.aNode;
+    this.givenNamedSlotBinds = [];
+    this.givenSlots = {
         named: {}
     };
 
@@ -152,7 +152,7 @@ function Component(options) { // eslint-disable-line
             );
         });
 
-        this.tagName = protoANode.tagName || me.givenANode.tagName;
+        this.tagName = protoANode.tagName || this.givenANode.tagName;
         this.binds = camelComponentBinds(this.givenANode.props);
 
         // init s-bind data
@@ -239,10 +239,10 @@ function Component(options) { // eslint-disable-line
  */
 Component.prototype._createGivenSlots = function () {
     var me = this;
-    me.givenSlots.named = {};
+    this.givenSlots.named = {};
 
     // 组件运行时传入的结构，做slot解析
-    me.givenANode && me.scope && each(me.givenANode.children, function (child) {
+    this.givenANode && this.scope && each(this.givenANode.children, function (child) {
         var target;
 
         var slotBind = !child.textExpr && getANodeProp(child, 'slot');
@@ -265,7 +265,7 @@ Component.prototype._createGivenSlots = function () {
         target && target.push(child);
     });
 
-    me.givenSlotInited = true;
+    this.givenSlotInited = true;
 };
 
 /**

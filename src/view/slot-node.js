@@ -80,7 +80,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
 
     var initData;
     if (nodeSBindInit(this, aNode.directives.bind)) {
-        initData = extend({}, me._sbindData);
+        initData = extend({}, this._sbindData);
     }
 
     if (realANode.vars) {
@@ -156,7 +156,7 @@ SlotNode.prototype._toPhase = elementOwnToPhase;
 SlotNode.prototype._update = function (changes, isFromOuter) {
     var me = this;
 
-    if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== me.name) {
+    if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== this.name) {
         this.owner._notifyNeedReload();
         return false;
     }

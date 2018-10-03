@@ -82,11 +82,11 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     var child;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
-        child = createNode(rinseCondANode(me.aNode), me);
+        child = createNode(rinseCondANode(this.aNode), this);
         elseIndex = -1;
     }
     else {
-        each(me.aNode.elses, function (elseANode, index) {
+        each(this.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.elif;
 
             if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
@@ -98,9 +98,9 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     }
 
     if (child) {
-        me.children[0] = child;
+        this.children[0] = child;
         child.attach(parentEl, beforeEl);
-        me.elseIndex = elseIndex;
+        this.elseIndex = elseIndex;
     }
 
 
@@ -116,14 +116,14 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
  */
 IfNode.prototype._update = function (changes) {
     var me = this;
-    var childANode = me.aNode;
+    var childANode = this.aNode;
     var elseIndex;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
         elseIndex = -1;
     }
     else {
-        each(me.aNode.elses, function (elseANode, index) {
+        each(this.aNode.elses, function (elseANode, index) {
             var elif = elseANode.directives.elif;
 
             if (elif && evalExpr(elif.value, me.scope, me.owner) || !elif) {
@@ -134,12 +134,12 @@ IfNode.prototype._update = function (changes) {
         });
     }
 
-    if (elseIndex === me.elseIndex) {
-        elementUpdateChildren(me, changes);
+    if (elseIndex === this.elseIndex) {
+        elementUpdateChildren(this, changes);
     }
     else {
-        var child = me.children[0];
-        me.children = [];
+        var child = this.children[0];
+        this.children = [];
         if (child) {
             child._ondisposed = newChild;
             child.dispose();
@@ -148,7 +148,7 @@ IfNode.prototype._update = function (changes) {
             newChild();
         }
 
-        me.elseIndex = elseIndex;
+        this.elseIndex = elseIndex;
     }
 
     function newChild() {
