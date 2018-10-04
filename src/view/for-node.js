@@ -229,7 +229,7 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
  */
 ForNode.prototype._createChildren = function () {
     var me = this;
-    var parentEl = me.el.parentNode;
+    var parentEl = this.el.parentNode;
 
     eachForData(this, function (value, i) {
         var child = createForDirectiveChild(me, value, i);
