@@ -165,6 +165,22 @@ function evalExpr(expr, data, owner) {
 
                 break;
 
+            case ExprType.CALL:
+                if (owner && expr.name.type === ExprType.ACCESSOR) {
+                    var method = owner;
+                    var pathsLen = expr.name.paths.length;
+
+                    for (var i = 0; method && i < pathsLen; i++) {
+                        method = method[evalExpr(expr.name.paths[i], data, owner)];
+                    }
+
+                    if (method) {
+                        value = method.apply(owner, evalArgs(expr.args, data, owner));
+                    }
+                }
+
+                break;
+
             /* eslint-disable no-redeclare */
             case ExprType.TEXT:
                 var buf = '';

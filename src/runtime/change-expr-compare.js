@@ -103,6 +103,13 @@ function changeExprCompare(changeExpr, expr, data) {
             }
 
             return 1;
+
+        case ExprType.CALL:
+            if (changeExprCompareExprs(changeExpr, expr.name.paths, data)
+                || changeExprCompareExprs(changeExpr, expr.args, data)
+            ) {
+                return 1;
+            }
     }
 
     return 0;
