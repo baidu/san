@@ -1197,7 +1197,7 @@ describe("Expression Update Detect", function () {
     it("call expr eval with component instance this", function (done) {
 
         var MyComponent = san.defineComponent({
-            template: '<u>result {{10 + (base > 0 ? enhance(num, base) : enhance(num, 1))}}</u>',
+            template: '<u>result {{10 + (base !== 0 ? enhance(num, abs(base)) : enhance(num, 1))}}</u>',
 
             enhance: function (num, times) {
                 return num * this.square(times);
@@ -1205,6 +1205,14 @@ describe("Expression Update Detect", function () {
 
             square: function (num) {
                 return num * num;
+            },
+
+            abs: function (num) {
+                if (num < 0) {
+                    return -num;
+                }
+
+                return num;
             }
         });
         var myComponent = new MyComponent({
@@ -1227,10 +1235,15 @@ describe("Expression Update Detect", function () {
 
             san.nextTick(function () {
                 expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 20');
-                myComponent.dispose();
-                document.body.removeChild(wrap);
+                myComponent.data.set('base', -5);
 
-                done();
+                san.nextTick(function () {
+                    expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 260');
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+
+                    done();
+                });
             });
         });
     });
