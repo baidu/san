@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
+var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
 var cloneDirectives = require('../parser/clone-directives');
@@ -739,6 +740,10 @@ var stringifier = {
     }
 };
 
+var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('computed,filters,components,'
+    + 'initData,template,attached,created,detached,disposed,compiled'
+);
+
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
  *
@@ -748,6 +753,44 @@ var stringifier = {
  */
 function genComponentContextCode(component) {
     var code = ['var componentCtx = {'];
+
+    // members for call expr
+    var ComponentProto = component.constructor.prototype;
+    Object.keys(ComponentProto).forEach(function (protoMemberKey) {
+        var protoMember = ComponentProto[protoMemberKey];
+        if (COMPONENT_RESERVED_MEMBERS[protoMemberKey] || !protoMember) {
+            return;
+        }
+
+        switch (typeof protoMember) {
+            case 'function':
+                code.push(protoMemberKey + ': ' + protoMember.toString() + ',');
+                break;
+
+            case 'object':
+                code.push(protoMemberKey + ':');
+
+                if (protoMember instanceof Array) {
+                    code.push('[');
+                    protoMember.forEach(function (item) {
+                        code.push(typeof item === 'function' ? item.toString() : '' + ',');
+                    });
+                    code.push(']');
+                }
+                else {
+                    code.push('{');
+                    Object.keys(protoMember).forEach(function (itemKey) {
+                        var item = protoMember[itemKey];
+                        if (typeof item === 'function') {
+                            code.push(itemKey + ':' + item.toString() + ',');
+                        }
+                    });
+                    code.push('}');
+                }
+
+                code.push(',');
+        }
+    });
 
     // given anode
     code.push('givenSlots: [],');
