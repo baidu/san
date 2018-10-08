@@ -115,7 +115,6 @@ TextNode.prototype.dispose = function (noDetach) {
         removeEl(this.sel);
     }
 
-    this._prev = null;
     this.el = null;
     this.sel = null;
 };

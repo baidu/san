@@ -16,15 +16,12 @@ var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var evalExpr = require('../runtime/eval-expr');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
-var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
-var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
-var elementDisposeChildren = require('./element-dispose-children');
 var dataCache = require('../runtime/data-cache');
 
 
@@ -236,18 +233,6 @@ ForNode.prototype._createChildren = function () {
         me.children.push(child);
         child.attach(parentEl, me.el);
     });
-};
-
-/**
- * 将元素从页面上移除的行为
- */
-ForNode.prototype.detach = function () {
-    if (this.lifeCycle.attached) {
-        elementDisposeChildren(this);
-        this.children = [];
-        removeEl(this.el);
-        this.lifeCycle = LifeCycle.detached;
-    }
 };
 
 /* eslint-disable fecs-max-statements */
