@@ -153,11 +153,8 @@ IfNode.prototype._update = function (changes) {
 
     function newChild() {
         if (typeof elseIndex !== 'undefined') {
-            var child = createNode(rinseCondANode(childANode), me);
-            // var parentEl = getNodeStumpParent(me);
-            child.attach(me.el.parentNode, me.el);
-
-            me.children[0] = child;
+            (me.children[0] = createNode(rinseCondANode(childANode), me))
+                .attach(me.el.parentNode, me.el);
         }
     }
 };
