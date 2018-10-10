@@ -438,7 +438,7 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var u = document.getElementsByTagName('u')[0];
+        var u = wrap.getElementsByTagName('u')[0];
         expect(u.innerHTML).toBe('2');
 
         triggerEvent(u, 'click');
