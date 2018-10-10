@@ -407,6 +407,50 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("defineComponent with SuperComponent", function (done) {
+        var Counter = san.defineComponent({
+            template: '<u on-click="add">{{num}}</u>',
+            initData: function () {
+                return {
+                    num: 2
+                };
+            },
+            add: function () {
+                this.data.set('num', this.data.get('num') + 1);
+            }
+        });
+
+        var RealCounter = san.defineComponent({
+            add: function () {
+                this.data.set('num', this.data.get('num') + 5);
+            }
+        }, Counter);
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-c': RealCounter
+            },
+            template: '<div><x-c /></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = document.getElementsByTagName('u')[0];
+        expect(u.innerHTML).toBe('2');
+
+        triggerEvent(u, 'click');
+        san.nextTick(function () {
+            expect(u.innerHTML).toBe('7');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("data set in inited should not update view", function (done) {
         var up = false;
         var MyComponent = san.defineComponent({
