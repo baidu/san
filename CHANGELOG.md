@@ -6,6 +6,7 @@ ChangeLog
 -------
 
 + 【新特性】- 支持 call 表达式
++ 【新特性】- defineComponent 方法增加 SuperComponent 参数，可以声明父组件
 + 【bug修复】- 括号表达式在 ssr 下可能运算错误
 
 
