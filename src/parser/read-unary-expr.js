@@ -48,9 +48,7 @@ function readUnaryExpr(walker) {
             return readNumber(walker);
 
         case 40: // (
-            var expr = readParenthesizedExpr(walker);
-            expr.parenthesized = true;
-            return expr;
+            return readParenthesizedExpr(walker);
 
         // array literal
         case 91: // [

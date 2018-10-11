@@ -16,6 +16,7 @@ function readParenthesizedExpr(walker) {
     var expr = readTertiaryExpr(walker);
     walker.goUntil(41); // )
 
+    expr.parenthesized = true;
     return expr;
 }
 
