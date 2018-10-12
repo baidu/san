@@ -2,24 +2,6 @@
   "name": "san",
   "description": "A Flexible JavaScript Component Framework",
   "version": "3.6.11",
-  "contributors": [
-    {
-      "name": "erik",
-      "email": "errorrik@gmail.com"
-    },
-    {
-      "name": "Otakustay",
-      "email": "otakustay@gmail.com"
-    },
-    {
-      "name": "Junmer",
-      "email": "junmer@foxmail.com"
-    },
-    {
-      "name": "Leon",
-      "email": "ludafa@outlook.com"
-    }
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/baidu/san.git"
