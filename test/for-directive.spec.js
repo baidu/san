@@ -997,7 +997,7 @@ describe("ForDirective", function () {
             expect(lis.length).toBe(6);
             expect(lis[1].innerHTML).toBe('1-erik');
             expect(lis[2].innerHTML).toBe('2-varsha');
-            expect(lis[3].innerHTML.indexOf('3-')).toBe(0);
+            expect(lis[3].innerHTML).toBe('3-');
             expect(lis[4].innerHTML).toBe('4-otakustay');
 
             myComponent.dispose();
