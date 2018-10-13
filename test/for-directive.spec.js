@@ -970,6 +970,42 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data set after attach, index overflow", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name</li><li san-for="p,i in persons">{{i+1}}-{{p}}</li><li>name</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: ['errorrik', 'varsha']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toBe('1-errorrik');
+        expect(lis[2].innerHTML).toBe('2-varsha');
+
+        myComponent.data.set('persons[0]', 'erik');
+        myComponent.data.set('persons[3]', 'otakustay');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toBe('1-erik');
+            expect(lis[2].innerHTML).toBe('2-varsha');
+            expect(lis[3].innerHTML.indexOf('3-')).toBe(0);
+            expect(lis[4].innerHTML).toBe('4-otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
 
     it("data set null after attach, has 2side sibling", function (done) {
         var MyComponent = san.defineComponent({
