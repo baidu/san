@@ -362,7 +362,6 @@ ForNode.prototype._updateArray = function (changes, newList) {
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
 
-    // var newList = evalExpr(this.param.value, this.scope, this.owner) || [];
     var newLen = newList.length;
 
     /* eslint-disable no-redeclare */
@@ -402,21 +401,24 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
                 childrenChanges[changeIndex].push(change);
 
-                if (this.children[changeIndex]) {
-                    if (change.type === DataChangeType.SPLICE) {
-                        this.children[changeIndex].scope._splice(
-                            change.expr,
-                            [].concat(change.index, change.deleteCount, change.insertions),
-                            {silent: 1}
-                        );
-                    }
-                    else {
+                if (change.type === DataChangeType.SET) {
+                    if (this.children[changeIndex]) {
                         this.children[changeIndex].scope._set(
                             change.expr,
                             change.value,
-                            {silent: 1}
+                            { silent: 1 }
                         );
                     }
+                    else {
+                        this.children[changeIndex] = 0;
+                    }
+                }
+                else if (this.children[changeIndex]) {
+                    this.children[changeIndex].scope._splice(
+                        change.expr,
+                        [].concat(change.index, change.deleteCount, change.insertions),
+                        { silent: 1 }
+                    );
                 }
             }
         }
