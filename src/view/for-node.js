@@ -410,6 +410,8 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         );
                     }
                     else {
+                        // 设置数组项的索引可能超出数组长度，此时需要新增
+                        // 比如当前数组只有2项，但是set list[4]
                         this.children[changeIndex] = 0;
                     }
                 }
