@@ -13,6 +13,10 @@ var readTertiaryExpr = require('./read-tertiary-expr');
  * @return {Object}
  */
 function parseExpr(source) {
+    if (!source) {
+        return;
+    }
+
     if (typeof source === 'object' && source.type) {
         return source;
     }

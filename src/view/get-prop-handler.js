@@ -116,7 +116,7 @@ var analInputChecker = {
     }
 };
 
-function analInputCheckedState(element, value, oper) {
+function analInputCheckedState(element, value) {
     var bindValue = getANodeProp(element.aNode, 'value');
     var bindType = getANodeProp(element.aNode, 'type');
 
@@ -125,7 +125,7 @@ function analInputCheckedState(element, value, oper) {
 
         if (analInputChecker[type]) {
             var bindChecked = getANodeProp(element.aNode, 'checked');
-            if (!bindChecked.hintExpr) {
+            if (bindChecked != null && !bindChecked.hintExpr) {
                 bindChecked.hintExpr = bindValue.expr;
             }
 
