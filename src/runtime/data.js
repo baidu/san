@@ -135,16 +135,18 @@ function immutableSet(source, exprPaths, value, data) {
         return value;
     }
 
+    if (source == null) {
+        source = {};
+    }
+
     var prop = evalExpr(exprPaths[0], data);
-    var result;
+    var result = source;
 
     if (source instanceof Array) {
         var index = +prop;
 
         result = source.slice(0);
         result[isNaN(index) ? prop : index] = immutableSet(source[index], exprPaths.slice(1), value, data);
-
-        return result;
     }
     else if (typeof source === 'object') {
         result = {};
@@ -155,12 +157,10 @@ function immutableSet(source, exprPaths, value, data) {
             }
         }
 
-        result[prop] = immutableSet(source[prop] || {}, exprPaths.slice(1), value, data);
-
-        return result;
+        result[prop] = immutableSet(source[prop], exprPaths.slice(1), value, data);
     }
 
-    return source;
+    return result;
 }
 
 /**
