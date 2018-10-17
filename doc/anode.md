@@ -24,6 +24,7 @@ ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果�
 　　[TERTIARY](#user-content-tertiary)
 　　[ARRAY LITERAL](#user-content-array-literal)
 　　[OBJECT LITERAL](#user-content-object-literal)
+　　[PARENTHESIZED](#user-content-parenthesized)
 [ANode 的结构](#user-content-anode-的结构)
 [模板解析结果](#user-content-模板解析结果)
 　　[文本](#user-content-文本)
@@ -463,6 +464,47 @@ exprInfo = {
     "raw": "{name: realName, email, ...ext}"
 }
 ```
+
+### PARENTHESIZED
+
+括号表达式不会生成独立的表达式对象。被括号包含的表达式，在其对象上有一个 `parenthesized` 属性，值为 `true`。
+
+```javascript
+// (a + b) * c
+// a + b 的表达式对象上包含 parenthesized 属性，值为 true
+exprInfo = {
+    type: ExprType.BINARY,
+    segs: [
+        {
+            type: ExprType.BINARY,
+            parenthesized: true,
+            segs: [
+                {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: 'a'}
+                    ]
+                },
+                {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: 'b'}
+                    ]
+                }
+            ],
+            operator: 43
+        },
+        {
+            type: ExprType.ACCESSOR,
+            paths: [
+                {type: ExprType.STRING, value: 'c'}
+            ]
+        }
+    ],
+    operator: 42
+}
+```
+
 
 ANode 的结构
 ------
