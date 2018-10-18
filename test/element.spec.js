@@ -860,4 +860,67 @@ describe("Element", function () {
         });
 
     });
+
+    it("disabled attr for normal element", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><a disabled checked>san</a></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+
+        // ie 是个 bt，什么元素都能 disabled
+        if (!/msie/i.test(navigator.userAgent)) {
+            expect(a.hasAttribute('disabled')).toBeTruthy();
+        }
+        expect(a.hasAttribute('checked')).toBeTruthy();
+
+        expect(a.disabled).toBeFalsy();
+        expect(a.checked).toBeFalsy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("disabled attr for form element", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><button disabled>san</button></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(btn.disabled).toBeTruthy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("type attr for button element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><form action="https://www.baidu.com/"><input type="text" value="test" name="kw"><button type="button">nosubmit</button></form></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(btn.getAttribute('type')).toBe('button');
+
+        triggerEvent(btn, 'click');
+        setTimeout(function () {
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }, 2000)
+    });
 });

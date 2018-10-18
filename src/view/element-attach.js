@@ -3,7 +3,7 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var createNode = require('./create-node');
+var genElementChildren = require('./gen-element-children');
 var evalExpr = require('../runtime/eval-expr');
 var insertBefore = require('../browser/insert-before');
 
@@ -25,12 +25,7 @@ function elementAttach(element, parentEl, beforeEl) {
             element.el.innerHTML = evalExpr(htmlDirective.value, element.scope, element.owner);
         }
         else {
-            var aNodeChildren = element.aNode.children;
-            for (var i = 0; i < aNodeChildren.length; i++) {
-                var child = createNode(aNodeChildren[i], element);
-                element.children.push(child);
-                child.attach(element.el);
-            }
+            genElementChildren(element);
         }
 
         element._contentReady = 1;

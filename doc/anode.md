@@ -5,34 +5,35 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
-[template 简述](#user-content-template-简述)  
-　　[插值语法](#user-content-插值语法)  
-　　[普通属性语法](#user-content-普通属性)  
-　　[双向绑定语法](#user-content-双向绑定)  
-　　[指令语法](#user-content-指令)  
-[表达式](#user-content-表达式)  
-　　[表达式类型](#user-content-表达式类型)  
-　　[STRING](#user-content-string)  
-　　[NUMBER](#user-content-number)  
-　　[BOOL](#user-content-bool)  
-　　[ACCESSOR](#user-content-accessor)  
-　　[INTERP](#user-content-interp)  
-　　[CALL](#user-content-call)  
-　　[TEXT](#user-content-text)  
-　　[BINARY](#user-content-binary)  
-　　[UNARY](#user-content-unary)  
-　　[TERTIARY](#user-content-tertiary)  
-　　[ARRAY LITERAL](#user-content-array-literal)  
-　　[OBJECT LITERAL](#user-content-object-literal)  
-[ANode 的结构](#user-content-anode-的结构)  
-[模板解析结果](#user-content-模板解析结果)  
-　　[文本](#user-content-文本)  
-　　[属性](#user-content-属性)  
-　　[双向绑定](#user-content-双向绑定)  
-　　[复杂的插值](#user-content-复杂的插值)  
-　　[事件绑定](#user-content-事件绑定)  
-　　[条件指令](#user-content-条件指令)  
-　　[循环指令](#user-content-循环指令)  
+[template 简述](#user-content-template-简述)
+　　[插值语法](#user-content-插值语法)
+　　[普通属性语法](#user-content-普通属性)
+　　[双向绑定语法](#user-content-双向绑定)
+　　[指令语法](#user-content-指令)
+[表达式](#user-content-表达式)
+　　[表达式类型](#user-content-表达式类型)
+　　[STRING](#user-content-string)
+　　[NUMBER](#user-content-number)
+　　[BOOL](#user-content-bool)
+　　[ACCESSOR](#user-content-accessor)
+　　[INTERP](#user-content-interp)
+　　[CALL](#user-content-call)
+　　[TEXT](#user-content-text)
+　　[BINARY](#user-content-binary)
+　　[UNARY](#user-content-unary)
+　　[TERTIARY](#user-content-tertiary)
+　　[ARRAY LITERAL](#user-content-array-literal)
+　　[OBJECT LITERAL](#user-content-object-literal)
+　　[PARENTHESIZED](#user-content-parenthesized)
+[ANode 的结构](#user-content-anode-的结构)
+[模板解析结果](#user-content-模板解析结果)
+　　[文本](#user-content-文本)
+　　[属性](#user-content-属性)
+　　[双向绑定](#user-content-双向绑定)
+　　[复杂的插值](#user-content-复杂的插值)
+　　[事件绑定](#user-content-事件绑定)
+　　[条件指令](#user-content-条件指令)
+　　[循环指令](#user-content-循环指令)
 
 
 
@@ -310,9 +311,13 @@ exprInfo = {
 
 ### UNARY
 
-一元表达式，其实现在就只支持 `!` 的逻辑否定。
+一元表达式，支持：
+
+- `!` 逻辑否定
+- `-` 取负
 
 ```javascript
+// operator - 操作符。数值，值为操作符 char 的 ascii。
 exprInfo = {
     type: ExprType.UNARY,
     expr: {
@@ -321,7 +326,8 @@ exprInfo = {
             {type: ExprType.STRING, value: 'user'},
             {type: ExprType.STRING, value: 'isLogin'}
         ]
-    }
+    },
+    operator: 33
 }
 ```
 
@@ -458,6 +464,47 @@ exprInfo = {
     "raw": "{name: realName, email, ...ext}"
 }
 ```
+
+### PARENTHESIZED
+
+括号表达式不会生成独立的表达式对象。被括号包含的表达式，在其对象上有一个 `parenthesized` 属性，值为 `true`。
+
+```javascript
+// (a + b) * c
+// a + b 的表达式对象上包含 parenthesized 属性，值为 true
+exprInfo = {
+    type: ExprType.BINARY,
+    segs: [
+        {
+            type: ExprType.BINARY,
+            parenthesized: true,
+            segs: [
+                {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: 'a'}
+                    ]
+                },
+                {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: 'b'}
+                    ]
+                }
+            ],
+            operator: 43
+        },
+        {
+            type: ExprType.ACCESSOR,
+            paths: [
+                {type: ExprType.STRING, value: 'c'}
+            ]
+        }
+    ],
+    operator: 42
+}
+```
+
 
 ANode 的结构
 ------

@@ -39,8 +39,7 @@ var HTML_ATTR_PROP_MAP = {
 var defaultElementPropHandler = {
     prop: function (el, value, name, element) {
         var propName = HTML_ATTR_PROP_MAP[name] || name;
-        value = value == null ? '' : value
-
+        value = value == null ? '' : value;
         // input 的 type 是个特殊属性，其实也应该用 setAttribute
         // 但是 type 不应该运行时动态改变，否则会有兼容性问题
         // 所以这里直接就不管了
@@ -106,10 +105,6 @@ var defaultElementPropHandlers = {
         prop: empty
     },
 
-    readonly: boolPropHandler,
-    disabled: boolPropHandler,
-    autofocus: boolPropHandler,
-    required: boolPropHandler,
     draggable: boolPropHandler
 };
 /* eslint-enable fecs-properties-quote */
@@ -121,7 +116,7 @@ var analInputChecker = {
     }
 };
 
-function analInputCheckedState(element, value, oper) {
+function analInputCheckedState(element, value) {
     var bindValue = getANodeProp(element.aNode, 'value');
     var bindType = getANodeProp(element.aNode, 'type');
 
@@ -130,7 +125,7 @@ function analInputCheckedState(element, value, oper) {
 
         if (analInputChecker[type]) {
             var bindChecked = getANodeProp(element.aNode, 'checked');
-            if (!bindChecked.hintExpr) {
+            if (bindChecked != null && !bindChecked.hintExpr) {
                 bindChecked.hintExpr = bindValue.expr;
             }
 
@@ -163,7 +158,7 @@ var elementPropHandlers = {
                 var bindType = getANodeProp(element.aNode, 'type') || {};
 
                 if (bindValue && bindType) {
-                    switch (bindType.raw) {
+                    switch (el.type.toLowerCase()) {
                         case 'checkbox':
                             data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
                             return;
@@ -181,7 +176,11 @@ var elementPropHandlers = {
 
                 defaultElementPropHandler.output(element, bindInfo, data);
             }
-        }
+        },
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
     },
 
     option: {
@@ -203,6 +202,27 @@ var elementPropHandlers = {
             },
 
             output: defaultElementPropHandler.output
+        },
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
+    },
+
+    textarea: {
+        readonly: boolPropHandler,
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        required: boolPropHandler
+    },
+
+    button: {
+        disabled: boolPropHandler,
+        autofocus: boolPropHandler,
+        type: {
+            prop: function (el, value) {
+                el.setAttribute('type', value || '');
+            }
         }
     }
 };

@@ -35,7 +35,7 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 ```
 
-[Dist Files Infomation](https://github.com/baidu/san/tree/master/dist)
+[Dist Files Information](https://github.com/baidu/san/tree/master/dist)
 
 
 ## Quick Start
@@ -91,7 +91,7 @@ CDN:
 - [san-factory](https://github.com/baidu/san-factory) - Component register and instantiation
 - [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
 - [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
-
+- [drei](https://github.com/ssddi456/drei/) - VSCode extension for SAN
 
 ## ChangeLog
 

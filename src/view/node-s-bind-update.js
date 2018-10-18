@@ -11,6 +11,9 @@ var changeExprCompare = require('../runtime/change-expr-compare');
  * 初始化节点的 s-bind 数据
  *
  * @param {Object} node 节点对象
+ * @param {Object} sBind bind指令对象
+ * @param {Array} changes 变更数组
+ * @param {Function} updater 绑定对象子项变更的更新函数
  */
 function nodeSBindUpdate(node, sBind, changes, updater) {
     if (sBind) {

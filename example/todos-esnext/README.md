@@ -1,7 +1,9 @@
 todos-esnext
 ===
 
-> todos demo use `.san` components and `esnext`
+> Todos demo use `.san` components and `esnext`
+
+Notice: This demo is incompatible with old IE. More infomation see https://github.com/baidu/san/issues/291
 
 ## Prepare
 
@@ -17,7 +19,7 @@ First, run dev script:
 $ npm run dev
 ```
 
-And then, open <http://localhost:8888/> 
+And then, open <http://localhost:8888/>
 
 ## Build
 
@@ -32,4 +34,4 @@ $ type serve >/dev/null 2>&1 || npm i -g serve
 $ serve dist -p 9999
 ```
 
-Open <http://localhost:9999/> 
+Open <http://localhost:9999/>

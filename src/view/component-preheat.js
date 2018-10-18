@@ -41,7 +41,9 @@ function componentPreheat(ComponentClass) {
             }
             else {
                 var sourceNode;
-                if (isBrowser && aNode.tagName && !/^(template|slot|select|input|option)$/i.test(aNode.tagName)) {
+                if (isBrowser && aNode.tagName
+                    && !/^(template|slot|select|input|option|button)$/i.test(aNode.tagName)
+                ) {
                     sourceNode = createEl(aNode.tagName);
                 }
 
@@ -63,26 +65,29 @@ function componentPreheat(ComponentClass) {
                     recordHotspotData(analyseExprDataHotspot(prop.expr));
                 });
 
-                /* eslint-disable guard-for-in */
                 for (var key in aNode.directives) {
-                    var directive = aNode.directives[key];
-                    recordHotspotData(analyseExprDataHotspot(directive.value), !/^(html|bind)$/.test(key));
+                    if (aNode.directives.hasOwnProperty(key)) {
+                        var directive = aNode.directives[key];
+                        recordHotspotData(
+                            analyseExprDataHotspot(directive.value),
+                            !/^(html|bind)$/.test(key)
+                        );
 
-                    // init trackBy getKey function
-                    if (key === 'for') {
-                        var trackBy = directive.trackBy;
-                        if (trackBy
-                            && trackBy.type === ExprType.ACCESSOR
-                            && trackBy.paths[0].value === directive.item.raw
-                        ) {
-                            aNode.hotspot.getForKey = new Function(
-                                directive.item.raw,
-                                'return ' + trackBy.raw
-                            );
+                        // init trackBy getKey function
+                        if (key === 'for') {
+                            var trackBy = directive.trackBy;
+                            if (trackBy
+                                && trackBy.type === ExprType.ACCESSOR
+                                && trackBy.paths[0].value === directive.item.raw
+                            ) {
+                                aNode.hotspot.getForKey = new Function(
+                                    directive.item.raw,
+                                    'return ' + trackBy.raw
+                                );
+                            }
                         }
                     }
                 }
-                /* eslint-enable guard-for-in */
 
                 each(aNode.elses, function (child) {
                     analyseANodeHotspot(child);

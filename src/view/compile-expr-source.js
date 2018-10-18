@@ -63,6 +63,42 @@ var compileExprSource = {
     },
 
     /**
+     * 生成调用表达式代码
+     *
+     * @param {Object?} callExpr 调用表达式对象
+     * @return {string}
+     */
+    callExpr: function (callExpr) {
+        var paths = callExpr.name.paths;
+        var code = 'componentCtx.' + paths[0].value;
+
+        for (var i = 1; i < paths.length; i++) {
+            var path = paths[i];
+
+            switch (path.type) {
+                case ExprType.STRING:
+                    code += '.' + path.value;
+                    break;
+
+                case ExprType.NUMBER:
+                    code += '[' + path.value + ']';
+                    break;
+
+                default:
+                    code += '[' + compileExprSource.expr(path) + ']';
+            }
+        }
+
+        code += '(';
+        each(callExpr.args, function (arg, index) {
+            code += (index > 0 ? ', ' : '') + compileExprSource.expr(arg);
+        });
+        code += ')';
+
+        return code;
+    },
+
+    /**
      * 生成插值代码
      *
      * @param {Object} interpExpr 插值表达式对象
@@ -176,9 +212,28 @@ var compileExprSource = {
      * @return {string}
      */
     expr: function (expr) {
+        if (expr.parenthesized) {
+            return '(' + compileExprSource._expr(expr) + ')';
+        }
+
+        return compileExprSource._expr(expr);
+    },
+
+    /**
+     * 根据表达式类型进行生成代码函数的中转分发
+     *
+     * @param {Object} expr 表达式对象
+     * @return {string}
+     */
+    _expr: function (expr) {
         switch (expr.type) {
             case ExprType.UNARY:
-                return '!' + compileExprSource.expr(expr.expr);
+                switch (expr.operator) {
+                    case 33:
+                        return '!' + compileExprSource.expr(expr.expr);
+                    case 45:
+                        return '-' + compileExprSource.expr(expr.expr);
+                }
 
             case ExprType.BINARY:
                 return compileExprSource.expr(expr.segs[0])
@@ -213,6 +268,9 @@ var compileExprSource = {
 
             case ExprType.OBJECT:
                 return compileExprSource.object(expr);
+
+            case ExprType.CALL:
+                return compileExprSource.callExpr(expr);
         }
     }
 };

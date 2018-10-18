@@ -1134,4 +1134,49 @@ describe("IfDirective", function () {
         });
     });
 
+    it("with call expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<div><u s-if="isWorking(time)">work</u><b s-else>rest</b></div>',
+
+            isWorking: function (time) {
+                if (time < 9 || time > 18) {
+                    return false;
+                }
+
+                return true;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                time: 8
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+        myComponent.data.set('time', 16);
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('u').length).toBe(1);
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+            myComponent.data.set('time', 19);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u').length).toBe(0);
+                expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
 });

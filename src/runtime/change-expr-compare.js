@@ -44,23 +44,22 @@ function changeExprCompare(changeExpr, expr, data) {
     switch (expr.type) {
         case ExprType.ACCESSOR:
             var paths = expr.paths;
-            var len = paths.length;
+            var pathsLen = paths.length;
             var changePaths = changeExpr.paths;
             var changeLen = changePaths.length;
 
             var result = 1;
-            for (var i = 0; i < len; i++) {
+            for (var i = 0; i < pathsLen; i++) {
                 var pathExpr = paths[i];
+                var pathExprValue = pathExpr.value;
 
-                if (pathExpr.type === ExprType.ACCESSOR
-                    && changeExprCompare(changeExpr, pathExpr, data)
-                ) {
+                if (pathExprValue == null && changeExprCompare(changeExpr, pathExpr, data)) {
                     return 1;
                 }
 
                 if (result && i < changeLen
                     /* eslint-disable eqeqeq */
-                    && (pathExpr.value || evalExpr(pathExpr, data))
+                    && (pathExprValue || evalExpr(pathExpr, data))
                         != (changePaths[i].value || evalExpr(changePaths[i], data))
                     /* eslint-enable eqeqeq */
                 ) {
@@ -69,7 +68,7 @@ function changeExprCompare(changeExpr, expr, data) {
             }
 
             if (result) {
-                result = Math.max(1, changeLen - len + 2);
+                result = Math.max(1, changeLen - pathsLen + 2);
             }
             return result;
 
@@ -104,6 +103,13 @@ function changeExprCompare(changeExpr, expr, data) {
             }
 
             return 1;
+
+        case ExprType.CALL:
+            if (changeExprCompareExprs(changeExpr, expr.name.paths, data)
+                || changeExprCompareExprs(changeExpr, expr.args, data)
+            ) {
+                return 1;
+            }
     }
 
     return 0;

@@ -27,7 +27,16 @@ function evalExpr(expr, data, owner) {
     if (value == null) {
         switch (expr.type) {
             case ExprType.UNARY:
-                value = !evalExpr(expr.expr, data, owner);
+                value = evalExpr(expr.expr, data, owner);
+                switch (expr.operator) {
+                    case 33:
+                        value = !value;
+                        break;
+
+                    case 45:
+                        value = 0 - value;
+                        break;
+                }
                 break;
 
             case ExprType.BINARY:
@@ -152,6 +161,22 @@ function evalExpr(expr, data, owner) {
 
                 if (value == null) {
                     value = '';
+                }
+
+                break;
+
+            case ExprType.CALL:
+                if (owner && expr.name.type === ExprType.ACCESSOR) {
+                    var method = owner;
+                    var pathsLen = expr.name.paths.length;
+
+                    for (var i = 0; method && i < pathsLen; i++) {
+                        method = method[evalExpr(expr.name.paths[i], data, owner)];
+                    }
+
+                    if (method) {
+                        value = method.apply(owner, evalArgs(expr.args, data, owner));
+                    }
                 }
 
                 break;

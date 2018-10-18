@@ -21,6 +21,9 @@ var svgTags = splitStr2Obj(''
     // other
     + 'marker,pattern,clippath,mask,filter,cursor,view,animate,'
     // font
-    + 'font,font-face,glyph,missing-glyph');
+    + 'font,font-face,glyph,missing-glyph,'
+    // camel
+    + 'animateColor,animateMotion,animateTransform,textPath,foreignObject'
+);
 
 exports = module.exports = svgTags;

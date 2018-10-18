@@ -892,6 +892,54 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data set after attach, use list[index] in interp", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{persons[i].name}} {{i+1}}/{{persons.length}}">{{persons[i].name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: [
+                    { name: 'errorrik', email: 'errorrik@gmail.com' },
+                    { name: 'varsha', email: 'wangshuonpu@163.com' }
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('errorrik 1/2');
+
+        myComponent.data.set('persons[0]', { name: 'erik', email: 'erik168@163.com' });
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(4);
+            expect(lis[1].getAttribute('title')).toBe('erik 1/2');
+            expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
+
+            expect(lis[2].getAttribute('title')).toBe('varsha 2/2');
+            expect(lis[2].innerHTML.indexOf('varsha - wangshuonpu@163.com')).toBe(0);
+
+            myComponent.data.set('persons[1].name', 'wsh');
+
+            san.nextTick(function () {
+                expect(lis.length).toBe(4);
+                expect(lis[1].getAttribute('title')).toBe('erik 1/2');
+                expect(lis[1].innerHTML.indexOf('erik - erik168@163.com')).toBe(0);
+
+                expect(lis[2].getAttribute('title')).toBe('wsh 2/2');
+                expect(lis[2].innerHTML.indexOf('wsh - wangshuonpu@163.com')).toBe(0);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("data set null after attach, has no sibling", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li></ul>'
@@ -915,6 +963,42 @@ describe("ForDirective", function () {
         san.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data set after attach, index overflow", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name</li><li san-for="p,i in persons">{{i+1}}-{{p}}</li><li>name</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: ['errorrik', 'varsha']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toBe('1-errorrik');
+        expect(lis[2].innerHTML).toBe('2-varsha');
+
+        myComponent.data.set('persons[0]', 'erik');
+        myComponent.data.set('persons[3]', 'otakustay');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toBe('1-erik');
+            expect(lis[2].innerHTML).toBe('2-varsha');
+            expect(lis[3].innerHTML).toBe('3-');
+            expect(lis[4].innerHTML).toBe('4-otakustay');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -2284,5 +2368,117 @@ describe("ForDirective", function () {
             document.body.removeChild(wrap);
             done();
         });
+    });
+
+    it("render object", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                persons: {
+                    'erik': 'errorrik@gmail.com',
+                    'otakustay': 'otakustay@gmail.com'
+                }
+            }
+        });
+
+        var erikHTML = 'erik-errorrik@gmail.com';
+        var grayHTML = 'otakustay-otakustay@gmail.com';
+        var leeHTML = 'leeight-leeight@gmail.com';
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(2);
+        expect(lis[0].innerHTML === erikHTML || lis[0].innerHTML === grayHTML).toBeTruthy();
+        expect(lis[1].innerHTML === erikHTML || lis[1].innerHTML === grayHTML).toBeTruthy();
+
+        myComponent.data.set('persons.leeight', 'leeight@gmail.com');
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            expect(lis.length).toBe(3);
+            expect(lis[0].innerHTML === erikHTML || lis[0].innerHTML === grayHTML || lis[0].innerHTML === leeHTML).toBeTruthy();
+            expect(lis[1].innerHTML === erikHTML || lis[1].innerHTML === grayHTML || lis[1].innerHTML === leeHTML).toBeTruthy();
+            expect(lis[2].innerHTML === erikHTML || lis[2].innerHTML === grayHTML || lis[2].innerHTML === leeHTML).toBeTruthy();
+
+            myComponent.data.set('persons.erik', null);
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+
+                expect(lis.length).toBe(2);
+                expect(lis[0].innerHTML === grayHTML || lis[0].innerHTML === leeHTML).toBeTruthy();
+                expect(lis[1].innerHTML === grayHTML || lis[1].innerHTML === leeHTML).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
+    it("render object, start with undefined", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in dep.persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                dep: {}
+            }
+        });
+
+        var erikHTML = 'erik-errorrik@gmail.com';
+        var grayHTML = 'otakustay-otakustay@gmail.com';
+        var leeHTML = 'leeight-leeight@gmail.com';
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(0);
+
+        myComponent.data.set('dep', {
+            persons: {
+                'erik': 'errorrik@gmail.com',
+                'otakustay': 'otakustay@gmail.com'
+            }
+        });
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            expect(lis.length).toBe(2);
+            expect(lis[0].innerHTML === erikHTML || lis[0].innerHTML === grayHTML).toBeTruthy();
+            expect(lis[1].innerHTML === erikHTML || lis[1].innerHTML === grayHTML).toBeTruthy();
+
+
+            myComponent.data.set('dep.persons.leeight', 'leeight@gmail.com');
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+
+                expect(lis.length).toBe(3);
+                expect(lis[0].innerHTML === erikHTML || lis[0].innerHTML === grayHTML || lis[0].innerHTML === leeHTML).toBeTruthy();
+                expect(lis[1].innerHTML === erikHTML || lis[1].innerHTML === grayHTML || lis[1].innerHTML === leeHTML).toBeTruthy();
+                expect(lis[2].innerHTML === erikHTML || lis[2].innerHTML === grayHTML || lis[2].innerHTML === leeHTML).toBeTruthy();
+
+                myComponent.data.set('dep', null);
+                myComponent.nextTick(function () {
+                    var lis = wrap.getElementsByTagName('li');
+                    expect(lis.length).toBe(0);
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+            });
+        });
+
     });
 });

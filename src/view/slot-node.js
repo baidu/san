@@ -5,6 +5,7 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
+var extend = require('../util/extend');
 var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var createAccessor = require('../parser/create-accessor');
@@ -13,6 +14,7 @@ var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var insertBefore = require('../browser/insert-before');
+var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
@@ -78,7 +80,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
 
     var initData;
     if (nodeSBindInit(this, aNode.directives.bind)) {
-        initData = extend({}, me._sbindData);
+        initData = extend({}, this._sbindData);
     }
 
     if (realANode.vars) {
@@ -133,6 +135,11 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childScope = null;
 
     elementDisposeChildren(this, noDetach, noTransition);
+
+    if (!noDetach) {
+        removeEl(this.el);
+        removeEl(this.sel);
+    }
     nodeDispose(this);
 };
 
@@ -149,7 +156,7 @@ SlotNode.prototype._toPhase = elementOwnToPhase;
 SlotNode.prototype._update = function (changes, isFromOuter) {
     var me = this;
 
-    if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== me.name) {
+    if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== this.name) {
         this.owner._notifyNeedReload();
         return false;
     }
@@ -182,7 +189,7 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                     scopedChanges.push({
                         type: DataChangeType.SET,
                         expr: createAccessor([
-                            { type: ExprType.STRING, value: name }
+                            {type: ExprType.STRING, value: name}
                         ]),
                         value: value,
                         option: {}

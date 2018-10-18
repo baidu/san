@@ -6,6 +6,7 @@
 
 var each = require('../util/each');
 var guid = require('../util/guid');
+var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
 var cloneDirectives = require('../parser/clone-directives');
@@ -52,7 +53,8 @@ var elementSourceCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
      * @param {Array} props 属性列表
-     * @param {string?} extraProp 额外的属性串
+     * @param {string=} extraProp 额外的属性串
+     * @param {Object=} bindDirective bind指令对象
      */
     tagStart: function (sourceBuffer, tagName, props, extraProp, bindDirective) {
         sourceBuffer.joinString('<' + tagName);
@@ -407,6 +409,9 @@ var aNodeCompiler = {
         }
 
         sourceBuffer.addRaw('var ' + listName + ' = ' + compileExprSource.expr(forDirective.value) + ';');
+        sourceBuffer.addRaw('if (' + listName + ' instanceof Array) {');
+
+        // for array
         sourceBuffer.addRaw('for ('
             + 'var ' + indexName + ' = 0; '
             + indexName + ' < ' + listName + '.length; '
@@ -421,6 +426,25 @@ var aNodeCompiler = {
                 owner
             )
         );
+        sourceBuffer.addRaw('}');
+
+        sourceBuffer.addRaw('} else if (typeof ' + listName + ' === "object") {');
+
+        // for object
+        sourceBuffer.addRaw('for (var ' + indexName + ' in ' + listName + ') {');
+        sourceBuffer.addRaw('if (' + listName + '[' + indexName + '] != null) {');
+        sourceBuffer.addRaw('componentCtx.data.' + indexName + '=' + indexName + ';');
+        sourceBuffer.addRaw('componentCtx.data.' + itemName + '= ' + listName + '[' + indexName + '];');
+        sourceBuffer.addRaw(
+            aNodeCompiler.compile(
+                forElementANode,
+                sourceBuffer,
+                owner
+            )
+        );
+        sourceBuffer.addRaw('}');
+        sourceBuffer.addRaw('}');
+
         sourceBuffer.addRaw('}');
     },
 
@@ -571,7 +595,7 @@ var aNodeCompiler = {
         });
 
         var givenDataHTML = '{' + givenData.join(',\n') + '}';
-        if (aNode.directives.bind){
+        if (aNode.directives.bind) {
             givenDataHTML = 'extend('
                 + compileExprSource.expr(aNode.directives.bind.value)
                  + ', '
@@ -587,7 +611,6 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('$givenSlots = null;');
     }
 };
-/* eslint-disable guard-for-in */
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
@@ -613,11 +636,13 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
 
     var eventDeclarations = [];
     for (var key in component.listeners) {
-        each(component.listeners[key], function (listener) {
-            if (listener.declaration) {
-                eventDeclarations.push(listener.declaration);
-            }
-        });
+        if (component.listeners.hasOwnProperty(key)) {
+            each(component.listeners[key], function (listener) {
+                if (listener.declaration) {
+                    eventDeclarations.push(listener.declaration);
+                }
+            });
+        }
     }
 
     elementSourceCompiler.tagStart(
@@ -635,7 +660,6 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     }
 
 
-
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
 }
@@ -646,7 +670,7 @@ var stringifier = {
         var result = '{';
 
         for (var key in source) {
-            if (typeof source[key] === 'undefined') {
+            if (!source.hasOwnProperty(key) || typeof source[key] === 'undefined') {
                 continue;
             }
 
@@ -716,6 +740,10 @@ var stringifier = {
     }
 };
 
+var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('computed,filters,components,'
+    + 'initData,template,attached,created,detached,disposed,compiled'
+);
+
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
  *
@@ -726,6 +754,44 @@ var stringifier = {
 function genComponentContextCode(component) {
     var code = ['var componentCtx = {'];
 
+    // members for call expr
+    var ComponentProto = component.constructor.prototype;
+    Object.keys(ComponentProto).forEach(function (protoMemberKey) {
+        var protoMember = ComponentProto[protoMemberKey];
+        if (COMPONENT_RESERVED_MEMBERS[protoMemberKey] || !protoMember) {
+            return;
+        }
+
+        switch (typeof protoMember) {
+            case 'function':
+                code.push(protoMemberKey + ': ' + protoMember.toString() + ',');
+                break;
+
+            case 'object':
+                code.push(protoMemberKey + ':');
+
+                if (protoMember instanceof Array) {
+                    code.push('[');
+                    protoMember.forEach(function (item) {
+                        code.push(typeof item === 'function' ? item.toString() : '' + ',');
+                    });
+                    code.push(']');
+                }
+                else {
+                    code.push('{');
+                    Object.keys(protoMember).forEach(function (itemKey) {
+                        var item = protoMember[itemKey];
+                        if (typeof item === 'function') {
+                            code.push(itemKey + ':' + item.toString() + ',');
+                        }
+                    });
+                    code.push('}');
+                }
+
+                code.push(',');
+        }
+    });
+
     // given anode
     code.push('givenSlots: [],');
 
@@ -733,10 +799,12 @@ function genComponentContextCode(component) {
     code.push('filters: {');
     var filterCode = [];
     for (var key in component.filters) {
-        var filter = component.filters[key];
+        if (component.filters.hasOwnProperty(key)) {
+            var filter = component.filters[key];
 
-        if (typeof filter === 'function') {
-            filterCode.push(key + ': ' + filter.toString());
+            if (typeof filter === 'function') {
+                filterCode.push(key + ': ' + filter.toString());
+            }
         }
     }
     code.push(filterCode.join(','));
@@ -756,19 +824,21 @@ function genComponentContextCode(component) {
     code.push('computed: {');
     var computedCode = [];
     for (var key in component.computed) {
-        var computed = component.computed[key];
+        if (component.computed.hasOwnProperty(key)) {
+            var computed = component.computed[key];
 
-        if (typeof computed === 'function') {
-            computedCode.push(key + ': '
-                + computed.toString().replace(
-                    /this.data.get\(([^\)]+)\)/g,
-                    function (match, exprLiteral) {
-                        var exprStr = (new Function('return ' + exprLiteral))();
-                        var expr = parseExpr(exprStr);
+            if (typeof computed === 'function') {
+                computedCode.push(key + ': '
+                    + computed.toString().replace(
+                        /this.data.get\(([^\)]+)\)/g,
+                        function (match, exprLiteral) {
+                            var exprStr = (new Function('return ' + exprLiteral))();
+                            var expr = parseExpr(exprStr);
 
-                        return compileExprSource.expr(expr);
-                    })
-            );
+                            return compileExprSource.expr(expr);
+                        })
+                );
+            }
         }
     }
     code.push(computedCode.join(','));
@@ -778,10 +848,12 @@ function genComponentContextCode(component) {
     code.push('computedNames: [');
     computedCode = [];
     for (var key in component.computed) {
-        var computed = component.computed[key];
+        if (component.computed.hasOwnProperty(key)) {
+            var computed = component.computed[key];
 
-        if (typeof computed === 'function') {
-            computedCode.push('"' + key + '"');
+            if (typeof computed === 'function') {
+                computedCode.push('"' + key + '"');
+            }
         }
     }
     code.push(computedCode.join(','));

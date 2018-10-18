@@ -8,6 +8,7 @@ var createANode = require('./create-a-node');
 var Walker = require('./walker');
 var integrateAttr = require('./integrate-attr');
 var parseText = require('./parse-text');
+var svgTags = require('../browser/svg-tags');
 var autoCloseTags = require('../browser/auto-close-tags');
 
 // #[begin] error
@@ -58,7 +59,10 @@ function parseTemplate(source, options) {
 
     while ((tagMatch = walker.match(tagReg)) != null) {
         var tagEnd = tagMatch[1];
-        var tagName = tagMatch[2].toLowerCase();
+        var tagName = tagMatch[2];
+        if (!svgTags[tagName]) {
+            tagName = tagName.toLowerCase();
+        }
 
         pushTextNode(source.slice(
             beforeLastIndex,

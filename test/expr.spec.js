@@ -38,6 +38,22 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("unary -", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{-val1 | tobe(-10)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 10);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("unary !", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{!val1 | tobe(false)}}</b>',

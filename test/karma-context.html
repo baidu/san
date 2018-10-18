@@ -24,6 +24,12 @@ Reloaded before every execution run.
 
 <div id="bool-attr-no-binding"><div><!--s-data:{}--><button disabled>button</button></div></div>
 
+<div id="call-expr"><u><!--s-data:{"num":2,"base":3}-->result 28</u></div>
+
+<div id="call-expr-dynamic"><u><!--s-data:{"isUp":true,"num1":5,"num2":3}-->result 8</u></div>
+
+<div id="call-expr-if"><div><!--s-data:{"time":8}--><b>rest</b></div></div>
+
 <div id="checkbox-checked"><div><!--s-data:{"cValue":["2","3"],"list":["1","2","3"]}--><input type="checkbox" value="1"><input type="checkbox" value="2" checked><input type="checkbox" value="3" checked></div></div>
 
 <div id="cmpt-event"><div><!--s-data:{"title":"1","text":"one"}--><a><span title="1">one</span></a></div></div>
@@ -68,6 +74,8 @@ Reloaded before every execution run.
 
 <div id="for-array-literal"><ul><!--s-data:{"three":3,"other":[]}--><li>1</li><li>2</li><li>3</li></ul></div>
 
+<div id="for-object"><ul><!--s-data:{"persons":{"erik":"errorrik@gmail.com","otakustay":"otakustay@gmail.com"}}--><li title="errorrik@gmail.com">erik-errorrik@gmail.com</li><li title="otakustay@gmail.com">otakustay-otakustay@gmail.com</li></ul></div>
+
 <div id="for-push-many-data"><ul><!--s-data:{"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"otakustay","email":"otakustay@gmail.com"}]}--><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
 
 <div id="for-rm-many-data"><ul><!--s-data:{"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"otakustay","email":"otakustay@gmail.com"}]}--><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
@@ -99,6 +107,8 @@ Reloaded before every execution run.
 <div id="multi-elif-update-last"><div><!--s-data:{"num":30}--><b title="small">small</b></div></div>
 
 <div id="multi-elif-update-mid"><div><!--s-data:{"num":300}--><span title="big">big</span></div></div>
+
+<div id="negated-unary"><div><!--s-data:{"num1":11,"num2":-12}--><u>1</u></div></div>
 
 <div id="nest-for"><form><!--s-data:{"cates":["foo","bar"],"forms":{"foo":[1,2,3],"bar":[4,5,6]}}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
 

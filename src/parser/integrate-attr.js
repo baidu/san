@@ -56,7 +56,7 @@ function integrateAttr(aNode, name, value, options) {
 
             event.expr = parseCall(value, [
                 createAccessor([
-                    { type: ExprType.STRING, value: '$event' }
+                    {type: ExprType.STRING, value: '$event'}
                 ])
             ]);
             break;

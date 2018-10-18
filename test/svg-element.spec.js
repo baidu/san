@@ -61,6 +61,33 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
 
         });
 
+        // svg foreignObject中可以渲染一个p标签 
+        it("foreignObject inner html", function (done) {
+
+            var MyComponent = san.defineComponent({
+                template: '<svg width="400px" height="300px" viewBox="0 0 400 300"'
+                    + 'xmlns="http://www.w3.org/2000/svg">'
+                    + '<foreignObject width="100" height="50">'
+                    + '<p>Here is a paragraph that requires word wrap</p>'
+                    + '</foreignObject>'
+                    + '<circle cx="150" cy="50" r="50"/>'
+                    + '</svg>',
+            });
+            var myComponent = new MyComponent;
+
+            myComponent.attach(wrap);
+            
+            var foreignObjectEl = wrap.getElementsByTagName('foreignObject')[0];
+            // 好像没啥用, 不论大小写，用 getElementsByTagName 都可以查询到节点
+            expect(!!foreignObjectEl).toBe(true);
+
+            //  所以匹配节点的标签是否是大写的
+            expect(/\<foreignObject/.test(foreignObjectEl.outerHTML)).toBe(true);
+            expect(/\<\/foreignObject\>/.test(foreignObjectEl.outerHTML)).toBe(true);
+
+            done();
+        });
+
     });
 
 }

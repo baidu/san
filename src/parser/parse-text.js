@@ -21,6 +21,8 @@ function regexpLiteral(source) {
     });
 }
 
+var delimRegCache = {};
+
 /**
  * 解析文本
  *
@@ -30,10 +32,18 @@ function regexpLiteral(source) {
  */
 function parseText(source, delimiters) {
     delimiters = delimiters || ['{{', '}}'];
-    var exprStartReg = new RegExp(
-        regexpLiteral(delimiters[0]) + '\\s*([\\s\\S]+?)\\s*' + regexpLiteral(delimiters[1]),
-        'ig'
-    );
+
+    var regCacheKey = delimiters[0] + '>..<' + delimiters[1];
+    var exprStartReg = delimRegCache[regCacheKey];
+    if (!exprStartReg) {
+        exprStartReg = new RegExp(
+            regexpLiteral(delimiters[0])
+                + '\\s*([\\s\\S]+?)\\s*'
+                + regexpLiteral(delimiters[1]),
+            'ig'
+        );
+        delimRegCache[regCacheKey] = exprStartReg;
+    }
 
     var exprMatch;
 

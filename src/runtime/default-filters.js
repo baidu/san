@@ -5,7 +5,6 @@
 
 
 /* eslint-disable fecs-camelcase */
-/* eslint-disable guard-for-in */
 
 /**
  * 默认filter
@@ -35,7 +34,9 @@ var DEFAULT_FILTERS = {
         if (typeof source === 'object') {
             var result = '';
             for (var key in source) {
-                result += key + ':' + source[key] + ';';
+                if (source.hasOwnProperty(key)) {
+                    result += key + ':' + source[key] + ';';
+                }
             }
 
             return result;

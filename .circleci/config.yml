@@ -12,7 +12,10 @@ version: 2
 jobs:
   build:
     <<: *job_defaults
-
+    branches:
+      only:
+        - master
+        
     steps:
       - checkout
 

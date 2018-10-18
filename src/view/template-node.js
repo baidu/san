@@ -6,6 +6,7 @@
 var each = require('../util/each');
 var guid = require('../util/guid');
 var insertBefore = require('../browser/insert-before');
+var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
 var nodeDispose = require('./node-dispose');
@@ -69,6 +70,11 @@ TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
  */
 TemplateNode.prototype.dispose = function (noDetach, noTransition) {
     elementDisposeChildren(this, noDetach, noTransition);
+
+    if (!noDetach) {
+        removeEl(this.el);
+        removeEl(this.sel);
+    }
     nodeDispose(this);
 };
 

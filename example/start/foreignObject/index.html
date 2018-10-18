@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>start - hello</title>
+</head>
+
+<body>
+    <script src="../../../dist/san.js"></script>
+    <script>
+    var MyApp = san.defineComponent({
+        template: `
+        <svg width="400px" height="300px" viewBox="0 0 400 300"
+        xmlns="http://www.w3.org/2000/svg">
+        <foreignObject width="100" height="50">
+            <p>Here is a paragraph that requires word wrap</p>
+        </foreignObject>
+        <circle cx="150" cy="50" r="50"/>
+            </svg>`,
+
+        initData: function () {
+            return {
+                name: 'San'
+            };
+        }
+    });
+
+    var myApp = new MyApp();
+    myApp.attach(document.body);
+    </script>
+</body>
+</html>
+

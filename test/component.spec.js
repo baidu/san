@@ -407,6 +407,50 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("defineComponent with SuperComponent", function (done) {
+        var Counter = san.defineComponent({
+            template: '<u on-click="add">{{num}}</u>',
+            initData: function () {
+                return {
+                    num: 2
+                };
+            },
+            add: function () {
+                this.data.set('num', this.data.get('num') + 1);
+            }
+        });
+
+        var RealCounter = san.defineComponent({
+            add: function () {
+                this.data.set('num', this.data.get('num') + 5);
+            }
+        }, Counter);
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-c': RealCounter
+            },
+            template: '<div><x-c /></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.innerHTML).toBe('2');
+
+        triggerEvent(u, 'click');
+        san.nextTick(function () {
+            expect(u.innerHTML).toBe('7');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("data set in inited should not update view", function (done) {
         var up = false;
         var MyComponent = san.defineComponent({
@@ -1040,6 +1084,64 @@ describe("Component", function () {
                 document.body.removeChild(wrap);
                 done();
             }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<div><x-panel content="{{layerContent}}"></x-panel><u>{{title}}</u></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                layerContent: 'layer',
+                title: 'main'
+            }
+        });
+
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('main');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('layer');
+
+        myComponent.data.set('title', 'title');
+        myComponent.data.set('layerContent', 'subtitle');
+    });
+
+    it("dynamic create component, and push to children", function (done) {
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+
+        var Panel = san.defineComponent({
+            template: '<div>panel</div>',
+            attached: function () {
+                var layer = new Layer({
+                    data: {
+                        content: this.data.get('content')
+                    }
+                });
+
+                layer.attach(wrap);
+                this.children.push(layer);
+
+                this.watch('content', function (value) {
+                    layer.data.set('content', value);
+
+                    this.nextTick(function () {
+                        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('title');
+                        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('subtitle');
+
+                        myComponent.dispose();
+                        document.body.removeChild(wrap);
+                        done();
+                    })
+                });
+            }
+        });
+        var Layer = san.defineComponent({
+            template: '<b>{{content}}</b>'
         });
 
         var MyComponent = san.defineComponent({
@@ -2877,6 +2979,49 @@ describe("Component", function () {
             },
 
             template: '<div><ui-label data-title="{{title}}" data-text="{{text}}"></ui-label></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                title: '1',
+                text: 'one'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+
+        expect(span.title).toBe('1');
+        expect(span.innerHTML.indexOf('one') === 0).toBeTruthy();
+
+        myComponent.data.set('title', '2');
+        myComponent.data.set('text', 'two');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('2');
+            expect(span.innerHTML.indexOf('two') === 0).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        })
+    });
+
+    it("data binding name auto camel case, strongly", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><span title="{{dataTitle}}">{{dataText}}</span></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label data-title="{{title}}" data-Text="{{text}}"></ui-label></div>'
         });
 
         var myComponent = new MyComponent({

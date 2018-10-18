@@ -597,6 +597,144 @@ describe("Expression Update Detect", function () {
         });
     });
 
+    it("bind property accessor, unary - item", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.orgs[-index].name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('p', {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            orgs: [
+                {
+                    name: 'efe',
+                    company: 'baidu'
+                },
+
+                {
+                    name: 'ssg',
+                    company: 'baidu'
+                }
+            ]
+        });
+        myComponent.data.set('index', 0);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+
+        myComponent.data.set('index', -1);
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind property accessor, before level of unary - item", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.orgs[-index].name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('p', {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            orgs: [
+                {
+                    name: 'efe',
+                    company: 'baidu'
+                },
+
+                {
+                    name: 'ssg',
+                    company: 'baidu'
+                }
+            ]
+        });
+        myComponent.data.set('index', 0);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+
+        myComponent.data.set('p.orgs', [
+            {
+                name: 'ssg',
+                company: 'baidu'
+            },
+            {
+                name: 'efe',
+                company: 'baidu'
+            }
+        ]);
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("bind property accessor, tertiary item", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.orgs[index > 0 ? cur : 0].name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('p', {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            orgs: [
+                {
+                    name: 'efe',
+                    company: 'baidu'
+                },
+
+                {
+                    name: 'ssg',
+                    company: 'baidu'
+                }
+            ]
+        });
+        myComponent.data.set('index', 0);
+        myComponent.data.set('cur', 1);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+
+        myComponent.data.set('index', 2);
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+            myComponent.data.set('cur', 0);
+
+            san.nextTick(function () {
+                expect(span.title).toBe('efe');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
     it("tertiary expr, condition expr change", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{a1+a2 ? v1 : v2}}">{{a1+a2 ? v1 : v2}}</span></a>'
@@ -931,6 +1069,226 @@ describe("Expression Update Detect", function () {
             document.body.removeChild(wrap);
 
             done();
+        });
+    });
+
+    it("simple call expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>Hello {{numText(num, isTrans)}}</u>',
+
+            numText: function (num, isTrans) {
+                if (isTrans) {
+                    return num === 2 ? 'er' : 'san';
+                }
+
+                return num;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello 2');
+
+        myComponent.data.set('isTrans', true);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello er');
+            myComponent.data.set('num', 3);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello san');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
+    it("nest call expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{enhance(num, square(base))}}</u>',
+
+            enhance: function (num, times) {
+                return num * times;
+            },
+
+            square: function (num) {
+                return num * num;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 18');
+
+        myComponent.data.set('num', 4);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 36');
+            myComponent.data.set('base', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 400');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
+    it("call expr in complex expr", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{10 + (base > 0 ? enhance(num, square(base)) : enhance(num, 1))}}</u>',
+
+            enhance: function (num, times) {
+                return num * times;
+            },
+
+            square: function (num) {
+                return num * num;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 28');
+
+        myComponent.data.set('base', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 12');
+            myComponent.data.set('num', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 20');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
+        });
+    });
+
+    it("call expr eval with component instance this", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{10 + (base !== 0 ? enhance(num, abs(base)) : enhance(num, 1))}}</u>',
+
+            enhance: function (num, times) {
+                return num * this.square(times);
+            },
+
+            square: function (num) {
+                return num * num;
+            },
+
+            abs: function (num) {
+                if (num < 0) {
+                    return -num;
+                }
+
+                return num;
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                num: 2,
+                base: 3
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 28');
+
+        myComponent.data.set('base', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 12');
+            myComponent.data.set('num', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 20');
+                myComponent.data.set('base', -5);
+
+                san.nextTick(function () {
+                    expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 260');
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+
+                    done();
+                });
+            });
+        });
+    });
+
+    it("call expr with dynamic name accessor", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<u>result {{op[isUp ? "plus" : "minus"](num1, num2)}}</u>',
+
+            op: {
+                plus: function (a, b) {
+                    return a + b;
+                },
+
+                minus: function (a, b) {
+                    return a - b;
+                }
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                isUp: true,
+                num1: 5,
+                num2: 3
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 8');
+
+        myComponent.data.set('isUp', 0);
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 2');
+            myComponent.data.set('num1', 10);
+
+            san.nextTick(function () {
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('result 7');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                done();
+            });
         });
     });
 });
