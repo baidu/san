@@ -104,7 +104,7 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     if (this.el) {
         var firstCommentNode = this.el.firstChild;
-        if (firstCommentNode.nodeType === 3) {
+        if (firstCommentNode && firstCommentNode.nodeType === 3) {
             firstCommentNode = firstCommentNode.nextSibling;
         }
 
