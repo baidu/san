@@ -22,7 +22,7 @@ function Walker(source) {
  * @return {number}
  */
 Walker.prototype.currentCode = function () {
-    return this.charCode(this.index);
+    return this.source.charCodeAt(this.index);
 };
 
 /**
