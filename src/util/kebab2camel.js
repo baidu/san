@@ -10,7 +10,7 @@
  * @return {string}
  */
 function kebab2camel(source) {
-    return source.replace(/-([a-z])/ig, function (match, alpha) {
+    return source.replace(/-+(.)/ig, function (match, alpha) {
         return alpha.toUpperCase();
     });
 }

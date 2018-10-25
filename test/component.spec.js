@@ -3013,7 +3013,7 @@ describe("Component", function () {
 
     it("data binding name auto camel case, strongly", function (done) {
         var Label = san.defineComponent({
-            template: '<a><span title="{{dataTitle}}">{{dataText}}</span></a>'
+            template: '<a><span title="{{dataTitle}}">{{dataText2B}}</span></a>'
         });
 
         var MyComponent = san.defineComponent({
@@ -3021,7 +3021,7 @@ describe("Component", function () {
                 'ui-label': Label
             },
 
-            template: '<div><ui-label data-title="{{title}}" data-Text="{{text}}"></ui-label></div>'
+            template: '<div><ui-label data-title="{{title}}" data-Text-2B="{{text}}"></ui-label></div>'
         });
 
         var myComponent = new MyComponent({
