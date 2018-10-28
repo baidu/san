@@ -8,6 +8,7 @@ var createANode = require('../parser/create-a-node');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
 var defineComponent = require('./define-component');
+var defineComponentLoader = require('./define-component-loader');
 
 
 /**
@@ -27,7 +28,9 @@ function compileComponent(ComponentClass) {
             var componentClass = components[key];
 
             if (typeof componentClass === 'object') {
-                components[key] = defineComponent(componentClass);
+                components[key] = typeof target.load === 'function' && !target.template && !target.aNode
+                    ? defineComponentLoader(componentClass)
+                    : defineComponent(componentClass);
             }
             else if (componentClass === 'self') {
                 components[key] = ComponentClass;
