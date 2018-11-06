@@ -1969,6 +1969,45 @@ describe("Component", function () {
 
     });
 
+    it("computed item compute once when init", function () {
+        var nameCount = 0;
+        var MyComponent = san.defineComponent({
+            template: '<span>{{text}}</span>',
+
+            initData: function() {
+                return {
+                    realname: 'san'
+                };
+            },
+
+            computed: {
+                name: function () {
+                    nameCount++;
+                    return 'good' + this.data.get('realname');
+                },
+
+                text: function () {
+                    return 'hello ' + this.data.get('name');
+                }
+            }
+        })
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toBe('hello goodsan');
+        expect(nameCount).toBe(1);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
     it("custom event listen and fire", function () {
         var receive;
 
