@@ -379,7 +379,7 @@ Component.prototype._calcComputed = function (computedExpr) {
                 if (!computedDeps[expr]) {
                     computedDeps[expr] = 1;
 
-                    if (me.computed[expr]) {
+                    if (me.computed[expr] && !me.computedDeps[expr]) {
                         me._calcComputed(expr);
                     }
 
