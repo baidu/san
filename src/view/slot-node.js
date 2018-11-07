@@ -72,8 +72,6 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
 
     realANode.children = givenChildren || aNode.children.slice(0);
 
-    var me = this;
-
     // calc scoped slot vars
     realANode.vars = aNode.vars;
     realANode.directives = aNode.directives;
@@ -110,6 +108,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
         this.sel = document.createComment(this.id);
         insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
+        var me = this;
         each(this.aNode.children, function (aNodeChild) {
             me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
         });
