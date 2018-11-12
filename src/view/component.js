@@ -1,6 +1,7 @@
 /**
  * @file 组件类
  * @author errorrik(errorrik@gmail.com)
+ *         dafrok(o.o@mug.dog)
  */
 
 var bind = require('../util/bind');
@@ -54,6 +55,21 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) { // eslint-disable-line
+
+    /* eslint-disable no-console */
+    // #[begin] error
+    if (typeof console === 'object' && console.warn) {
+        for (var key in Component.prototype) {
+            if (this[key] !== Component.prototype[key]) {
+                console.warn('[SAN WARNING] \`' + key + '\` is a reserved key of san components. '
+                    + 'Overriding this property may cause unknown exceptions.');
+            }
+        }
+    }
+    // #[end]
+    /* eslint-disable no-console */
+
+
     options = options || {};
 
     this.lifeCycle = LifeCycle.start;
