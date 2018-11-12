@@ -44,6 +44,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
+var warn = require('../util/warn');
 
 
 
@@ -58,12 +59,9 @@ function Component(options) { // eslint-disable-line
 
     /* eslint-disable no-console */
     // #[begin] error
-    if (typeof console === 'object' && console.warn) {
-        for (var key in Component.prototype) {
-            if (this[key] !== Component.prototype[key]) {
-                console.warn('[SAN WARNING] \`' + key + '\` is a reserved key of san components. '
-                    + 'Overriding this property may cause unknown exceptions.');
-            }
+    for (var key in Component.prototype) {
+        if (this[key] !== Component.prototype[key]) {
+            warn('\`' + key + '\` is a reserved key of san components. Overriding this property may cause unknown exceptions.');
         }
     }
     // #[end]

@@ -4,6 +4,7 @@
  */
 
 var each = require('../util/each');
+var warn = require('../util/warn');
 
 // #[begin] error
 /**
@@ -30,16 +31,8 @@ function warnEventListenMethod(eventBind, owner) {
         each(eventBind.expr.name.paths, function (path) {
             paths.push(path.value);
         });
-        var message = '[SAN WARNING] ' + eventBind.name + ' listen fail,"' + paths.join('.') + '" not exist';
 
-        /* eslint-disable no-console */
-        if (typeof console === 'object' && console.warn) {
-            console.warn(message);
-        }
-        else {
-            throw new Error(message);
-        }
-        /* eslint-enable no-console */
+        warn(eventBind.name + ' listen fail,"' + paths.join('.') + '" not exist');
     }
 }
 // #[end]
