@@ -43,6 +43,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
+var warnOverrideSuperPrototype = require('./warn-override-super-prototype');
 
 
 
@@ -54,6 +55,9 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) { // eslint-disable-line
+
+    warnOverrideSuperPrototype(this);
+
     options = options || {};
 
     this.lifeCycle = LifeCycle.start;
