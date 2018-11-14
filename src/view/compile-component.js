@@ -28,7 +28,7 @@ function compileComponent(ComponentClass) {
             var componentClass = components[key];
 
             if (typeof componentClass === 'object') {
-                components[key] = typeof target.load === 'function' && !target.template && !target.aNode
+                components[key] = typeof componentClass.load === 'function' && !componentClass.template && !componentClass.aNode
                     ? defineComponentLoader(componentClass)
                     : defineComponent(componentClass);
             }
