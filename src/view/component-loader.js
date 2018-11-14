@@ -39,16 +39,12 @@ ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
     insertBefore(this.el, parentEl, beforeEl);
 
     var startLoad = this.load();
-    if (typeof startLoad.then === 'function') {
-        var me = this;
-        startLoad.then(
-            function (RealComponent) {
-                me.done(RealComponent);
-            },
-            function (RealComponent) {
-                me.done(RealComponent)
-            }
-        );
+    var me = this;
+    function finish(RealComponent) {
+        me.done(RealComponent);
+    }
+    if (startLoad && typeof startLoad.then === 'function') {
+        startLoad.then(finish, finish);
     }
 };
 
@@ -65,11 +61,11 @@ ComponentLoader.prototype.done = function (ComponentClass) {
         component.attach(this.el.parentNode, this.el);
 
         var parentChildren = this.options.parent.children;
-        var parentChildrenLen = parentChildren.length;
+        var len = parentChildren.length;
 
-        while (parentChildrenLen--) {
-            if (parentChildren[parentChildrenLen] === this) {
-                parentChildren[parentChildrenLen] = component;
+        while (len--) {
+            if (parentChildren[len] === this) {
+                parentChildren[len] = component;
                 break;
             }
         }
