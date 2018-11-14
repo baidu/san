@@ -15,6 +15,7 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
 function ComponentLoader(options) {
     this.options = options;
     this.id = guid();
+    this.children = [];
 }
 
 ComponentLoader.prototype._create = nodeOwnCreateStump;
@@ -27,6 +28,13 @@ ComponentLoader.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
+    var LoadingComponent = this.loading;
+    if (LoadingComponent) {
+        var component = new LoadingComponent(this.options);
+        this.children[0] = component;
+        component.attach(parentEl, beforeEl);
+    }
+
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
 
