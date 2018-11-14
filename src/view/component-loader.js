@@ -1,12 +1,31 @@
+/**
+ * @file 组件Loader基类
+ * @author errorrik(errorrik@gmail.com)
+ */
+
+var nodeOwnCreateStump = require('./node-own-create-stump');
 
 
+/**
+ * 组件Loader基类
+ *
+ * @class
+ * @param {Object} options 初始化参数
+ */
 function ComponentLoader(options) {
     this.options = options;
     this.id = guid();
 }
 
 ComponentLoader.prototype._create = nodeOwnCreateStump;
+ComponentLoader.prototype.dispose = nodeOwnSimpleDispose;
 
+/**
+ * attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
 ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
@@ -25,12 +44,15 @@ ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
     }
 };
 
-ComponentLoader.prototype.dispose = nodeOwnSimpleDispose;
-
+/**
+ * 完成组件加载，渲染组件
+ *
+ * @param {Function=} ComponentClass 组件类
+ */
 ComponentLoader.prototype.done = function (ComponentClass) {
-    if (this.el) {
-        ComponentClass = ComponentClass || this.fallback;
+    ComponentClass = ComponentClass || this.fallback;
 
+    if (this.el && ComponentClass) {
         var component = new ComponentClass(this.options);
         component.attach(this.el.parentNode, this.el);
 
