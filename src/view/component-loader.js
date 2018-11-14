@@ -3,7 +3,10 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
+var NodeType = require('./node-type');
+var createReverseNode = require('./create-reverse-node');
 var nodeOwnCreateStump = require('./node-own-create-stump');
+var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 
 /**
@@ -16,8 +19,25 @@ function ComponentLoader(options) {
     this.options = options;
     this.id = guid();
     this.children = [];
+
+    // #[begin] reverse
+    var reverseWalker = options.reverseWalker;
+    if (reverseWalker) {
+        var LoadingComponent = this.loading;
+        if (LoadingComponent) {
+            this.children[0] = new LoadingComponent(options);
+        }
+
+        this._create();
+        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+
+        this.start();
+    }
+    options.reverseWalker = null;
+    // #[end]
 }
 
+ComponentLoader.prototype.nodeType = NodeType.LOADER;
 ComponentLoader.prototype._create = nodeOwnCreateStump;
 ComponentLoader.prototype.dispose = nodeOwnSimpleDispose;
 
@@ -38,11 +58,20 @@ ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
 
+    this.start();
+};
+
+/**
+ * 开始加载组件
+ */
+ComponentLoader.prototype.start = function () {
     var startLoad = this.load();
     var me = this;
+
     function finish(RealComponent) {
         me.done(RealComponent);
     }
+
     if (startLoad && typeof startLoad.then === 'function') {
         startLoad.then(finish, finish);
     }

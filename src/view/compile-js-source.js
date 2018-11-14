@@ -15,6 +15,7 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var rinseCondANode = require('./rinse-cond-anode');
 var getANodeProp = require('./get-a-node-prop');
+var NodeType = require('./node-type');
 
 // #[begin] ssr
 
@@ -295,9 +296,14 @@ var aNodeCompiler = {
             var ComponentType = owner.getComponentType
                 ? owner.getComponentType(aNode)
                 : owner.components[aNode.tagName];
+
             if (ComponentType) {
                 compileMethod = 'compileComponent';
                 extra.ComponentClass = ComponentType;
+
+                if (ComponentType.prototype.nodeType === NodeType.LOADER) {
+                    compileMethod = 'compileComponentLoader';
+                }
             }
         }
 
@@ -609,6 +615,25 @@ var aNodeCompiler = {
         sourceBuffer.addRendererEnd();
         sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $givenSlots);');
         sourceBuffer.addRaw('$givenSlots = null;');
+    },
+
+    /**
+     * 编译组件加载器节点
+     *
+     * @param {ANode} aNode 节点对象
+     * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
+     * @param {Component} owner 所属组件实例环境
+     * @param {Object} extra 编译所需的一些额外信息
+     * @param {Function} extra.ComponentClass 对应类
+     */
+    compileComponentLoader: function (aNode, sourceBuffer, owner, extra) {
+        var LoadingComponent = extra.ComponentClass.prototype.loading;
+        if (typeof LoadingComponent === 'function') {
+            aNodeCompiler.compileComponent(aNode, sourceBuffer, owner, {
+                prop: extra.prop,
+                ComponentClass: LoadingComponent
+            });
+        }
     }
 };
 
