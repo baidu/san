@@ -76,6 +76,12 @@ IfNode.prototype.nodeType = NodeType.IF;
 IfNode.prototype._create = nodeOwnCreateStump;
 IfNode.prototype.dispose = nodeOwnSimpleDispose;
 
+/**
+ * attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
 IfNode.prototype.attach = function (parentEl, beforeEl) {
     var me = this;
     var elseIndex;
