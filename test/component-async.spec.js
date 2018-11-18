@@ -403,4 +403,71 @@ describe("Component Async", function () {
         }, 500);
 
     });
+
+    it("in slot with slot", function (done) {
+        var Label = san.defineComponent({
+            template: '<u><slot/></u>'
+        });
+
+        var Panel = san.defineComponent({
+            template: '<a><slot/></a>'
+        })
+
+        var LoadingLabel = san.defineComponent({
+            template: '<b><slot/></b>'
+        });
+
+        var loadSuccess;
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel,
+                'x-label': {
+                    load: function () {
+                        return {
+                            then: function (success) {
+                                loadSuccess = success;
+                            }
+                        };
+                    },
+                    loading: LoadingLabel
+                }
+            },
+
+            template: '<div><x-panel><x-label>Hello {{text}}</x-label></x-panel></div>',
+
+            attached: function () {
+                this.nextTick(function () {
+                    loadSuccess(Label);
+                });
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+
+        expect(a.getElementsByTagName('u').length).toBe(0);
+        expect(a.getElementsByTagName('b').length).toBe(1);
+        expect(a.getElementsByTagName('b')[0].innerHTML).toContain('Hello San');
+
+        setTimeout(function () {
+            expect(a.getElementsByTagName('u').length).toBe(1);
+            expect(a.getElementsByTagName('u')[0].innerHTML).toContain('Hello San');
+
+            expect(a.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 500);
+
+    });
 });
