@@ -470,4 +470,65 @@ describe("Component Async", function () {
         }, 500);
 
     });
+
+    it("with for", function (done) {
+        var LI = san.defineComponent({
+            template: '<li><b><slot/></b></li>'
+        });
+
+        var LoadingLabel = san.defineComponent({
+            template: '<li><slot/></li>'
+        });
+
+        var loadInvokeCount = 0;
+        var loadSuccess;
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-li': {
+                    load: function () {
+                        loadInvokeCount++;
+                        return {
+                            then: function (success) {
+                                loadSuccess = success;
+                            }
+                        };
+                    },
+                    loading: LoadingLabel
+                }
+            },
+
+            template: '<ul><x-li s-for="item in list">Hello {{item}}</x-li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: ['yi', 'er', 'san']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('li').length).toBe(3);
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        expect(loadInvokeCount).toBe(1);
+
+        myComponent.nextTick(function () {
+            loadSuccess(LI);
+        });
+
+        setTimeout(function () {
+            expect(wrap.getElementsByTagName('li').length).toBe(3);
+            expect(wrap.getElementsByTagName('b').length).toBe(3);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('Hello yi');
+            expect(wrap.getElementsByTagName('b')[1].innerHTML).toContain('Hello er');
+            expect(wrap.getElementsByTagName('b')[2].innerHTML).toContain('Hello san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        }, 500);
+
+    });
 });
