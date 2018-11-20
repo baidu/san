@@ -26,22 +26,35 @@ function ComponentLoader(options) {
 
 /**
  * 开始加载组件
+ *
+ * @param {Function} onload 组件加载完成监听函数
  */
-ComponentLoader.prototype.start = function () {
-    if (this.state) {
-        return;
-    }
-
-    this.state = 1;
-    var startLoad = this.load();
+ComponentLoader.prototype.start = function (onload) {
     var me = this;
 
-    function done(RealComponent) {
-        me.done(RealComponent);
-    }
+    switch (this.state) {
+        case 2:
+            nextTick(function () {
+                onload(me.Component);
+            });
+            break;
 
-    if (startLoad && typeof startLoad.then === 'function') {
-        startLoad.then(done, done);
+        case 1:
+            this.listeners.push(onload);
+            break;
+
+        default:
+            this.listeners.push(onload);
+            this.state = 1;
+
+            var startLoad = this.load();
+            var done = function (RealComponent) {
+                me.done(RealComponent);
+            };
+
+            if (startLoad && typeof startLoad.then === 'function') {
+                startLoad.then(done, done);
+            }
     }
 };
 
@@ -58,23 +71,6 @@ ComponentLoader.prototype.done = function (ComponentClass) {
     each(this.listeners, function (listener) {
         listener(ComponentClass);
     });
-};
-
-/**
- * 监听组件加载完成
- *
- * @param {Function} listener 监听函数
- */
-ComponentLoader.prototype.listen = function (listener) {
-    if (this.state > 1) {
-        var ComponentClass = this.Component;
-        nextTick(function () {
-            listener(ComponentClass);
-        });
-    }
-    else {
-        this.listeners.push(listener);
-    }
 };
 
 exports = module.exports = ComponentLoader;

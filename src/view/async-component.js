@@ -33,10 +33,9 @@ function AsyncComponent(options, loader) {
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
         var me = this;
-        this.loader.listen(function (ComponentClass) {
+        this.loader.start(function (ComponentClass) {
             me.onload(ComponentClass);
         });
-        this.loader.start();
     }
     options.reverseWalker = null;
     // #[end]
@@ -63,10 +62,9 @@ AsyncComponent.prototype.attach = function (parentEl, beforeEl) {
     insertBefore(this.el, parentEl, beforeEl);
 
     var me = this;
-    this.loader.listen(function (ComponentClass) {
+    this.loader.start(function (ComponentClass) {
         me.onload(ComponentClass);
     });
-    this.loader.start();
 };
 
 /**
