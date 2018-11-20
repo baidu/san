@@ -531,4 +531,82 @@ describe("Component Async", function () {
         }, 500);
 
     });
+
+    it("reuse loader", function (done) {
+        var loadCount = 0;
+        var loadSuccess;
+        var loader = san.createComponentLoader({
+            load: function () {
+                loadCount++;
+                return {
+                    then: function (success) {
+                        loadSuccess = success;
+                    }
+                };
+            },
+            loading: san.defineComponent({
+                template: '<b>{{text}}</b>'
+            })
+        });
+
+        var Label = san.defineComponent({
+            template: '<u>{{text}}</u>'
+        });
+
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': loader
+            },
+
+            template: '<div><x-label text="{{text}}"/></div>'
+        });
+
+        var MyComponent2 = san.defineComponent({
+            components: {
+                'x-label': loader
+            },
+
+            template: '<div><x-label text="{{text}}"/></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hello San'
+            }
+        });
+
+        var myComponent2 = new MyComponent2({
+            data: {
+                text: 'Bye ER'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+        myComponent2.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
+        expect(wrap.getElementsByTagName('b').length).toBe(2);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('Hello San');
+        expect(wrap.getElementsByTagName('b')[1].innerHTML).toBe('Bye ER');
+
+        san.nextTick(function () {
+            loadSuccess(Label);
+            san.nextTick(function () {
+                expect(loadCount).toBe(1);
+                expect(wrap.getElementsByTagName('u').length).toBe(2);
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello San');
+                expect(wrap.getElementsByTagName('u')[1].innerHTML).toBe('Bye ER');
+
+                expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
 });
