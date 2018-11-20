@@ -15,7 +15,7 @@ var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var rinseCondANode = require('./rinse-cond-anode');
 var getANodeProp = require('./get-a-node-prop');
-var NodeType = require('./node-type');
+var ComponentLoader = require('./component-loader');
 
 // #[begin] ssr
 
@@ -301,7 +301,7 @@ var aNodeCompiler = {
                 compileMethod = 'compileComponent';
                 extra.ComponentClass = ComponentType;
 
-                if (ComponentType.prototype.nodeType === NodeType.LOADER) {
+                if (ComponentType instanceof ComponentLoader) {
                     compileMethod = 'compileComponentLoader';
                 }
             }
@@ -627,7 +627,7 @@ var aNodeCompiler = {
      * @param {Function} extra.ComponentClass 对应类
      */
     compileComponentLoader: function (aNode, sourceBuffer, owner, extra) {
-        var LoadingComponent = extra.ComponentClass.prototype.loading;
+        var LoadingComponent = extra.ComponentClass.placeholder.loading;
         if (typeof LoadingComponent === 'function') {
             aNodeCompiler.compileComponent(aNode, sourceBuffer, owner, {
                 prop: extra.prop,
