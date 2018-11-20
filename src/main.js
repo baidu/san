@@ -55,6 +55,7 @@
     var Component = require('./view/component');
     var compileComponent = require('./view/compile-component');
     var defineComponent = require('./view/define-component');
+    var createComponentLoader = require('./view/create-component-loader');
     var emitDevtool = require('./util/emit-devtool');
     var compileJSSource = require('./view/compile-js-source');
     var Data = require('./runtime/data');
@@ -121,6 +122,17 @@
          * @return {Function}
          */
         defineComponent: defineComponent,
+
+        /**
+         * 创建组件Loader
+         *
+         * @param {Object} options loader参数
+         * @param {Function} options.load load方法
+         * @param {Function=} options.loading loading过程中渲染的组件
+         * @param {Function=} options.fallback load失败时渲染的组件
+         * @return {ComponentLoader}
+         */
+        createComponentLoader: createComponentLoader,
 
         /**
          * 编译组件类。预解析template和components
