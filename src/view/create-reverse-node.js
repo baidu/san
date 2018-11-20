@@ -46,19 +46,28 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
             return new TemplateNode(aNode, owner, scope, parent, reverseWalker);
 
         default:
-            var ComponentType = owner.getComponentType
+            var ComponentOrLoader = owner.getComponentType
                 ? owner.getComponentType(aNode)
                 : owner.components[aNode.tagName];
 
-            if (ComponentType) {
-                return new ComponentType({
-                    aNode: aNode,
-                    owner: owner,
-                    scope: scope,
-                    parent: parent,
-                    subTag: aNode.tagName,
-                    reverseWalker: reverseWalker
-                });
+            if (ComponentOrLoader) {
+                return typeof ComponentOrLoader === 'function'
+                    ? new ComponentOrLoader({
+                        aNode: aNode,
+                        owner: owner,
+                        scope: scope,
+                        parent: parent,
+                        subTag: aNode.tagName,
+                        reverseWalker: reverseWalker
+                    })
+                    : new AsyncComponent({
+                        aNode: aNode,
+                        owner: owner,
+                        scope: scope,
+                        parent: parent,
+                        subTag: aNode.tagName,
+                        reverseWalker: reverseWalker
+                    }, ComponentOrLoader);
             }
     }
 
