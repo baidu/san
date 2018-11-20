@@ -1,106 +1,80 @@
 /**
- * @file 组件Loader基类
+ * @file 组件Loader类
  * @author errorrik(errorrik@gmail.com)
  */
 
-var NodeType = require('./node-type');
-var createReverseNode = require('./create-reverse-node');
-var nodeOwnCreateStump = require('./node-own-create-stump');
-var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
+var nextTick = require('../util/next-tick');
+var each = require('../util/each');
 
 
 /**
- * 组件Loader基类
+ * 组件Loader类
  *
  * @class
- * @param {Object} options 初始化参数
+ *
+ * @param {Object} options loader参数
+ * @param {Function} options.load load方法
+ * @param {Function=} options.loading loading过程中渲染的组件
+ * @param {Function=} options.fallback load失败时渲染的组件
  */
 function ComponentLoader(options) {
-    this.options = options;
-    this.id = guid();
-    this.children = [];
-
-    // #[begin] reverse
-    var reverseWalker = options.reverseWalker;
-    if (reverseWalker) {
-        var LoadingComponent = this.loading;
-        if (LoadingComponent) {
-            this.children[0] = new LoadingComponent(options);
-        }
-
-        this._create();
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
-
-        this.start();
-    }
-    options.reverseWalker = null;
-    // #[end]
+    this.load = options.load;
+    this.placeholder = options;
+    this.listeners = [];
 }
 
-ComponentLoader.prototype.nodeType = NodeType.LOADER;
-ComponentLoader.prototype._create = nodeOwnCreateStump;
-ComponentLoader.prototype.dispose = nodeOwnSimpleDispose;
-
-/**
- * attach到页面
- *
- * @param {HTMLElement} parentEl 要添加到的父元素
- * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
- */
-ComponentLoader.prototype.attach = function (parentEl, beforeEl) {
-    var LoadingComponent = this.loading;
-    if (LoadingComponent) {
-        var component = new LoadingComponent(this.options);
-        this.children[0] = component;
-        component.attach(parentEl, beforeEl);
-    }
-
-    this._create();
-    insertBefore(this.el, parentEl, beforeEl);
-
-    this.start();
-};
 
 /**
  * 开始加载组件
  */
 ComponentLoader.prototype.start = function () {
+    if (this.state) {
+        return;
+    }
+
+    this.state = 1;
     var startLoad = this.load();
     var me = this;
 
-    function finish(RealComponent) {
+    function done(RealComponent) {
         me.done(RealComponent);
     }
 
     if (startLoad && typeof startLoad.then === 'function') {
-        startLoad.then(finish, finish);
+        startLoad.then(done, done);
     }
 };
 
 /**
- * 完成组件加载，渲染组件
+ * 完成组件加载
  *
  * @param {Function=} ComponentClass 组件类
  */
 ComponentLoader.prototype.done = function (ComponentClass) {
-    ComponentClass = ComponentClass || this.fallback;
+    this.state = 2;
+    ComponentClass = ComponentClass || this.placeholder.fallback;
+    this.Component = ComponentClass;
 
-    if (this.el && ComponentClass) {
-        var component = new ComponentClass(this.options);
-        component.attach(this.el.parentNode, this.el);
+    each(this.listeners, function (listener) {
+        listener(ComponentClass);
+    });
+};
 
-        var parentChildren = this.options.parent.children;
-        var len = parentChildren.length;
-
-        while (len--) {
-            if (parentChildren[len] === this) {
-                parentChildren[len] = component;
-                break;
-            }
-        }
+/**
+ * 监听组件加载完成
+ *
+ * @param {Function} listener 监听函数
+ */
+ComponentLoader.prototype.listen = function (listener) {
+    if (this.state > 1) {
+        var ComponentClass = this.Component;
+        nextTick(function () {
+            listener(ComponentClass);
+        });
     }
-
-    this.dispose();
+    else {
+        this.listeners.push(listener);
+    }
 };
 
 exports = module.exports = ComponentLoader;
