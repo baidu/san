@@ -3,7 +3,6 @@
  * @author errorrik(errorrik@gmail.com)
  */
 
-var NodeType = require('./node-type');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
@@ -24,9 +23,9 @@ function AsyncComponent(options, loader) {
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (reverseWalker) {
-        var LoadingComponent = this.loader.placeholder.loading;
-        if (LoadingComponent) {
-            this.children[0] = new LoadingComponent(options);
+        var PlaceholderComponent = this.loader.placeholder;
+        if (PlaceholderComponent) {
+            this.children[0] = new PlaceholderComponent(options);
         }
 
         this._create();
@@ -51,9 +50,9 @@ AsyncComponent.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 AsyncComponent.prototype.attach = function (parentEl, beforeEl) {
-    var LoadingComponent = this.loader.placeholder.loading;
-    if (LoadingComponent) {
-        var component = new LoadingComponent(this.options);
+    var PlaceholderComponent = this.loader.placeholder;
+    if (PlaceholderComponent) {
+        var component = new PlaceholderComponent(this.options);
         this.children[0] = component;
         component.attach(parentEl, beforeEl);
     }

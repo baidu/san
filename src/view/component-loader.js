@@ -17,9 +17,11 @@ var each = require('../util/each');
  * @param {Function=} options.loading loading过程中渲染的组件
  * @param {Function=} options.fallback load失败时渲染的组件
  */
-function ComponentLoader(options) {
-    this.load = options.load;
-    this.placeholder = options;
+function ComponentLoader(load, placeholder, fallback) {
+    this.load = load;
+    this.placeholder = placeholder;
+    this.fallback = fallback;
+
     this.listeners = [];
 }
 
@@ -65,7 +67,7 @@ ComponentLoader.prototype.start = function (onload) {
  */
 ComponentLoader.prototype.done = function (ComponentClass) {
     this.state = 2;
-    ComponentClass = ComponentClass || this.placeholder.fallback;
+    ComponentClass = ComponentClass || this.fallback;
     this.Component = ComponentClass;
 
     each(this.listeners, function (listener) {
