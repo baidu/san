@@ -8,7 +8,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success) {
@@ -16,7 +16,7 @@ describe("Component Async", function () {
                             }
                         };
                     }
-                }
+                })
             },
 
             template: '<div><x-label text="{{text}}"/></div>',
@@ -64,7 +64,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success) {
@@ -72,8 +72,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<div><x-label text="{{text}}"/></div>',
@@ -129,7 +129,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success, fail) {
@@ -138,9 +138,9 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel,
+                    placeholder: LoadingLabel,
                     fallback: FallbackLabel
-                }
+                })
             },
 
             template: '<div><x-label text="{{text}}"/></div>',
@@ -204,7 +204,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success, fail) {
@@ -213,8 +213,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<div><x-label text="{{text}}"/></div>',
@@ -273,7 +273,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success) {
@@ -281,8 +281,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<div><x-label text="{{text}}" s-if="isShow"/></div>'
@@ -339,7 +339,7 @@ describe("Component Async", function () {
                 });
 
             });
-        })
+        });
 
 
     });
@@ -356,7 +356,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success) {
@@ -364,8 +364,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<div><x-label>Hello {{text}}</x-label></div>',
@@ -421,7 +421,7 @@ describe("Component Async", function () {
         var MyComponent = san.defineComponent({
             components: {
                 'x-panel': Panel,
-                'x-label': {
+                'x-label': san.createComponentLoader({
                     load: function () {
                         return {
                             then: function (success) {
@@ -429,8 +429,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<div><x-panel><x-label>Hello {{text}}</x-label></x-panel></div>',
@@ -484,7 +484,7 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-li': {
+                'x-li': san.createComponentLoader({
                     load: function () {
                         loadInvokeCount++;
                         return {
@@ -493,8 +493,8 @@ describe("Component Async", function () {
                             }
                         };
                     },
-                    loading: LoadingLabel
-                }
+                    placeholder: LoadingLabel
+                })
             },
 
             template: '<ul><x-li s-for="item in list">Hello {{item}}</x-li></ul>'
@@ -544,7 +544,7 @@ describe("Component Async", function () {
                     }
                 };
             },
-            loading: san.defineComponent({
+            placeholder: san.defineComponent({
                 template: '<b>{{text}}</b>'
             })
         });
