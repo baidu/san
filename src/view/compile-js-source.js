@@ -627,7 +627,7 @@ var aNodeCompiler = {
      * @param {Function} extra.ComponentClass 对应类
      */
     compileComponentLoader: function (aNode, sourceBuffer, owner, extra) {
-        var LoadingComponent = extra.ComponentClass.placeholder.loading;
+        var LoadingComponent = extra.ComponentClass.placeholder;
         if (typeof LoadingComponent === 'function') {
             aNodeCompiler.compileComponent(aNode, sourceBuffer, owner, {
                 prop: extra.prop,
