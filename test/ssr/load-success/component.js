@@ -7,15 +7,13 @@ var Label = san.defineComponent({
 var loadSuccess;
 var MyComponent = san.defineComponent({
     components: {
-        'x-label': {
-            load: function () {
-                return {
-                    then: function (success) {
-                        loadSuccess = success;
-                    }
-                };
-            }
-        }
+        'x-label': san.createComponentLoader(function () {
+            return {
+                then: function (success) {
+                    loadSuccess = success;
+                }
+            };
+        })
     },
 
     template: '<div><x-label text="{{text}}"/></div>',

@@ -16,7 +16,7 @@ var loadFail;
 var loadSuccess;
 var MyComponent = san.defineComponent({
     components: {
-        'x-label': {
+        'x-label': san.createComponentLoader({
             load: function () {
                 return {
                     then: function (success, fail) {
@@ -25,9 +25,9 @@ var MyComponent = san.defineComponent({
                     }
                 };
             },
-            loading: LoadingLabel,
+            placeholder: LoadingLabel,
             fallback: FallbackLabel
-        }
+        })
     },
 
     template: '<div><x-label text="{{text}}"/></div>',
