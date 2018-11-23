@@ -97,7 +97,7 @@ function Component(options) { // eslint-disable-line
     var me = this;
     var protoANode = clazz.prototype.aNode;
 
-    this.givenANode = options.aNode;
+    this.givenANode = options.source;
     this.givenNamedSlotBinds = [];
     this.givenSlots = {
         named: {}

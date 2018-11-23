@@ -54,14 +54,14 @@ function createNode(aNode, parent, scope) {
             if (ComponentOrLoader) {
                 return typeof ComponentOrLoader === 'function'
                     ? new ComponentOrLoader({
-                        aNode: aNode,
+                        source: aNode,
                         owner: owner,
                         scope: scope,
                         parent: parent,
                         subTag: aNode.tagName
                     })
                     : new AsyncComponent({
-                        aNode: aNode,
+                        source: aNode,
                         owner: owner,
                         scope: scope,
                         parent: parent,

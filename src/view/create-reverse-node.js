@@ -53,7 +53,7 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
             if (ComponentOrLoader) {
                 return typeof ComponentOrLoader === 'function'
                     ? new ComponentOrLoader({
-                        aNode: aNode,
+                        source: aNode,
                         owner: owner,
                         scope: scope,
                         parent: parent,
@@ -61,7 +61,7 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
                         reverseWalker: reverseWalker
                     })
                     : new AsyncComponent({
-                        aNode: aNode,
+                        source: aNode,
                         owner: owner,
                         scope: scope,
                         parent: parent,
