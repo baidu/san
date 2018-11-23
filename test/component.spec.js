@@ -3292,6 +3292,66 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("dynamic component by source, prop data should be auto update", function (done) {
+        var Person = san.defineComponent({
+            template: '<span><b>{{name}}</b><u>{{email}}</u></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><a>hello</a></div>',
+
+            attached: function () {
+                this.p = new Person({
+                    owner: this,
+                    source: '<x-biz name="{{author.name}}" email="{{author.email}}" />'
+                });
+                this.p.attach(this.el);
+            },
+
+            disposed: function () {
+                this.p.dispose();
+                this.p = null;
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                author: {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                }
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(1);
+        expect(us[0].innerHTML).toBe('errorrik@gmail.com');
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(1);
+        expect(bs[0].innerHTML).toBe('erik');
+
+        myComponent.data.set('author.email', 'erik168@163.com');
+        myComponent.nextTick(function () {
+            var us = wrap.getElementsByTagName('u');
+            expect(us.length).toBe(1);
+            expect(us[0].innerHTML).toBe('erik168@163.com');
+
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(1);
+            expect(bs[0].innerHTML).toBe('erik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("pre compile template to aNode", function (done) {
         var Man = san.defineComponent({
             filters: {
