@@ -585,7 +585,7 @@ var aNodeCompiler = {
 
         var ComponentClass = extra.ComponentClass;
         var component = new ComponentClass({
-            aNode: aNode,
+            source: aNode,
             owner: owner,
             subTag: aNode.tagName
         });
