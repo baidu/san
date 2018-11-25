@@ -3306,11 +3306,6 @@ describe("Component", function () {
                     source: '<x-biz name="{{author.name}}" email="{{author.email}}" />'
                 });
                 this.p.attach(this.el);
-            },
-
-            disposed: function () {
-                this.p.dispose();
-                this.p = null;
             }
         });
 
@@ -3366,11 +3361,6 @@ describe("Component", function () {
                     source: '<x-p name="{=author.name=}" email="{{author.email}}" />'
                 });
                 this.p.attach(this.el);
-            },
-
-            disposed: function () {
-                this.p.dispose();
-                this.p = null;
             }
         });
 
