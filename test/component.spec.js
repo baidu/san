@@ -158,6 +158,19 @@ describe("Component", function () {
         expect(labelDetached).toBe(1);
 
         document.body.removeChild(wrap);
+
+        // dispose a unattach component
+        var myComponent2 = new MyComponent();
+        expect(!!myComponent2.lifeCycle.is('inited')).toBe(true);
+        expect(!!myComponent2.lifeCycle.is('created')).toBe(false);
+        expect(!!myComponent2.lifeCycle.is('disposed')).toBe(false);
+        myComponent2.dispose();
+
+        expect(!!myComponent2.lifeCycle.is('inited')).toBe(false);
+        expect(!!myComponent2.lifeCycle.is('created')).toBe(false);
+        expect(!!myComponent2.lifeCycle.is('attached')).toBe(false);
+        expect(!!myComponent2.lifeCycle.is('detached')).toBe(false);
+        expect(!!myComponent2.lifeCycle.is('disposed')).toBe(true);
     });
 
     it("life cycle and event", function () {
