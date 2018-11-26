@@ -3341,6 +3341,8 @@ describe("Component", function () {
             expect(bs[0].innerHTML).toBe('erik');
 
             myComponent.dispose();
+
+            expect(myComponent.p.lifeCycle.disposed).toBeTruthy();
             document.body.removeChild(wrap);
             done();
         });
