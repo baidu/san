@@ -3355,7 +3355,7 @@ describe("Component", function () {
 
             myComponent.dispose();
 
-            expect(myComponent.p.lifeCycle.disposed).toBeTruthy();
+            expect(myComponent.p.lifeCycle.is('disposed')).toBeTruthy();
             document.body.removeChild(wrap);
             done();
         });
