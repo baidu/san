@@ -3433,20 +3433,22 @@ describe("Component", function () {
         });
 
         var newName;
+        var oldName;
         var MyComponent = san.defineComponent({
             template: '<div><a>{{author.name}}</a></div>',
 
             attached: function () {
                 this.p = new Person({
                     owner: this,
-                    source: '<x-p name="{{author.name}}" email="{{author.email}}" on-namechange="editName($event)"/>'
+                    source: '<x-p name="{{author.name}}" email="{{author.email}}" on-namechange="editName($event, author)"/>'
                 });
                 this.p.attach(this.el);
-                newName = this.data.get('author.name');
+                oldName = newName = this.data.get('author.name');
             },
 
-            editName: function (e) {
+            editName: function (e, author) {
                 newName = e;
+                oldName = author.name;
             }
         });
 
@@ -3478,9 +3480,11 @@ describe("Component", function () {
 
 
         expect(newName).toBe('erik');
+        expect(oldName).toBe('erik');
         myComponent.p.fire('namechange', 'errorrik');
         myComponent.nextTick(function () {
             expect(newName).toBe('errorrik');
+            expect(oldName).toBe('erik');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
