@@ -94,9 +94,9 @@ describe("Component", function () {
         });
 
         var myComponent = new MyComponent();
-        expect(myComponent.lifeCycle.is('inited')).toBe(true);
-        expect(myComponent.lifeCycle.is('created')).toBe(false);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
+        expect(myComponent.lifeCycle.is('inited')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('created')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('attached')).toBeFalsy();
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(0);
         expect(mainAttached).toBe(0);
@@ -107,9 +107,9 @@ describe("Component", function () {
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
-        expect(myComponent.lifeCycle.is('inited')).toBe(true);
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(true);
+        expect(myComponent.lifeCycle.is('inited')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('attached')).toBeTruthy();
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(1);
         expect(mainAttached).toBe(1);
@@ -122,9 +122,9 @@ describe("Component", function () {
         expect(myComponent.nextTick).toBe(san.nextTick);
 
         myComponent.detach();
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
-        expect(myComponent.lifeCycle.is('detached')).toBe(true);
+        expect(myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('attached')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('detached')).toBeTruthy();
         expect(mainCreated).toBe(1);
         expect(mainDetached).toBe(1);
         expect(mainAttached).toBe(0);
@@ -134,9 +134,9 @@ describe("Component", function () {
         expect(labelDetached).toBe(0);
 
         myComponent.attach(wrap);
-        expect(myComponent.lifeCycle.is('created')).toBe(true);
-        expect(myComponent.lifeCycle.is('attached')).toBe(true);
-        expect(myComponent.lifeCycle.is('detached')).toBe(false);
+        expect(myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('attached')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('detached')).toBeFalsy();
         expect(mainCreated).toBe(1);
         expect(mainDetached).toBe(0);
         expect(mainAttached).toBe(1);
@@ -147,11 +147,11 @@ describe("Component", function () {
 
 
         myComponent.dispose();
-        expect(myComponent.lifeCycle.is('inited')).toBe(false);
-        expect(myComponent.lifeCycle.is('created')).toBe(false);
-        expect(myComponent.lifeCycle.is('attached')).toBe(false);
-        expect(myComponent.lifeCycle.is('detached')).toBe(false);
-        expect(myComponent.lifeCycle.is('disposed')).toBe(true);
+        expect(myComponent.lifeCycle.is('inited')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('created')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('attached')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('detached')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('disposed')).toBeTruthy();
         expect(mainDisposed).toBe(1);
         expect(labelDisposed).toBe(1);
         expect(mainDetached).toBe(1);
@@ -161,16 +161,16 @@ describe("Component", function () {
 
         // dispose a unattach component
         var myComponent2 = new MyComponent();
-        expect(myComponent2.lifeCycle.is('inited')).toBe(true);
-        expect(myComponent2.lifeCycle.is('created')).toBe(false);
-        expect(myComponent2.lifeCycle.is('disposed')).toBe(false);
+        expect(myComponent2.lifeCycle.is('inited')).toBeTruthy();
+        expect(myComponent2.lifeCycle.is('created')).toBeFalsy();
+        expect(myComponent2.lifeCycle.is('disposed')).toBeFalsy();
         myComponent2.dispose();
 
-        expect(myComponent2.lifeCycle.is('inited')).toBe(false);
-        expect(myComponent2.lifeCycle.is('created')).toBe(false);
-        expect(myComponent2.lifeCycle.is('attached')).toBe(false);
-        expect(myComponent2.lifeCycle.is('detached')).toBe(false);
-        expect(myComponent2.lifeCycle.is('disposed')).toBe(true);
+        expect(myComponent2.lifeCycle.is('inited')).toBeFalsy();
+        expect(myComponent2.lifeCycle.is('created')).toBeFalsy();
+        expect(myComponent2.lifeCycle.is('attached')).toBeFalsy();
+        expect(myComponent2.lifeCycle.is('detached')).toBeFalsy();
+        expect(myComponent2.lifeCycle.is('disposed')).toBeTruthy();
     });
 
     it("life cycle and event", function () {
