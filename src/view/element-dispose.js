@@ -18,6 +18,12 @@ var nodeDispose = require('./node-dispose');
 function elementDispose(element) {
     elementDisposeChildren(element, 1, 1);
 
+    var children = element.implicitChildren;
+    var len = children && children.length;
+    while (len--) {
+        children[len].dispose(0, 1);
+    }
+
     // el 事件解绑
     var len = element._elFns.length;
     while (len--) {

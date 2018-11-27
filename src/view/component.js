@@ -77,6 +77,7 @@ function Component(options) { // eslint-disable-line
     this._elFns = [];
     this.listeners = {};
     this.slotChildren = [];
+    this.implicitChildren = [];
 
     var clazz = this.constructor;
 
@@ -97,11 +98,15 @@ function Component(options) { // eslint-disable-line
     var me = this;
     var protoANode = clazz.prototype.aNode;
 
-    this.givenANode = options.source;
+
+    this.givenANode = typeof options.source === 'string'
+        ? parseTemplate(options.source).children[0]
+        : options.source;
     this.givenNamedSlotBinds = [];
     this.givenSlots = {
         named: {}
     };
+
 
     this.owner = options.owner;
     this.scope = options.scope;
@@ -113,6 +118,10 @@ function Component(options) { // eslint-disable-line
         this.parentComponent = parent.nodeType === NodeType.CMPT
             ? parent
             : parent && parent.parentComponent;
+    }
+    else if (this.owner) {
+        this.parentComponent = this.owner;
+        this.scope = this.owner.data;
     }
 
     this.id = guid();
@@ -163,7 +172,7 @@ function Component(options) { // eslint-disable-line
 
             me.on(
                 eventBind.name,
-                bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
+                bind(eventDeclarationListener, options.owner, eventBind, 1, me.scope),
                 eventBind
             );
         });
@@ -632,6 +641,9 @@ Component.prototype._update = function (changes) {
         });
 
         elementUpdateChildren(this, dataChanges);
+        for (var i = 0, l = this.implicitChildren.length; i < l; i++) {
+            this.implicitChildren[i]._update(dataChanges);
+        }
         if (needReloadForSlot) {
             this._createGivenSlots();
             this._repaintChildren();
@@ -758,6 +770,8 @@ Component.prototype._doneLeave = function () {
             this.givenANode = null;
             this.givenSlots = null;
             this.givenNamedSlotBinds = null;
+
+            this.implicitChildren = null;
         }
     }
     else if (this.lifeCycle.attached) {
