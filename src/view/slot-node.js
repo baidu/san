@@ -60,17 +60,17 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
     }
 
     // calc aNode children
-    var givenSlots = owner.givenSlots;
-    var givenChildren;
-    if (givenSlots) {
-        givenChildren = this.isNamed ? givenSlots.named[this.name] : givenSlots.noname;
+    var sourceSlots = owner.sourceSlots;
+    var matchedSlots;
+    if (sourceSlots) {
+        matchedSlots = this.isNamed ? sourceSlots.named[this.name] : sourceSlots.noname;
     }
 
-    if (givenChildren) {
+    if (matchedSlots) {
         this.isInserted = true;
     }
 
-    realANode.children = givenChildren || aNode.children.slice(0);
+    realANode.children = matchedSlots || aNode.children.slice(0);
 
     // calc scoped slot vars
     realANode.vars = aNode.vars;

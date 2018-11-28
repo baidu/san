@@ -103,7 +103,7 @@ function Component(options) { // eslint-disable-line
         ? parseTemplate(options.source).children[0]
         : options.source;
     this.givenNamedSlotBinds = [];
-    this.givenSlots = {
+    this.sourceSlots = {
         named: {}
     };
 
@@ -157,7 +157,7 @@ function Component(options) { // eslint-disable-line
 
     if (this.source) {
         // 组件运行时传入的结构，做slot解析
-        this._createGivenSlots();
+        this._initSourceSlots(1);
 
         each(this.source.events, function (eventBind) {
             // 保存当前实例的native事件，下面创建aNode时候做合并
@@ -262,9 +262,9 @@ function Component(options) { // eslint-disable-line
  *
  * @protected
  */
-Component.prototype._createGivenSlots = function () {
+Component.prototype._initSourceSlots = function (isFirstTime) {
     var me = this;
-    this.givenSlots.named = {};
+    this.sourceSlots.named = {};
 
     // 组件运行时传入的结构，做slot解析
     this.source && this.scope && each(this.source.children, function (child) {
@@ -272,25 +272,23 @@ Component.prototype._createGivenSlots = function () {
 
         var slotBind = !child.textExpr && getANodeProp(child, 'slot');
         if (slotBind) {
-            !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
+            isFirstTime && me.givenNamedSlotBinds.push(slotBind);
 
             var slotName = evalExpr(slotBind.expr, me.scope, me.owner);
-            target = me.givenSlots.named[slotName];
+            target = me.sourceSlots.named[slotName];
             if (!target) {
-                target = me.givenSlots.named[slotName] = [];
+                target = me.sourceSlots.named[slotName] = [];
             }
         }
-        else if (!me.givenSlotInited) {
-            target = me.givenSlots.noname;
+        else if (isFirstTime) {
+            target = me.sourceSlots.noname;
             if (!target) {
-                target = me.givenSlots.noname = [];
+                target = me.sourceSlots.noname = [];
             }
         }
 
         target && target.push(child);
     });
-
-    this.givenSlotInited = true;
 };
 
 /**
@@ -608,7 +606,7 @@ Component.prototype._update = function (changes) {
         });
 
         if (needReloadForSlot) {
-            this._createGivenSlots();
+            this._initSourceSlots();
             this._repaintChildren();
         }
         else {
@@ -644,7 +642,7 @@ Component.prototype._update = function (changes) {
         elementUpdateChildren(this.implicitChildren, dataChanges);
 
         if (needReloadForSlot) {
-            this._createGivenSlots();
+            this._initSourceSlots();
             this._repaintChildren();
         }
 
@@ -767,7 +765,7 @@ Component.prototype._doneLeave = function () {
             this.listeners = null;
 
             this.source = null;
-            this.givenSlots = null;
+            this.sourceSlots = null;
             this.givenNamedSlotBinds = null;
 
             this.implicitChildren = null;
