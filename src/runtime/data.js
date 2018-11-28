@@ -139,14 +139,16 @@ function immutableSet(source, exprPaths, pathsStart, pathsLen, value, data) {
         source = {};
     }
 
-    var prop = evalExpr(exprPaths[pathsStart], data);
+    var pathExpr = exprPaths[pathsStart];
+    var prop = evalExpr(pathExpr, data);
     var result = source;
 
     if (source instanceof Array) {
         var index = +prop;
+        prop = isNaN(index) ? prop : index;
 
         result = source.slice(0);
-        result[isNaN(index) ? prop : index] = immutableSet(source[index], exprPaths, ++pathsStart, pathsLen, value, data);
+        result[prop] = immutableSet(source[prop], exprPaths, pathsStart + 1, pathsLen, value, data);
     }
     else if (typeof source === 'object') {
         result = {};
@@ -157,7 +159,14 @@ function immutableSet(source, exprPaths, pathsStart, pathsLen, value, data) {
             }
         }
 
-        result[prop] = immutableSet(source[prop], exprPaths, ++pathsStart, pathsLen, value, data);
+        result[prop] = immutableSet(source[prop], exprPaths, pathsStart + 1, pathsLen, value, data);
+    }
+
+    if (pathExpr.value == null) {
+        exprPaths[pathsStart] = {
+            type: typeof prop === 'string' ? ExprType.STRING : ExprType.NUMBER,
+            value: prop
+        };
     }
 
     return result;
@@ -335,6 +344,12 @@ Data.prototype.splice = function (expr, args, option) {
 
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
+
+        expr = {
+            type: ExprType.ACCESSOR,
+            paths: expr.paths.slice(0)
+        };
+
         dataCache.clear();
         this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, newArray, this);
 
