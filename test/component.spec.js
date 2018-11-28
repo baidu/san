@@ -4056,5 +4056,51 @@ describe("Component", function () {
         });
 
     });
+
+    it("set expr contains dynamic assessor, update children component success", function (done) {
+        var Child = san.defineComponent({
+            template: '<b>{{d.test1.value}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child d="{{map}}"/><a>{{map[list[index].title].value}}</a></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                map: {
+                    test1: { value: 'hello' }
+                },
+                list: [
+                    {
+                        title: 'test1'
+                    }
+                ],
+                index: 0
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('hello');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('hello');
+
+        myComponent.data.set('map[list[index].title].value', 'bye');
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('bye');
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('bye');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 });
 
