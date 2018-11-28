@@ -59,8 +59,7 @@ function changeExprCompare(changeExpr, expr, data) {
 
                 if (result && i < changeLen
                     /* eslint-disable eqeqeq */
-                    && (pathExprValue || evalExpr(pathExpr, data))
-                        != (changePaths[i].value || evalExpr(changePaths[i], data))
+                    && (pathExprValue || evalExpr(pathExpr, data)) != changePaths[i].value
                     /* eslint-enable eqeqeq */
                 ) {
                     result = 0;
