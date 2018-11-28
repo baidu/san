@@ -133,7 +133,7 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childOwner = null;
     this.childScope = null;
 
-    elementDisposeChildren(this, noDetach, noTransition);
+    elementDisposeChildren(this.children, noDetach, noTransition);
 
     if (!noDetach) {
         removeEl(this.el);

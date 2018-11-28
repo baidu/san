@@ -16,13 +16,8 @@ var nodeDispose = require('./node-dispose');
  * @param {Object=} options 销毁行为的参数
  */
 function elementDispose(element) {
-    elementDisposeChildren(element, 1, 1);
-
-    var children = element.implicitChildren;
-    var len = children && children.length;
-    while (len--) {
-        children[len].dispose(0, 1);
-    }
+    elementDisposeChildren(element.children, 1, 1);
+    elementDisposeChildren(element.implicitChildren, 0, 1);
 
     // el 事件解绑
     var len = element._elFns.length;

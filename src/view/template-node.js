@@ -69,7 +69,7 @@ TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
  * @param {boolean=} noTransition 是否不显示过渡动画效果
  */
 TemplateNode.prototype.dispose = function (noDetach, noTransition) {
-    elementDisposeChildren(this, noDetach, noTransition);
+    elementDisposeChildren(this.children, noDetach, noTransition);
 
     if (!noDetach) {
         removeEl(this.el);
