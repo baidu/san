@@ -102,7 +102,7 @@ function Component(options) { // eslint-disable-line
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;
-    this.givenNamedSlotBinds = [];
+    this.sourceSlotNameProps = [];
     this.sourceSlots = {
         named: {}
     };
@@ -272,7 +272,7 @@ Component.prototype._initSourceSlots = function (isFirstTime) {
 
         var slotBind = !child.textExpr && getANodeProp(child, 'slot');
         if (slotBind) {
-            isFirstTime && me.givenNamedSlotBinds.push(slotBind);
+            isFirstTime && me.sourceSlotNameProps.push(slotBind);
 
             var slotName = evalExpr(slotBind.expr, me.scope, me.owner);
             target = me.sourceSlots.named[slotName];
@@ -599,7 +599,7 @@ Component.prototype._update = function (changes) {
                 }
             });
 
-            each(me.givenNamedSlotBinds, function (bindItem) {
+            each(me.sourceSlotNameProps, function (bindItem) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
                 return !needReloadForSlot;
             });
@@ -766,7 +766,7 @@ Component.prototype._doneLeave = function () {
 
             this.source = null;
             this.sourceSlots = null;
-            this.givenNamedSlotBinds = null;
+            this.sourceSlotNameProps = null;
 
             this.implicitChildren = null;
         }
