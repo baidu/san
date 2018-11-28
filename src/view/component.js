@@ -640,10 +640,9 @@ Component.prototype._update = function (changes) {
             });
         });
 
-        elementUpdateChildren(this, dataChanges);
-        for (var i = 0, l = this.implicitChildren.length; i < l; i++) {
-            this.implicitChildren[i]._update(dataChanges);
-        }
+        elementUpdateChildren(this.children, dataChanges);
+        elementUpdateChildren(this.implicitChildren, dataChanges);
+
         if (needReloadForSlot) {
             this._createGivenSlots();
             this._repaintChildren();

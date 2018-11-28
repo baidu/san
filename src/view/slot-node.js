@@ -162,7 +162,7 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
 
     if (isFromOuter) {
         if (this.isInserted) {
-            elementUpdateChildren(this, changes);
+            elementUpdateChildren(this.children, changes);
         }
     }
     else {
@@ -235,10 +235,10 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                 });
             });
 
-            elementUpdateChildren(this, scopedChanges);
+            elementUpdateChildren(this.children, scopedChanges);
         }
         else if (!this.isInserted) {
-            elementUpdateChildren(this, changes);
+            elementUpdateChildren(this.children, changes);
         }
     }
 };
