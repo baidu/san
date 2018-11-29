@@ -199,10 +199,7 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
-    expr = {
-        type: ExprType.ACCESSOR,
-        paths: expr.paths.slice(0)
-    };
+    expr = createAccessor(expr.paths.slice(0));
 
     dataCache.clear();
     this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, value, this);
@@ -345,10 +342,7 @@ Data.prototype.splice = function (expr, args, option) {
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
 
-        expr = {
-            type: ExprType.ACCESSOR,
-            paths: expr.paths.slice(0)
-        };
+        expr = createAccessor(expr.paths.slice(0));
 
         dataCache.clear();
         this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, newArray, this);
