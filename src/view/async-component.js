@@ -66,6 +66,7 @@ AsyncComponent.prototype.attach = function (parentEl, beforeEl) {
     });
 };
 
+
 /**
  * loader加载完成，渲染组件
  *
@@ -77,14 +78,15 @@ AsyncComponent.prototype.onload = function (ComponentClass) {
         component.attach(this.el.parentNode, this.el);
 
         var parentChildren = this.options.parent.children;
-        var len = parentChildren.length;
-
-        while (len--) {
-            if (parentChildren[len] === this) {
-                parentChildren[len] = component;
-                break;
-            }
+        if (this.parentIndex == null || parentChildren[this.parentIndex] !== this) {
+            each(parentChildren, function (child, index) {
+                if (child instanceof AsyncComponent) {
+                    child.parentIndex = index;
+                }
+            });
         }
+
+        parentChildren[this.parentIndex] = component;
     }
 
     this.dispose();
