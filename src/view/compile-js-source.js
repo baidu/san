@@ -472,7 +472,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('  return html;');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.addRaw('  var $givenSlot = [];');
+        sourceBuffer.addRaw('  var $mySourceSlots = [];');
 
         var nameProp = getANodeProp(aNode, 'name');
         if (nameProp) {
@@ -482,16 +482,16 @@ var aNodeCompiler = {
             sourceBuffer.addRaw('var $slotName = null;');
         }
 
-        sourceBuffer.addRaw('var $ctxGivenSlots = componentCtx.givenSlots;');
-        sourceBuffer.addRaw('for (var $i = 0; $i < $ctxGivenSlots.length; $i++) {');
-        sourceBuffer.addRaw('  if ($ctxGivenSlots[$i][1] == $slotName) {');
-        sourceBuffer.addRaw('    $givenSlot.push($ctxGivenSlots[$i][0]);');
+        sourceBuffer.addRaw('var $ctxSourceSlots = componentCtx.sourceSlots;');
+        sourceBuffer.addRaw('for (var $i = 0; $i < $ctxSourceSlots.length; $i++) {');
+        sourceBuffer.addRaw('  if ($ctxSourceSlots[$i][1] == $slotName) {');
+        sourceBuffer.addRaw('    $mySourceSlots.push($ctxSourceSlots[$i][0]);');
         sourceBuffer.addRaw('  }');
         sourceBuffer.addRaw('}');
 
 
-        sourceBuffer.addRaw('var $isInserted = $givenSlot.length > 0;');
-        sourceBuffer.addRaw('if (!$isInserted) { $givenSlot.push($defaultSlotRender); }');
+        sourceBuffer.addRaw('var $isInserted = $mySourceSlots.length > 0;');
+        sourceBuffer.addRaw('if (!$isInserted) { $mySourceSlots.push($defaultSlotRender); }');
 
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
 
@@ -511,8 +511,8 @@ var aNodeCompiler = {
             });
         }
 
-        sourceBuffer.addRaw('for (var $renderIndex = 0; $renderIndex < $givenSlot.length; $renderIndex++) {');
-        sourceBuffer.addRaw('  html += $givenSlot[$renderIndex]($slotCtx);');
+        sourceBuffer.addRaw('for (var $renderIndex = 0; $renderIndex < $mySourceSlots.length; $renderIndex++) {');
+        sourceBuffer.addRaw('  html += $mySourceSlots[$renderIndex]($slotCtx);');
         sourceBuffer.addRaw('}');
 
         sourceBuffer.addRaw('})();');
@@ -562,19 +562,19 @@ var aNodeCompiler = {
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
         if (aNode) {
             sourceBuffer.addRaw('var $slotName = null;');
-            sourceBuffer.addRaw('var $givenSlots = [];');
+            sourceBuffer.addRaw('var $sourceSlots = [];');
             each(aNode.children, function (child) {
                 var slotBind = !child.textExpr && getANodeProp(child, 'slot');
                 if (slotBind) {
                     sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
-                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
                     sourceBuffer.addRaw('  var html = "";');
                     sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
                     sourceBuffer.addRaw('  return html;');
                     sourceBuffer.addRaw('}, $slotName]);');
                 }
                 else {
-                    sourceBuffer.addRaw('$givenSlots.push([function (componentCtx) {');
+                    sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
                     sourceBuffer.addRaw('  var html = "";');
                     sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
                     sourceBuffer.addRaw('  return html;');
@@ -613,8 +613,8 @@ var aNodeCompiler = {
         sourceBuffer.addRendererStart();
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
         sourceBuffer.addRendererEnd();
-        sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $givenSlots);');
-        sourceBuffer.addRaw('$givenSlots = null;');
+        sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $sourceSlots);');
+        sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
     /**
@@ -648,7 +648,7 @@ var aNodeCompiler = {
 function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
-    sourceBuffer.addRaw('componentCtx.givenSlots = givenSlots;');
+    sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
 
 
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
@@ -818,7 +818,7 @@ function genComponentContextCode(component) {
     });
 
     // given anode
-    code.push('givenSlots: [],');
+    code.push('sourceSlots: [],');
 
     // filters
     code.push('filters: {');
