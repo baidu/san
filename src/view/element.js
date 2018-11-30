@@ -180,7 +180,7 @@ Element.prototype._update = function (changes) {
         }
     }
     else {
-        elementUpdateChildren(this, changes);
+        elementUpdateChildren(this.children, changes);
     }
 };
 

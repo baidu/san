@@ -15,6 +15,10 @@ var elementAttach = require('./element-attach');
 function elementOwnAttach(parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
         elementAttach(this, parentEl, beforeEl);
+
+        if (this.owner && !this.parent) {
+            this.owner.implicitChildren.push(this);
+        }
         this._attached();
     }
 }

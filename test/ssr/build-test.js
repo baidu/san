@@ -94,6 +94,7 @@ let buildFile = function (filePath) {
 
         // iterate
         if (isDir) {
+            console.log(`[Build SSR spec] ${filename}`);
             buildFile(abFilePath);
         }
     });

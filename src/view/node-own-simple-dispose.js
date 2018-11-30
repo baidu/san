@@ -13,7 +13,7 @@ var elementDisposeChildren = require('./element-dispose-children');
  * @param {boolean=} noDetach 是否不要把节点从dom移除
  */
 function nodeOwnSimpleDispose(noDetach) {
-    elementDisposeChildren(this, noDetach, 1);
+    elementDisposeChildren(this.children, noDetach, 1);
 
     if (!noDetach) {
         removeEl(this.el);

@@ -18,7 +18,7 @@ function elementGetTransition(element) {
     var owner = element.owner;
 
     if (element.nodeType === NodeType.CMPT) {
-        var cmptGivenTransition = element.givenANode && element.givenANode.directives.transition;
+        var cmptGivenTransition = element.source && element.source.directives.transition;
         if (cmptGivenTransition) {
             directive = cmptGivenTransition;
         }

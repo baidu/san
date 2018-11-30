@@ -60,19 +60,17 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
     }
 
     // calc aNode children
-    var givenSlots = owner.givenSlots;
-    var givenChildren;
-    if (givenSlots) {
-        givenChildren = this.isNamed ? givenSlots.named[this.name] : givenSlots.noname;
+    var sourceSlots = owner.sourceSlots;
+    var matchedSlots;
+    if (sourceSlots) {
+        matchedSlots = this.isNamed ? sourceSlots.named[this.name] : sourceSlots.noname;
     }
 
-    if (givenChildren) {
+    if (matchedSlots) {
         this.isInserted = true;
     }
 
-    realANode.children = givenChildren || aNode.children.slice(0);
-
-    var me = this;
+    realANode.children = matchedSlots || aNode.children.slice(0);
 
     // calc scoped slot vars
     realANode.vars = aNode.vars;
@@ -110,6 +108,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
         this.sel = document.createComment(this.id);
         insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
+        var me = this;
         each(this.aNode.children, function (aNodeChild) {
             me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
         });
@@ -134,7 +133,7 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
     this.childOwner = null;
     this.childScope = null;
 
-    elementDisposeChildren(this, noDetach, noTransition);
+    elementDisposeChildren(this.children, noDetach, noTransition);
 
     if (!noDetach) {
         removeEl(this.el);
@@ -163,7 +162,7 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
 
     if (isFromOuter) {
         if (this.isInserted) {
-            elementUpdateChildren(this, changes);
+            elementUpdateChildren(this.children, changes);
         }
     }
     else {
@@ -236,10 +235,10 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                 });
             });
 
-            elementUpdateChildren(this, scopedChanges);
+            elementUpdateChildren(this.children, scopedChanges);
         }
         else if (!this.isInserted) {
-            elementUpdateChildren(this, changes);
+            elementUpdateChildren(this.children, changes);
         }
     }
 };

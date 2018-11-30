@@ -26,7 +26,7 @@ function compileComponent(ComponentClass) {
         for (var key in components) { // eslint-disable-line
             var componentClass = components[key];
 
-            if (typeof componentClass === 'object') {
+            if (typeof componentClass === 'object' && !(componentClass instanceof ComponentLoader)) {
                 components[key] = defineComponent(componentClass);
             }
             else if (componentClass === 'self') {
