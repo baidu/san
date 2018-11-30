@@ -40,6 +40,7 @@
     "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
     "opener": "~1.4.0",
+    "source-map": "^0.7.3",
     "swig": "^1.4.2",
     "uglify-js": "^2.8.22",
     "watch": "^1.0.2",

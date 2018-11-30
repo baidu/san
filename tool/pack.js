@@ -32,11 +32,15 @@ function pack(rootDir, mainFile) {
     mainFile = mainFile || path.resolve(srcDir, 'main.js');
 
     let deps = depAnalyse(mainFile);
-
-    return fileContent(mainFile, 1, []).replace(
-        '// #[main-dependencies]',
-        deps.map(dep => fileContent(dep)).join('\n\n')
-    );
+    for(let i in deps)
+        console.dir(deps[i])
+    return {
+        content: fileContent(mainFile, 1, []).replace(
+            '// #[main-dependencies]',
+            deps.map(dep => fileContent(dep)).join('\n\n')),
+        deps: deps,
+        base: mainFile
+    };
 }
 
 function depAnalyse(targetFile) {

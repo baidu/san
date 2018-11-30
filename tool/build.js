@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const pack = require('./pack');
 const uglifyJS = require('uglify-js');
-
+const MOZ_SourceMap = require('source-map');
 
 let editions = {
     ssr: {},
@@ -71,13 +71,13 @@ function build() {
 
     let version = JSON.parse(fs.readFileSync(path.resolve(rootDir, 'package.json'))).version;
 
-    let source = pack(rootDir).replace(/##version##/g, version);
+    let baseSource = pack(rootDir);
+    let source = baseSource.content.replace(/##version##/g, version);
 
 
     Object.keys(editions).forEach(edition => {
         let option = editions[edition];
         let editionSource = clearFeatureCode(source, option.ignoreFeatures);
-
         if (option.compress) {
             let ast = uglifyJS.parse(editionSource);
             ast.figure_out_scope({screw_ie8: false});
@@ -90,12 +90,39 @@ function build() {
 
             editionSource = ast.print_to_string({screw_ie8: false});
         }
-
+        let fileName = edition === '__' ? `san.js` : `san.${edition}.js`;
+        editionSource += `//@ sourceMappingURL=./${fileName}.map`
         fs.writeFileSync(
-            edition === '__' ? `${distDir}/san.js` : `${distDir}/san.${edition}.js`,
+            `${distDir}/` + fileName,
             editionSource,
             'UTF-8'
         );
+        let map = new MOZ_SourceMap.SourceMapGenerator({
+            file: fileName
+        })
+        let baseLine = fs.readFileSync(baseSource.base)
+            .toString('utf8').split('// #[main-dependencies]')[0]
+            .split('\n').length
+        for(var i = 0;i < baseSource.deps.length; i ++) {
+            let script = fs.readFileSync(baseSource.deps[i]);
+            let fileSplit = script.toString('utf8').split('\n');
+            let fileLine = fileSplit.length;
+            for(let j = 0; j< fileSplit.length;j ++){
+                map.addMapping({
+                    source: baseSource.deps[i],
+                    original: {
+                        line: j + 1,
+                        column: 0
+                    },
+                    generated: {
+                        line: baseLine + j,
+                        column: 0
+                    }
+                });
+            }
+            baseLine = fileLine + 1 + baseLine;
+        }
+        fs.writeFileSync(`${distDir}/` + fileName + '.map', map.toString(), 'UTF-8');
     });
 }
 
