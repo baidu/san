@@ -1,28 +1,29 @@
 /**
- * @file 警告
+ * @file 开发时的警告提示
  * @author errorrik(errorrik@gmail.com)
  */
 
-var prefix = '[SAN WARNING] ';
-
+// #[begin] error
 /**
- * 警告
+ * 开发时的警告提示
  *
  * @param {Object} message 警告信息
  */
 function warn(message) {
+    message = '[SAN WARNING] ' + message;
 
     /* eslint-disable no-console */
     if (typeof console === 'object' && console.warn) {
-        console.warn(prefix + message);
+        console.warn(message);
     }
     else {
         // 防止警告中断调用堆栈
         setTimeout(function () {
-            throw new Error(prefix + message);
-        });
+            throw new Error(message);
+        }, 0);
     }
     /* eslint-enable no-console */
 }
+// #[end]
 
 exports = module.exports = warn;
