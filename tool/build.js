@@ -78,6 +78,8 @@ function build() {
     Object.keys(editions).forEach(edition => {
         let option = editions[edition];
         let editionSource = clearFeatureCode(source, option.ignoreFeatures);
+        let fileName = edition === '__' ? `san.js` : `san.${edition}.js`;
+        let filePath = path.join(distDir, fileName);
         if (option.compress) {
             let ast = uglifyJS.parse(editionSource);
             ast.figure_out_scope({screw_ie8: false});
@@ -90,39 +92,42 @@ function build() {
 
             editionSource = ast.print_to_string({screw_ie8: false});
         }
-        let fileName = edition === '__' ? `san.js` : `san.${edition}.js`;
-        editionSource += `//@ sourceMappingURL=./${fileName}.map`
+        if(!/min/.test(edition)){
+            editionSource += '//@ sourceMappingURL=' + path.join('./', fileName + '.map');
+        }
         fs.writeFileSync(
-            `${distDir}/` + fileName,
+            filePath,
             editionSource,
             'UTF-8'
         );
-        let map = new MOZ_SourceMap.SourceMapGenerator({
-            file: fileName
-        })
-        let baseLine = fs.readFileSync(baseSource.base)
-            .toString('utf8').split('// #[main-dependencies]')[0]
-            .split('\n').length
-        for(var i = 0;i < baseSource.deps.length; i ++) {
-            let script = fs.readFileSync(baseSource.deps[i]);
-            let fileSplit = script.toString('utf8').split('\n');
-            let fileLine = fileSplit.length;
-            for(let j = 0; j< fileSplit.length;j ++){
-                map.addMapping({
-                    source: baseSource.deps[i],
-                    original: {
-                        line: j + 1,
-                        column: 0
-                    },
-                    generated: {
-                        line: baseLine + j,
-                        column: 0
-                    }
-                });
+        if(!/min/.test(edition)){
+            let map = new MOZ_SourceMap.SourceMapGenerator({
+                file: filePath
+            });
+            let baseLineLength = fs.readFileSync(baseSource.base)
+                .toString('utf8').split('// #[main-dependencies]')[0]
+                .split('\n').length;
+            for (let i = 0; i < baseSource.deps.length; i++) {
+                let script = fs.readFileSync(baseSource.deps[i]);
+                let fileSplit = script.toString('utf8').split('\n');
+                let fileLineLength = fileSplit.length;
+                for (let j = 0; j < fileLineLength; j++){
+                    map.addMapping({
+                        source: baseSource.deps[i],
+                        original: {
+                            line: j + 1,
+                            column: 0
+                        },
+                        generated: {
+                            line: baseLineLength + j,
+                            column: 0
+                        }
+                    });
+                }
+                baseLineLength = fileLineLength + 1 + baseLineLength;
             }
-            baseLine = fileLine + 1 + baseLine;
+            fs.writeFileSync(`${filePath}.map`, map.toString(), 'UTF-8');
         }
-        fs.writeFileSync(`${distDir}/` + fileName + '.map', map.toString(), 'UTF-8');
     });
 }
 

@@ -36,7 +36,8 @@ function pack(rootDir, mainFile) {
         content: fileContent(mainFile, 1, []).replace(
             '// #[main-dependencies]',
             deps.map(dep => fileContent(dep)).join('\n\n')),
-        deps: deps
+        deps: deps,
+        base: mainFile
     };
 }
 
