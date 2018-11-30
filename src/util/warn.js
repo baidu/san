@@ -1,13 +1,13 @@
 /**
  * @file 开发时的警告提示
- * @author errorrik(errorrik@gmail.com)
+ * @author dafrok(o.o@mug.dog)
  */
 
 // #[begin] error
 /**
  * 开发时的警告提示
  *
- * @param {Object} message 警告信息
+ * @param {string} message 警告信息
  */
 function warn(message) {
     message = '[SAN WARNING] ' + message;
