@@ -3562,6 +3562,66 @@ describe("Component", function () {
 
     });
 
+    it("dynamic component by owner, auto dispose", function () {
+        var Person = san.defineComponent({
+            template: '<span><b>{{name}}</b><u>{{email}}</u></span>'
+        });
+
+        var dispatchName = 'erik';
+        var MyComponent = san.defineComponent({
+            template: '<div><a>{{author.name}}</a></div>',
+
+            attached: function () {
+                this.p = new Person({
+                    owner: this,
+                    data: {
+                        name: this.data.get('author.name'),
+                        email: this.data.get('author.email')
+                    }
+                });
+                this.p.attach(document.body);
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                author: {
+                    name: 'erik',
+                    email: 'errorrik@gmail.com'
+                }
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var pEl = myComponent.p.el;
+
+
+        expect(pEl.parentNode).not.toBe(null);
+
+        var us = pEl.getElementsByTagName('u');
+        expect(us.length).toBe(1);
+        expect(us[0].innerHTML).toBe('errorrik@gmail.com');
+
+        var bs = pEl.getElementsByTagName('b');
+        expect(bs.length).toBe(1);
+        expect(bs[0].innerHTML).toBe('erik');
+
+
+        var as = wrap.getElementsByTagName('a');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+        expect(pEl.parentNode).toBe(null);
+        expect(myComponent.p.el).toBe(null);
+        expect(myComponent.p.lifeCycle.is('disposed')).toBeTruthy();
+
+    });
+
     it("pre compile template to aNode", function (done) {
         var Man = san.defineComponent({
             filters: {
