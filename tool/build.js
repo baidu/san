@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const assert = reuqire('assert');
 const pack = require('./pack');
 const uglifyJS = require('uglify-js');
 const MOZ_SourceMap = require('source-map');
@@ -101,6 +102,7 @@ function build() {
             'UTF-8'
         );
         if(!/min/.test(edition)){
+            assert(typeof path.parse(baseSource.base) === 'object', 'The base(entry file) must be a file path!');
             let map = new MOZ_SourceMap.SourceMapGenerator({
                 file: filePath
             });

@@ -1,6 +1,7 @@
 node_modules/
 dist/*.js
 dist/*.gz
+dist/*.map
 .idea/
 public/
 npm-debug.log
