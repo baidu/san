@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const assert = reuqire('assert');
+const assert = require('assert');
 const pack = require('./pack');
 const uglifyJS = require('uglify-js');
 const MOZ_SourceMap = require('source-map');
