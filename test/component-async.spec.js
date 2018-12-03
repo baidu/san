@@ -8,14 +8,12 @@ describe("Component Async", function () {
         var loadSuccess;
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': san.createComponentLoader({
-                    load: function () {
-                        return {
-                            then: function (success) {
-                                loadSuccess = success;
-                            }
-                        };
-                    }
+                'x-label': san.createComponentLoader(function () {
+                    return {
+                        then: function (success) {
+                            loadSuccess = success;
+                        }
+                    };
                 })
             },
 
