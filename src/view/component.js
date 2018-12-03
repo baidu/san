@@ -1,6 +1,7 @@
 /**
  * @file 组件类
  * @author errorrik(errorrik@gmail.com)
+ *         dafrok(o.o@mug.dog)
  */
 
 var bind = require('../util/bind');
@@ -43,6 +44,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
+var warn = require('../util/warn');
 
 
 
@@ -54,6 +56,18 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
  * @param {Object} options 初始化参数
  */
 function Component(options) { // eslint-disable-line
+
+    /* eslint-disable no-console */
+    // #[begin] error
+    for (var key in Component.prototype) {
+        if (this[key] !== Component.prototype[key]) {
+            warn('\`' + key + '\` is a reserved key of san components. Overriding this property may cause unknown exceptions.');
+        }
+    }
+    // #[end]
+    /* eslint-disable no-console */
+
+
     options = options || {};
 
     this.lifeCycle = LifeCycle.start;
@@ -61,6 +75,7 @@ function Component(options) { // eslint-disable-line
     this._elFns = [];
     this.listeners = {};
     this.slotChildren = [];
+    this.implicitChildren = [];
 
     var clazz = this.constructor;
 
@@ -81,11 +96,15 @@ function Component(options) { // eslint-disable-line
     var me = this;
     var protoANode = clazz.prototype.aNode;
 
-    this.givenANode = options.aNode;
-    this.givenNamedSlotBinds = [];
-    this.givenSlots = {
+
+    this.source = typeof options.source === 'string'
+        ? parseTemplate(options.source).children[0]
+        : options.source;
+    this.sourceSlotNameProps = [];
+    this.sourceSlots = {
         named: {}
     };
+
 
     this.owner = options.owner;
     this.scope = options.scope;
@@ -98,13 +117,17 @@ function Component(options) { // eslint-disable-line
             ? parent
             : parent && parent.parentComponent;
     }
+    else if (this.owner) {
+        this.parentComponent = this.owner;
+        this.scope = this.owner.data;
+    }
 
     this.id = guid();
 
     // #[begin] reverse
     if (this.el) {
         var firstCommentNode = this.el.firstChild;
-        if (firstCommentNode.nodeType === 3) {
+        if (firstCommentNode && firstCommentNode.nodeType === 3) {
             firstCommentNode = firstCommentNode.nextSibling;
         }
 
@@ -130,11 +153,11 @@ function Component(options) { // eslint-disable-line
     // native事件数组
     this.nativeEvents = [];
 
-    if (this.givenANode) {
+    if (this.source) {
         // 组件运行时传入的结构，做slot解析
-        this._createGivenSlots();
+        this._initSourceSlots(1);
 
-        each(this.givenANode.events, function (eventBind) {
+        each(this.source.events, function (eventBind) {
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
                 me.nativeEvents.push(eventBind);
@@ -147,16 +170,16 @@ function Component(options) { // eslint-disable-line
 
             me.on(
                 eventBind.name,
-                bind(eventDeclarationListener, options.owner, eventBind, 1, options.scope),
+                bind(eventDeclarationListener, options.owner, eventBind, 1, me.scope),
                 eventBind
             );
         });
 
-        this.tagName = protoANode.tagName || this.givenANode.tagName;
-        this.binds = camelComponentBinds(this.givenANode.props);
+        this.tagName = protoANode.tagName || this.source.tagName;
+        this.binds = camelComponentBinds(this.source.props);
 
         // init s-bind data
-        nodeSBindInit(this, this.givenANode.directives.bind);
+        nodeSBindInit(this, this.source.directives.bind);
     }
 
     this._toPhase('compiled');
@@ -237,35 +260,33 @@ function Component(options) { // eslint-disable-line
  *
  * @protected
  */
-Component.prototype._createGivenSlots = function () {
+Component.prototype._initSourceSlots = function (isFirstTime) {
     var me = this;
-    this.givenSlots.named = {};
+    this.sourceSlots.named = {};
 
     // 组件运行时传入的结构，做slot解析
-    this.givenANode && this.scope && each(this.givenANode.children, function (child) {
+    this.source && this.scope && each(this.source.children, function (child) {
         var target;
 
         var slotBind = !child.textExpr && getANodeProp(child, 'slot');
         if (slotBind) {
-            !me.givenSlotInited && me.givenNamedSlotBinds.push(slotBind);
+            isFirstTime && me.sourceSlotNameProps.push(slotBind);
 
             var slotName = evalExpr(slotBind.expr, me.scope, me.owner);
-            target = me.givenSlots.named[slotName];
+            target = me.sourceSlots.named[slotName];
             if (!target) {
-                target = me.givenSlots.named[slotName] = [];
+                target = me.sourceSlots.named[slotName] = [];
             }
         }
-        else if (!me.givenSlotInited) {
-            target = me.givenSlots.noname;
+        else if (isFirstTime) {
+            target = me.sourceSlots.noname;
             if (!target) {
-                target = me.givenSlots.noname = [];
+                target = me.sourceSlots.noname = [];
             }
         }
 
         target && target.push(child);
     });
-
-    this.givenSlotInited = true;
 };
 
 /**
@@ -366,9 +387,10 @@ Component.prototype._calcComputed = function (computedExpr) {
         computedDeps = this.computedDeps[computedExpr] = {};
     }
 
+    var me = this;
     this.data.set(computedExpr, this.computed[computedExpr].call({
         data: {
-            get: bind(function (expr) {
+            get: function (expr) {
                 // #[begin] error
                 if (!expr) {
                     throw new Error('[SAN ERROR] call get method in computed need argument');
@@ -378,17 +400,17 @@ Component.prototype._calcComputed = function (computedExpr) {
                 if (!computedDeps[expr]) {
                     computedDeps[expr] = 1;
 
-                    if (this.computed[expr]) {
-                        this._calcComputed(expr);
+                    if (me.computed[expr] && !me.computedDeps[expr]) {
+                        me._calcComputed(expr);
                     }
 
-                    this.watch(expr, function () {
-                        this._calcComputed(computedExpr);
+                    me.watch(expr, function () {
+                        me._calcComputed(computedExpr);
                     });
                 }
 
-                return this.data.get(expr);
-            }, this)
+                return me.data.get(expr);
+            }
         }
     }));
 };
@@ -480,7 +502,7 @@ Component.prototype.ref = function (name) {
                     break;
 
                 case NodeType.CMPT:
-                    ref = element.givenANode.directives.ref;
+                    ref = element.source.directives.ref;
                     if (ref && evalExpr(ref.value, element.scope, owner) === name) {
                         refTarget = element;
                     }
@@ -517,12 +539,12 @@ Component.prototype._update = function (changes) {
     };
 
     if (changes) {
-        this.givenANode && nodeSBindUpdate(
+        this.source && nodeSBindUpdate(
             this,
-            this.givenANode.directives.bind,
+            this.source.directives.bind,
             changes,
             function (name, value) {
-                if (name in me.givenANode.hotspot.props) {
+                if (name in me.source.hotspot.props) {
                     return;
                 }
 
@@ -575,14 +597,14 @@ Component.prototype._update = function (changes) {
                 }
             });
 
-            each(me.givenNamedSlotBinds, function (bindItem) {
+            each(me.sourceSlotNameProps, function (bindItem) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
                 return !needReloadForSlot;
             });
         });
 
         if (needReloadForSlot) {
-            this._createGivenSlots();
+            this._initSourceSlots();
             this._repaintChildren();
         }
         else {
@@ -614,9 +636,11 @@ Component.prototype._update = function (changes) {
             });
         });
 
-        elementUpdateChildren(this, dataChanges);
+        elementUpdateChildren(this.children, dataChanges);
+        elementUpdateChildren(this.implicitChildren, dataChanges);
+
         if (needReloadForSlot) {
-            this._createGivenSlots();
+            this._initSourceSlots();
             this._repaintChildren();
         }
 
@@ -668,7 +692,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
  */
 Component.prototype._repaintChildren = function () {
-    elementDisposeChildren(this, 0, 1);
+    elementDisposeChildren(this.children, 0, 1);
     this.children = [];
 
     this._contentReady = 0;
@@ -738,9 +762,11 @@ Component.prototype._doneLeave = function () {
             );
             this.listeners = null;
 
-            this.givenANode = null;
-            this.givenSlots = null;
-            this.givenNamedSlotBinds = null;
+            this.source = null;
+            this.sourceSlots = null;
+            this.sourceSlotNameProps = null;
+
+            this.implicitChildren = null;
         }
     }
     else if (this.lifeCycle.attached) {
