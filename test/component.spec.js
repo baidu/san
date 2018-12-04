@@ -3596,8 +3596,6 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var pEl = myComponent.p.el;
-
-
         expect(pEl.parentNode).not.toBe(null);
 
         var us = pEl.getElementsByTagName('u');
@@ -3615,8 +3613,7 @@ describe("Component", function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
-
-        expect(pEl.parentNode).toBe(null);
+        expect(!pEl.parentNode || !pEl.parentNode.tagName).toBeTruthy();
         expect(myComponent.p.el).toBe(null);
         expect(myComponent.p.lifeCycle.is('disposed')).toBeTruthy();
 
