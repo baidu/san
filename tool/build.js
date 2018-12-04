@@ -99,7 +99,7 @@ function build() {
 
             assert(typeof path.parse(baseSource.base) === 'object', 'The base(entry file) must be a file path!');
             let map = new MOZ_SourceMap.SourceMapGenerator({
-                file: filePath
+                file: fileName
             });
             let baseLineLength = fs.readFileSync(baseSource.base)
                 .toString('utf8').split('// #[main-dependencies]')[0]
