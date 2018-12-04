@@ -86,7 +86,7 @@ module.exports = function(config) {
         reports:{
             html: 'coverage/html',
             lcovonly: 'coverage/report-lcov/lcov.info',
-      }
+        }
     };
 
   }
