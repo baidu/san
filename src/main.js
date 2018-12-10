@@ -1,11 +1,10 @@
 /**
- * San
- * Copyright 2016 Baidu Inc. All rights reserved.
+ * Copyright (c) Baidu Inc. All rights reserved.
  *
- * @file 主文件
- * @author errorrik(errorrik@gmail.com)
- *         otakustay(otakustay@gmail.com)
- *         junmer(junmer@foxmail.com)
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
+ * @file San 主文件
  */
 
 (function (root) {
