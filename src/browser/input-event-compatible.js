@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 解决 IE9 在表单元素中删除字符时不触发事件的问题
- * @author dafrok(o.o@mug.dog)
  */
 
 var ie = require('./ie');

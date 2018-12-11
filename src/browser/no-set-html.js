@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 判断元素是否不允许设置HTML
- * @author errorrik(errorrik@gmail.com)
  */
 
 // some html elements cannot set innerHTML in old ie
