@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file DOM 事件挂载
+ * @file 触发元素事件
  */
 
 /**
- * DOM 事件挂载
+ * 触发元素事件
  *
  * @inner
  * @param {HTMLElement} el DOM元素
