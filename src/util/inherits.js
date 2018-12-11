@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 构建类之间的继承关系
- * @author errorrik(errorrik@gmail.com)
  */
 
 var extend = require('./extend');

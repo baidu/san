@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 判断数组中是否包含某项
- * @author errorrik(errorrik@gmail.com)
  */
 
 var each = require('./each');

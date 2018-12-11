@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 在下一个时间周期运行任务
- * @author errorrik(errorrik@gmail.com)
  */
 
 // 该方法参照了vue2.5.0的实现，感谢vue团队
