@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 在对象上使用accessor表达式查找方法
- * @author errorrik(errorrik@gmail.com)
  */
 
 var evalExpr = require('../runtime/eval-expr');
