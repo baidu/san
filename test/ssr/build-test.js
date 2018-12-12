@@ -8,7 +8,7 @@ const san = require('../../dist/san.ssr');
 const fs = require('fs');
 const path = require('path');
 
-let htmlTpl = fs.readFileSync(path.resolve(__dirname, '../index-ssr.html.tpl'), 'UTF-8');
+let htmlTpl = fs.readFileSync(path.resolve(__dirname, '..', 'index-ssr.html.tpl'), 'UTF-8');
 let html = '';
 let specTpls = '';
 
@@ -101,6 +101,7 @@ let buildFile = function (filePath) {
 
     let match = filePath.match(/\/([a-zA-Z0-9_,$\-]*)$/);
     // dirName is the identity of each component
+    console.log(filePath, match)
     dirName = match[1];
     // generate html when it has source file
     if (sourceFile) {
@@ -116,15 +117,15 @@ let buildFile = function (filePath) {
 };
 
 let writeIn = function ({htmlTpl, html, specTpls}) {
-    let karmaHtml = fs.readFileSync(path.resolve(__dirname, '../karma-context.html.tpl'), 'UTF-8');
+    let karmaHtml = fs.readFileSync(path.resolve(__dirname, '..', 'karma-context.html.tpl'), 'UTF-8');
     fs.writeFileSync(
-        path.resolve(__dirname, '../karma-context.html'),
+        path.resolve(__dirname, '..', 'karma-context.html'),
         karmaHtml.replace('##ssr-elements##', html),
         'UTF-8'
     );
 
     fs.writeFileSync(
-        path.resolve(__dirname, '../index-ssr.html'),
+        path.resolve(__dirname, '..', 'index-ssr.html'),
         htmlTpl.replace('##ssr-elements##', html),
         'UTF-8'
     );
