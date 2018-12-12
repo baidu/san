@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 读取逻辑与表达式
- * @author errorrik(errorrik@gmail.com)
  */
 
 var ExprType = require('./expr-type');

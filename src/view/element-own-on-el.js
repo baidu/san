@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 为元素的 el 绑定事件
- * @author errorrik(errorrik@gmail.com)
  */
 
 var on = require('../browser/on');

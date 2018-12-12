@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 将元素attach到页面
- * @author errorrik(errorrik@gmail.com)
  */
 
 var genElementChildren = require('./gen-element-children');

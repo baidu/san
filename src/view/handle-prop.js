@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 处理元素的属性操作
- * @author errorrik(errorrik@gmail.com)
  */
 
 var getPropHandler = require('./get-prop-handler');

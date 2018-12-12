@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 将 binds 的 name 从 kebabcase 转换成 camelcase
- * @author errorrik(errorrik@gmail.com)
  */
 
 var kebab2camel = require('../util/kebab2camel');

@@ -1,6 +1,10 @@
 /**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
  * @file 初始化 element 节点的 tagName 处理
- * @author errorrik(errorrik@gmail.com)
  */
 
 var ieOldThan9 = require('../browser/ie-old-than-9');
