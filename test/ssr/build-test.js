@@ -101,7 +101,6 @@ let buildFile = function (filePath) {
 
     let match = filePath.match(/[\/\\]([a-zA-Z0-9_,$\-]*)$/);
     // dirName is the identity of each component
-    console.log(filePath, match)
     dirName = match[1];
     // generate html when it has source file
     if (sourceFile) {
