@@ -595,7 +595,7 @@ describe("Component-TwoWay Binding", function () {
             components: {
               'x-input': Input
             },
-            template: '<div><b>{{name}}</b><x-input value="{=name=}"/><span>{{name}}</span></div>',
+            template: '<div><b>{{name}}</b><x-input value="{=name=}"/><span>{{name}}</span></div>'
         });
         var myComponent = new MyComponent();
         expect(myComponent.data.get('name') == null).toBeTruthy();

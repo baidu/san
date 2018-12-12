@@ -61,7 +61,7 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
 
         });
 
-        // svg foreignObject中可以渲染一个p标签 
+        // svg foreignObject中可以渲染一个p标签
         it("foreignObject inner html", function (done) {
 
             var MyComponent = san.defineComponent({
@@ -71,12 +71,12 @@ if (!/MSIE|Trident/.test(navigator.userAgent)) {
                     + '<p>Here is a paragraph that requires word wrap</p>'
                     + '</foreignObject>'
                     + '<circle cx="150" cy="50" r="50"/>'
-                    + '</svg>',
+                    + '</svg>'
             });
             var myComponent = new MyComponent;
 
             myComponent.attach(wrap);
-            
+
             var foreignObjectEl = wrap.getElementsByTagName('foreignObject')[0];
             // 好像没啥用, 不论大小写，用 getElementsByTagName 都可以查询到节点
             expect(!!foreignObjectEl).toBe(true);
