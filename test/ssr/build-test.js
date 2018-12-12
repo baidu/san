@@ -99,7 +99,7 @@ let buildFile = function (filePath) {
         }
     });
 
-    let match = filePath.match(/\/([a-zA-Z0-9_,$\-]*)$/);
+    let match = filePath.match(/[\/\\]([a-zA-Z0-9_,$\-]*)$/);
     // dirName is the identity of each component
     console.log(filePath, match)
     dirName = match[1];
