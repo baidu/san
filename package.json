@@ -8,10 +8,10 @@
   },
   "scripts": {
     "dev": "node ./tool/dev.js",
-    "dev:unit": "karma start ./test/karma.conf.js start",
+    "dev:unit": "npx karma start ./test/karma.conf.js start",
     "pretest": "npm run build && node ./test/ssr/build-test.js",
     "test": "npm run test:unit",
-    "test:unit": "karma start ./test/karma.conf.js --single-run",
+    "test:unit": "npx karma start ./test/karma.conf.js --single-run",
     "test:coverage": "npm run test -- -- --coverage && cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
