@@ -20,6 +20,7 @@ function elementOwnAttach(parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
         elementAttach(this, parentEl, beforeEl);
 
+        // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
         if (this.owner && !this.parent) {
             this.owner.implicitChildren.push(this);
         }
