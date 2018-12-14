@@ -7,7 +7,7 @@ install:
   - ps: >-
       try { Install-Product node $env:nodejs_version -ErrorAction Stop }
       catch { Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) }
-  - choco install googlechrome
+  - choco install googlechrome --ignore-checksums
   - npm install --global npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
