@@ -23,7 +23,7 @@ var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
 var compileComponent = require('./compile-component');
-var componentPreheat = require('./component-preheat');
+var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
@@ -92,17 +92,24 @@ function Component(options) { // eslint-disable-line
 
     this.subTag = options.subTag;
 
+
+
+
     // compile
     compileComponent(clazz);
-    componentPreheat(clazz);
 
     var me = this;
     var protoANode = clazz.prototype.aNode;
+    preheatANode(protoANode);
+
 
 
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;
+    preheatANode(this.source);
+
+
     this.sourceSlotNameProps = [];
     this.sourceSlots = {
         named: {}

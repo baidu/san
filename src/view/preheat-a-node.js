@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file 组件预热
+ * @file ANode预热
  */
 
 var ExprType = require('../parser/expr-type');
@@ -15,11 +15,11 @@ var getANodeProp = require('./get-a-node-prop');
 var isBrowser = require('../browser/is-browser');
 
 /**
- * 组件预热，分析组件aNode的数据引用等信息
+ * ANode预热，分析的数据引用等信息
  *
- * @param {Function} ComponentClass 组件类
+ * @param {Object} aNode 要预热的ANode
  */
-function componentPreheat(ComponentClass) {
+function preheatANode(aNode) {
     var stack = [];
 
     function recordHotspotData(refs, notContentData) {
@@ -40,7 +40,7 @@ function componentPreheat(ComponentClass) {
 
 
             if (aNode.textExpr) {
-                aNode.hotspot = {data: {}};
+                aNode.hotspot = { data: {} };
                 recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
             }
             else {
@@ -147,7 +147,9 @@ function componentPreheat(ComponentClass) {
         }
     }
 
-    analyseANodeHotspot(ComponentClass.prototype.aNode);
+    if (aNode && !aNode.hotspot) {
+        analyseANodeHotspot(aNode);
+    }
 }
 
 /**
@@ -201,4 +203,4 @@ function analyseExprDataHotspot(expr) {
     return refs;
 }
 
-exports = module.exports = componentPreheat;
+exports = module.exports = preheatANode;
