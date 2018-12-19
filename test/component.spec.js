@@ -3426,6 +3426,73 @@ describe("Component", function () {
 
     });
 
+    it("dynamic component by source, custom slot", function (done) {
+        var Dialog = san.defineComponent({
+            template: '<span><slot name="title"/><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div>test dialog</div>',
+
+            attached: function () {
+                if (!this.dialog) {
+                    this.dialog = new Dialog({
+                        owner: this,
+                        source: '<x-dialog><a slot="title">{{title}}</a><b s-if="strongContent">{{content}}</b><u s-else>{{content}}</u></x-dialog>'
+                    });
+                    this.dialog.attach(this.el);
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                title: 'my dialog',
+                content: 'hello san',
+                strongContent: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(0);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(1);
+        expect(bs[0].innerHTML).toBe('hello san');
+
+
+        var as = wrap.getElementsByTagName('a');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('my dialog');
+
+        myComponent.data.set('strongContent', false);
+        myComponent.data.set('title', 'title changed');
+        myComponent.nextTick(function () {
+            var us = wrap.getElementsByTagName('u');
+            expect(us.length).toBe(1);
+            expect(us[0].innerHTML).toBe('hello san');
+
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(0);
+
+
+            var as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('title changed');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
 
     it("dynamic component by owner, fire event to owner", function (done) {
         var Person = san.defineComponent({
