@@ -953,6 +953,41 @@ describe("Component", function () {
         doneSpec();
     });
 
+    it("subcomponent data binding", function () {
+        var Label = san.defineComponent({
+            template: '<a><span title="{{te_xt}}">{{te_xt}}</span></a>',
+
+            updated: function () {
+                subTimes++;
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label te_xt="{{name}}"></ui-label></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'erik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
     it("data binding can use filter interp", function () {
         var Label = san.defineComponent({
             template: '<a><span title="{{text}}">{{text}}</span></a>',
