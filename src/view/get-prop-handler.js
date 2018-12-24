@@ -154,6 +154,19 @@ var elementPropHandlers = {
                     'checked',
                     element
                 );
+
+                // #[begin] allua
+                // 代码不用抽出来防重复，allua内的代码在现代浏览器版本会被编译时干掉，gzip也会处理重复问题
+                // see: #378
+                if (ie && ie < 8 && !element.lifeCycle.attached) {
+                    boolPropHandler.prop(
+                        el,
+                        state != null ? state : value,
+                        'defaultChecked',
+                        element
+                    );
+                }
+                // #[end]
             },
 
             output: function (element, bindInfo, data) {
