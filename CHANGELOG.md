@@ -7,6 +7,7 @@ ChangeLog
 
 + 【新特性】- 组件初始化时 source 参数支持定义嵌入 slot 的内容
 + 【优化】- 模板的 attribute name 允许 `_` 字符
++ 【bug修复】- IE8- 下，checkbox 和 radio 初始 checked 状态不生效
 
 
 3.7.0
