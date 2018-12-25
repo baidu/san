@@ -5,7 +5,6 @@
  * See LICENSE file in the project root for license information.
  *
  * @file 生成唯一id
- * @author errorrik(errorrik@gmail.com
  */
 
 
