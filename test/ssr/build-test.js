@@ -13,7 +13,7 @@ let html = '';
 let specTpls = '';
 
 // generate html
-let genContent = function ({componentClass, componentSource, compontentData, specTpl, dirName, result}) {
+function genContent({componentClass, componentSource, compontentData, specTpl, dirName, result}) {
     let renderer = san.compileToRenderer(componentClass);
     let id = dirName;
 
@@ -26,9 +26,7 @@ let genContent = function ({componentClass, componentSource, compontentData, spe
 
     let injectHtml = result ? result : renderer(compontentData);
 
-    html += '<div id="' + id + '">'
-        + injectHtml
-        + '</div>\n\n';
+    html += `<div id="${id}">${injectHtml}</div>\n\n`;
 
     let preCode = `
         ${componentSource}
@@ -41,7 +39,7 @@ let genContent = function ({componentClass, componentSource, compontentData, spe
     specTpls += specTpl;
 };
 
-let buildFile = function (filePath) {
+function buildFile(filePath) {
     let files = fs.readdirSync(filePath);
     let componentClass;
     let componentSource;
@@ -64,32 +62,37 @@ let buildFile = function (filePath) {
 
         // if it's a file, init data
         if (isFile) {
-            // component file
-            if (filename === 'component.js') {
-                componentClass = require(abFilePath);
-                componentSource = fs.readFileSync(path.resolve(abFilePath), 'UTF-8')
-                    .split('\n')
-                    .map(line => {
-                        if (/(\.|\s)exports\s*=/.test(line)
-                            || /san\s*=\s*require\(/.test(line)
-                        ) {
-                            return '';
-                        }
+            switch (filename) {
+                case 'component.js':
+                    componentClass = require(abFilePath);
+                    componentSource = fs.readFileSync(path.resolve(abFilePath), 'UTF-8')
+                        .split('\n')
+                        .map(line => {
+                            if (/(\.|\s)exports\s*=/.test(line)
+                                || /san\s*=\s*require\(/.test(line)
+                            ) {
+                                return '';
+                            }
 
-                        return line;
-                    })
-                    .join('\n');
-                sourceFile = filename;
+                            return line;
+                        })
+                        .join('\n');
+                    sourceFile = filename;
+                    break;
+
+                case 'spec.js':
+                    specTpl = fs.readFileSync(path.resolve(abFilePath), 'UTF-8');
+                    break;
+
+                case 'data.js':
+                    compontentData = require(abFilePath);
+                    break;
+
+                case 'result.html':
+                    result = fs.readFileSync(path.resolve(abFilePath), 'UTF-8').replace('\n', '');
+                    break;
             }
-            if (filename === 'spec.js') {
-                specTpl = fs.readFileSync(path.resolve(abFilePath), 'UTF-8');
-            }
-            if (filename === 'data.js') {
-                compontentData = require(abFilePath);
-            }
-            if (filename === 'result.html') {
-                result = fs.readFileSync(path.resolve(abFilePath), 'UTF-8').replace('\n', '');
-            }
+
         }
 
         // iterate
@@ -115,7 +118,7 @@ let buildFile = function (filePath) {
     }
 };
 
-let writeIn = function ({htmlTpl, html, specTpls}) {
+function writeIn({htmlTpl, html, specTpls}) {
     let karmaHtml = fs.readFileSync(path.resolve(__dirname, '..', 'karma-context.html.tpl'), 'UTF-8');
     fs.writeFileSync(
         path.resolve(__dirname, '..', 'karma-context.html'),
@@ -136,7 +139,7 @@ let writeIn = function ({htmlTpl, html, specTpls}) {
     );
 };
 
-
+console.log();
 console.log('----- Build SSR Specs -----');
 
 
