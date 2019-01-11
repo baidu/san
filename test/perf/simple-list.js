@@ -3,14 +3,14 @@ var swig  = require('swig');
 var art = require('art-template');
 
 
-let App = san.defineComponent({
+const App = san.defineComponent({
     template: `<div id='app'><ul><li s-for='item in items'>{{item}}</li></ul></div>`
 });
 
-let Item = san.defineComponent({
+const Item = san.defineComponent({
     template: `<li>{{item}}</li>`
 });
-let App2 = san.defineComponent({
+const App2 = san.defineComponent({
     components: {
         'x-item': Item
     },
@@ -18,49 +18,46 @@ let App2 = san.defineComponent({
 });
 
 
-var items = [];
-for (var i = 0; i < 10000; i++) {
-    items.push(i)
+let data = { items: [] };
+for (let i = 0; i < 10000; i++) {
+    data.items.push(i);
 }
-var data = {items};
 
 
 
-var renderer = san.compileToRenderer(App);
-var renderer2 = san.compileToRenderer(App2);
-var swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{item}}</li>{% endfor %}</ul></div>`);
-var artRenderer = art.compile(`<div id='app'><ul>{<% for(var i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`)
+let renderer = san.compileToRenderer(App);
+let renderer2 = san.compileToRenderer(App2);
+let swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{item}}</li>{% endfor %}</ul></div>`);
+let artRenderer = art.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
 
 
+console.log('----- Simple List SSR Perf (100 times) -----');
 
-
-var now2 = new Date();
-for (var i = 0; i < 100; i++) {
+console.time('san');
+for (let i = 0; i < 100; i++) {
     renderer(data);
 }
-var runtime2 = (new Date) - now2;
-console.log(`san: ${runtime2 / 100}ms`);
+console.timeEnd('san');
 
-var now1 = new Date();
-for (var i = 0; i < 100; i++) {
+
+console.time('san(item as component)');
+for (let i = 0; i < 100; i++) {
     renderer2(data);
 }
-var runtime1 = (new Date) - now1;
-console.log(`san(item as component): ${runtime1 / 100}ms`);
+console.timeEnd('san(item as component)');
 
-var now = new Date();
-for (var i = 0; i < 100; i++) {
+
+console.time('swig');
+for (let i = 0; i < 100; i++) {
     swigRenderer(data);
 }
-var runtime = (new Date) - now;
-console.log(`swig: ${runtime / 100}ms`);
+console.timeEnd('swig');
 
 
-var now3 = new Date();
-for (var i = 0; i < 100; i++) {
+console.time('artTpl');
+for (let i = 0; i < 100; i++) {
     artRenderer(data);
 }
-var runtime3 = (new Date) - now3;
-console.log(`artTpl: ${runtime3 / 100}ms`);
+console.timeEnd('artTpl');
 
 
