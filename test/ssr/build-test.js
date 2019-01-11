@@ -136,6 +136,12 @@ let writeIn = function ({htmlTpl, html, specTpls}) {
     );
 };
 
+
+console.log('----- Build SSR Specs -----');
+
+
 buildFile(path.resolve(__dirname, './'));
 // write into file
 writeIn({htmlTpl, html, specTpls});
+
+console.log();
