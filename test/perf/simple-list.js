@@ -5,7 +5,6 @@ var art = require('art-template');
 
 let App = san.defineComponent({
     template: `<div id='app'><ul><li s-for='item in items'>{{item}}</li></ul></div>`
-
 });
 
 
@@ -29,14 +28,14 @@ for (var i = 0; i < 100; i++) {
     renderer(data);
 }
 var runtime2 = (new Date) - now2;
-console.log(runtime2 / 100)
+console.log(`san: ${runtime2 / 100}ms`);
 
 var now = new Date();
 for (var i = 0; i < 100; i++) {
     swigRenderer(data);
 }
 var runtime = (new Date) - now;
-console.log(runtime / 100)
+console.log(`swig: ${runtime / 100}ms`);
 
 
 var now3 = new Date();
@@ -44,6 +43,6 @@ for (var i = 0; i < 100; i++) {
     artRenderer(data);
 }
 var runtime3 = (new Date) - now3;
-console.log(runtime3 / 100)
+console.log(`artTpl: ${runtime3 / 100}ms`);
 
 
