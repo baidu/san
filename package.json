@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "npx karma start ./test/karma.conf.js start",
-    "pretest": "npm run build && node ./test/ssr/build-test.js",
+    "pretest": "npm run build && node ./test/ssr/build-test.js && node ./test/perf/index.js",
     "test": "npm run test:unit",
     "test:unit": "npx karma start ./test/karma.conf.js --single-run",
     "test:coverage": "npm run test -- -- --coverage && cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
