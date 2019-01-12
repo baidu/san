@@ -31,7 +31,7 @@ let swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{
 let artRenderer = art.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
 
 
-console.log('----- Simple List SSR Perf (100 times) -----');
+console.log('----- Simple List SSR Perf (10000 items x 100 times) -----');
 
 console.time('san');
 for (let i = 0; i < 100; i++) {
