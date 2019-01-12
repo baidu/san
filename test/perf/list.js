@@ -106,11 +106,12 @@ for (var i = 500; i > 0; i--) {
 
 var renderer = san.compileToRenderer(MyComponent);
 
-var now = new Date();
+console.log('----- List SSR Perf (500 items x 100 times) -----');
+
+console.time('san')
 for (var i = 0; i < 100; i++) {
     renderer(data);
 }
+console.timeEnd('san')
 
-var runtime = (new Date) - now;
-console.log(runtime / 100)
 exports = module.exports = MyComponent;
