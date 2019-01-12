@@ -1,4 +1,41 @@
-var san = require('../../dist/san.ssr');
+const san = require('../../dist/san.ssr');
+const art = require('art-template');
+
+
+let artRenderer = art.compile(`
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        <% for(let i = 0; i < categories.length; i++){ let item = categories[i]; %>
+        <li style="background: <%= item.color %>">
+            <a href="/todos/category/<%= item.id %>"><%= item.title %></a>
+        </li>
+        <% } %>
+    </ul>
+
+    <ul class="todo-list">
+        <% for(let index = 0; index < todos.length; index++){ let item = todos[index]; %>
+        <li style="border-color: <%= item.category.color%>"
+            class="<%= item.done ? 'todo-done' : ''%>"
+        >
+            <h3><%=  item.title %></h3>
+            <p><%=  item.desc %></p>
+            <div class="todo-meta">
+                <% if (item.category) { %>
+                <span><%=  item.category.title %> | </span>
+                <% } %>
+            </div>
+            <a class="fa fa-pencil" href="/edit/<%=  item.id %>"></a>
+            <i class="fa fa-check"></i>
+            <i class="fa fa-trash-o"></i>
+        </li>
+        <% } %>
+    </ul>
+</div>
+`);
+
+
+
 var MyComponent = san.defineComponent({
     template: `
 <div class="todos">
@@ -15,7 +52,7 @@ var MyComponent = san.defineComponent({
     <ul class="todo-list">
         <li san-for="item, index in todos"
             style="border-color: {{item.category.color}}"
-            class="{{item.done ? 'todo-done' : ''}}"cl
+            class="{{item.done ? 'todo-done' : ''}}"
         >
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>
@@ -108,10 +145,18 @@ var renderer = san.compileToRenderer(MyComponent);
 
 console.log('----- List SSR Perf (500 items x 100 times) -----');
 
-console.time('san')
+console.time('san');
 for (var i = 0; i < 100; i++) {
     renderer(data);
 }
-console.timeEnd('san')
+console.timeEnd('san');
+
+console.time('artTpl');
+for (var i = 0; i < 100; i++) {
+    artRenderer(data);
+}
+console.timeEnd('artTpl');
+
+
 
 exports = module.exports = MyComponent;
