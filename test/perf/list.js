@@ -1,5 +1,6 @@
 const san = require('../../dist/san.ssr');
 const art = require('art-template');
+const swig = require('swig');
 
 
 let artRenderer = art.compile(`
@@ -30,6 +31,39 @@ let artRenderer = art.compile(`
             <i class="fa fa-trash-o"></i>
         </li>
         <% } %>
+    </ul>
+</div>
+`, {cache: false});
+
+
+let swigRenderer = swig.compile(`
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        {% for item in categories %}
+        <li style="background: {{item.color}}">
+            <a href="/todos/category/{{ item.id }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <ul class="todo-list">
+        {% for item in todos %}
+        <li style="border-color: {{item.category.color}}"
+            class="{{item.done ? 'todo-done' : ''}}"
+        >
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+            <div class="todo-meta">
+                {% if item.category %}
+                <span>{{ item.category.title }} | </span>
+                {% endif %}
+            </div>
+            <a class="fa fa-pencil" href="/edit/{{ item.id }}"></a>
+            <i class="fa fa-check></i>
+            <i class="fa fa-trash-o"></i>
+        </li>
+        {% endfor %}
     </ul>
 </div>
 `);
@@ -157,6 +191,11 @@ for (var i = 0; i < 100; i++) {
 }
 console.timeEnd('artTpl');
 
+console.time('swig');
+for (var i = 0; i < 100; i++) {
+    swigRenderer(data);
+}
+console.timeEnd('swig');
 
 
 exports = module.exports = MyComponent;
