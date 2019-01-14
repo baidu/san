@@ -588,6 +588,7 @@ var aNodeCompiler = {
         }
 
         var ComponentClass = extra.ComponentClass;
+
         var component = new ComponentClass({
             source: aNode,
             owner: owner,
@@ -663,17 +664,6 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw('}');
 
     extraProp = extraProp || '';
-
-    var eventDeclarations = [];
-    for (var key in component.listeners) {
-        if (component.listeners.hasOwnProperty(key)) {
-            each(component.listeners[key], function (listener) {
-                if (listener.declaration) {
-                    eventDeclarations.push(listener.declaration);
-                }
-            });
-        }
-    }
 
     elementSourceCompiler.tagStart(
         sourceBuffer,
@@ -915,6 +905,8 @@ function genComponentContextCode(component) {
  */
 function componentCompilePreCode() {
     var $version = '##version##';
+
+    var componentRenderers = {};
 
     function extend(target, source) {
         if (source) {
