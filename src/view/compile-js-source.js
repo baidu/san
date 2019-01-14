@@ -564,6 +564,8 @@ var aNodeCompiler = {
      * @param {Function} extra.ComponentClass 对应组件类
      */
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
+        var dataLiteral = '{}';
+
         if (aNode) {
             sourceBuffer.addRaw('var $slotName = null;');
             sourceBuffer.addRaw('var $sourceSlots = [];');
@@ -585,6 +587,25 @@ var aNodeCompiler = {
                     sourceBuffer.addRaw('}]);');
                 }
             });
+
+            var givenData = [];
+            each(camelComponentBinds(aNode.props), function (prop) {
+                postProp(prop);
+                givenData.push(
+                    compileExprSource.stringLiteralize(prop.name)
+                    + ':'
+                    + compileExprSource.expr(prop.expr)
+                );
+            });
+
+            dataLiteral = '{' + givenData.join(',\n') + '}';
+            if (aNode.directives.bind) {
+                dataLiteral = 'extend('
+                    + compileExprSource.expr(aNode.directives.bind.value)
+                    + ', '
+                    + dataLiteral
+                    + ')';
+            }
         }
 
         var ComponentClass = extra.ComponentClass;
@@ -595,28 +616,9 @@ var aNodeCompiler = {
             subTag: aNode.tagName
         });
 
-        var givenData = [];
-
-        each(component.binds, function (prop) {
-            givenData.push(
-                compileExprSource.stringLiteralize(prop.name)
-                + ':'
-                + compileExprSource.expr(prop.expr)
-            );
-        });
-
-        var givenDataHTML = '{' + givenData.join(',\n') + '}';
-        if (aNode.directives.bind) {
-            givenDataHTML = 'extend('
-                + compileExprSource.expr(aNode.directives.bind.value)
-                 + ', '
-                + givenDataHTML
-                + ')';
-        }
-
         sourceBuffer.addRaw('html += (');
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
-        sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $sourceSlots);');
+        sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
@@ -649,6 +651,9 @@ var aNodeCompiler = {
  * @param {string?} extraProp 额外的属性串
  */
 function compileComponentSource(sourceBuffer, component, extraProp) {
+    // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
+    // var component = new ComponentClass();
+
     sourceBuffer.addRaw('function (data, parentCtx, sourceSlots) {');
     sourceBuffer.addRaw('var html = "";');
 
@@ -657,6 +662,8 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
 
 
+    // init data and calc computed
+    // TODO: computed dep computed, maybe has bug
     sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
     sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
     sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
