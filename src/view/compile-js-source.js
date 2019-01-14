@@ -58,12 +58,10 @@ var elementSourceCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
      * @param {Array} props 属性列表
-     * @param {string=} extraProp 额外的属性串
      * @param {Object=} bindDirective bind指令对象
      */
-    tagStart: function (sourceBuffer, tagName, props, extraProp, bindDirective) {
+    tagStart: function (sourceBuffer, tagName, props, bindDirective) {
         sourceBuffer.joinString('<' + tagName);
-        sourceBuffer.joinString(extraProp || '');
 
         // index list
         var propsIndex = {};
@@ -546,7 +544,6 @@ var aNodeCompiler = {
             sourceBuffer,
             aNode.tagName,
             aNode.props,
-            extra.prop,
             aNode.directives.bind
         );
 
@@ -617,7 +614,7 @@ var aNodeCompiler = {
         });
 
         sourceBuffer.addRaw('html += (');
-        compileComponentSource(sourceBuffer, component, extra && extra.prop);
+        compileComponentSource(sourceBuffer, component);
         sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
@@ -635,7 +632,6 @@ var aNodeCompiler = {
         var LoadingComponent = extra.ComponentClass.placeholder;
         if (typeof LoadingComponent === 'function') {
             aNodeCompiler.compileComponent(aNode, sourceBuffer, owner, {
-                prop: extra.prop,
                 ComponentClass: LoadingComponent
             });
         }
@@ -648,9 +644,8 @@ var aNodeCompiler = {
  * @inner
  * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
  * @param {Object} component 组件实例
- * @param {string?} extraProp 额外的属性串
  */
-function compileComponentSource(sourceBuffer, component, extraProp) {
+function compileComponentSource(sourceBuffer, component) {
     // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
     // var component = new ComponentClass();
 
@@ -670,13 +665,11 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
     sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
 
-    extraProp = extraProp || '';
 
     elementSourceCompiler.tagStart(
         sourceBuffer,
         component.tagName,
         component.aNode.props,
-        extraProp,
         component.aNode.directives.bind
     );
 
