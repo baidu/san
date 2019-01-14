@@ -673,11 +673,12 @@ function compileComponentSource(sourceBuffer, component) {
         component.aNode.directives.bind
     );
 
-    if (!component.owner) {
-        sourceBuffer.joinString('<!--s-data:');
-        sourceBuffer.joinDataStringify();
-        sourceBuffer.joinString('-->');
-    }
+
+    sourceBuffer.addRaw('if (!parentCtx) {');
+    sourceBuffer.joinString('<!--s-data:');
+    sourceBuffer.joinDataStringify();
+    sourceBuffer.joinString('-->');
+    sourceBuffer.addRaw('}');
 
 
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
