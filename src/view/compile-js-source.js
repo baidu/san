@@ -614,9 +614,7 @@ var aNodeCompiler = {
         }
 
         sourceBuffer.addRaw('html += (');
-        sourceBuffer.addRendererStart();
         compileComponentSource(sourceBuffer, component, extra && extra.prop);
-        sourceBuffer.addRendererEnd();
         sourceBuffer.addRaw(')(' + givenDataHTML + ', componentCtx, $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
@@ -650,6 +648,9 @@ var aNodeCompiler = {
  * @param {string?} extraProp 额外的属性串
  */
 function compileComponentSource(sourceBuffer, component, extraProp) {
+    sourceBuffer.addRaw('function (data, parentCtx, sourceSlots) {');
+    sourceBuffer.addRaw('var html = "";');
+
     sourceBuffer.addRaw(genComponentContextCode(component));
     sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
     sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
@@ -691,6 +692,9 @@ function compileComponentSource(sourceBuffer, component, extraProp) {
 
     elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
     elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
+
+    sourceBuffer.addRaw('return html;');
+    sourceBuffer.addRaw('}');
 }
 
 var stringifier = {
@@ -1124,7 +1128,9 @@ function compileJSSource(ComponentClass) {
     // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
     var component = new ComponentClass();
 
+    sourceBuffer.addRaw('var render = ');
     compileComponentSource(sourceBuffer, component);
+    sourceBuffer.addRaw(';\nreturn render(data);');
     sourceBuffer.addRendererEnd();
     return sourceBuffer.toCode();
 }

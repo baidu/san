@@ -49,15 +49,13 @@ CompileSourceBuffer.prototype.joinRaw = function (code) {
  * 添加renderer方法的起始源码
  */
 CompileSourceBuffer.prototype.addRendererStart = function () {
-    this.addRaw('function (data, parentCtx, sourceSlots) {');
-    this.addRaw('var html = "";');
+    this.addRaw('function (data) {');
 };
 
 /**
  * 添加renderer方法的结束源码
  */
 CompileSourceBuffer.prototype.addRendererEnd = function () {
-    this.addRaw('return html;');
     this.addRaw('}');
 };
 
