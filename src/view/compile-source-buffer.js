@@ -217,7 +217,7 @@ function compileSourcePreCode() {
             return '';
         }
 
-        return String(source).replace(/[&<>"']/g, htmlFilterReplacer);
+        return ('' + source).replace(/[&<>"']/g, htmlFilterReplacer);
     }
 
     var DEFAULT_FILTERS = {
