@@ -113,11 +113,26 @@ var compileExprSource = {
 
 
         each(interpExpr.filters, function (filter) {
-            code = 'componentCtx.callFilter("' + filter.name.paths[0].value + '", [' + code;
-            each(filter.args, function (arg) {
-                code += ', ' + compileExprSource.expr(arg);
-            });
-            code += '])';
+            var filterName = filter.name.paths[0].value;
+
+            switch (filterName) {
+                case '_style':
+                case '_class':
+                    code = 'DEFAULT_FILTERS.' + filterName + '(' + code + ')';
+                    break;
+
+                case '_sep':
+                    code = 'DEFAULT_FILTERS._sep(' + code + ', ' + compileExprSource.expr(filter.args[0]) + ')';
+                    break;
+
+                default:
+                    code = 'componentCtx.callFilter("' + filterName + '", [' + code;
+                    each(filter.args, function (arg) {
+                        code += ', ' + compileExprSource.expr(arg);
+                    });
+                    code += '])';
+            }
+
         });
 
         if (!interpExpr.original) {
