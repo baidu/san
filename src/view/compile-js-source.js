@@ -563,46 +563,44 @@ var aNodeCompiler = {
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
         var dataLiteral = '{}';
 
-        if (aNode) {
-            sourceBuffer.addRaw('var $slotName = null;');
-            sourceBuffer.addRaw('var $sourceSlots = [];');
-            each(aNode.children, function (child) {
-                var slotBind = !child.textExpr && getANodeProp(child, 'slot');
-                if (slotBind) {
-                    sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
-                    sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
-                    sourceBuffer.addRaw('  var html = "";');
-                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
-                    sourceBuffer.addRaw('  return html;');
-                    sourceBuffer.addRaw('}, $slotName]);');
-                }
-                else {
-                    sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
-                    sourceBuffer.addRaw('  var html = "";');
-                    sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
-                    sourceBuffer.addRaw('  return html;');
-                    sourceBuffer.addRaw('}]);');
-                }
-            });
-
-            var givenData = [];
-            each(camelComponentBinds(aNode.props), function (prop) {
-                postProp(prop);
-                givenData.push(
-                    compileExprSource.stringLiteralize(prop.name)
-                    + ':'
-                    + compileExprSource.expr(prop.expr)
-                );
-            });
-
-            dataLiteral = '{' + givenData.join(',\n') + '}';
-            if (aNode.directives.bind) {
-                dataLiteral = 'extend('
-                    + compileExprSource.expr(aNode.directives.bind.value)
-                    + ', '
-                    + dataLiteral
-                    + ')';
+        sourceBuffer.addRaw('var $slotName = null;');
+        sourceBuffer.addRaw('var $sourceSlots = [];');
+        each(aNode.children, function (child) {
+            var slotBind = !child.textExpr && getANodeProp(child, 'slot');
+            if (slotBind) {
+                sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
+                sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
+                sourceBuffer.addRaw('  var html = "";');
+                sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                sourceBuffer.addRaw('  return html;');
+                sourceBuffer.addRaw('}, $slotName]);');
             }
+            else {
+                sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
+                sourceBuffer.addRaw('  var html = "";');
+                sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                sourceBuffer.addRaw('  return html;');
+                sourceBuffer.addRaw('}]);');
+            }
+        });
+
+        var givenData = [];
+        each(camelComponentBinds(aNode.props), function (prop) {
+            postProp(prop);
+            givenData.push(
+                compileExprSource.stringLiteralize(prop.name)
+                + ':'
+                + compileExprSource.expr(prop.expr)
+            );
+        });
+
+        dataLiteral = '{' + givenData.join(',\n') + '}';
+        if (aNode.directives.bind) {
+            dataLiteral = 'extend('
+                + compileExprSource.expr(aNode.directives.bind.value)
+                + ', '
+                + dataLiteral
+                + ')';
         }
 
         var ComponentClass = extra.ComponentClass;
