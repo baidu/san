@@ -61,7 +61,13 @@ var elementSourceCompiler = {
      * @param {Object=} bindDirective bind指令对象
      */
     tagStart: function (sourceBuffer, tagName, props, bindDirective) {
-        sourceBuffer.joinString('<' + tagName);
+        if (tagName.dynamic) {
+            sourceBuffer.joinString('<');
+            sourceBuffer.joinRaw(tagName.value);
+        }
+        else {
+            sourceBuffer.joinString('<' + tagName.value);
+        }
 
         // index list
         var propsIndex = {};
@@ -75,7 +81,7 @@ var elementSourceCompiler = {
             }
 
             if (prop.name === 'value') {
-                switch (tagName) {
+                switch (tagName.value) {
                     case 'textarea':
                         return;
 
@@ -120,7 +126,7 @@ var elementSourceCompiler = {
                     break;
 
                 case 'checked':
-                    if (tagName === 'input') {
+                    if (tagName.value === 'input') {
                         var valueProp = propsIndex.value;
                         var valueCode = compileExprSource.expr(valueProp.expr);
 
@@ -174,7 +180,7 @@ var elementSourceCompiler = {
                 + 'var $value = $bindObj[$key];'
             );
 
-            if (tagName === 'textarea') {
+            if (tagName.value === 'textarea') {
                 sourceBuffer.addRaw(
                     'if ($key === "value") {'
                     + 'continue;'
@@ -542,7 +548,7 @@ var aNodeCompiler = {
 
         elementSourceCompiler.tagStart(
             sourceBuffer,
-            aNode.tagName,
+            {value: aNode.tagName},
             aNode.props,
             aNode.directives.bind
         );
@@ -605,7 +611,7 @@ var aNodeCompiler = {
 
         sourceBuffer.addRaw('html += (');
         compileComponentSource(sourceBuffer, extra.ComponentClass);
-        sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, $sourceSlots);');
+        sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
@@ -639,7 +645,7 @@ function compileComponentSource(sourceBuffer, ComponentClass) {
     // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
     var component = new ComponentClass();
 
-    sourceBuffer.addRaw('function (data, parentCtx, sourceSlots) {');
+    sourceBuffer.addRaw('function (data, parentCtx, tagName, sourceSlots) {');
     sourceBuffer.addRaw('var html = "";');
 
     sourceBuffer.addRaw(genComponentContextCode(component));
@@ -655,10 +661,16 @@ function compileComponentSource(sourceBuffer, ComponentClass) {
     sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
     sourceBuffer.addRaw('}');
 
+    var tagNameInfo = component.aNode.tagName
+        ? { value: component.tagName }
+        : {
+            value: 'tagName || "div"',
+            dynamic: 1
+        };
 
     elementSourceCompiler.tagStart(
         sourceBuffer,
-        component.tagName,
+        tagNameInfo,
         component.aNode.props,
         component.aNode.directives.bind
     );
