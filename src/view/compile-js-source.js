@@ -603,16 +603,8 @@ var aNodeCompiler = {
                 + ')';
         }
 
-        var ComponentClass = extra.ComponentClass;
-
-        var component = new ComponentClass({
-            source: aNode,
-            owner: owner,
-            subTag: aNode.tagName
-        });
-
         sourceBuffer.addRaw('html += (');
-        compileComponentSource(sourceBuffer, component);
+        compileComponentSource(sourceBuffer, extra.ComponentClass);
         sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
@@ -643,9 +635,9 @@ var aNodeCompiler = {
  * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
  * @param {Object} component 组件实例
  */
-function compileComponentSource(sourceBuffer, component) {
+function compileComponentSource(sourceBuffer, ComponentClass) {
     // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
-    // var component = new ComponentClass();
+    var component = new ComponentClass();
 
     sourceBuffer.addRaw('function (data, parentCtx, sourceSlots) {');
     sourceBuffer.addRaw('var html = "";');
@@ -904,14 +896,11 @@ function compileJSSource(ComponentClass) {
     var sourceBuffer = new CompileSourceBuffer();
 
     sourceBuffer.addRendererStart();
-
-    // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
-    var component = new ComponentClass();
-
     sourceBuffer.addRaw('var render = ');
-    compileComponentSource(sourceBuffer, component);
+    compileComponentSource(sourceBuffer, ComponentClass);
     sourceBuffer.addRaw(';\nreturn render(data);');
     sourceBuffer.addRendererEnd();
+
     return sourceBuffer.toCode();
 }
 // #[end]
