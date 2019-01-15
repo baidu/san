@@ -610,7 +610,7 @@ var aNodeCompiler = {
         }
 
         var renderId = compileComponentSource(sourceBuffer, extra.ComponentClass, owner.ssrContextId);
-        sourceBuffer.addRaw('html += componentRenderers["' + renderId + '"](');
+        sourceBuffer.addRaw('html += componentRenderers.' + renderId + '(');
         sourceBuffer.addRaw(dataLiteral + ', componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
@@ -668,7 +668,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
             );
         }
 
-        sourceBuffer.addRaw('componentRenderers["' + componentIdInContext + '"] = componentRenderers["' + componentIdInContext + '"] || function (data, parentCtx, tagName, sourceSlots) {');
+        sourceBuffer.addRaw('componentRenderers.' + componentIdInContext + ' = componentRenderers.' + componentIdInContext + ' || function (data, parentCtx, tagName, sourceSlots) {');
         sourceBuffer.addRaw('var html = "";');
 
         sourceBuffer.addRaw(genComponentContextCode(component));
@@ -944,7 +944,7 @@ function compileJSSource(ComponentClass) {
 
     sourceBuffer.addRendererStart();
     var renderId = compileComponentSource(sourceBuffer, ComponentClass, contextId);
-    sourceBuffer.addRaw('return componentRenderers["' + renderId + '"](data)');
+    sourceBuffer.addRaw('return componentRenderers.' + renderId + '(data)');
     sourceBuffer.addRendererEnd();
 
     return sourceBuffer.toCode();
