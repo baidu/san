@@ -220,33 +220,32 @@ function compileSourcePreCode() {
         return ('' + source).replace(/[&<>"']/g, htmlFilterReplacer);
     }
 
-    var DEFAULT_FILTERS = {
-        url: encodeURIComponent,
-        _class: function (source) {
-            if (source instanceof Array) {
-                return source.join(' ');
-            }
-
-            return source;
-        },
-        _style: function (source) {
-            if (typeof source === 'object') {
-                var result = '';
-                if (source) {
-                    Object.keys(source).forEach(function (key) {
-                        result += key + ':' + source[key] + ';';
-                    });
-                }
-
-                return result;
-            }
-
-            return source || '';
-        },
-        _sep: function (source, sep) {
-            return source ? sep + source : '';
+    function _classFilter(source) {
+        if (source instanceof Array) {
+            return source.join(' ');
         }
-    };
+
+        return source;
+    }
+
+    function _styleFilter(source) {
+        if (typeof source === 'object') {
+            var result = '';
+            if (source) {
+                Object.keys(source).forEach(function (key) {
+                    result += key + ':' + source[key] + ';';
+                });
+            }
+
+            return result;
+        }
+
+        return source || '';
+    }
+
+    function _sepFilter(source, sep) {
+        return source ? sep + source : '';
+    }
 
     function attrFilter(name, value) {
         if (value) {

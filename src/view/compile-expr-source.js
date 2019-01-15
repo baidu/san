@@ -118,12 +118,17 @@ var compileExprSource = {
             switch (filterName) {
                 case '_style':
                 case '_class':
-                    code = 'DEFAULT_FILTERS.' + filterName + '(' + code + ')';
+                    code = filterName + 'Filter(' + code + ')';
                     break;
 
                 case '_sep':
-                    code = 'DEFAULT_FILTERS._sep(' + code + ', ' + compileExprSource.expr(filter.args[0]) + ')';
+                    code = '_sepFilter(' + code + ', ' + compileExprSource.expr(filter.args[0]) + ')';
                     break;
+
+                case 'url':
+                    code = 'encodeURIComponent(' + code + ')';
+                    break;
+                    encodeURIComponent
 
                 default:
                     code = 'componentCtx.callFilter("' + filterName + '", [' + code;
