@@ -678,7 +678,15 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
         // init data and calc computed
         // TODO: computed dep computed, maybe has bug
-        sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
+
+        var defaultData = component.data.get();
+        sourceBuffer.addRaw('if (data) {');
+        sourceBuffer.addRaw('componentCtx.data = data;');
+        Object.keys(defaultData).forEach(function (key) {
+            sourceBuffer.addRaw('componentCtx.data["' + key + '"] = componentCtx.data["' + key + '"] || ' + stringifier.any(defaultData[key]) + ';');
+        });
+        sourceBuffer.addRaw('} else {componentCtx.data = ' + stringifier.any(defaultData) + '}');
+
         sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
         sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
         sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
@@ -913,7 +921,7 @@ function genComponentContextCode(component) {
     /* eslint-enable no-redeclare */
 
     // data
-    code.push('data: ' + stringifier.any(component.data.get()) + ',');
+    // code.push('data: ' + stringifier.any(component.data.get()) + ',');
 
     // tagName
     code.push('tagName: "' + component.tagName + '"');
