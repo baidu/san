@@ -609,9 +609,9 @@ var aNodeCompiler = {
                 + ')';
         }
 
-        sourceBuffer.addRaw('html += (');
-        compileComponentSource(sourceBuffer, extra.ComponentClass);
-        sourceBuffer.addRaw(')(' + dataLiteral + ', componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
+        var renderId = compileComponentSource(sourceBuffer, extra.ComponentClass, owner.ssrContextId);
+        sourceBuffer.addRaw('html += componentRenderers["' + renderId + '"](');
+        sourceBuffer.addRaw(dataLiteral + ', componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
@@ -641,53 +641,79 @@ var aNodeCompiler = {
  * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
  * @param {Object} component 组件实例
  */
-function compileComponentSource(sourceBuffer, ComponentClass) {
-    // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
-    var component = new ComponentClass();
+function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
+    ComponentClass.ssrContext = ComponentClass.ssrContext || {};
+    var componentIdInContext = ComponentClass.ssrContext[contextId];
 
-    sourceBuffer.addRaw('function (data, parentCtx, tagName, sourceSlots) {');
-    sourceBuffer.addRaw('var html = "";');
+    if (!componentIdInContext) {
+        componentIdInContext = guid();
+        ComponentClass.ssrContext[contextId] = componentIdInContext;
 
-    sourceBuffer.addRaw(genComponentContextCode(component));
-    sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
-    sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
+        // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
+        var component = new ComponentClass();
+        component.ssrContextId = contextId;
 
+        if (component.components) {
+            Object.keys(component.components).forEach(
+                function (key) {
+                    var CmptClass = component.components[key];
+                    if (CmptClass instanceof ComponentLoader) {
+                        CmptClass = CmptClass.placeholder;
+                    }
 
-    // init data and calc computed
-    // TODO: computed dep computed, maybe has bug
-    sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
-    sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
-    sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
-    sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
-    sourceBuffer.addRaw('}');
+                    if (CmptClass) {
+                        compileComponentSource(sourceBuffer, CmptClass, contextId);
+                    }
+                }
+            );
+        }
 
-    var tagNameInfo = component.aNode.tagName
-        ? { value: component.tagName }
-        : {
-            value: 'tagName || "div"',
-            dynamic: 1
-        };
+        sourceBuffer.addRaw('componentRenderers["' + componentIdInContext + '"] = componentRenderers["' + componentIdInContext + '"] || function (data, parentCtx, tagName, sourceSlots) {');
+        sourceBuffer.addRaw('var html = "";');
 
-    elementSourceCompiler.tagStart(
-        sourceBuffer,
-        tagNameInfo,
-        component.aNode.props,
-        component.aNode.directives.bind
-    );
-
-
-    sourceBuffer.addRaw('if (!parentCtx) {');
-    sourceBuffer.joinString('<!--s-data:');
-    sourceBuffer.joinDataStringify();
-    sourceBuffer.joinString('-->');
-    sourceBuffer.addRaw('}');
+        sourceBuffer.addRaw(genComponentContextCode(component));
+        sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
+        sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
 
 
-    elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
-    elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
+        // init data and calc computed
+        // TODO: computed dep computed, maybe has bug
+        sourceBuffer.addRaw('data = extend(componentCtx.data, data);');
+        sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
+        sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
+        sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
+        sourceBuffer.addRaw('}');
 
-    sourceBuffer.addRaw('return html;');
-    sourceBuffer.addRaw('}');
+        var tagNameInfo = component.aNode.tagName
+            ? { value: component.tagName }
+            : {
+                value: 'tagName || "div"',
+                dynamic: 1
+            };
+
+        elementSourceCompiler.tagStart(
+            sourceBuffer,
+            tagNameInfo,
+            component.aNode.props,
+            component.aNode.directives.bind
+        );
+
+
+        sourceBuffer.addRaw('if (!parentCtx) {');
+        sourceBuffer.joinString('<!--s-data:');
+        sourceBuffer.joinDataStringify();
+        sourceBuffer.joinString('-->');
+        sourceBuffer.addRaw('}');
+
+
+        elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
+        elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
+
+        sourceBuffer.addRaw('return html;');
+        sourceBuffer.addRaw('};');
+    }
+
+    return componentIdInContext;
 }
 
 var stringifier = {
@@ -906,11 +932,11 @@ function genComponentContextCode(component) {
  */
 function compileJSSource(ComponentClass) {
     var sourceBuffer = new CompileSourceBuffer();
+    var contextId = guid();
 
     sourceBuffer.addRendererStart();
-    sourceBuffer.addRaw('var render = ');
-    compileComponentSource(sourceBuffer, ComponentClass);
-    sourceBuffer.addRaw(';\nreturn render(data);');
+    var renderId = compileComponentSource(sourceBuffer, ComponentClass, contextId);
+    sourceBuffer.addRaw('return componentRenderers["' + renderId + '"](data)');
     sourceBuffer.addRendererEnd();
 
     return sourceBuffer.toCode();
