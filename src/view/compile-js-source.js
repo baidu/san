@@ -227,16 +227,23 @@ var elementSourceCompiler = {
     tagEnd: function (sourceBuffer, aNode, tagNameVariable) {
         var tagName = aNode.tagName;
 
-        if (!autoCloseTags[tagName]) {
-            sourceBuffer.joinString('</' + tagName + '>');
-        }
+        if (tagName) {
+            if (!autoCloseTags[tagName]) {
+                sourceBuffer.joinString('</' + tagName + '>');
+            }
 
-        if (tagName === 'select') {
-            sourceBuffer.addRaw('$selectValue = null;');
-        }
+            if (tagName === 'select') {
+                sourceBuffer.addRaw('$selectValue = null;');
+            }
 
-        if (tagName === 'option') {
-            sourceBuffer.addRaw('$optionValue = null;');
+            if (tagName === 'option') {
+                sourceBuffer.addRaw('$optionValue = null;');
+            }
+        }
+        else {
+            sourceBuffer.joinString('</');
+            sourceBuffer.joinRaw(tagNameVariable + ' || "div"');
+            sourceBuffer.joinString('>');
         }
     },
 
@@ -697,11 +704,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         sourceBuffer.addRaw('}');
 
 
-        elementSourceCompiler.tagStart(
-            sourceBuffer,
-            component.aNode,
-            'tagName'
-        );
+        elementSourceCompiler.tagStart(sourceBuffer, component.aNode, 'tagName');
 
 
         sourceBuffer.addRaw('if (!parentCtx) {');
@@ -712,7 +715,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
 
         elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
-        elementSourceCompiler.tagEnd(sourceBuffer, component);
+        elementSourceCompiler.tagEnd(sourceBuffer, component.aNode, 'tagName');
 
         sourceBuffer.addRaw('return html;');
         sourceBuffer.addRaw('};');
