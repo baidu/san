@@ -80,10 +80,14 @@ var elementSourceCompiler = {
         var propsIndex = {};
         each(props, function (prop) {
             propsIndex[prop.name] = prop;
+
+            if (prop.name !== 'slot' && prop.attr) {
+                sourceBuffer.joinString(' ' + prop.attr);
+            }
         });
 
         each(props, function (prop) {
-            if (prop.name === 'slot') {
+            if (prop.name === 'slot' || prop.attr) {
                 return;
             }
 
@@ -166,17 +170,12 @@ var elementSourceCompiler = {
                     break;
 
                 default:
-                    if (prop.attr) {
-                        sourceBuffer.joinString(' ' + prop.attr);
-                    }
-                    else {
-                        sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
-                            + (prop.x ? 'escapeHTML(' : '')
-                            + compileExprSource.expr(prop.expr)
-                            + (prop.x ? ')' : '')
-                            + ')'
-                        );
-                    }
+                    sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
+                        + (prop.x ? 'escapeHTML(' : '')
+                        + compileExprSource.expr(prop.expr)
+                        + (prop.x ? ')' : '')
+                        + ')'
+                    );
                     break;
             }
         });
@@ -275,7 +274,7 @@ var elementSourceCompiler = {
         else {
             /* eslint-disable no-use-before-define */
             each(aNode.children, function (aNodeChild) {
-                sourceBuffer.addRaw(aNodeCompiler.compile(aNodeChild, sourceBuffer, owner));
+                aNodeCompiler.compile(aNodeChild, sourceBuffer, owner);
             });
             /* eslint-enable no-use-before-define */
         }
@@ -345,7 +344,12 @@ var aNodeCompiler = {
             sourceBuffer.joinString(serializeStump('text'));
         }
 
-        sourceBuffer.joinExpr(aNode.textExpr);
+        if (aNode.textExpr.value != null) {
+            sourceBuffer.joinString(aNode.textExpr.segs[0].literal);
+        }
+        else {
+            sourceBuffer.joinExpr(aNode.textExpr);
+        }
 
         if (aNode.textExpr.original) {
             sourceBuffer.joinString(serializeStumpEnd('text'));
