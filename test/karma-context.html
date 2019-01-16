@@ -50,9 +50,9 @@ Reloaded before every execution run.
 
 <div id="complex-struct-in-textnode"><a><!--s-data:{"name":"er<u>erik</u>ik"}--><span>aaa</span><!--s-text-->hello er<u>erik</u>ik!<!--/s-text--><b>bbb</b></a></div>
 
-<div id="computed-data"><div><!--s-data:{"realTitle":"real1","title":"1"}--><b title="real1">real1</b></div></div>
+<div id="computed-data"><div><!--s-data:{"title":"1","realTitle":"real1"}--><b title="real1">real1</b></div></div>
 
-<div id="custom-tag-name"><div><!--s-data:{"text":"hello san"}--><x-p>hello san</div></div></div>
+<div id="custom-tag-name"><div><!--s-data:{"text":"hello san"}--><x-p>hello san</x-p></div></div>
 
 <div id="data-binding-camel-named"><div><!--s-data:{"title":"1","text":"one"}--><a><span title="1">one</span></a></div></div>
 
@@ -128,7 +128,7 @@ Reloaded before every execution run.
 
 <div id="nest-for"><form><!--s-data:{"cates":["foo","bar"],"forms":{"foo":[1,2,3],"bar":[4,5,6]}}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
 
-<div id="nest-for-computed"><form><!--s-data:{"formLen":3,"forms":{"foo":[1,2,3],"bar":[4,5,6]},"cates":["foo","bar"]}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
+<div id="nest-for-computed"><form><!--s-data:{"cates":["foo","bar"],"formLen":3,"forms":{"foo":[1,2,3],"bar":[4,5,6]}}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
 
 <div id="object-literal"><div><!--s-data:{"article":{"title":"san","content":"framework"},"aAuthor":{"name":"erik","email":"errorrik@gmail.com"},"from":"hk"}--><div><h3>san</h3><h4>hk</h4><div><u>erik</u><a>errorrik@gmail.com</a></div><p>framework</p></div></div></div>
 
@@ -180,7 +180,7 @@ Reloaded before every execution run.
 
 <div id="update-cmpt-has-attr"><div><!--s-data:{"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><span title="airike" class="label  my-label">airike</span></h5><p><a>none</a><u>bidu</u></p></div></div>
 
-<div id="update-cmpt-merge-data"><div><!--s-data:{"jokeName":"airike","school":"none","company":"bidu"}--><h5><span title="title" class="label  my-label">airike</span></h5><p><a title="none">none</a><u title="bidu">bidu</u></p></div></div>
+<div id="update-cmpt-merge-data"><div><!--s-data:{"company":"bidu","jokeName":"airike","school":"none"}--><h5><span title="title" class="label  my-label">airike</span></h5><p><a title="none">none</a><u title="bidu">bidu</u></p></div></div>
 
 <div id="update-text"><a><!--s-data:{"email":"errorrik@gmail.com","name":"errorrik"}--><span title="errorrik@gmail.com">errorrik</span></a></div>
 
