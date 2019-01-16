@@ -60,13 +60,20 @@ var elementSourceCompiler = {
      * @param {Array} props 属性列表
      * @param {Object=} bindDirective bind指令对象
      */
-    tagStart: function (sourceBuffer, tagName, props, bindDirective) {
-        if (tagName.dynamic) {
+    tagStart: function (sourceBuffer, aNode, tagNameVariable) {
+        var props = aNode.props;
+        var bindDirective = aNode.directives.bind;
+        var tagName = aNode.tagName;
+
+        if (tagName) {
+            sourceBuffer.joinString('<' + tagName);
+        }
+        else if (tagNameVariable) {
             sourceBuffer.joinString('<');
-            sourceBuffer.joinRaw(tagName.value);
+            sourceBuffer.joinRaw(tagNameVariable + ' || "div"');
         }
         else {
-            sourceBuffer.joinString('<' + tagName.value);
+            sourceBuffer.joinString('<div');
         }
 
         // index list
@@ -81,7 +88,7 @@ var elementSourceCompiler = {
             }
 
             if (prop.name === 'value') {
-                switch (tagName.value) {
+                switch (tagName) {
                     case 'textarea':
                         return;
 
@@ -126,7 +133,7 @@ var elementSourceCompiler = {
                     break;
 
                 case 'checked':
-                    if (tagName.value === 'input') {
+                    if (tagName === 'input') {
                         var valueProp = propsIndex.value;
                         var valueCode = compileExprSource.expr(valueProp.expr);
 
@@ -180,7 +187,7 @@ var elementSourceCompiler = {
                 + 'var $value = $bindObj[$key];'
             );
 
-            if (tagName.value === 'textarea') {
+            if (tagName === 'textarea') {
                 sourceBuffer.addRaw(
                     'if ($key === "value") {'
                     + 'continue;'
@@ -546,12 +553,7 @@ var aNodeCompiler = {
         //     });
         // }
 
-        elementSourceCompiler.tagStart(
-            sourceBuffer,
-            {value: aNode.tagName},
-            aNode.props,
-            aNode.directives.bind
-        );
+        elementSourceCompiler.tagStart(sourceBuffer, aNode);
 
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
         elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
@@ -676,9 +678,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
 
 
-        // init data and calc computed
-        // TODO: computed dep computed, maybe has bug
-
+        // init data
         var defaultData = component.data.get();
         sourceBuffer.addRaw('if (data) {');
         sourceBuffer.addRaw('componentCtx.data = data;');
@@ -687,23 +687,18 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         });
         sourceBuffer.addRaw('} else {componentCtx.data = ' + stringifier.any(defaultData) + '}');
 
+        // calc computed
+        // TODO: computed dep computed, maybe has bug
         sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
         sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
         sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
         sourceBuffer.addRaw('}');
 
-        var tagNameInfo = component.aNode.tagName
-            ? { value: component.tagName }
-            : {
-                value: 'tagName || "div"',
-                dynamic: 1
-            };
 
         elementSourceCompiler.tagStart(
             sourceBuffer,
-            tagNameInfo,
-            component.aNode.props,
-            component.aNode.directives.bind
+            component.aNode,
+            'tagName'
         );
 
 
