@@ -217,7 +217,11 @@ function compileSourcePreCode() {
             return '';
         }
 
-        return ('' + source).replace(/[&<>"']/g, htmlFilterReplacer);
+        if (typeof source === 'string') {
+            return source.replace(/[&<>"']/g, htmlFilterReplacer);
+        }
+
+        return '' + source;
     }
 
     function _classFilter(source) {
