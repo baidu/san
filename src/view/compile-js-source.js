@@ -224,7 +224,9 @@ var elementSourceCompiler = {
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
      * @param {string} tagName 标签名
      */
-    tagEnd: function (sourceBuffer, tagName) {
+    tagEnd: function (sourceBuffer, aNode, tagNameVariable) {
+        var tagName = aNode.tagName;
+
         if (!autoCloseTags[tagName]) {
             sourceBuffer.joinString('</' + tagName + '>');
         }
@@ -556,7 +558,7 @@ var aNodeCompiler = {
         elementSourceCompiler.tagStart(sourceBuffer, aNode);
 
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
-        elementSourceCompiler.tagEnd(sourceBuffer, aNode.tagName);
+        elementSourceCompiler.tagEnd(sourceBuffer, aNode);
     },
 
     /**
@@ -710,7 +712,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
 
         elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
-        elementSourceCompiler.tagEnd(sourceBuffer, component.tagName);
+        elementSourceCompiler.tagEnd(sourceBuffer, component);
 
         sourceBuffer.addRaw('return html;');
         sourceBuffer.addRaw('};');
