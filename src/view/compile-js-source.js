@@ -81,13 +81,13 @@ var elementSourceCompiler = {
         each(props, function (prop) {
             propsIndex[prop.name] = prop;
 
-            if (prop.name !== 'slot' && prop.attr) {
-                sourceBuffer.joinString(' ' + prop.attr);
+            if (prop.name !== 'slot' && prop.expr.value != null) {
+                sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.segs[0].literal + '"');
             }
         });
 
         each(props, function (prop) {
-            if (prop.name === 'slot' || prop.attr) {
+            if (prop.name === 'slot' || prop.expr.value != null) {
                 return;
             }
 
