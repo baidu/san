@@ -2,6 +2,7 @@ const san = require('../../dist/san.ssr');
 const art = require('art-template');
 const swig = require('swig');
 const etpl = require('etpl');
+const ejs = require('ejs');
 
 
 let artRenderer = art.compile(`
@@ -98,6 +99,38 @@ let etplRenderer = etpl.compile(`
             <i class="fa fa-trash-o"></i>
         </li>
         <!-- /for -->
+    </ul>
+</div>
+`);
+
+let ejsRenderer = ejs.compile(`
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        <% for(let i = 0; i < categories.length; i++){ let item = categories[i]; %>
+        <li style="background: <%= item.color %>">
+            <a href="/todos/category/<%= item.id %>"><%= item.title %></a>
+        </li>
+        <% } %>
+    </ul>
+
+    <ul class="todo-list">
+        <% for(let index = 0; index < todos.length; index++){ let item = todos[index]; %>
+        <li style="border-color: <%= item.category.color%>"
+            class="<%= item.done ? 'todo-done' : ''%>"
+        >
+            <h3><%=  item.title %></h3>
+            <p><%=  item.desc %></p>
+            <div class="todo-meta">
+                <% if (item.category) { %>
+                <span><%=  item.category.title %> | </span>
+                <% } %>
+            </div>
+            <a class="fa fa-pencil" href="/edit/<%=  item.id %>"></a>
+            <i class="fa fa-check"></i>
+            <i class="fa fa-trash-o"></i>
+        </li>
+        <% } %>
     </ul>
 </div>
 `);
@@ -236,5 +269,11 @@ for (var i = 0; i < 100; i++) {
     etplRenderer(data);
 }
 console.timeEnd('etpl');
+
+console.time('ejs');
+for (var i = 0; i < 100; i++) {
+    ejsRenderer(data);
+}
+console.timeEnd('ejs');
 
 exports = module.exports = MyComponent;
