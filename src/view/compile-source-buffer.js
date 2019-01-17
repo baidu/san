@@ -218,7 +218,7 @@ function compileSourcePreCode() {
         }
 
         if (typeof source === 'string') {
-            return source.replace(/[&<>"']/g, htmlFilterReplacer);
+            return source ? source.replace(/[&<>"']/g, htmlFilterReplacer) : '';
         }
 
         return '' + source;
@@ -244,7 +244,7 @@ function compileSourcePreCode() {
             return result;
         }
 
-        return source || '';
+        return source;
     }
 
     function _sepFilter(source, sep) {
