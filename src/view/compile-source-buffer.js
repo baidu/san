@@ -127,7 +127,7 @@ CompileSourceBuffer.prototype.toCode = function () {
         genStrLiteral();
         switch (seg.type) {
             case 'JOIN_DATA_STRINGIFY':
-                code.push('html += stringifier.any(' + compileExprSource.dataAccess() + ');');
+                code.push('html += JSON.stringify(' + compileExprSource.dataAccess() + ');');
                 break;
 
             case 'JOIN_EXPR':
@@ -277,82 +277,6 @@ function compileSourcePreCode() {
                 .replace(/\x0D/g, '\\r')
             + '"';
     }
-
-    var stringifier = {
-        obj: function (source) {
-            var prefixComma;
-            var result = '{';
-
-            Object.keys(source).forEach(function (key) {
-                if (typeof source[key] === 'undefined') {
-                    return;
-                }
-
-                if (prefixComma) {
-                    result += ',';
-                }
-                prefixComma = 1;
-
-                result += stringLiteralize(key) + ':' + stringifier.any(source[key]);
-            });
-
-            return result + '}';
-        },
-
-        arr: function (source) {
-            var prefixComma;
-            var result = '[';
-
-            each(source, function (value) {
-                if (prefixComma) {
-                    result += ',';
-                }
-                prefixComma = 1;
-
-                result += stringifier.any(value);
-            });
-
-            return result + ']';
-        },
-
-        str: function (source) {
-            return stringLiteralize(source);
-        },
-
-        date: function (source) {
-            return 'new Date(' + source.getTime() + ')';
-        },
-
-        any: function (source) {
-            switch (typeof source) {
-                case 'string':
-                    return stringifier.str(source);
-
-                case 'number':
-                    return '' + source;
-
-                case 'boolean':
-                    return source ? 'true' : 'false';
-
-                case 'object':
-                    if (!source) {
-                        return null;
-                    }
-
-                    if (source instanceof Array) {
-                        return stringifier.arr(source);
-                    }
-
-                    if (source instanceof Date) {
-                        return stringifier.date(source);
-                    }
-
-                    return stringifier.obj(source);
-            }
-
-            throw new Error('Cannot Stringify:' + source);
-        }
-    };
 }
 /* eslint-enable no-unused-vars */
 /* eslint-enable fecs-camelcase */
