@@ -147,8 +147,12 @@ function Component(options) { // eslint-disable-line
                 var stumpText = stumpMatch[1];
 
                 // fill component data
-                options.data = (new Function(
-                    'return ' + stumpText.replace(/^[\s\n]*/, '')
+                options.data = (new Function('return '
+                    + stumpText
+                        .replace(/^[\s\n]*/, '')
+                        .replace(/"\d{4}-\d{2}-\d{2}T[0-9:\.]+Z"/g, function (match) {
+                            return 'new Date(Date.parse(' + match + '))'
+                        })
                 ))();
 
                 if (firstCommentNode.previousSibling) {
