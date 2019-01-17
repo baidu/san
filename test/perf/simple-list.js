@@ -1,7 +1,7 @@
-var san = require('../../dist/san.ssr');
-var swig  = require('swig');
-var art = require('art-template');
-
+const san = require('../../dist/san.ssr');
+const swig  = require('swig');
+const art = require('art-template');
+const etpl = require('etpl');
 
 const App = san.defineComponent({
     template: `<div id='app'><ul><li s-for='item in items'>{{item}}</li></ul></div>`
@@ -29,7 +29,7 @@ let renderer = san.compileToRenderer(App);
 let renderer2 = san.compileToRenderer(App2);
 let swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{item}}</li>{% endfor %}</ul></div>`);
 let artRenderer = art.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
-
+let etplRenderer = etpl.compile('<div id=\'app\'><ul><!-- for: ${items} as ${item} --><li>${item}</li><!-- /for --></ul></div>');
 
 console.log('----- Simple List SSR Perf (10000 items x 100 times) -----');
 
@@ -60,4 +60,10 @@ for (let i = 0; i < 100; i++) {
 }
 console.timeEnd('artTpl');
 
+
+console.time('etpl');
+for (let i = 0; i < 100; i++) {
+    etplRenderer(data);
+}
+console.timeEnd('etpl');
 
