@@ -808,7 +808,7 @@ var stringifier = {
     }
 };
 
-var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('computed,filters,components,'
+var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('aNode,computed,filters,components,'
     + 'initData,template,attached,created,detached,disposed,compiled'
 );
 
