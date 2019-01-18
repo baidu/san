@@ -9,7 +9,6 @@
 
 
 var each = require('../util/each');
-var guid = require('../util/guid');
 var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
@@ -22,6 +21,11 @@ var getANodeProp = require('./get-a-node-prop');
 var ComponentLoader = require('./component-loader');
 
 // #[begin] ssr
+
+var ssrIndex = 0;
+function genSSRId() {
+    return '_id' + (ssrIndex++);
+}
 
 /**
  * 生成序列化时起始桩的html
@@ -436,10 +440,10 @@ var aNodeCompiler = {
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
         var itemName = forDirective.item.raw;
         var indexName = forDirective.index.raw;
-        var listName = guid();
+        var listName = genSSRId();
 
         if (indexName === '$index') {
-            indexName = guid();
+            indexName = genSSRId();
         }
 
         sourceBuffer.addRaw('var ' + listName + ' = ' + compileExprSource.expr(forDirective.value) + ';');
@@ -661,7 +665,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
     var componentIdInContext = ComponentClass.ssrContext[contextId];
 
     if (!componentIdInContext) {
-        componentIdInContext = guid();
+        componentIdInContext = genSSRId();
         ComponentClass.ssrContext[contextId] = componentIdInContext;
 
         // 先初始化个实例，让模板编译成 ANode，并且能获得初始化数据
@@ -941,7 +945,7 @@ function genComponentContextCode(component) {
  */
 function compileJSSource(ComponentClass) {
     var sourceBuffer = new CompileSourceBuffer();
-    var contextId = guid();
+    var contextId = genSSRId();
 
     sourceBuffer.addRendererStart();
     var renderId = compileComponentSource(sourceBuffer, ComponentClass, contextId);
