@@ -687,12 +687,11 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
             );
         }
 
-        sourceBuffer.addRaw('componentRenderers.' + componentIdInContext + ' = componentRenderers.' + componentIdInContext + ' || function (data, parentCtx, tagName, sourceSlots) {');
+        sourceBuffer.addRaw('componentRenderers.' + componentIdInContext + ' = componentRenderers.'
+            + componentIdInContext + '|| function (data, parentCtx, tagName, sourceSlots) {');
         sourceBuffer.addRaw('var html = "";');
 
         sourceBuffer.addRaw(genComponentContextCode(component));
-        sourceBuffer.addRaw('componentCtx.owner = parentCtx;');
-        sourceBuffer.addRaw('componentCtx.sourceSlots = sourceSlots;');
 
 
         // init data
@@ -860,8 +859,11 @@ function genComponentContextCode(component) {
         }
     });
 
-    // given anode
-    code.push('sourceSlots: [],');
+    // sourceSlots
+    code.push('sourceSlots: sourceSlots,');
+
+    // parentCtx
+    code.push('owner: parentCtx,');
 
     // filters
     code.push('filters: {');
