@@ -876,7 +876,7 @@ function genComponentContextCode(component) {
 
     code.push(
         'callFilter: function (name, args) {',
-        '    var filter = this.filters[name] || DEFAULT_FILTERS[name];',
+        '    var filter = this.filters[name];',
         '    if (typeof filter === "function") {',
         '        return filter.apply(this, args);',
         '    }',
@@ -923,9 +923,6 @@ function genComponentContextCode(component) {
     code.push(computedCode.join(','));
     code.push('],');
     /* eslint-enable no-redeclare */
-
-    // data
-    // code.push('data: ' + stringifier.any(component.data.get()) + ',');
 
     // tagName
     code.push('tagName: "' + component.tagName + '"');
