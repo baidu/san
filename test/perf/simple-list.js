@@ -3,6 +3,7 @@ const swig  = require('swig');
 const art = require('art-template');
 const etpl = require('etpl');
 const ejs = require('ejs');
+const mustache = require('mustache');
 
 const App = san.defineComponent({
     template: `<div id='app'><ul><li s-for='item in items'>{{item}}</li></ul></div>`
@@ -29,7 +30,7 @@ for (let i = 0; i < 10000; i++) {
 let renderer = san.compileToRenderer(App);
 let renderer2 = san.compileToRenderer(App2);
 let swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{item}}</li>{% endfor %}</ul></div>`);
-let artRenderer = art.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
+let artRenderer = art.compile(`<div id='app'><ul><% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
 let etplRenderer = etpl.compile('<div id=\'app\'><ul><!-- for: ${items} as ${item} --><li>${item}</li><!-- /for --></ul></div>');
 let ejsRenderer = ejs.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
 
@@ -74,4 +75,10 @@ for (let i = 0; i < 100; i++) {
     ejsRenderer(data);
 }
 console.timeEnd('ejs');
+
+console.time('mustache');
+for (let i = 0; i < 100; i++) {
+    mustache.render(`<div id='app'><ul>{{#items}}<li>{{.}}</li>{{/items}}</ul></div>`, data);
+}
+console.timeEnd('mustache');
 

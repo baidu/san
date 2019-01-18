@@ -3,6 +3,7 @@ const art = require('art-template');
 const swig = require('swig');
 const etpl = require('etpl');
 const ejs = require('ejs');
+const mustache = require('mustache');
 
 
 let artRenderer = art.compile(`
@@ -275,5 +276,41 @@ for (var i = 0; i < 100; i++) {
     ejsRenderer(data);
 }
 console.timeEnd('ejs');
+
+console.time('mustache');
+for (var i = 0; i < 100; i++) {
+    mustache.render(`
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        {{#categories}}
+        <li style="background: {{color}}">
+            <a href="/todos/category/{{ id }}">{{ title }}</a>
+        </li>
+        {{/categories}}
+    </ul>
+
+    <ul class="todo-list">
+        {{#todos}}
+        <li style="border-color: {{category.color}}"
+            class="{{#done}}todo-done{{/done}}"
+        >
+            <h3>{{ title }}</h3>
+            <p>{{ desc }}</p>
+            <div class="todo-meta">
+                {{#category}}
+                <span>{{ title }} | </span>
+                {{/category}}
+            </div>
+            <a class="fa fa-pencil" href="/edit/{{ id }}"></a>
+            <i class="fa fa-check></i>
+            <i class="fa fa-trash-o"></i>
+        </li>
+        {{/todos}}
+    </ul>
+</div>
+`, data);
+}
+console.timeEnd('mustache');
 
 exports = module.exports = MyComponent;
