@@ -697,7 +697,6 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         // init data
         var defaultData = component.data.get();
         sourceBuffer.addRaw('if (data) {');
-        sourceBuffer.addRaw('componentCtx.data = data;');
         Object.keys(defaultData).forEach(function (key) {
             sourceBuffer.addRaw('componentCtx.data["' + key + '"] = componentCtx.data["' + key + '"] || ' + stringifier.any(defaultData[key]) + ';');
         });
@@ -861,6 +860,9 @@ function genComponentContextCode(component) {
 
     // sourceSlots
     code.push('sourceSlots: sourceSlots,');
+
+    // data
+    code.push('data: data,');
 
     // parentCtx
     code.push('owner: parentCtx,');
