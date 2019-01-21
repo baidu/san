@@ -249,7 +249,7 @@ console.log('----- List SSR Perf (500 items x 100 times) -----');
 
 console.time('san');
 for (var i = 0; i < 100; i++) {
-    renderer(data);
+    renderer(data, true);
 }
 console.timeEnd('san');
 

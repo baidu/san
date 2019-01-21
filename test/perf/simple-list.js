@@ -38,14 +38,14 @@ console.log('----- Simple List SSR Perf (10000 items x 100 times) -----');
 
 console.time('san');
 for (let i = 0; i < 100; i++) {
-    renderer(data);
+    renderer(data, true);
 }
 console.timeEnd('san');
 
 
 console.time('san(item as component)');
 for (let i = 0; i < 100; i++) {
-    renderer2(data);
+    renderer2(data, true);
 }
 console.timeEnd('san(item as component)');
 
@@ -82,3 +82,4 @@ for (let i = 0; i < 100; i++) {
 }
 console.timeEnd('mustache');
 
+// console.log(san.compileToSource(App2))

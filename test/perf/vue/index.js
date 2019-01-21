@@ -111,7 +111,7 @@ let sanRenderer = san.compileToRenderer(MyComponent);
 console.log('----- List SSR Perf (1000 items) -----');
 
 console.time('san');
-sanRenderer(data);
+sanRenderer(data, true);
 console.timeEnd('san');
 
 
