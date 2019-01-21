@@ -630,7 +630,7 @@ var aNodeCompiler = {
 
         var renderId = compileComponentSource(sourceBuffer, extra.ComponentClass, owner.ssrContextId);
         sourceBuffer.addRaw('html += componentRenderers.' + renderId + '(');
-        sourceBuffer.addRaw(dataLiteral + ', componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
+        sourceBuffer.addRaw(dataLiteral + ', true, componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
@@ -688,7 +688,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         }
 
         sourceBuffer.addRaw('componentRenderers.' + componentIdInContext + ' = componentRenderers.'
-            + componentIdInContext + '|| function (data, parentCtx, tagName, sourceSlots) {');
+            + componentIdInContext + '|| function (data, noDataOutput, parentCtx, tagName, sourceSlots) {');
         sourceBuffer.addRaw('var html = "";');
 
         sourceBuffer.addRaw(genComponentContextCode(component));
@@ -714,7 +714,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         elementSourceCompiler.tagStart(sourceBuffer, component.aNode, 'tagName');
 
 
-        sourceBuffer.addRaw('if (!parentCtx) {');
+        sourceBuffer.addRaw('if (!noDataOutput) {');
         sourceBuffer.joinString('<!--s-data:');
         sourceBuffer.joinDataStringify();
         sourceBuffer.joinString('-->');
@@ -951,7 +951,7 @@ function compileJSSource(ComponentClass) {
 
     sourceBuffer.addRendererStart();
     var renderId = compileComponentSource(sourceBuffer, ComponentClass, contextId);
-    sourceBuffer.addRaw('return componentRenderers.' + renderId + '(data)');
+    sourceBuffer.addRaw('return componentRenderers.' + renderId + '(data, noDataOutput)');
     sourceBuffer.addRendererEnd();
 
     return sourceBuffer.toCode();

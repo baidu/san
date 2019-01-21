@@ -49,7 +49,7 @@ CompileSourceBuffer.prototype.joinRaw = function (code) {
  * 添加renderer方法的起始源码
  */
 CompileSourceBuffer.prototype.addRendererStart = function () {
-    this.addRaw('function (data) {');
+    this.addRaw('function (data, noDataOutput) {');
     this.addRaw(
         compileSourcePreCode.toString()
             .split('\n')
