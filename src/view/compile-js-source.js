@@ -700,7 +700,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         Object.keys(defaultData).forEach(function (key) {
             sourceBuffer.addRaw('componentCtx.data["' + key + '"] = componentCtx.data["' + key + '"] || ' + stringifier.any(defaultData[key]) + ';');
         });
-        sourceBuffer.addRaw('} else {componentCtx.data = ' + stringifier.any(defaultData) + '}');
+        sourceBuffer.addRaw('}');
 
         // calc computed
         // TODO: computed dep computed, maybe has bug
@@ -862,7 +862,8 @@ function genComponentContextCode(component) {
     code.push('sourceSlots: sourceSlots,');
 
     // data
-    code.push('data: data,');
+    var defaultData = component.data.get();
+    code.push('data: data || ' + stringifier.any(defaultData) + ',');
 
     // parentCtx
     code.push('owner: parentCtx,');
