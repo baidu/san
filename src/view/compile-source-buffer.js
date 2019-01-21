@@ -266,17 +266,6 @@ function compileSourcePreCode() {
 
         return '';
     }
-
-    function stringLiteralize(source) {
-        return '"'
-            + source
-                .replace(/\x5C/g, '\\\\')
-                .replace(/"/g, '\\"')
-                .replace(/\x0A/g, '\\n')
-                .replace(/\x09/g, '\\t')
-                .replace(/\x0D/g, '\\r')
-            + '"';
-    }
 }
 /* eslint-enable no-unused-vars */
 /* eslint-enable fecs-camelcase */
