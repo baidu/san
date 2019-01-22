@@ -19,7 +19,7 @@ function defaultClassFilter(source) {
     return source;
 }
 
-function defaultStyleFilterfunction(source) {
+function defaultStyleFilter(source) {
     if (typeof source === 'object') {
         var result = '';
         for (var key in source) {
@@ -51,7 +51,7 @@ var DEFAULT_FILTERS = {
     url: encodeURIComponent,
 
     _class: defaultClassFilter,
-    _style: defaultStyleFilterfunction,
+    _style: defaultStyleFilter,
 
     _xclass: function (source) {
         var result = defaultClassFilter(source);
@@ -59,7 +59,7 @@ var DEFAULT_FILTERS = {
     },
 
     _xstyle: function (source) {
-        var result = defaultStyleFilterfunction(source);
+        var result = defaultStyleFilter(source);
         return result ? ';' + result : '';
     }
 };
