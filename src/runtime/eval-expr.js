@@ -155,10 +155,7 @@ function evalExpr(expr, data, owner) {
                             );
                         }
                         else if (DEFAULT_FILTERS[filterName]) {
-                            value = DEFAULT_FILTERS[filterName](
-                                value,
-                                filter.args[0] ? filter.args[0].value : ''
-                            );
+                            value = DEFAULT_FILTERS[filterName](value);
                         }
                     }
                 }
