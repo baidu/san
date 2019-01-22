@@ -247,8 +247,31 @@ function compileSourcePreCode() {
         return source;
     }
 
-    function _sepFilter(source, sep) {
-        return source ? sep + source : '';
+    function _xclassFilter(source) {
+        if (source instanceof Array) {
+            source = source.join(' ');
+        }
+
+        return source ? ' ' + source : '';
+    }
+
+    function _xstyleFilter(source) {
+        var result;
+        if (typeof source === 'object') {
+            result = '';
+            if (source) {
+                Object.keys(source).forEach(function (key) {
+                    result += key + ':' + source[key] + ';';
+                });
+            }
+
+            return result;
+        }
+        else {
+            result = source;
+        }
+
+        return result ? ';' + result : '';
     }
 
     function attrFilter(name, value) {

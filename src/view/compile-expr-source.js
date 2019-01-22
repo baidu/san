@@ -117,7 +117,9 @@ var compileExprSource = {
 
             switch (filterName) {
                 case '_style':
+                case '_xstyle':
                 case '_class':
+                case '_xclass':
                     code = filterName + 'Filter(' + code + ')';
                     break;
 
