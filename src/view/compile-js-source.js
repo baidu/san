@@ -379,9 +379,6 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileIf: function (aNode, sourceBuffer, owner) {
-        sourceBuffer.addRaw('(function () {');
-
-        sourceBuffer.addRaw('var ifIndex = null;');
 
         // output main if
         var ifDirective = aNode.directives['if']; // eslint-disable-line dot-notation
@@ -396,7 +393,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('}');
 
         // output elif and else
-        each(aNode.elses, function (elseANode, index) {
+        each(aNode.elses, function (elseANode) {
             var elifDirective = elseANode.directives.elif;
             if (elifDirective) {
                 sourceBuffer.addRaw('else if (' + compileExprSource.expr(elifDirective.value) + ') {');
@@ -414,8 +411,6 @@ var aNodeCompiler = {
             );
             sourceBuffer.addRaw('}');
         });
-
-        sourceBuffer.addRaw('})();');
     },
 
     /**
