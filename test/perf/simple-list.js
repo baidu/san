@@ -82,4 +82,3 @@ for (let i = 0; i < 100; i++) {
 }
 console.timeEnd('mustache');
 
-// console.log(san.compileToSource(App2))
