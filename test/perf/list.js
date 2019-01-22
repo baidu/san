@@ -4,6 +4,7 @@ const swig = require('swig');
 const etpl = require('etpl');
 const ejs = require('ejs');
 const mustache = require('mustache');
+const handlebars = require('handlebars');
 
 
 let artRenderer = art.compile(`
@@ -132,6 +133,38 @@ let ejsRenderer = ejs.compile(`
             <i class="fa fa-trash-o"></i>
         </li>
         <% } %>
+    </ul>
+</div>
+`);
+
+let handlebarsRenderer = handlebars.compile(`
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        {{#categories}}
+        <li style="background: {{color}}">
+            <a href="/todos/category/{{ id }}">{{ title }}</a>
+        </li>
+        {{/categories}}
+    </ul>
+
+    <ul class="todo-list">
+        {{#todos}}
+        <li style="border-color: {{category.color}}"
+            class="{{#done}}todo-done{{/done}}"
+        >
+            <h3>{{ title }}</h3>
+            <p>{{ desc }}</p>
+            <div class="todo-meta">
+                {{#category}}
+                <span>{{ title }} | </span>
+                {{/category}}
+            </div>
+            <a class="fa fa-pencil" href="/edit/{{ id }}"></a>
+            <i class="fa fa-check></i>
+            <i class="fa fa-trash-o"></i>
+        </li>
+        {{/todos}}
     </ul>
 </div>
 `);
@@ -276,6 +309,12 @@ for (var i = 0; i < 100; i++) {
     ejsRenderer(data);
 }
 console.timeEnd('ejs');
+
+console.time('handlebars');
+for (var i = 0; i < 100; i++) {
+    handlebarsRenderer(data);
+}
+console.timeEnd('handlebars');
 
 console.time('mustache');
 for (var i = 0; i < 100; i++) {

@@ -4,6 +4,7 @@ const art = require('art-template');
 const etpl = require('etpl');
 const ejs = require('ejs');
 const mustache = require('mustache');
+const handlebars = require('handlebars');
 
 const App = san.defineComponent({
     template: `<div id='app'><ul><li s-for='item in items'>{{item}}</li></ul></div>`
@@ -33,6 +34,7 @@ let swigRenderer = swig.compile(`<div id='app'><ul>{% for item in items %}<li>{{
 let artRenderer = art.compile(`<div id='app'><ul><% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
 let etplRenderer = etpl.compile('<div id=\'app\'><ul><!-- for: ${items} as ${item} --><li>${item}</li><!-- /for --></ul></div>');
 let ejsRenderer = ejs.compile(`<div id='app'><ul>{<% for(let i = 0; i < items.length; i++){ %><li><%= items[i] %></li><% } %></ul></div>`);
+let handlebarsRenderer = handlebars.compile(`<div id='app'><ul>{{#items}}<li>{{.}}</li>{{/items}}</ul></div>`);
 
 console.log('----- Simple List SSR Perf (10000 items x 100 times) -----');
 
@@ -75,6 +77,12 @@ for (let i = 0; i < 100; i++) {
     ejsRenderer(data);
 }
 console.timeEnd('ejs');
+
+console.time('handlebars');
+for (let i = 0; i < 100; i++) {
+    handlebarsRenderer(data);
+}
+console.timeEnd('handlebars');
 
 console.time('mustache');
 for (let i = 0; i < 100; i++) {
