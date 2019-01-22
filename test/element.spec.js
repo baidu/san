@@ -212,13 +212,17 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        expect(span.className).toBe('msg msg-notice msg-error');
+        expect(/(^| )msg( |$)/.test(span.className)).toBeTruthy();
+        expect(/(^| )msg-notice( |$)/.test(span.className)).toBeTruthy();
+        expect(/(^| )msg-error( |$)/.test(span.className)).toBeTruthy();
 
         myComponent.data.set('extra', 'msg-error');
 
 
         san.nextTick(function () {
-            expect(span.className).toBe('msg msg-error');
+            expect(/(^| )msg( |$)/.test(span.className)).toBeTruthy();
+            expect(/(^| )msg-notice( |$)/.test(span.className)).toBeFalsy();
+            expect(/(^| )msg-error( |$)/.test(span.className)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
