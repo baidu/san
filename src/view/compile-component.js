@@ -66,8 +66,8 @@ function compileComponent(ComponentClass) {
             }
 
             var componentPropExtra = {
-                'class': {name: 'class', expr: parseText('{{class | _class | _sep(" ")}}')},
-                'style': {name: 'style', expr: parseText('{{style | _style | _sep(";")}}')},
+                'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
+                'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
                 'id': {name: 'id', expr: parseText('{{id}}')}
             };
 

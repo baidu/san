@@ -10,6 +10,30 @@
 
 /* eslint-disable fecs-camelcase */
 
+
+function defaultClassFilter(source) {
+    if (source instanceof Array) {
+        return source.join(' ');
+    }
+
+    return source;
+}
+
+function defaultStyleFilterfunction(source) {
+    if (typeof source === 'object') {
+        var result = '';
+        for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+                result += key + ':' + source[key] + ';';
+            }
+        }
+
+        return result;
+    }
+
+    return source;
+}
+
 /**
  * 默认filter
  *
@@ -26,31 +50,17 @@ var DEFAULT_FILTERS = {
      */
     url: encodeURIComponent,
 
-    _class: function (source) {
-        if (source instanceof Array) {
-            return source.join(' ');
-        }
+    _class: defaultClassFilter,
+    _style: defaultStyleFilterfunction,
 
-        return source;
+    _xclass: function (source) {
+        var result = defaultClassFilter(source);
+        return result ? ' ' + result : '';
     },
 
-    _style: function (source) {
-        if (typeof source === 'object') {
-            var result = '';
-            for (var key in source) {
-                if (source.hasOwnProperty(key)) {
-                    result += key + ':' + source[key] + ';';
-                }
-            }
-
-            return result;
-        }
-
-        return source;
-    },
-
-    _sep: function (source, sep) {
-        return source ? sep + source : source;
+    _xstyle: function (source) {
+        var result = defaultStyleFilterfunction(source);
+        return result ? ';' + result : '';
     }
 };
 /* eslint-enable fecs-camelcase */
