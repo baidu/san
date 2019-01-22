@@ -123,10 +123,6 @@ var compileExprSource = {
                     code = filterName + 'Filter(' + code + ')';
                     break;
 
-                case '_sep':
-                    code = '_sepFilter(' + code + ', ' + compileExprSource.expr(filter.args[0]) + ')';
-                    break;
-
                 case 'url':
                     code = 'encodeURIComponent(' + code + ')';
                     break;
