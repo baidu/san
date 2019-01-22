@@ -174,12 +174,40 @@ var elementSourceCompiler = {
                     break;
 
                 default:
+                    var onlyOneAccessor = false;
+                    var preCondExpr;
+
+                    if (prop.expr.type === ExprType.ACCESSOR) {
+                        onlyOneAccessor = true;
+                        preCondExpr = prop.expr;
+                    }
+                    else if (prop.expr.segs.length === 1) {
+                        var interpExpr = prop.expr.segs[0];
+                        var interpFilters = interpExpr.filters;
+
+                        if (!interpFilters.length
+                            || interpFilters.length === 1 && interpFilters[0].args.length === 0
+                        ) {
+                            onlyOneAccessor = true;
+                            preCondExpr = prop.expr.segs[0].expr;
+                        }
+                    }
+
+                    if (onlyOneAccessor) {
+                        sourceBuffer.addRaw('if (' + compileExprSource.expr(preCondExpr) + ') {');
+                    }
+
                     sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
                         + (prop.x ? 'escapeHTML(' : '')
                         + compileExprSource.expr(prop.expr)
                         + (prop.x ? ')' : '')
                         + ')'
                     );
+
+                    if (onlyOneAccessor) {
+                        sourceBuffer.addRaw('}');
+                    }
+
                     break;
             }
         });
