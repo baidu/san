@@ -7,7 +7,7 @@
  * @file ie版本号
  */
 
- // #[begin] allua
+// #[begin] allua
 /**
  * 从userAgent中ie版本号的匹配信息
  *

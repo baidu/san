@@ -61,15 +61,15 @@ var warn = require('../util/warn');
  */
 function Component(options) { // eslint-disable-line
 
-    /* eslint-disable no-console */
     // #[begin] error
     for (var key in Component.prototype) {
         if (this[key] !== Component.prototype[key]) {
+            /* eslint-disable max-len */
             warn('\`' + key + '\` is a reserved key of san components. Overriding this property may cause unknown exceptions.');
+            /* eslint-enable max-len */
         }
     }
     // #[end]
-    /* eslint-disable no-console */
 
 
     options = options || {};

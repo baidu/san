@@ -35,6 +35,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 /**
  * slot 节点类
  *
+ * @class
  * @param {Object} aNode 抽象节点
  * @param {Component} owner 所属组件环境
  * @param {Model=} scope 所属数据环境

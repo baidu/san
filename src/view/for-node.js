@@ -131,6 +131,7 @@ function createForDirectiveChild(forElement, item, index) {
 /**
  * for 指令节点类
  *
+ * @class
  * @param {Object} aNode 抽象节点
  * @param {Component} owner 所属组件环境
  * @param {Model=} scope 所属数据环境

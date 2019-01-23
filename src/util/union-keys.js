@@ -16,14 +16,15 @@
  */
 function unionKeys(obj1, obj2) {
     var result = [];
+    var key;
 
-    for (var key in obj1) {
+    for (key in obj1) {
         if (obj1.hasOwnProperty(key)) {
             result.push(key);
         }
     }
 
-    for (var key in obj2) {
+    for (key in obj2) {
         if (obj2.hasOwnProperty(key)) {
             !obj1[key] && result.push(key);
         }

@@ -14,6 +14,7 @@ var SlotNode = require('./slot-node');
 var ForNode = require('./for-node');
 var IfNode = require('./if-node');
 var TemplateNode = require('./template-node');
+var AsyncComponent = require('./async-component');
 
 // #[begin] reverse
 /**

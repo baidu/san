@@ -24,7 +24,7 @@ var readUnaryExpr = require('./read-unary-expr');
 var directiveParsers = {
     'for': function (value) {
         var walker = new Walker(value);
-        var match = walker.match(/^\s*([\$0-9a-z_]+)(\s*,\s*([\$0-9a-z_]+))?\s+in\s+/ig, 1);
+        var match = walker.match(/^\s*([$0-9a-z_]+)(\s*,\s*([$0-9a-z_]+))?\s+in\s+/ig, 1);
 
         if (match) {
             var directive = {
@@ -64,7 +64,7 @@ var directiveParsers = {
         };
     },
 
-    'else': function (value) {
+    'else': function () {
         return {
             value: {}
         };
