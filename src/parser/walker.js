@@ -80,16 +80,13 @@ Walker.prototype.goUntil = function (charCode) {
     var code;
     while (this.index < this.len && (code = this.currentCode())) {
         switch (code) {
-            // 空格 space
-            case 32:
-            // 制表符 tab
-            case 9:
-            // \r
-            case 13:
-            // \n
-            case 10:
+            case 32: // 空格 space
+            case 9: // 制表符 tab
+            case 13: // \r
+            case 10: // \n
                 this.index++;
                 break;
+
             default:
                 if (code === charCode) {
                     this.index++;

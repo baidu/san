@@ -166,7 +166,7 @@ function compileSourcePreCode() {
     function extend(target, source) {
         if (source) {
             Object.keys(source).forEach(function (key) {
-                let value = source[key];
+                var value = source[key];
                 if (typeof value !== 'undefined') {
                     target[key] = value;
                 }

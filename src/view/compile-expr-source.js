@@ -255,6 +255,7 @@ var compileExprSource = {
                     case 45:
                         return '-' + compileExprSource.expr(expr.expr);
                 }
+                return '';
 
             case ExprType.BINARY:
                 return compileExprSource.expr(expr.segs[0])

@@ -13,7 +13,10 @@ var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
 var createANode = require('../parser/create-a-node');
 var cloneDirectives = require('../parser/clone-directives');
+var ExprType = require('../parser/expr-type');
+var postProp = require('../parser/post-prop');
 var autoCloseTags = require('../browser/auto-close-tags');
+var camelComponentBinds = require('./camel-component-binds');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var rinseCondANode = require('./rinse-cond-anode');
@@ -581,20 +584,8 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      * @param {Object} extra 编译所需的一些额外信息
      */
-    compileElement: function (aNode, sourceBuffer, owner, extra) {
-        extra = extra || {};
-        // if (aNode.tagName === 'option'
-        //     && !getANodeProp(aNode, 'value')
-        //     && aNode.children[0]
-        // ) {
-        //     aNode.props.push({
-        //         name: 'value',
-        //         expr: aNode.children[0].textExpr
-        //     });
-        // }
-
+    compileElement: function (aNode, sourceBuffer, owner) {
         elementSourceCompiler.tagStart(sourceBuffer, aNode);
-
         elementSourceCompiler.inner(sourceBuffer, aNode, owner);
         elementSourceCompiler.tagEnd(sourceBuffer, aNode);
     },

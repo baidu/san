@@ -84,13 +84,12 @@ ForItemData.prototype.exprResolve = function (expr) {
 
     each(expr.paths, function (item) {
         resolvedPaths.push(
-            item.type === ExprType.ACCESSOR
-                && item.paths[0].value === directive.index.paths[0].value
-            ? {
-                type: ExprType.NUMBER,
-                value: me.get(directive.index)
-            }
-            : resolveItem(item)
+            item.type === ExprType.ACCESSOR && item.paths[0].value === directive.index.paths[0].value
+                ? {
+                    type: ExprType.NUMBER,
+                    value: me.get(directive.index)
+                }
+                : resolveItem(item)
         );
     });
 
