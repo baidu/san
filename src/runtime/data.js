@@ -130,6 +130,8 @@ Data.prototype.get = function (expr, callee) {
  * @inner
  * @param {Object|Array} source 要变更的源数据
  * @param {Array} exprPaths 属性路径
+ * @param {number} pathsStart 当前处理的属性路径指针位置
+ * @param {number} pathsLen 属性路径长度
  * @param {*} value 变更属性值
  * @param {Data} data 对应的Data对象
  * @return {*} 变更后的新数据

@@ -30,6 +30,86 @@ function genSSRId() {
     return '_id' + (ssrIndex++);
 }
 
+var stringifier = {
+    obj: function (source) {
+        var prefixComma;
+        var result = '{';
+
+        for (var key in source) {
+            if (!source.hasOwnProperty(key) || typeof source[key] === 'undefined') {
+                continue;
+            }
+
+            if (prefixComma) {
+                result += ',';
+            }
+            prefixComma = 1;
+
+            result += compileExprSource.stringLiteralize(key) + ':' + stringifier.any(source[key]);
+        }
+
+        return result + '}';
+    },
+
+    arr: function (source) {
+        var prefixComma;
+        var result = '[';
+
+        each(source, function (value) {
+            if (prefixComma) {
+                result += ',';
+            }
+            prefixComma = 1;
+
+            result += stringifier.any(value);
+        });
+
+        return result + ']';
+    },
+
+    str: function (source) {
+        return compileExprSource.stringLiteralize(source);
+    },
+
+    date: function (source) {
+        return 'new Date(' + source.getTime() + ')';
+    },
+
+    any: function (source) {
+        switch (typeof source) {
+            case 'string':
+                return stringifier.str(source);
+
+            case 'number':
+                return '' + source;
+
+            case 'boolean':
+                return source ? 'true' : 'false';
+
+            case 'object':
+                if (!source) {
+                    return null;
+                }
+
+                if (source instanceof Array) {
+                    return stringifier.arr(source);
+                }
+
+                if (source instanceof Date) {
+                    return stringifier.date(source);
+                }
+
+                return stringifier.obj(source);
+        }
+
+        throw new Error('Cannot Stringify:' + source);
+    }
+};
+
+var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('aNode,computed,filters,components,'
+    + 'initData,template,attached,created,detached,disposed,compiled'
+);
+
 /**
  * 生成序列化时起始桩的html
  *
@@ -59,13 +139,13 @@ function serializeStumpEnd(type) {
 var elementSourceCompiler = {
 
     /* eslint-disable max-params */
+
     /**
      * 编译元素标签头
      *
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {string} tagName 标签名
-     * @param {Array} props 属性列表
-     * @param {Object=} bindDirective bind指令对象
+     * @param {ANode} aNode 抽象节点
+     * @param {string=} tagNameVariable 组件标签为外部动态传入时的标签变量名
      */
     tagStart: function (sourceBuffer, aNode, tagNameVariable) {
         var props = aNode.props;
@@ -256,7 +336,8 @@ var elementSourceCompiler = {
      * 编译元素闭合
      *
      * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
-     * @param {string} tagName 标签名
+     * @param {ANode} aNode 抽象节点
+     * @param {string=} tagNameVariable 组件标签为外部动态传入时的标签变量名
      */
     tagEnd: function (sourceBuffer, aNode, tagNameVariable) {
         var tagName = aNode.tagName;
@@ -668,11 +749,13 @@ var aNodeCompiler = {
 };
 
 /**
- * 生成组件 renderer 时 ctx 对象构建的代码
+ * 生成组件构建的代码
  *
  * @inner
  * @param {CompileSourceBuffer} sourceBuffer 编译源码的中间buffer
- * @param {Object} component 组件实例
+ * @param {Function} ComponentClass 组件类
+ * @param {string} contextId 构建render环境的id
+ * @return {string} 组件在当前环境下的方法标识
  */
 function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
     ComponentClass.ssrContext = ComponentClass.ssrContext || {};
@@ -743,86 +826,6 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
     return componentIdInContext;
 }
-
-var stringifier = {
-    obj: function (source) {
-        var prefixComma;
-        var result = '{';
-
-        for (var key in source) {
-            if (!source.hasOwnProperty(key) || typeof source[key] === 'undefined') {
-                continue;
-            }
-
-            if (prefixComma) {
-                result += ',';
-            }
-            prefixComma = 1;
-
-            result += compileExprSource.stringLiteralize(key) + ':' + stringifier.any(source[key]);
-        }
-
-        return result + '}';
-    },
-
-    arr: function (source) {
-        var prefixComma;
-        var result = '[';
-
-        each(source, function (value) {
-            if (prefixComma) {
-                result += ',';
-            }
-            prefixComma = 1;
-
-            result += stringifier.any(value);
-        });
-
-        return result + ']';
-    },
-
-    str: function (source) {
-        return compileExprSource.stringLiteralize(source);
-    },
-
-    date: function (source) {
-        return 'new Date(' + source.getTime() + ')';
-    },
-
-    any: function (source) {
-        switch (typeof source) {
-            case 'string':
-                return stringifier.str(source);
-
-            case 'number':
-                return '' + source;
-
-            case 'boolean':
-                return source ? 'true' : 'false';
-
-            case 'object':
-                if (!source) {
-                    return null;
-                }
-
-                if (source instanceof Array) {
-                    return stringifier.arr(source);
-                }
-
-                if (source instanceof Date) {
-                    return stringifier.date(source);
-                }
-
-                return stringifier.obj(source);
-        }
-
-        throw new Error('Cannot Stringify:' + source);
-    }
-};
-
-var COMPONENT_RESERVED_MEMBERS = splitStr2Obj('aNode,computed,filters,components,'
-    + 'initData,template,attached,created,detached,disposed,compiled'
-);
 
 /**
  * 生成组件 renderer 时 ctx 对象构建的代码
