@@ -40,7 +40,9 @@ function preheatANode(aNode) {
 
 
             if (aNode.textExpr) {
-                aNode.hotspot = { data: {} };
+                aNode.hotspot = {
+                    data: {}
+                };
                 recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
             }
             else {

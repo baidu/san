@@ -15,6 +15,7 @@ var nextTick = require('../util/next-tick');
 var emitDevtool = require('../util/emit-devtool');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
+var parseTemplate = require('../parser/parse-template');
 var createAccessor = require('../parser/create-accessor');
 var postProp = require('../parser/post-prop');
 var removeEl = require('../browser/remove-el');
@@ -151,7 +152,7 @@ function Component(options) { // eslint-disable-line
                     + stumpText
                         .replace(/^[\s\n]*/, '')
                         .replace(/"\d{4}-\d{2}-\d{2}T[0-9:\.]+Z"/g, function (match) {
-                            return 'new Date(Date.parse(' + match + '))'
+                            return 'new Date(Date.parse(' + match + '))';
                         })
                 ))();
 
@@ -273,6 +274,7 @@ function Component(options) { // eslint-disable-line
  * 初始化创建组件外部传入的插槽对象
  *
  * @protected
+ * @param {boolean} isFirstTime 是否初次对sourceSlots进行计算
  */
 Component.prototype._initSourceSlots = function (isFirstTime) {
     var me = this;

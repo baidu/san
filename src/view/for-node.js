@@ -410,7 +410,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         this.children[changeIndex].scope._set(
                             change.expr,
                             change.value,
-                            { silent: 1 }
+                            {
+                                silent: 1
+                            }
                         );
                     }
                     else {
@@ -423,7 +425,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     this.children[changeIndex].scope._splice(
                         change.expr,
                         [].concat(change.index, change.deleteCount, change.insertions),
-                        { silent: 1 }
+                        {
+                            silent: 1
+                        }
                     );
                 }
             }

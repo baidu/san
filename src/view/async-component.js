@@ -7,6 +7,9 @@
  * @file 异步组件类
  */
 
+var guid = require('../util/guid');
+var each = require('../util/each');
+var insertBefore = require('../browser/insert-before');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 

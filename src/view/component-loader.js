@@ -16,10 +16,9 @@ var each = require('../util/each');
  *
  * @class
  *
- * @param {Object} options loader参数
- * @param {Function} options.load load方法
- * @param {Function=} options.loading loading过程中渲染的组件
- * @param {Function=} options.fallback load失败时渲染的组件
+ * @param {Function} load load方法
+ * @param {Function=} placeholder loading过程中渲染的组件
+ * @param {Function=} fallback load失败时渲染的组件
  */
 function ComponentLoader(load, placeholder, fallback) {
     this.load = load;

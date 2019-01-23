@@ -264,8 +264,6 @@ function compileSourcePreCode() {
                     result += key + ':' + source[key] + ';';
                 });
             }
-
-            return result;
         }
         else {
             result = source;

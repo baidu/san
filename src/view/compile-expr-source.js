@@ -126,7 +126,6 @@ var compileExprSource = {
                 case 'url':
                     code = 'encodeURIComponent(' + code + ')';
                     break;
-                    encodeURIComponent
 
                 default:
                     code = 'componentCtx.callFilter("' + filterName + '", [' + code;

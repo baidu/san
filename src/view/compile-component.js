@@ -12,6 +12,7 @@ var createANode = require('../parser/create-a-node');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
 var defineComponent = require('./define-component');
+var ComponentLoader = require('./component-loader');
 
 
 /**

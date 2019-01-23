@@ -10,6 +10,7 @@
 var contains = require('../util/contains');
 var empty = require('../util/empty');
 var svgTags = require('../browser/svg-tags');
+var ie = require('../browser/ie');
 var evalExpr = require('../runtime/eval-expr');
 var getANodeProp = require('./get-a-node-prop');
 var NodeType = require('./node-type');
