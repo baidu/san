@@ -13,9 +13,10 @@ let html = '';
 let specTpls = '';
 
 // generate html
-function genContent({componentClass, componentSource, compontentData, specTpl, dirName, result}) {
+function genContent({ componentClass, componentSource, compontentData, componentDataLiteral, specTpl, dirName, result}) {
     let renderer = san.compileToRenderer(componentClass);
     let id = dirName;
+    let noDataOutput = /-ndo$/.test(dirName);
 
     // if no inject mark, add it
     if (!/\/\/\s*\[inject\]/.test(specTpl)) {
@@ -24,7 +25,7 @@ function genContent({componentClass, componentSource, compontentData, specTpl, d
         });
     }
 
-    let injectHtml = result ? result : renderer(compontentData);
+    let injectHtml = result ? result : renderer(compontentData, noDataOutput);
 
     html += `<div id="${id}">${injectHtml}</div>\n\n`;
 
@@ -33,8 +34,12 @@ function genContent({componentClass, componentSource, compontentData, specTpl, d
         var wrap = document.getElementById('${id}');
         var myComponent = new MyComponent({
             el: wrap.firstChild
-        });
     `;
+
+    if (noDataOutput) {
+        preCode += ',data:' + componentDataLiteral
+    }
+    preCode += '        });'
     specTpl = specTpl.replace(/\/\/\s*\[inject\]\s* init/, preCode);
     specTpls += specTpl;
 };
@@ -45,6 +50,7 @@ function buildFile(filePath) {
     let componentSource;
     let specTpl;
     let compontentData;
+    let componentDataLiteral;
     let dirName;
     let result;
     let sourceFile = '';
@@ -86,6 +92,10 @@ function buildFile(filePath) {
 
                 case 'data.js':
                     compontentData = require(abFilePath);
+                    componentDataLiteral = fs.readFileSync(abFilePath, 'UTF-8');
+                    componentDataLiteral = componentDataLiteral
+                        .slice(componentDataLiteral.indexOf('{'))
+                        .replace(/;\s*$/, '');
                     break;
 
                 case 'result.html':
@@ -111,6 +121,7 @@ function buildFile(filePath) {
             componentClass,
             componentSource,
             compontentData,
+            componentDataLiteral,
             specTpl,
             dirName,
             result
