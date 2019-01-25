@@ -603,7 +603,7 @@ var aNodeCompiler = {
     compileSlot: function (aNode, sourceBuffer, owner) {
         var rendererId = genSSRId();
 
-        sourceBuffer.addRaw('componentCtx.' + rendererId + ' = componentCtx.' + rendererId + ' || function () {');
+        sourceBuffer.addRaw('componentCtx.slotRenderers.' + rendererId + ' = componentCtx.slotRenderers.' + rendererId + ' || function () {');
 
         sourceBuffer.addRaw('function $defaultSlotRender(componentCtx) {');
         sourceBuffer.addRaw('  var html = "";');
@@ -656,7 +656,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('  html += $mySourceSlots[$renderIndex]($slotCtx);');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.addRaw('};componentCtx.' + rendererId + '();');
+        sourceBuffer.addRaw('};componentCtx.slotRenderers.' + rendererId + '();');
     },
 
     /**
@@ -685,26 +685,50 @@ var aNodeCompiler = {
     compileComponent: function (aNode, sourceBuffer, owner, extra) {
         var dataLiteral = '{}';
 
-        sourceBuffer.addRaw('var $slotName = null;');
         sourceBuffer.addRaw('var $sourceSlots = [];');
-        each(aNode.children, function (child) {
-            var slotBind = !child.textExpr && getANodeProp(child, 'slot');
-            if (slotBind) {
-                sourceBuffer.addRaw('$slotName = ' + compileExprSource.expr(slotBind.expr) + ';');
+        if (aNode.children) {
+            var defaultSourceSlots = [];
+            var sourceSlotCodes = {};
+
+            each(aNode.children, function (child) {
+                var slotBind = !child.textExpr && getANodeProp(child, 'slot');
+                if (slotBind) {
+                    if (!sourceSlotCodes[slotBind.raw]) {
+                        sourceSlotCodes[slotBind.raw] = {
+                            children: [],
+                            prop: slotBind
+                        };
+                    }
+
+                    sourceSlotCodes[slotBind.raw].children.push(child);
+                }
+                else {
+                    defaultSourceSlots.push(child);
+                }
+            });
+
+            if (defaultSourceSlots.length) {
                 sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
                 sourceBuffer.addRaw('  var html = "";');
-                sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
-                sourceBuffer.addRaw('  return html;');
-                sourceBuffer.addRaw('}, $slotName]);');
-            }
-            else {
-                sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
-                sourceBuffer.addRaw('  var html = "";');
-                sourceBuffer.addRaw(aNodeCompiler.compile(child, sourceBuffer, owner));
+                defaultSourceSlots.forEach(function (child) {
+                    aNodeCompiler.compile(child, sourceBuffer, owner);
+                });
                 sourceBuffer.addRaw('  return html;');
                 sourceBuffer.addRaw('}]);');
             }
-        });
+
+            for (var key in sourceSlotCodes) {
+                var sourceSlotCode = sourceSlotCodes[key];
+                sourceBuffer.addRaw('$sourceSlots.push([function (componentCtx) {');
+                sourceBuffer.addRaw('  var html = "";');
+                sourceBuffer.addRaw(sourceSlotCode.children.forEach(function (child) {
+                    aNodeCompiler.compile(child, sourceBuffer, owner);
+                }));
+                sourceBuffer.addRaw('  return html;');
+                sourceBuffer.addRaw('}, ' + compileExprSource.expr(sourceSlotCode.prop.expr) + ']);');
+            }
+        }
+
 
         var givenData = [];
         each(camelComponentBinds(aNode.props), function (prop) {
