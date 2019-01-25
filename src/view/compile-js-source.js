@@ -601,7 +601,9 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileSlot: function (aNode, sourceBuffer, owner) {
-        sourceBuffer.addRaw('(function () {');
+        var rendererId = genSSRId();
+
+        sourceBuffer.addRaw('componentCtx.' + rendererId + ' = componentCtx.' + rendererId + ' || function () {');
 
         sourceBuffer.addRaw('function $defaultSlotRender(componentCtx) {');
         sourceBuffer.addRaw('  var html = "";');
@@ -654,7 +656,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('  html += $mySourceSlots[$renderIndex]($slotCtx);');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.addRaw('})();');
+        sourceBuffer.addRaw('};componentCtx.' + rendererId + '();');
     },
 
     /**
@@ -884,6 +886,9 @@ function genComponentContextCode(component) {
 
     // parentCtx
     code.push('owner: parentCtx,');
+
+    // slotRenderers
+    code.push('slotRenderers: {},');
 
     // filters
     code.push('filters: {');
