@@ -192,13 +192,6 @@ var renderer = san.compileToRenderer(App);
 var itemComponentRenderer = san.compileToRenderer(ItemAsComponentApp);
 var slotRenderer = san.compileToRenderer(SlotApp);
 
-console.log('----- pure component -----');
-console.log(renderer(data, true));
-console.log('----- item as component -----');
-console.log(itemComponentRenderer(data, true));
-console.log('----- item as component, slot contented -----');
-console.log(slotRenderer(data, true));
-
 console.time('san');
 for (var i = 0; i < 100; i++) {
     renderer(data, true);
@@ -217,3 +210,4 @@ for (var i = 0; i < 100; i++) {
 }
 console.timeEnd('san(item as component, slot contented)');
 
+// console.log(san.compileToSource(SlotApp))
