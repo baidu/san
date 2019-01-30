@@ -613,27 +613,29 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('  return html;');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.addRaw('  var $mySourceSlots = [];');
+        sourceBuffer.addRaw('var $isInserted = false;');
+        sourceBuffer.addRaw('var $ctxSourceSlots = componentCtx.sourceSlots;');
+        sourceBuffer.addRaw('var $mySourceSlots = [];');
 
         var nameProp = getANodeProp(aNode, 'name');
         if (nameProp) {
             sourceBuffer.addRaw('var $slotName = ' + compileExprSource.expr(nameProp.expr) + ';');
+
+            sourceBuffer.addRaw('for (var $i = 0; $i < $ctxSourceSlots.length; $i++) {');
+            sourceBuffer.addRaw('  if ($ctxSourceSlots[$i][1] == $slotName) {');
+            sourceBuffer.addRaw('    $mySourceSlots.push($ctxSourceSlots[$i][0]);');
+            sourceBuffer.addRaw('    $isInserted = true;');
+            sourceBuffer.addRaw('  }');
+            sourceBuffer.addRaw('}');
         }
         else {
-            sourceBuffer.addRaw('var $slotName = null;');
+            sourceBuffer.addRaw('if ($ctxSourceSlots[0] && $ctxSourceSlots[0][1] == null) {');
+            sourceBuffer.addRaw('  $mySourceSlots.push($ctxSourceSlots[0][0]);');
+            sourceBuffer.addRaw('  $isInserted = true;');
+            sourceBuffer.addRaw('}');
         }
 
-        sourceBuffer.addRaw('var $ctxSourceSlots = componentCtx.sourceSlots;');
-        sourceBuffer.addRaw('for (var $i = 0; $i < $ctxSourceSlots.length; $i++) {');
-        sourceBuffer.addRaw('  if ($ctxSourceSlots[$i][1] == $slotName) {');
-        sourceBuffer.addRaw('    $mySourceSlots.push($ctxSourceSlots[$i][0]);');
-        sourceBuffer.addRaw('  }');
-        sourceBuffer.addRaw('}');
-
-
-        sourceBuffer.addRaw('var $isInserted = $mySourceSlots.length > 0;');
         sourceBuffer.addRaw('if (!$isInserted) { $mySourceSlots.push($defaultSlotRender); }');
-
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
 
         if (aNode.vars || aNode.directives.bind) {
@@ -656,7 +658,8 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('  html += $mySourceSlots[$renderIndex]($slotCtx);');
         sourceBuffer.addRaw('}');
 
-        sourceBuffer.addRaw('};componentCtx.slotRenderers.' + rendererId + '();');
+        sourceBuffer.addRaw('};');
+        sourceBuffer.addRaw('componentCtx.slotRenderers.' + rendererId + '();');
     },
 
     /**
