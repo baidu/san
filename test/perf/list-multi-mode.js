@@ -114,7 +114,7 @@ const SlotApp = san.defineComponent({
     </ul>
 
     <ul class="todo-list">
-        <p-item item="{{item}}" index="{{index}}" s-for="item, index in todos">
+        <p-item item="{{item}}" s-for="item, index in todos">
             <h3>{{ item.title }}</h3>
             <p>{{ item.desc }}</p>
             <div class="todo-meta">
@@ -123,6 +123,48 @@ const SlotApp = san.defineComponent({
             <a class="fa fa-pencil" href="/edit/{{ item.id }}"></a>
             <i class="fa fa-check" on-click="doneTodo(index)"></i>
             <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
+        </p-item>
+    </ul>
+</div>
+    `
+});
+
+const SItemPanel = san.defineComponent({
+    template: `
+        <li style="border-color: {{item.category.color}}"
+            class="{{item.done ? 'todo-done' : ''}}"
+        >
+            <slot var-item="{{item}}"/>
+        </li>
+    `
+});
+
+const SSlotApp = san.defineComponent({
+    components: {
+        'p-item': SItemPanel
+    },
+    template: `
+<div class="todos">
+    <a href="#/add" class="todo-add"><i class="fa fa-plus-square"></i></a>
+    <ul class="filter-category">
+        <li
+            san-for="item in categories"
+            style="background: {{item.color}}"
+        >
+            <a href="/todos/category/{{ item.id }}">{{ item.title }}</a>
+        </li>
+    </ul>
+
+    <ul class="todo-list">
+        <p-item item="{{todo}}" s-for="todo in todos">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+            <div class="todo-meta">
+                <span san-if="item.category">{{ item.category.title }} | </span>
+            </div>
+            <a class="fa fa-pencil" href="/edit/{{ item.id }}"></a>
+            <i class="fa fa-check"></i>
+            <i class="fa fa-trash-o"></i>
         </p-item>
     </ul>
 </div>
@@ -191,6 +233,7 @@ for (var i = 500; i > 0; i--) {
 var renderer = san.compileToRenderer(App);
 var itemComponentRenderer = san.compileToRenderer(ItemAsComponentApp);
 var slotRenderer = san.compileToRenderer(SlotApp);
+var sslotRenderer = san.compileToRenderer(SSlotApp);
 
 console.time('san');
 for (var i = 0; i < 100; i++) {
@@ -210,4 +253,9 @@ for (var i = 0; i < 100; i++) {
 }
 console.timeEnd('san(item as component, slot contented)');
 
-// console.log(san.compileToSource(SlotApp))
+console.time('san(item as component, scoped slot)');
+for (var i = 0; i < 100; i++) {
+    sslotRenderer(data, true);
+}
+console.timeEnd('san(item as component, scoped slot)');
+// console.log(san.compileToSource(SSlotApp))
