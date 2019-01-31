@@ -10,7 +10,7 @@ cache:
   directories:
     - node_modules
 addons:
-  chrome: stable
+  chrome: beta
 script:
   - npm run test:coverage
 notifications:
