@@ -67,6 +67,12 @@ define(function (require) {
             this.updateViewState();
         },
 
+        prevMonth: function () {
+            var viewMonth = this.data.get('viewMonth');
+            this.data.set('viewMonth', viewMonth - 1);
+            this.updateViewState();
+        },
+
         nextMonth: function () {
             var viewMonth = this.data.get('viewMonth');
             this.data.set('viewMonth', viewMonth + 1);
