@@ -945,17 +945,32 @@ function genComponentContextCode(component) {
     // computed obj
     code.push('computed: {');
     var computedCode = [];
+    var computedNamesCode = [];
+    var computedNamesIndex = {};
     for (var key in component.computed) {
         if (component.computed.hasOwnProperty(key)) {
             var computed = component.computed[key];
 
             if (typeof computed === 'function') {
+                if (!computedNamesIndex[key]) {
+                    computedNamesIndex[key] = 1;
+                    computedNamesCode.push('"' + key + '"');
+                }
+
                 computedCode.push(key + ': '
                     + computed.toString().replace(
                         /this.data.get\(([^\)]+)\)/g,
                         function (match, exprLiteral) {
                             var exprStr = (new Function('return ' + exprLiteral))();
                             var expr = parseExpr(exprStr);
+
+                            var ident = expr.paths[0].value;
+                            if (component.computed.hasOwnProperty(ident)
+                                && !computedNamesIndex[ident]
+                            ) {
+                                computedNamesIndex[ident] = 1;
+                                computedNamesCode.unshift('"' + ident + '"');
+                            }
 
                             return compileExprSource.expr(expr);
                         })
@@ -968,17 +983,17 @@ function genComponentContextCode(component) {
 
     // computed names
     code.push('computedNames: [');
-    computedCode = [];
-    for (var key in component.computed) {
-        if (component.computed.hasOwnProperty(key)) {
-            var computed = component.computed[key];
+    // computedCode = [];
+    // for (var key in component.computed) {
+    //     if (component.computed.hasOwnProperty(key)) {
+    //         var computed = component.computed[key];
 
-            if (typeof computed === 'function') {
-                computedCode.push('"' + key + '"');
-            }
-        }
-    }
-    code.push(computedCode.join(','));
+    //         if (typeof computed === 'function') {
+    //             computedCode.push('"' + key + '"');
+    //         }
+    //     }
+    // }
+    code.push(computedNamesCode.join(','));
     code.push('],');
     /* eslint-enable no-redeclare */
 
