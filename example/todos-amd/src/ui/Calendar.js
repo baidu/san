@@ -61,12 +61,6 @@ define(function (require) {
             return this.data.get('left') < 0;
         },
 
-        presanonth: function () {
-            var viewMonth = this.data.get('viewMonth');
-            this.data.set('viewMonth', viewMonth - 1);
-            this.updateViewState();
-        },
-
         prevMonth: function () {
             var viewMonth = this.data.get('viewMonth');
             this.data.set('viewMonth', viewMonth - 1);
