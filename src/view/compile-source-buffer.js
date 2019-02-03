@@ -287,6 +287,13 @@ function compileSourcePreCode() {
 
         return '';
     }
+
+    function callFilter(ctx, name, args) {
+        var filter = ctx.filters[name];
+        if (typeof filter === "function") {
+            return filter.apply(ctx, args);
+        }
+    }
 }
 /* eslint-enable no-unused-vars */
 /* eslint-enable fecs-camelcase */

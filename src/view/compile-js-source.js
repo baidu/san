@@ -639,7 +639,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
 
         if (aNode.vars || aNode.directives.bind) {
-            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters, callFilter: $slotCtx.callFilter};'); // eslint-disable-line
+            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters};'); // eslint-disable-line
 
             if (aNode.directives.bind) {
                 sourceBuffer.addRaw('extend($slotCtx.data, ' + compileExprSource.expr(aNode.directives.bind.value) + ');'); // eslint-disable-line
@@ -932,15 +932,6 @@ function genComponentContextCode(component) {
     code.push(filterCode.join(','));
     code.push('},');
 
-    code.push(
-        'callFilter: function (name, args) {',
-        '    var filter = this.filters[name];',
-        '    if (typeof filter === "function") {',
-        '        return filter.apply(this, args);',
-        '    }',
-        '},'
-    );
-
     /* eslint-disable no-redeclare */
     // computed obj
     code.push('computed: {');
@@ -983,16 +974,6 @@ function genComponentContextCode(component) {
 
     // computed names
     code.push('computedNames: [');
-    // computedCode = [];
-    // for (var key in component.computed) {
-    //     if (component.computed.hasOwnProperty(key)) {
-    //         var computed = component.computed[key];
-
-    //         if (typeof computed === 'function') {
-    //             computedCode.push('"' + key + '"');
-    //         }
-    //     }
-    // }
     code.push(computedNamesCode.join(','));
     code.push('],');
     /* eslint-enable no-redeclare */

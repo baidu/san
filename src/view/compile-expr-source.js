@@ -128,7 +128,7 @@ var compileExprSource = {
                     break;
 
                 default:
-                    code = 'componentCtx.callFilter("' + filterName + '", [' + code;
+                    code = 'callFilter(componentCtx, "' + filterName + '", [' + code;
                     each(filter.args, function (arg) {
                         code += ', ' + compileExprSource.expr(arg);
                     });
