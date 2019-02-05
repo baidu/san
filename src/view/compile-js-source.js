@@ -829,7 +829,6 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         sourceBuffer.addRaw('}');
 
         // calc computed
-        // TODO: computed dep computed, maybe has bug
         sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
         sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
         sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
