@@ -235,6 +235,8 @@ var itemComponentRenderer = san.compileToRenderer(ItemAsComponentApp);
 var slotRenderer = san.compileToRenderer(SlotApp);
 var sslotRenderer = san.compileToRenderer(SSlotApp);
 
+console.log('----- List Multi Mode Perf (500 items x 100 times) -----');
+
 console.time('san');
 for (var i = 0; i < 100; i++) {
     renderer(data, true);
