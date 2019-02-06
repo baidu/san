@@ -151,9 +151,13 @@ function Component(options) { // eslint-disable-line
                 options.data = (new Function('return '
                     + stumpText
                         .replace(/^[\s\n]*/, '')
-                        .replace(/"\d{4}-\d{2}-\d{2}T[0-9:\.]+Z"/g, function (match) {
-                            return 'new Date(Date.parse(' + match + '))';
-                        })
+                        .replace(
+                            /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"/g,
+                            function (match, y, mon, d, h, m, s) {
+                                return 'new Date(' + (+y) + ',' + (+mon) + ',' + (+d) + ','
+                                    + (+h) + ',' + (+m) + ',' + (+s) + ')';
+                            }
+                        )
                 ))();
 
                 if (firstCommentNode.previousSibling) {
