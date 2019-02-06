@@ -639,7 +639,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('var $slotCtx = $isInserted ? componentCtx.owner : componentCtx;');
 
         if (aNode.vars || aNode.directives.bind) {
-            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), filters: $slotCtx.filters};'); // eslint-disable-line
+            sourceBuffer.addRaw('$slotCtx = {data: extend({}, $slotCtx.data), proto: $slotCtx.proto, owner: $slotCtx.owner};'); // eslint-disable-line
 
             if (aNode.directives.bind) {
                 sourceBuffer.addRaw('extend($slotCtx.data, ' + compileExprSource.expr(aNode.directives.bind.value) + ');'); // eslint-disable-line
@@ -814,10 +814,13 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         }
 
         sourceBuffer.addRaw('componentRenderers.' + componentIdInContext + ' = componentRenderers.'
-            + componentIdInContext + '|| function (data, noDataOutput, parentCtx, tagName, sourceSlots) {');
+            + componentIdInContext + '|| ' + componentIdInContext + ';');
+
+        sourceBuffer.addRaw('var ' + componentIdInContext + 'Proto = ' + genComponentProtoCode(component));
+        sourceBuffer.addRaw('function ' + componentIdInContext + '(data, noDataOutput, parentCtx, tagName, sourceSlots) {');
         sourceBuffer.addRaw('var html = "";');
 
-        sourceBuffer.addRaw(genComponentContextCode(component));
+        sourceBuffer.addRaw(genComponentContextCode(component, componentIdInContext));
 
 
         // init data
@@ -829,9 +832,10 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         sourceBuffer.addRaw('}');
 
         // calc computed
-        sourceBuffer.addRaw('for (var $i = 0; $i < componentCtx.computedNames.length; $i++) {');
-        sourceBuffer.addRaw('  var $computedName = componentCtx.computedNames[$i];');
-        sourceBuffer.addRaw('  data[$computedName] = componentCtx.computed[$computedName]();');
+        sourceBuffer.addRaw('var computedNames = componentCtx.proto.computedNames;');
+        sourceBuffer.addRaw('for (var $i = 0; $i < computedNames.length; $i++) {');
+        sourceBuffer.addRaw('  var $computedName = computedNames[$i];');
+        sourceBuffer.addRaw('  data[$computedName] = componentCtx.proto.computed[$computedName](componentCtx);');
         sourceBuffer.addRaw('}');
 
 
@@ -862,8 +866,39 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
  * @param {Object} component 组件实例
  * @return {string}
  */
-function genComponentContextCode(component) {
+function genComponentContextCode(component, componentIdInContext) {
     var code = ['var componentCtx = {'];
+
+    // proto
+    code.push('proto: ' + componentIdInContext + 'Proto,');
+
+    // sourceSlots
+    code.push('sourceSlots: sourceSlots,');
+
+    // data
+    var defaultData = component.data.get();
+    code.push('data: data || ' + stringifier.any(defaultData) + ',');
+
+    // parentCtx
+    code.push('owner: parentCtx,');
+
+    // slotRenderers
+    code.push('slotRenderers: {}');
+
+    code.push('};');
+
+    return code.join('\n');
+}
+
+/**
+ * 生成组件 proto 对象构建的代码
+ *
+ * @inner
+ * @param {Object} component 组件实例
+ * @return {string}
+ */
+function genComponentProtoCode(component) {
+    var code = ['{'];
 
     // members for call expr
     var ComponentProto = component.constructor.prototype;
@@ -903,19 +938,6 @@ function genComponentContextCode(component) {
         }
     });
 
-    // sourceSlots
-    code.push('sourceSlots: sourceSlots,');
-
-    // data
-    var defaultData = component.data.get();
-    code.push('data: data || ' + stringifier.any(defaultData) + ',');
-
-    // parentCtx
-    code.push('owner: parentCtx,');
-
-    // slotRenderers
-    code.push('slotRenderers: {},');
-
     // filters
     code.push('filters: {');
     var filterCode = [];
@@ -948,22 +970,25 @@ function genComponentContextCode(component) {
                 }
 
                 computedCode.push(key + ': '
-                    + computed.toString().replace(
-                        /this.data.get\(([^\)]+)\)/g,
-                        function (match, exprLiteral) {
-                            var exprStr = (new Function('return ' + exprLiteral))();
-                            var expr = parseExpr(exprStr);
+                    + computed.toString()
+                        .replace(/^\s*function\s*\(/, 'function (componentCtx')
+                        .replace(
+                            /this.data.get\(([^\)]+)\)/g,
+                            function (match, exprLiteral) {
+                                var exprStr = (new Function('return ' + exprLiteral))();
+                                var expr = parseExpr(exprStr);
 
-                            var ident = expr.paths[0].value;
-                            if (component.computed.hasOwnProperty(ident)
-                                && !computedNamesIndex[ident]
-                            ) {
-                                computedNamesIndex[ident] = 1;
-                                computedNamesCode.unshift('"' + ident + '"');
+                                var ident = expr.paths[0].value;
+                                if (component.computed.hasOwnProperty(ident)
+                                    && !computedNamesIndex[ident]
+                                ) {
+                                    computedNamesIndex[ident] = 1;
+                                    computedNamesCode.unshift('"' + ident + '"');
+                                }
+
+                                return compileExprSource.expr(expr);
                             }
-
-                            return compileExprSource.expr(expr);
-                        })
+                        )
                 );
             }
         }

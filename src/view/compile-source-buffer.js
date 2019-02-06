@@ -289,7 +289,7 @@ function compileSourcePreCode() {
     }
 
     function callFilter(ctx, name, args) {
-        var filter = ctx.filters[name];
+        var filter = ctx.proto.filters[name];
         if (typeof filter === "function") {
             return filter.apply(ctx, args);
         }

@@ -74,7 +74,7 @@ var compileExprSource = {
      */
     callExpr: function (callExpr) {
         var paths = callExpr.name.paths;
-        var code = 'componentCtx.' + paths[0].value;
+        var code = 'componentCtx.proto.' + paths[0].value;
 
         for (var i = 1; i < paths.length; i++) {
             var path = paths[i];
