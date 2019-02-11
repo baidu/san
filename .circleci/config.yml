@@ -6,7 +6,6 @@ anchor_1: &job_defaults
     - image: circleci/node:8.11.2-browsers
       environment:
         CHROME_BIN: "/usr/bin/google-chrome"
-        COVERALLS_REPO_TOKEN: kqAWthJaNY2gKsoAZTvlhQ2yLDCI7TxYH
 
 version: 2
 jobs:
@@ -32,5 +31,5 @@ jobs:
           key: *cache_key
 
       - run:
-          name: test & coverage
-          command: npm run test:coverage
+          name: test
+          command: npm run test
