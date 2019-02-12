@@ -63,6 +63,7 @@ function inputXPropOutputer(element, xProp, data) {
 function elementOwnAttached() {
     this._toPhase('created');
 
+    if (this.el.nodeType === 1) {
     var isComponent = this.nodeType === NodeType.CMPT;
     var data = isComponent ? this.data : this.scope;
 
@@ -142,6 +143,7 @@ function elementOwnAttached() {
             eventBind.modifier.capture
         );
     }
+    }
 
     this._toPhase('attached');
 
@@ -149,7 +151,7 @@ function elementOwnAttached() {
     if (this._isInitFromEl) {
         this._isInitFromEl = false;
     }
-    else {
+    else if (this.el.nodeType === 1) {
         var transition = elementGetTransition(this);
         if (transition && transition.enter) {
             transition.enter(this.el, empty);

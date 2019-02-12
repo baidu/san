@@ -645,24 +645,37 @@ Component.prototype._update = function (changes) {
     var dataChanges = this.dataChanges;
     if (dataChanges) {
         this.dataChanges = null;
-        each(this.aNode.hotspot.dynamicProps, function (prop) {
-            each(dataChanges, function (change) {
-                if (changeExprCompare(change.expr, prop.expr, me.data)
-                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
-                ) {
-                    handleProp(me, evalExpr(prop.expr, me.data, me), prop);
-                    return false;
+
+        var ifDirective = this.aNode.directives['if'];
+        var expectNodeType = (!ifDirective || evalExpr(ifDirective.value, this.data, this)) ? 1 : 8;
+
+        if (this.el.nodeType === expectNodeType) {
+            if (expectNodeType === 1) {
+                each(this.aNode.hotspot.dynamicProps, function (prop) {
+                    each(dataChanges, function (change) {
+                        if (changeExprCompare(change.expr, prop.expr, me.data)
+                            || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
+                        ) {
+                            handleProp(me, evalExpr(prop.expr, me.data, me), prop);
+                            return false;
+                        }
+                    });
+                });
+
+                elementUpdateChildren(this.children, dataChanges);
+
+
+                if (needReloadForSlot) {
+                    this._initSourceSlots();
+                    this._repaintChildren();
                 }
-            });
-        });
-
-        elementUpdateChildren(this.children, dataChanges);
-        elementUpdateChildren(this.implicitChildren, dataChanges);
-
-        if (needReloadForSlot) {
-            this._initSourceSlots();
-            this._repaintChildren();
+            }
         }
+        else {
+            this._repaint(expectNodeType);
+        }
+
+        elementUpdateChildren(this.implicitChildren, dataChanges);
 
         this._toPhase('updated');
 
@@ -712,12 +725,14 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
  */
 Component.prototype._repaintChildren = function () {
-    elementDisposeChildren(this.children, 0, 1);
-    this.children = [];
+    if (this.el.nodeType === 1) {
+        elementDisposeChildren(this.children, 0, 1);
+        this.children = [];
 
-    this._contentReady = 0;
-    this.slotChildren = [];
-    elementAttach(this);
+        this._contentReady = 0;
+        this.slotChildren = [];
+        elementAttach(this);
+    }
 };
 
 
@@ -758,13 +773,6 @@ Component.prototype.watch = function (dataName, listener) {
     }, this));
 };
 
-/**
- * 组件销毁的行为
- *
- * @param {Object} options 销毁行为的参数
- */
-Component.prototype.dispose = elementOwnDispose;
-
 Component.prototype._doneLeave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
@@ -795,17 +803,102 @@ Component.prototype._doneLeave = function () {
     }
 };
 
-/**
- * 完成组件 attached 后的行为
- *
- * @param {Object} element 元素节点
- */
-Component.prototype._attached = elementOwnAttached;
 
-Component.prototype.attach = elementOwnAttach;
+Component.prototype.attach = function (parentEl, beforeEl) {
+    if (!this.lifeCycle.attached) {
+        var ifDirective = this.aNode.directives['if'];
+
+        if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
+            this._create();
+            insertBefore(this.el, parentEl, beforeEl);
+
+            if (!this._contentReady) {
+                genElementChildren(this);
+                this._contentReady = 1;
+            }
+        }
+        else {
+            this.el = document.createComment(this.id);
+            insertBefore(this.el, parentEl, beforeEl);
+        }
+
+        this._attached();
+
+        // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
+        if (this.owner && !this.parent) {
+            this.owner.implicitChildren.push(this);
+        }
+    }
+};
+
+Component.prototype._repaint = function (elType) {
+    var beforeEl = this.el;
+    elementDisposeChildren(this.children, 1, 1);
+    this.children = [];
+
+    this._contentReady = 0;
+    this.slotChildren = [];
+
+    // el 事件解绑
+    var len = this._elFns.length;
+    while (len--) {
+        var fn = this._elFns[len];
+        un(this.el, fn[0], fn[1], fn[2]);
+    }
+    this._elFns = [];
+
+    if (elType === 1) {
+        var isComponent = this.nodeType === NodeType.CMPT;
+        var sourceNode = this.aNode.hotspot.sourceNode;
+        var props = this.aNode.props;
+
+        if (sourceNode) {
+            this.el = sourceNode.cloneNode();
+            props = this.aNode.hotspot.dynamicProps;
+        }
+        else {
+            this.el = createEl(this.tagName);
+        }
+
+        for (var key in this._sbindData) {
+            if (this._sbindData.hasOwnProperty(key)) {
+                getPropHandler(this.tagName, key).prop(
+                    this.el,
+                    this._sbindData[key],
+                    key,
+                    this
+                );
+            }
+        }
+
+        for (var i = 0, l = props.length; i < l; i++) {
+            var prop = props[i];
+            var value = isComponent
+                ? evalExpr(prop.expr, this.data, this)
+                : evalExpr(prop.expr, this.scope, this.owner);
+
+            if (value || !emptyPropWhenCreate[prop.name]) {
+                handleProp(this, value, prop);
+            }
+        }
+
+        genElementChildren(this);
+    }
+    else {
+        this.el = document.createComment(this.id);
+    }
+
+    insertBefore(this.el, beforeEl.parentNode, beforeEl);
+    removeEl(beforeEl);
+
+    this._contentReady = 1;
+};
+
 Component.prototype.detach = elementOwnDetach;
+Component.prototype.dispose = elementOwnDispose;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._onEl = elementOwnOnEl;
+Component.prototype._attached = elementOwnAttached;
 
 
 exports = module.exports = Component;
