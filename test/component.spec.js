@@ -4261,5 +4261,137 @@ describe("Component", function () {
         });
 
     });
+
+    it("root element with if, has data when inited", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                person: {
+                    name: 'errorrik'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrik');
+
+        myComponent.data.set('person', null);
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("root element with if, no data when inited", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        myComponent.data.set('person', {
+            name: 'errorrik'
+        });
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("root element with if as child, has data when inited", function (done) {
+        var Child = san.defineComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child person="{{p}}"/></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                p: {
+                    name: 'errorrik'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrik');
+
+        myComponent.data.set('p', null);
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("root element with if as child, no data when inited", function (done) {
+        var Child = san.defineComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child person="{{p}}"/></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+        myComponent.data.set('p', {
+            name: 'errorrik'
+        });
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 });
 
