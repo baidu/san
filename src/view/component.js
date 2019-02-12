@@ -892,6 +892,7 @@ Component.prototype._repaint = function (elType) {
     removeEl(beforeEl);
 
     this._contentReady = 1;
+    this._attached();
 };
 
 Component.prototype.detach = elementOwnDetach;
