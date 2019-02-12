@@ -4295,8 +4295,12 @@ describe("Component", function () {
     });
 
     it("root element with if, no data when inited", function (done) {
+        var num = 0;
         var MyComponent = san.defineComponent({
-            template: '<b s-if="person">{{person.name}}</b>'
+            template: '<b s-if="person" on-click="add">{{person.name}}</b>',
+            add: function () {
+                num++;
+            }
         });
 
         var myComponent = new MyComponent();
@@ -4312,13 +4316,20 @@ describe("Component", function () {
 
         myComponent.nextTick(function () {
             expect(wrap.getElementsByTagName('b').length).toBe(1);
-            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrik');
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
+            var b = wrap.getElementsByTagName('b')[0];
+            triggerEvent(b, 'click');
+            expect(b.innerHTML).toBe('errorrik');
+
+            myComponent.nextTick(function () {
+                expect(num).toBe(1);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+
         });
-
     });
 
     it("root element with if as child, has data when inited", function (done) {
