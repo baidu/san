@@ -7,7 +7,7 @@
 <h1 align="center">SAN</h1>
 
 <p align="center">
-A Flexible JavaScript Component Framework. <a href="https://baidu.github.io/san/" target="_blank">HomePage</a>
+A fast, portable, flexible JavaScript component framework. <a href="https://baidu.github.io/san/" target="_blank">HomePage</a>
 </p>
 
 <p align="center">
