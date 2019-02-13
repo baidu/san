@@ -839,6 +839,11 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         sourceBuffer.addRaw('}');
 
 
+        var ifDirective = component.aNode.directives['if']; // eslint-disable-line dot-notation
+        if (ifDirective) {
+            sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
+        }
+
         elementSourceCompiler.tagStart(sourceBuffer, component.aNode, 'tagName');
 
 
@@ -851,6 +856,10 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
         elementSourceCompiler.inner(sourceBuffer, component.aNode, component);
         elementSourceCompiler.tagEnd(sourceBuffer, component.aNode, 'tagName');
+
+        if (ifDirective) {
+            sourceBuffer.addRaw('}');
+        }
 
         sourceBuffer.addRaw('return html;');
         sourceBuffer.addRaw('};');

@@ -93,9 +93,6 @@ function Component(options) { // eslint-disable-line
 
     this.subTag = options.subTag;
 
-
-
-
     // compile
     compileComponent(clazz);
 
@@ -257,18 +254,27 @@ function Component(options) { // eslint-disable-line
         reverseElementChildren(this);
         this._attached();
     }
+    else {
+        var walker = options.reverseWalker;
+        if (walker) {
+            var ifDirective = this.aNode.directives['if'];
 
-    var walker = options.reverseWalker;
-    if (walker) {
-        var currentNode = walker.current;
-        if (currentNode && currentNode.nodeType === 1) {
-            this.el = currentNode;
-            walker.goNext();
+            if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
+                var currentNode = walker.current;
+                if (currentNode && currentNode.nodeType === 1) {
+                    this.el = currentNode;
+                    walker.goNext();
+                }
+
+                reverseElementChildren(this);
+            }
+            else {
+                this.el = document.createComment(this.id);
+                insertBefore(this.el, walker.target, walker.current);
+            }
+
+            this._attached();
         }
-
-        reverseElementChildren(this);
-
-        this._attached();
     }
     // #[end]
 }
