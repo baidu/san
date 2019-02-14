@@ -40,7 +40,6 @@ var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnCreate = require('./element-own-create');
-var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var warnEventListenMethod = require('./warn-event-listen-method');

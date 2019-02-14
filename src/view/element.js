@@ -20,7 +20,6 @@ var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnCreate = require('./element-own-create');
-var elementOwnAttach = require('./element-own-attach');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -100,8 +99,38 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
 
 Element.prototype.nodeType = NodeType.ELEM;
 
+/**
+ * 将元素attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
+Element.prototype.attach = function (parentEl, beforeEl) {
+    if (!this.lifeCycle.attached) {
+        this._create();
+        insertBefore(this.el, parentEl, beforeEl);
 
-Element.prototype.attach = elementOwnAttach;
+        if (!this._contentReady) {
+            var htmlDirective = this.aNode.directives.html;
+
+            if (htmlDirective) {
+                this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
+            }
+            else {
+                genElementChildren(this);
+            }
+
+            this._contentReady = 1;
+        }
+
+        // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
+        if (this.owner && !this.parent) {
+            this.owner.implicitChildren.push(this);
+        }
+        this._attached();
+    }
+};
+
 Element.prototype.detach = elementOwnDetach;
 Element.prototype.dispose = elementOwnDispose;
 Element.prototype._create = elementOwnCreate;
