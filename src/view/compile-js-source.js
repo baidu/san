@@ -848,9 +848,7 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
 
 
         sourceBuffer.addRaw('if (!noDataOutput) {');
-        sourceBuffer.joinString('<!--s-data:');
         sourceBuffer.joinDataStringify();
-        sourceBuffer.joinString('-->');
         sourceBuffer.addRaw('}');
 
 

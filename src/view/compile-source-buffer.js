@@ -127,7 +127,8 @@ CompileSourceBuffer.prototype.toCode = function () {
         genStrLiteral();
         switch (seg.type) {
             case 'JOIN_DATA_STRINGIFY':
-                code.push('html += JSON.stringify(' + compileExprSource.dataAccess() + ');');
+                code.push('html += "<!--s-data:" + JSON.stringify('
+                    + compileExprSource.dataAccess() + ') + "-->";');
                 break;
 
             case 'JOIN_EXPR':
