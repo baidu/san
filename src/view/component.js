@@ -735,9 +735,8 @@ Component.prototype._repaintChildren = function () {
         elementDisposeChildren(this.children, 0, 1);
         this.children = [];
 
-        this._contentReady = 0;
         this.slotChildren = [];
-        elementAttach(this);
+        genElementChildren(this);
     }
 };
 
