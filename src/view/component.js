@@ -850,40 +850,9 @@ Component.prototype._repaint = function (elType) {
     }
     this._elFns = [];
 
+    this.el = null;
     if (elType === 1) {
-        var isComponent = this.nodeType === NodeType.CMPT;
-        var sourceNode = this.aNode.hotspot.sourceNode;
-        var props = this.aNode.props;
-
-        if (sourceNode) {
-            this.el = sourceNode.cloneNode();
-            props = this.aNode.hotspot.dynamicProps;
-        }
-        else {
-            this.el = createEl(this.tagName);
-        }
-
-        for (var key in this._sbindData) {
-            if (this._sbindData.hasOwnProperty(key)) {
-                getPropHandler(this.tagName, key).prop(
-                    this.el,
-                    this._sbindData[key],
-                    key,
-                    this
-                );
-            }
-        }
-
-        for (var i = 0, l = props.length; i < l; i++) {
-            var prop = props[i];
-            var value = isComponent
-                ? evalExpr(prop.expr, this.data, this)
-                : evalExpr(prop.expr, this.scope, this.owner);
-
-            if (value || !emptyPropWhenCreate[prop.name]) {
-                handleProp(this, value, prop);
-            }
-        }
+        this._create();
 
         genElementChildren(this);
     }
