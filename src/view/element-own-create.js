@@ -24,7 +24,7 @@ var emptyPropWhenCreate = {
  * 创建节点对应的 HTMLElement 主元素
  */
 function elementOwnCreate() {
-    if (!this.lifeCycle.created) {
+    if (!this.el) {
         var isComponent = this.nodeType === NodeType.CMPT;
         var sourceNode = this.aNode.hotspot.sourceNode;
         var props = this.aNode.props;
@@ -59,6 +59,10 @@ function elementOwnCreate() {
             }
         }
 
+        this._toPhase('created');
+    }
+
+    if (!this.lifeCycle.created) {
         this._toPhase('created');
     }
 }
