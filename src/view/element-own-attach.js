@@ -8,8 +8,6 @@
  */
 
 
-var elementAttach = require('./element-attach');
-
 /**
  * 将元素attach到页面
  *
@@ -18,7 +16,21 @@ var elementAttach = require('./element-attach');
  */
 function elementOwnAttach(parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        elementAttach(this, parentEl, beforeEl);
+        this._create();
+        insertBefore(this.el, parentEl, beforeEl);
+
+        if (!this._contentReady) {
+            var htmlDirective = this.aNode.directives.html;
+
+            if (htmlDirective) {
+                this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
+            }
+            else {
+                genElementChildren(this);
+            }
+
+            this._contentReady = 1;
+        }
 
         // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
         if (this.owner && !this.parent) {

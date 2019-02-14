@@ -45,7 +45,6 @@ var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var warnEventListenMethod = require('./warn-event-listen-method');
 var elementDisposeChildren = require('./element-dispose-children');
-var elementAttach = require('./element-attach');
 var handleProp = require('./handle-prop');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
