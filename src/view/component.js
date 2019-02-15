@@ -809,23 +809,7 @@ Component.prototype._doneLeave = function () {
 
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        var ifDirective = this.aNode.directives['if'];
-
-        if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
-            this._create();
-            insertBefore(this.el, parentEl, beforeEl);
-
-            if (!this._contentReady) {
-                genElementChildren(this);
-                this._contentReady = 1;
-            }
-        }
-        else {
-            this.el = document.createComment(this.id);
-            insertBefore(this.el, parentEl, beforeEl);
-        }
-
-        this._attached();
+        this._attach(parentEl, beforeEl);
 
         // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
         if (this.owner && !this.parent) {
@@ -833,6 +817,26 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         }
     }
 };
+
+Component.prototype._attach = function (parentEl, beforeEl) {
+    var ifDirective = this.aNode.directives['if'];
+
+    if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
+        this._create();
+        insertBefore(this.el, parentEl, beforeEl);
+
+        if (!this._contentReady) {
+            genElementChildren(this);
+            this._contentReady = 1;
+        }
+    }
+    else {
+        this.el = document.createComment(this.id);
+        insertBefore(this.el, parentEl, beforeEl);
+    }
+
+    this._attached();
+}
 
 Component.prototype._repaint = function (elType) {
     var beforeEl = this.el;
@@ -851,20 +855,9 @@ Component.prototype._repaint = function (elType) {
     this._elFns = [];
 
     this.el = null;
-    if (elType === 1) {
-        this._create();
+    this._attach(beforeEl.parentNode, beforeEl);
 
-        genElementChildren(this);
-    }
-    else {
-        this.el = document.createComment(this.id);
-    }
-
-    insertBefore(this.el, beforeEl.parentNode, beforeEl);
     removeEl(beforeEl);
-
-    this._contentReady = 1;
-    this._attached();
 };
 
 Component.prototype.detach = elementOwnDetach;
