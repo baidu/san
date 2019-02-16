@@ -842,9 +842,9 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 Component.prototype._repaint = function () {
     elementDisposeChildren(this.children, 1, 1);
     this.children = [];
+    this.slotChildren = [];
 
     this._contentReady = 0;
-    this.slotChildren = [];
 
     elementUnEl(this);
     this._elFns = [];
