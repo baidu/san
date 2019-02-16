@@ -777,6 +777,9 @@ Component.prototype.watch = function (dataName, listener) {
     }, this));
 };
 
+/**
+ * 元素完成视图退场动作的行为
+ */
 Component.prototype._doneLeave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
@@ -807,7 +810,12 @@ Component.prototype._doneLeave = function () {
     }
 };
 
-
+/**
+ * 将组件attach到页面
+ *
+ * @param {HTMLElement} parentEl 要添加到的父元素
+ * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
+ */
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
         this._attach(parentEl, beforeEl);
@@ -837,8 +845,11 @@ Component.prototype._attach = function (parentEl, beforeEl) {
     }
 
     this._attached();
-}
+};
 
+/**
+ * 重新刷新组件视图
+ */
 Component.prototype._repaint = function () {
     elementDisposeChildren(this.children, 1, 1);
     this.children = [];

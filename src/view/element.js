@@ -137,6 +137,9 @@ Element.prototype._create = elementOwnCreate;
 Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
 
+/**
+ * 元素完成视图退场动作的行为
+ */
 Element.prototype._doneLeave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
