@@ -838,7 +838,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
     this._attached();
 }
 
-Component.prototype._repaint = function (elType) {
+Component.prototype._repaint = function () {
     var beforeEl = this.el;
     elementDisposeChildren(this.children, 1, 1);
     this.children = [];
