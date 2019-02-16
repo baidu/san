@@ -39,6 +39,7 @@ var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
 var elementUpdateChildren = require('./element-update-children');
 var elementOwnOnEl = require('./element-own-on-el');
+var elementUnEl = require('./element-un-el');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
@@ -839,20 +840,15 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 }
 
 Component.prototype._repaint = function () {
-    var beforeEl = this.el;
     elementDisposeChildren(this.children, 1, 1);
     this.children = [];
 
     this._contentReady = 0;
     this.slotChildren = [];
 
-    // el 事件解绑
-    var len = this._elFns.length;
-    while (len--) {
-        var fn = this._elFns[len];
-        un(this.el, fn[0], fn[1], fn[2]);
-    }
+    elementUnEl(this);
     this._elFns = [];
+    var beforeEl = this.el;
 
     this.el = null;
     this._attach(beforeEl.parentNode, beforeEl);

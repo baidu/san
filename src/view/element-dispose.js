@@ -11,6 +11,7 @@
 var un = require('../browser/un');
 var removeEl = require('../browser/remove-el');
 var elementDisposeChildren = require('./element-dispose-children');
+var elementUnEl = require('./element-un-el');
 var nodeDispose = require('./node-dispose');
 
 /**
@@ -23,14 +24,7 @@ function elementDispose(element) {
     elementDisposeChildren(element.children, 1, 1);
     elementDisposeChildren(element.implicitChildren, 0, 1);
 
-    // el 事件解绑
-    var len = element._elFns.length;
-    while (len--) {
-        var fn = element._elFns[len];
-        un(element.el, fn[0], fn[1], fn[2]);
-    }
-    element._elFns = null;
-
+    elementUnEl(element);
 
     // 如果没有parent，说明是一个root component，一定要从dom树中remove
     if (!element.disposeNoDetach || !element.parent) {
