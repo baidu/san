@@ -61,8 +61,7 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
     elementInitTagName(this);
 
     nodeSBindInit(this, aNode.directives.bind);
-
-    this._toPhase('inited');
+    this.lifeCycle = LifeCycle.inited;
 
     // #[begin] reverse
     if (reverseWalker) {
@@ -152,7 +151,7 @@ Element.prototype._doneLeave = function () {
     }
     else if (this.lifeCycle.attached) {
         removeEl(this.el);
-        this._toPhase('detached');
+        this.lifeCycle = LifeCycle.detached;
     }
 };
 
