@@ -122,10 +122,6 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             this._contentReady = 1;
         }
 
-        // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
-        if (this.owner && !this.parent) {
-            this.owner.implicitChildren.push(this);
-        }
         this._attached();
     }
 };
