@@ -116,7 +116,11 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
             }
             else {
-                genElementChildren(this);
+                for (var i = 0; i < this.aNode.children.length; i++) {
+                    var child = createNode(this.aNode.children[i], this);
+                    this.children.push(child);
+                    child.attach(this.el);
+                }
             }
 
             this._contentReady = 1;
