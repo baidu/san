@@ -165,16 +165,29 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
-        var me = this;
         this.listData = evalExpr(this.param.value, this.scope, this.owner);
-        eachForData(
-            this,
-            function (item, i) {
-                var itemScope = new ForItemData(me, item, i);
-                var child = createReverseNode(me.itemANode, reverseWalker, me, itemScope);
-                me.children.push(child);
+        if (this.listData instanceof Array) {
+            for (var i = 0; i < this.listData.length; i++) {
+                this.children.push(createReverseNode(
+                    this.itemANode,
+                    reverseWalker,
+                    this,
+                    new ForItemData(this, this.listData[i], i)
+                ));
             }
-        );
+        }
+        else if (this.listData && typeof this.listData === 'object') {
+            for (var i in this.listData) {
+                if (this.listData.hasOwnProperty(i) && this.listData[i] != null) {
+                    this.children.push(createReverseNode(
+                        this.itemANode,
+                        reverseWalker,
+                        this,
+                        new ForItemData(this, this.listData[i], i)
+                    ));
+                }
+            }
+        }
 
         this._create();
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
@@ -186,30 +199,6 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 ForNode.prototype.nodeType = NodeType.FOR;
 ForNode.prototype._create = nodeOwnCreateStump;
 ForNode.prototype.dispose = nodeOwnSimpleDispose;
-
-/**
- * 对 for 节点数据进行遍历
- *
- * @inner
- * @param {ForNode} forNode for节点对象
- * @param {Function} fn 数据遍历函数
- */
-function eachForData(forNode, fn) {
-    var listData = forNode.listData;
-
-    if (listData instanceof Array) {
-        for (var i = 0; i < listData.length; i++) {
-            fn(listData[i], i);
-        }
-    }
-    else if (listData && typeof listData === 'object') {
-        for (var i in listData) {
-            if (listData.hasOwnProperty(i)) {
-                (listData[i] != null) && fn(listData[i], i);
-            }
-        }
-    }
-}
 
 /**
  * 将元素attach到页面的行为
@@ -229,14 +218,25 @@ ForNode.prototype.attach = function (parentEl, beforeEl) {
  * 创建子元素
  */
 ForNode.prototype._createChildren = function () {
-    var me = this;
     var parentEl = this.el.parentNode;
+    var listData = this.listData;
 
-    eachForData(this, function (value, i) {
-        var child = createForDirectiveChild(me, value, i);
-        me.children.push(child);
-        child.attach(parentEl, me.el);
-    });
+    if (listData instanceof Array) {
+        for (var i = 0; i < listData.length; i++) {
+            var child = createForDirectiveChild(this, listData[i], i);
+            this.children.push(child);
+            child.attach(parentEl, this.el);
+        }
+    }
+    else if (listData && typeof listData === 'object') {
+        for (var i in listData) {
+            if (listData.hasOwnProperty(i) && listData[i] != null) {
+                var child = createForDirectiveChild(this, listData[i], i);
+                this.children.push(child);
+                child.attach(parentEl, this.el);
+            }
+        }
+    }
 };
 
 /* eslint-disable fecs-max-statements */
