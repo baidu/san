@@ -30,7 +30,7 @@ function elementOwnCreate() {
         var props = this.aNode.props;
 
         if (sourceNode) {
-            this.el = sourceNode.cloneNode();
+            this.el = sourceNode.cloneNode(false);
             props = this.aNode.hotspot.dynamicProps;
         }
         else {
