@@ -667,7 +667,9 @@ Component.prototype._update = function (changes) {
                     });
                 });
 
-                elementUpdateChildren(this.children, dataChanges);
+                for (var i = 0; i < this.children.length; i++) {
+                    this.children[i]._update(dataChanges);
+                }
 
 
                 if (needReloadForSlot) {
@@ -680,7 +682,9 @@ Component.prototype._update = function (changes) {
             this._repaint(expectNodeType);
         }
 
-        elementUpdateChildren(this.implicitChildren, dataChanges);
+        for (var i = 0; i < this.implicitChildren.length; i++) {
+            this.implicitChildren[i]._update(dataChanges);
+        }
 
         this._toPhase('updated');
 

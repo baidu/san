@@ -216,7 +216,9 @@ Element.prototype._update = function (changes) {
         }
     }
     else {
-        elementUpdateChildren(this.children, changes);
+        for (var i = 0; i < this.children.length; i++) {
+            this.children[i]._update(changes);
+        }
     }
 };
 
