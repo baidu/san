@@ -18,7 +18,6 @@ var NodeType = require('./node-type');
 var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
-var elementUpdateChildren = require('./element-update-children');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');

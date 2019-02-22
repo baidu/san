@@ -37,7 +37,6 @@ var nodeSBindUpdate = require('./node-s-bind-update');
 var elementInitTagName = require('./element-init-tag-name');
 var elementOwnAttached = require('./element-own-attached');
 var elementDispose = require('./element-dispose');
-var elementUpdateChildren = require('./element-update-children');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementUnEl = require('./element-un-el');
 var elementOwnCreate = require('./element-own-create');

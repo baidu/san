@@ -16,7 +16,6 @@ var rinseCondANode = require('./rinse-cond-anode');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnCreateStump = require('./node-own-create-stump');
-var elementUpdateChildren = require('./element-update-children');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 /**
