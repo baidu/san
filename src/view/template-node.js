@@ -92,7 +92,9 @@ TemplateNode.prototype._toPhase = elementOwnToPhase;
  * @param {Array} changes 数据变化信息
  */
 TemplateNode.prototype._update = function (changes) {
-    elementUpdateChildren(this.children, changes);
+    for (var i = 0; i < this.children.length; i++) {
+        this.children[i]._update(changes);
+    }
 };
 
 exports = module.exports = TemplateNode;

@@ -167,7 +167,9 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
 
     if (isFromOuter) {
         if (this.isInserted) {
-            elementUpdateChildren(this.children, changes);
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i]._update(changes);
+            }
         }
     }
     else {
@@ -240,10 +242,14 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                 });
             });
 
-            elementUpdateChildren(this.children, scopedChanges);
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i]._update(scopedChanges);
+            }
         }
         else if (!this.isInserted) {
-            elementUpdateChildren(this.children, changes);
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i]._update(changes);
+            }
         }
     }
 };

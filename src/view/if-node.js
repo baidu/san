@@ -145,11 +145,12 @@ IfNode.prototype._update = function (changes) {
         });
     }
 
+    var child = this.children[0];
     if (elseIndex === this.elseIndex) {
-        elementUpdateChildren(this.children, changes);
+
+        child && child._update(changes);
     }
     else {
-        var child = this.children[0];
         this.children = [];
         if (child) {
             child._ondisposed = newChild;
