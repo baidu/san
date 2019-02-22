@@ -9,7 +9,6 @@
 
 
 var insertBefore = require('../browser/insert-before');
-var genElementChildren = require('./gen-element-children');
 
 
 /**
@@ -23,7 +22,11 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     this.sel = document.createComment(this.id);
     insertBefore(this.sel, parentEl, beforeEl);
 
-    genElementChildren(this, parentEl, beforeEl);
+    for (var i = 0; i < this.aNode.children.length; i++) {
+        var child = createNode(this.aNode.children[i], this);
+        this.children.push(child);
+        child.attach(parentEl, beforeEl);
+    }
 
     this.el = document.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);

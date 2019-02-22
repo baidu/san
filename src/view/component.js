@@ -738,7 +738,12 @@ Component.prototype._repaintChildren = function () {
         this.children = [];
 
         this.slotChildren = [];
-        genElementChildren(this);
+
+        for (var i = 0; i < this.aNode.children.length; i++) {
+            var child = createNode(this.aNode.children[i], this);
+            this.children.push(child);
+            child.attach(this.el);
+        }
     }
 };
 
@@ -838,7 +843,11 @@ Component.prototype._attach = function (parentEl, beforeEl) {
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
-            genElementChildren(this);
+            for (var i = 0; i < this.aNode.children.length; i++) {
+                var child = createNode(this.aNode.children[i], this);
+                this.children.push(child);
+                child.attach(this.el);
+            }
             this._contentReady = 1;
         }
     }
