@@ -798,6 +798,13 @@ Component.prototype._doneLeave = function () {
             this.dataChanger = null;
             this.dataChanges = null;
 
+            var len = this.implicitChildren.length;
+            while (len--) {
+                this.implicitChildren[len].dispose(0, 1);
+            }
+
+            this.implicitChildren = null;
+
             elementDispose(
                 this,
                 this.disposeNoDetach,
@@ -809,7 +816,6 @@ Component.prototype._doneLeave = function () {
             this.sourceSlots = null;
             this.sourceSlotNameProps = null;
 
-            this.implicitChildren = null;
         }
     }
     else if (this.lifeCycle.attached) {

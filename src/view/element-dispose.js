@@ -10,7 +10,6 @@
 
 var un = require('../browser/un');
 var removeEl = require('../browser/remove-el');
-var elementDisposeChildren = require('./element-dispose-children');
 var elementUnEl = require('./element-un-el');
 var nodeDispose = require('./node-dispose');
 
@@ -21,8 +20,10 @@ var nodeDispose = require('./node-dispose');
  * @param {Object=} options 销毁行为的参数
  */
 function elementDispose(element) {
-    elementDisposeChildren(element.children, 1, 1);
-    elementDisposeChildren(element.implicitChildren, 0, 1);
+    var len = element.children.length;
+    while (len--) {
+        element.children[len].dispose(1, 1);
+    }
 
     elementUnEl(element);
 
