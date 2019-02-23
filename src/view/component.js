@@ -815,7 +815,6 @@ Component.prototype._doneLeave = function () {
             this.source = null;
             this.sourceSlots = null;
             this.sourceSlotNameProps = null;
-
         }
     }
     else if (this.lifeCycle.attached) {
