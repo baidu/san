@@ -44,9 +44,13 @@ function ForItemData(forElement, item, index) {
     this.raw = {};
     this.listeners = [];
 
-    this.directive = forElement.aNode.directives['for']; // eslint-disable-line dot-notation
-    this.raw[this.directive.item.raw] = item;
-    this.raw[this.directive.index.raw] = index;
+    var directive = forElement.aNode.directives['for']; // eslint-disable-line dot-notation
+    this.valueExpr = directive.value;
+    this.itemName = directive.item.raw;
+    this.indexName = directive.index ? directive.index.raw : '$index';
+
+    this.raw[this.itemName] = item;
+    this.raw[this.indexName] = index;
 }
 
 /**
@@ -57,18 +61,15 @@ function ForItemData(forElement, item, index) {
  * @return {Object}
  */
 ForItemData.prototype.exprResolve = function (expr) {
-    var directive = this.directive;
     var me = this;
 
     function resolveItem(expr) {
-        if (expr.type === ExprType.ACCESSOR
-            && expr.paths[0].value === directive.item.paths[0].value
-        ) {
+        if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === me.itemName) {
             return createAccessor(
-                directive.value.paths.concat(
+                me.valueExpr.paths.concat(
                     {
                         type: ExprType.NUMBER,
-                        value: me.get(directive.index)
+                        value: me.raw[me.indexName]
                     },
                     expr.paths.slice(1)
                 )
@@ -84,10 +85,10 @@ ForItemData.prototype.exprResolve = function (expr) {
 
     each(expr.paths, function (item) {
         resolvedPaths.push(
-            item.type === ExprType.ACCESSOR && item.paths[0].value === directive.index.paths[0].value
+            item.type === ExprType.ACCESSOR && item.paths[0].value === me.indexName
                 ? {
                     type: ExprType.NUMBER,
-                    value: me.get(directive.index)
+                    value: me.raw[me.indexName]
                 }
                 : resolveItem(item)
         );
@@ -558,19 +559,21 @@ ForNode.prototype._updateArray = function (changes, newList) {
             var newCount = insertionsLen - deleteCount;
 
             if (newCount) {
-                var indexChange = {
-                    type: DataChangeType.SET,
-                    option: change.option,
-                    expr: this.param.index
-                };
+                var indexChange = this.param.index
+                    ? {
+                        type: DataChangeType.SET,
+                        option: change.option,
+                        expr: this.param.index
+                    }
+                    : null;
 
                 for (var i = changeStart + deleteCount; i < this.children.length; i++) {
-                    (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
-                    this.children[i] && this.children[i].scope._set(
-                        indexChange.expr,
-                        i - deleteCount + insertionsLen,
-                        {silent: 1}
-                    );
+                    indexChange && (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
+
+                    var child = this.children[i];
+                    if (child) {
+                        child.scope.raw[child.scope.indexName] = i - deleteCount + insertionsLen;
+                    }
                 }
             }
 
