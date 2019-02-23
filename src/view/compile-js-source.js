@@ -546,12 +546,9 @@ var aNodeCompiler = {
 
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
         var itemName = forDirective.item.raw;
-        var indexName = forDirective.index.raw;
+        var indexName = forDirective.index ? forDirective.index.raw : genSSRId();
         var listName = genSSRId();
 
-        if (indexName === '$index') {
-            indexName = genSSRId();
-        }
 
         sourceBuffer.addRaw('var ' + listName + ' = ' + compileExprSource.expr(forDirective.value) + ';');
         sourceBuffer.addRaw('if (' + listName + ' instanceof Array) {');
