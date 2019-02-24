@@ -545,8 +545,8 @@ var aNodeCompiler = {
         });
 
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
-        var itemName = forDirective.item.raw;
-        var indexName = forDirective.index ? forDirective.index.raw : genSSRId();
+        var itemName = forDirective.item;
+        var indexName = forDirective.index || genSSRId();
         var listName = genSSRId();
 
 
