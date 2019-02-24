@@ -28,12 +28,12 @@ var directiveParsers = {
 
         if (match) {
             var directive = {
-                item: parseExpr(match[1]),
+                item: match[1],
                 value: readUnaryExpr(walker)
             };
 
             if (match[3]) {
-                directive.index = parseExpr(match[3]);
+                directive.index = match[3];
             }
 
             if (walker.match(/\s*trackby\s+/ig, 1)) {

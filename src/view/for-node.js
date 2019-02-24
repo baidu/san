@@ -44,12 +44,10 @@ function ForItemData(forElement, item, index) {
     this.raw = {};
     this.listeners = [];
 
-    var directive = forElement.aNode.directives['for']; // eslint-disable-line dot-notation
-    this.valueExpr = directive.value;
-    this.itemName = directive.item.raw;
-    this.indexName = directive.index ? directive.index.raw : '$index';
+    this.directive = forElement.aNode.directives['for']; // eslint-disable-line dot-notation
+    this.indexName = this.directive.index || '$index';
 
-    this.raw[this.itemName] = item;
+    this.raw[this.directive.item] = item;
     this.raw[this.indexName] = index;
 }
 
@@ -62,11 +60,12 @@ function ForItemData(forElement, item, index) {
  */
 ForItemData.prototype.exprResolve = function (expr) {
     var me = this;
+    var directive = this.directive;
 
     function resolveItem(expr) {
-        if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === me.itemName) {
+        if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === directive.item) {
             return createAccessor(
-                me.valueExpr.paths.concat(
+                directive.value.paths.concat(
                     {
                         type: ExprType.NUMBER,
                         value: me.raw[me.indexName]
@@ -370,6 +369,16 @@ ForNode.prototype._updateArray = function (changes, newList) {
     var newLen = newList.length;
 
     /* eslint-disable no-redeclare */
+    var itemPaths = [
+        {
+            type: ExprType.STRING,
+            value: this.param.item
+        }
+    ];
+    var indexExpr = createAccessor([{
+        type: ExprType.STRING,
+        value: '' + this.param.index
+    }]);
     for (var cIndex = 0; cIndex < changes.length; cIndex++) {
         var change = changes[cIndex];
         var relation = changeExprCompare(change.expr, this.param.value, this.scope);
@@ -395,7 +404,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 change = {
                     type: change.type,
                     expr: createAccessor(
-                        this.param.item.paths.concat(changePaths.slice(forLen + 1))
+                        itemPaths.concat(changePaths.slice(forLen + 1))
                     ),
                     value: change.value,
                     index: change.index,
@@ -436,7 +445,6 @@ ForNode.prototype._updateArray = function (changes, newList) {
         else if (change.type !== DataChangeType.SPLICE) {
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
-
             var getItemKey = this.aNode.hotspot.getForKey;
             if (getItemKey && newLen && oldChildrenLen) {
                 // 如果设置了trackBy，用lcs更新。开始 ====
@@ -482,7 +490,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                             (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
                                 type: DataChangeType.SET,
                                 option: change.option,
-                                expr: createAccessor(this.param.item.paths.slice(0)),
+                                expr: createAccessor(itemPaths),
                                 value: newList[newIndex]
                             });
                         }
@@ -526,7 +534,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(this.param.item.paths.slice(0)),
+                        expr: createAccessor(itemPaths),
                         value: newList[i]
                     });
 
@@ -536,11 +544,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     }
 
                     if (this.children[i]) {
-                        this.children[i].scope._set(
-                            this.param.item,
-                            newList[i],
-                            {silent: 1}
-                        );
+                        this.children[i].scope.raw[this.param.item] = newList[i];
                     }
                     else {
                         this.children[i] = 0;
@@ -563,7 +567,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     ? {
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: this.param.index
+                        expr: indexExpr
                     }
                     : null;
 
@@ -585,15 +589,11 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(this.param.item.paths.slice(0)),
+                        expr: createAccessor(itemPaths),
                         value: change.insertions[deleteLen]
                     });
                     if (this.children[i]) {
-                        this.children[i].scope._set(
-                            this.param.item,
-                            change.insertions[deleteLen],
-                            {silent: 1}
-                        );
+                        this.children[i].scope.raw[this.param.item] = change.insertions[deleteLen];
                     }
                 }
             }

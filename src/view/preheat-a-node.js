@@ -84,10 +84,10 @@ function preheatANode(aNode) {
                             var trackBy = directive.trackBy;
                             if (trackBy
                                 && trackBy.type === ExprType.ACCESSOR
-                                && trackBy.paths[0].value === directive.item.raw
+                                && trackBy.paths[0].value === directive.item
                             ) {
                                 aNode.hotspot.getForKey = new Function(
-                                    directive.item.raw,
+                                    directive.item,
                                     'return ' + trackBy.raw
                                 );
                             }
