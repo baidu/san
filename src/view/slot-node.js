@@ -120,7 +120,7 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
         this.el = document.createComment(this.id);
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
 
-        this._toPhase('attached');
+        this.lifeCycle = LifeCycle.attached;
     }
     // #[end]
 }
@@ -143,11 +143,21 @@ SlotNode.prototype.dispose = function (noDetach, noTransition) {
         removeEl(this.el);
         removeEl(this.sel);
     }
-    nodeDispose(this);
+
+    this.sel = null;
+    this.el = null;
+    this.owner = null;
+    this.scope = null;
+    this.children = null;
+
+    this.lifeCycle = LifeCycle.disposed;
+
+    if (this._ondisposed) {
+        this._ondisposed();
+    }
 };
 
 SlotNode.prototype.attach = nodeOwnOnlyChildrenAttach;
-SlotNode.prototype._toPhase = elementOwnToPhase;
 
 /**
  * 视图更新函数

@@ -23,7 +23,15 @@ function nodeOwnSimpleDispose(noDetach) {
         removeEl(this.el);
     }
 
-    nodeDispose(this);
+    this.el = null;
+    this.owner = null;
+    this.scope = null;
+    this.children = null;
+
+    this.lifeCycle = LifeCycle.disposed;
+    if (this._ondisposed) {
+        this._ondisposed();
+    }
 }
 
 exports = module.exports = nodeOwnSimpleDispose;

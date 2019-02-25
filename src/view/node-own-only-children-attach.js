@@ -31,7 +31,7 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     this.el = document.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
 
-    this._toPhase('attached');
+    this.lifeCycle = LifeCycle.attached;
 }
 
 exports = module.exports = nodeOwnOnlyChildrenAttach;

@@ -18,9 +18,6 @@ function nodeDispose(node) {
     node.sel = null;
     node.owner = null;
     node.scope = null;
-    node.aNode = null;
-    node.parent = null;
-    node.parentComponent = null;
     node.children = null;
 
     if (node._toPhase) {

@@ -36,7 +36,19 @@ function elementDispose(element) {
         element._toPhase('detached');
     }
 
-    nodeDispose(element);
+    element.el = null;
+    element.sel = null;
+    element.owner = null;
+    element.scope = null;
+    element.children = null;
+
+    if (element._toPhase) {
+        element._toPhase('disposed');
+    }
+
+    if (element._ondisposed) {
+        element._ondisposed();
+    }
 }
 
 
