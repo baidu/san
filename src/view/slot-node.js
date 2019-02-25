@@ -27,7 +27,6 @@ var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
-var elementOwnToPhase = require('./element-own-to-phase');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 

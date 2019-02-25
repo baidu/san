@@ -16,7 +16,6 @@ var LifeCycle = require('./life-cycle');
 var nodeDispose = require('./node-dispose');
 var createReverseNode = require('./create-reverse-node');
 var elementDisposeChildren = require('./element-dispose-children');
-var elementOwnToPhase = require('./element-own-to-phase');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 /**
