@@ -22,7 +22,6 @@ var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
-var nodeDispose = require('./node-dispose');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var createReverseNode = require('./create-reverse-node');

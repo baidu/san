@@ -8,7 +8,6 @@
  */
 
 var removeEl = require('../browser/remove-el');
-var nodeDispose = require('./node-dispose');
 var elementDisposeChildren = require('./element-dispose-children');
 
 /**

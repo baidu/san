@@ -11,7 +11,6 @@
 var un = require('../browser/un');
 var removeEl = require('../browser/remove-el');
 var elementUnEl = require('./element-un-el');
-var nodeDispose = require('./node-dispose');
 
 /**
  * 销毁元素节点
