@@ -398,8 +398,10 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 pushToChildrenChanges(change);
             }
             else {
-                (childrenChanges[changeIndex] = childrenChanges[changeIndex] || [])
-                    .push(change);
+                childrenChanges[changeIndex] = childrenChanges[changeIndex] || [];
+                if (this.param.index) {
+                    childrenChanges[changeIndex].push(change);
+                }
 
                 change = {
                     type: change.type,
