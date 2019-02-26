@@ -456,6 +456,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
         }
         else if (change.type !== DataChangeType.SPLICE) {
             childrenNeedUpdate = null;
+            isOnlyDispose = false;
 
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
@@ -588,7 +589,10 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     : null;
 
                 for (var i = changeStart + deleteCount; i < this.children.length; i++) {
-                    indexChange && (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
+                    if (indexChange) {
+                        isOnlyDispose = false;
+                        (childrenChanges[i] = childrenChanges[i] || []).push(indexChange);
+                    }
 
                     var child = this.children[i];
                     if (child) {
@@ -665,6 +669,10 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
     function doCreateAndUpdate() {
         me._doCreateAndUpdate = null;
+
+        if (isOnlyDispose) {
+            return;
+        }
 
         var beforeEl = me.el;
         var parentEl = beforeEl.parentNode;
