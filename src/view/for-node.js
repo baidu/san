@@ -163,6 +163,21 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
 
     this.param = aNode.directives['for']; // eslint-disable-line dot-notation
 
+    this.itemPaths = [
+        {
+            type: ExprType.STRING,
+            value: this.param.item
+        }
+    ];
+
+    if (this.param.index) {
+        this.indexExpr = createAccessor([{
+            type: ExprType.STRING,
+            value: '' + this.param.index
+        }]);
+    }
+
+
     // #[begin] reverse
     if (reverseWalker) {
         this.listData = evalExpr(this.param.value, this.scope, this.owner);
@@ -376,16 +391,6 @@ ForNode.prototype._updateArray = function (changes, newList) {
     var newLen = newList.length;
 
     /* eslint-disable no-redeclare */
-    var itemPaths = [
-        {
-            type: ExprType.STRING,
-            value: this.param.item
-        }
-    ];
-    var indexExpr = createAccessor([{
-        type: ExprType.STRING,
-        value: '' + this.param.index
-    }]);
     for (var cIndex = 0; cIndex < changes.length; cIndex++) {
         var change = changes[cIndex];
         var relation = changeExprCompare(change.expr, this.param.value, this.scope);
@@ -413,17 +418,27 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     childrenChanges[changeIndex].push(change);
                 }
 
-                change = {
-                    type: change.type,
-                    expr: createAccessor(
-                        itemPaths.concat(changePaths.slice(forLen + 1))
-                    ),
-                    value: change.value,
-                    index: change.index,
-                    deleteCount: change.deleteCount,
-                    insertions: change.insertions,
-                    option: change.option
-                };
+                change = change.type === DataChangeType.SET
+                    ? {
+                        type: change.type,
+                        expr: createAccessor(
+                            this.itemPaths.concat(changePaths.slice(forLen + 1))
+                        ),
+                        value: change.value,
+                        option: change.option
+                    }
+                    : {
+                        index: change.index,
+                        deleteCount: change.deleteCount,
+                        insertions: change.insertions,
+                        type: change.type,
+                        expr: createAccessor(
+                            this.itemPaths.concat(changePaths.slice(forLen + 1))
+                        ),
+                        value: change.value,
+                        option: change.option
+                    };
+
 
                 childrenChanges[changeIndex].push(change);
 
@@ -505,7 +520,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                             (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
                                 type: DataChangeType.SET,
                                 option: change.option,
-                                expr: createAccessor(itemPaths),
+                                expr: createAccessor(this.itemPaths),
                                 value: newList[newIndex]
                             });
                         }
@@ -549,7 +564,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(itemPaths),
+                        expr: createAccessor(this.itemPaths),
                         value: newList[i]
                     });
 
@@ -584,7 +599,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     ? {
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: indexExpr
+                        expr: this.indexExpr
                     }
                     : null;
 
@@ -610,7 +625,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(itemPaths),
+                        expr: createAccessor(this.itemPaths),
                         value: change.insertions[deleteLen]
                     });
                     if (this.children[i]) {
