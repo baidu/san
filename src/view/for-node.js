@@ -295,12 +295,12 @@ ForNode.prototype._disposeChildren = function (children, callback) {
         && !children
         // 是否 parent 的唯一 child
         && (len
-                && parentFirstChild === this.children[0].el
-                && (parentLastChild === this.el
-                    || parentLastChild === this.children[len - 1].el)
+            && parentFirstChild === this.children[0].el
+            && (parentLastChild === this.el
+                || parentLastChild === this.children[len - 1].el)
             || len === 0
-                && parentFirstChild === this.el
-                && parentLastChild === this.el
+            && parentFirstChild === this.el
+            && parentLastChild === this.el
         );
 
     if (!children) {
@@ -359,12 +359,19 @@ ForNode.prototype._updateArray = function (changes, newList) {
         for (var i = 0, l = childrenChanges.length; i < l; i++) {
             (childrenChanges[i] = childrenChanges[i] || []).push(change);
         }
+        childrenNeedUpdate = null;
+        isOnlyDispose = false;
     }
 
     var disposeChildren = [];
 
     // 控制列表是否整体更新的变量
     var isChildrenRebuild;
+
+    //
+    var isOnlyDispose = true;
+
+    var childrenNeedUpdate = {};
 
     var newLen = newList.length;
 
@@ -398,6 +405,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 pushToChildrenChanges(change);
             }
             else {
+                isOnlyDispose = false;
+                childrenNeedUpdate && (childrenNeedUpdate[changeIndex] = 1);
+
                 childrenChanges[changeIndex] = childrenChanges[changeIndex] || [];
                 if (this.param.index) {
                     childrenChanges[changeIndex].push(change);
@@ -445,6 +455,8 @@ ForNode.prototype._updateArray = function (changes, newList) {
             }
         }
         else if (change.type !== DataChangeType.SPLICE) {
+            childrenNeedUpdate = null;
+
             // 变更表达式是list绑定表达式本身或母项的重新设值
             // 此时需要更新整个列表
             var getItemKey = this.aNode.hotspot.getForKey;
@@ -557,6 +569,8 @@ ForNode.prototype._updateArray = function (changes, newList) {
             isChildrenRebuild = 1;
         }
         else if (relation === 2 && change.type === DataChangeType.SPLICE && !isChildrenRebuild) {
+            childrenNeedUpdate = null;
+
             // 变更表达式是list绑定表达式本身数组的splice操作
             // 此时需要删除部分项，创建部分项
             var changeStart = change.index;
@@ -586,6 +600,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
             var deleteLen = deleteCount;
             while (deleteLen--) {
                 if (deleteLen < insertionsLen) {
+                    isOnlyDispose = false;
                     var i = changeStart + deleteLen;
                     // update
                     (childrenChanges[i] = childrenChanges[i] || []).push({
@@ -605,6 +620,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 childrenChanges.splice(changeStart + insertionsLen, -newCount);
             }
             else if (newCount > 0) {
+                isOnlyDispose = false;
                 var spliceArgs = [changeStart + deleteCount, 0].concat(new Array(newCount));
                 this.children.splice.apply(this.children, spliceArgs);
                 childrenChanges.splice.apply(childrenChanges, spliceArgs);
@@ -660,7 +676,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
             var child = me.children[i];
 
             if (child) {
-                childrenChanges[i] && child._update(childrenChanges[i]);
+                if (childrenChanges[i] && (!childrenNeedUpdate || childrenNeedUpdate[i])) {
+                    child._update(childrenChanges[i]);
+                }
             }
             else {
                 if (j < i) {
