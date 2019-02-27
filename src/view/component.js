@@ -655,16 +655,20 @@ Component.prototype._update = function (changes) {
 
         if (this.el.nodeType === expectNodeType) {
             if (expectNodeType === 1) {
-                each(this.aNode.hotspot.dynamicProps, function (prop) {
-                    each(dataChanges, function (change) {
+                var dynamicProps = this.aNode.hotspot.dynamicProps;
+                for (var i = 0; i < dynamicProps.length; i++) {
+                    var prop = dynamicProps[i];
+
+                    for (var j = 0; j < dataChanges.length; j++) {
+                        var change = dataChanges[j];
                         if (changeExprCompare(change.expr, prop.expr, me.data)
                             || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
                         ) {
                             handleProp(me, evalExpr(prop.expr, me.data, me), prop);
-                            return false;
+                            break;
                         }
-                    });
-                });
+                    }
+                }
 
                 for (var i = 0; i < this.children.length; i++) {
                     this.children[i]._update(dataChanges);
