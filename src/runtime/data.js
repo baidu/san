@@ -208,7 +208,10 @@ Data.prototype.set = function (expr, value, option) {
     expr = createAccessor(expr.paths.slice(0));
 
     dataCache.clear();
-    this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, value, this);
+
+    var prop = expr.paths[0].value;
+    this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, value, this);
+
     this.fire({
         type: DataChangeType.SET,
         expr: expr,
