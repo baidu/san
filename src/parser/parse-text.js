@@ -44,7 +44,7 @@ function parseText(source, delimiters) {
             regexpLiteral(delimiters[0])
                 + '\\s*([\\s\\S]+?)\\s*'
                 + regexpLiteral(delimiters[1]),
-            'ig'
+            'g'
         );
         delimRegCache[regCacheKey] = exprStartReg;
     }
