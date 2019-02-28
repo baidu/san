@@ -27,9 +27,7 @@ function rinseCondANode(aNode) {
         vars: aNode.vars,
         hotspot: aNode.hotspot,
         directives: cloneDirectives(aNode.directives, {
-            'if': 1,
-            'else': 1,
-            'elif': 1
+            'if': 1
         })
     });
 
