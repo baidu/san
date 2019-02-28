@@ -157,6 +157,20 @@ function preheatANode(aNode) {
                     };
                     aNode = aNode.ifRinsed;
                 }
+
+                if (aNode.directives['for']) {
+                    aNode.forRinsed = {
+                        children: aNode.children,
+                        props: aNode.props,
+                        events: aNode.events,
+                        tagName: aNode.tagName,
+                        vars: aNode.vars,
+                        hotspot: aNode.hotspot,
+                        directives: cloneDirectives(aNode.directives, {
+                            'for': 1
+                        })
+                    };
+                }
                 // === analyse hotspot props: end
             }
 

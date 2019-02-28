@@ -124,7 +124,7 @@ each(
  */
 function createForDirectiveChild(forElement, item, index) {
     var itemScope = new ForItemData(forElement, item, index);
-    return createNode(forElement.itemANode, forElement, itemScope);
+    return createNode(forElement.aNode.forRinsed, forElement, itemScope);
 }
 
 /**
@@ -149,18 +149,6 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
     this.id = guid();
     this.children = [];
 
-    this.itemANode = createANode({
-        children: aNode.children,
-        props: aNode.props,
-        events: aNode.events,
-        tagName: aNode.tagName,
-        vars: aNode.vars,
-        hotspot: aNode.hotspot,
-        directives: cloneDirectives(aNode.directives, {
-            'for': 1
-        })
-    });
-
     this.param = aNode.directives['for']; // eslint-disable-line dot-notation
 
     this.itemPaths = [
@@ -184,7 +172,7 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
         if (this.listData instanceof Array) {
             for (var i = 0; i < this.listData.length; i++) {
                 this.children.push(createReverseNode(
-                    this.itemANode,
+                    this.aNode.forRinsed,
                     reverseWalker,
                     this,
                     new ForItemData(this, this.listData[i], i)
@@ -195,7 +183,7 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
             for (var i in this.listData) {
                 if (this.listData.hasOwnProperty(i) && this.listData[i] != null) {
                     this.children.push(createReverseNode(
-                        this.itemANode,
+                        this.aNode.forRinsed,
                         reverseWalker,
                         this,
                         new ForItemData(this, this.listData[i], i)
