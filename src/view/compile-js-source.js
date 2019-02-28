@@ -19,7 +19,6 @@ var autoCloseTags = require('../browser/auto-close-tags');
 var camelComponentBinds = require('./camel-component-binds');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
-var rinseCondANode = require('./rinse-cond-anode');
 var getANodeProp = require('./get-a-node-prop');
 var ComponentLoader = require('./component-loader');
 

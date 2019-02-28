@@ -12,7 +12,6 @@ var guid = require('../util/guid');
 var insertBefore = require('../browser/insert-before');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
-var rinseCondANode = require('./rinse-cond-anode');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnCreateStump = require('./node-own-create-stump');
