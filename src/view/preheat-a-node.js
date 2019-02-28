@@ -142,6 +142,20 @@ function preheatANode(aNode) {
                     aNode.hotspot.dynamicProps.push(valueProp);
                     aNode.hotspot.props.value = aNode.props.length - 1;
                 }
+
+                if (aNode.directives['if']) {
+                    aNode.rinsed = {
+                        children: aNode.children,
+                        props: aNode.props,
+                        events: aNode.events,
+                        tagName: aNode.tagName,
+                        vars: aNode.vars,
+                        hotspot: aNode.hotspot,
+                        directives: cloneDirectives(aNode.directives, {
+                            'if': 1
+                        })
+                    };
+                }
                 // === analyse hotspot props: end
             }
 

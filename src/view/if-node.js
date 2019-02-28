@@ -47,7 +47,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
         if (evalExpr(this.cond, this.scope, this.owner)) {
             this.elseIndex = -1;
             this.children[0] = createReverseNode(
-                rinseCondANode(aNode),
+                this.aNode.rinsed,
                 reverseWalker,
                 this
             );
@@ -60,7 +60,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
                 if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
                     me.elseIndex = index;
                     me.children[0] = createReverseNode(
-                        rinseCondANode(elseANode),
+                        elseANode,
                         reverseWalker,
                         me
                     );
@@ -92,7 +92,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     var child;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
-        child = createNode(rinseCondANode(this.aNode), this);
+        child = createNode(this.aNode.rinsed, this);
         elseIndex = -1;
     }
     else {
@@ -100,7 +100,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
             var elif = elseANode.directives.elif;
 
             if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
-                child = createNode(rinseCondANode(elseANode), me);
+                child = createNode(elseANode, me);
                 elseIndex = index;
                 return false;
             }
@@ -126,7 +126,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
  */
 IfNode.prototype._update = function (changes) {
     var me = this;
-    var childANode = this.aNode;
+    var childANode = this.aNode.rinsed;
     var elseIndex;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
@@ -164,7 +164,7 @@ IfNode.prototype._update = function (changes) {
 
     function newChild() {
         if (typeof elseIndex !== 'undefined') {
-            (me.children[0] = createNode(rinseCondANode(childANode), me))
+            (me.children[0] = createNode(childANode, me))
                 .attach(me.el.parentNode, me.el);
         }
     }
