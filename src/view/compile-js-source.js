@@ -496,7 +496,7 @@ var aNodeCompiler = {
         sourceBuffer.addRaw('if (' + compileExprSource.expr(ifDirective.value) + ') {');
         sourceBuffer.addRaw(
             aNodeCompiler.compile(
-                aNode.rinsed,
+                aNode.ifRinsed,
                 sourceBuffer,
                 owner
             )

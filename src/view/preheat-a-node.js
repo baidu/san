@@ -144,7 +144,7 @@ function preheatANode(aNode) {
                 }
 
                 if (aNode.directives['if']) {
-                    aNode.rinsed = {
+                    aNode.ifRinsed = {
                         children: aNode.children,
                         props: aNode.props,
                         events: aNode.events,
@@ -155,6 +155,7 @@ function preheatANode(aNode) {
                             'if': 1
                         })
                     };
+                    aNode = aNode.ifRinsed;
                 }
                 // === analyse hotspot props: end
             }

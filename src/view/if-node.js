@@ -46,7 +46,7 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
         if (evalExpr(this.cond, this.scope, this.owner)) {
             this.elseIndex = -1;
             this.children[0] = createReverseNode(
-                this.aNode.rinsed,
+                this.aNode.ifRinsed,
                 reverseWalker,
                 this
             );
@@ -91,7 +91,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     var child;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
-        child = createNode(this.aNode.rinsed, this);
+        child = createNode(this.aNode.ifRinsed, this);
         elseIndex = -1;
     }
     else {
@@ -125,7 +125,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
  */
 IfNode.prototype._update = function (changes) {
     var me = this;
-    var childANode = this.aNode.rinsed;
+    var childANode = this.aNode.ifRinsed;
     var elseIndex;
 
     if (evalExpr(this.cond, this.scope, this.owner)) {
