@@ -114,20 +114,6 @@ each(
 );
 
 /**
- * 创建 for 指令元素的子元素
- *
- * @inner
- * @param {ForDirective} forElement for 指令元素对象
- * @param {*} item 子元素对应数据
- * @param {number} index 子元素对应序号
- * @return {Element}
- */
-function createForDirectiveChild(forElement, item, index) {
-    var itemScope = new ForItemData(forElement, item, index);
-    return createNode(forElement.aNode.forRinsed, forElement, itemScope);
-}
-
-/**
  * for 指令节点类
  *
  * @class
@@ -226,7 +212,7 @@ ForNode.prototype._createChildren = function () {
 
     if (listData instanceof Array) {
         for (var i = 0; i < listData.length; i++) {
-            var child = createForDirectiveChild(this, listData[i], i);
+            var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i));
             this.children.push(child);
             child.attach(parentEl, this.el);
         }
@@ -234,7 +220,7 @@ ForNode.prototype._createChildren = function () {
     else if (listData && typeof listData === 'object') {
         for (var i in listData) {
             if (listData.hasOwnProperty(i) && listData[i] != null) {
-                var child = createForDirectiveChild(this, listData[i], i);
+                var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i));
                 this.children.push(child);
                 child.attach(parentEl, this.el);
             }
@@ -705,7 +691,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     }
                 }
 
-                me.children[i] = createForDirectiveChild(me, newList[i], i);
+                me.children[i] = createNode(me.aNode.forRinsed, me, new ForItemData(me, newList[i], i));
                 me.children[i].attach(parentEl, beforeEl || me.el);
             }
         }
