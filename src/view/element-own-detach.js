@@ -7,13 +7,33 @@
  * @file 将元素从页面上移除
  */
 
-var elementLeave = require('./element-leave');
 
 /**
  * 将元素从页面上移除
  */
 function elementOwnDetach() {
-    elementLeave(this);
+    var lifeCycle = this.lifeCycle;
+    if (lifeCycle.leaving) {
+        return;
+    }
+
+    if (this.disposeNoTransition) {
+        this._doneLeave();
+    }
+    else {
+        var transition = elementGetTransition(this);
+
+        if (transition && transition.leave) {
+            this._toPhase('leaving');
+            var me = this;
+            transition.leave(this.el, function () {
+                me._doneLeave();
+            });
+        }
+        else {
+            this._doneLeave();
+        }
+    }
 }
 
 
