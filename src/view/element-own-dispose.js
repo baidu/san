@@ -20,7 +20,7 @@ function elementOwnDispose(noDetach, noTransition) {
     this.disposeNoDetach = noDetach;
     this.disposeNoTransition = noTransition;
 
-    elementLeave(this);
+    this.detach();
 }
 
 exports = module.exports = elementOwnDispose;
