@@ -18,7 +18,7 @@ function elementOwnDetach() {
     }
 
     if (this.disposeNoTransition) {
-        this._doneLeave();
+        this._leave();
     }
     else {
         var transition = elementGetTransition(this);
@@ -27,11 +27,11 @@ function elementOwnDetach() {
             this._toPhase('leaving');
             var me = this;
             transition.leave(this.el, function () {
-                me._doneLeave();
+                me._leave();
             });
         }
         else {
-            this._doneLeave();
+            this._leave();
         }
     }
 }

@@ -792,7 +792,7 @@ Component.prototype.watch = function (dataName, listener) {
 /**
  * 元素完成视图退场动作的行为
  */
-Component.prototype._doneLeave = function () {
+Component.prototype._leave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
