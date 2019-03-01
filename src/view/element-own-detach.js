@@ -17,10 +17,7 @@ function elementOwnDetach() {
         return;
     }
 
-    if (this.disposeNoTransition) {
-        this._leave();
-    }
-    else {
+    if (!this.disposeNoTransition) {
         var transition = elementGetTransition(this);
 
         if (transition && transition.leave) {
@@ -29,11 +26,12 @@ function elementOwnDetach() {
             transition.leave(this.el, function () {
                 me._leave();
             });
-        }
-        else {
-            this._leave();
+
+            return;
         }
     }
+
+    this._leave();
 }
 
 
