@@ -7,8 +7,6 @@
  * @file 销毁释放元素
  */
 
-var elementLeave = require('./element-leave');
-
 /**
  * 销毁释放元素
  *
