@@ -24,7 +24,7 @@ var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnAttached = require('./element-own-attached');
-var elementDispose = require('./element-dispose');
+var elementOwnLeave = require('./element-own-leave');
 var elementInitTagName = require('./element-init-tag-name');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
@@ -134,25 +134,7 @@ Element.prototype.dispose = elementOwnDispose;
 Element.prototype._create = elementOwnCreate;
 Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
-
-/**
- * 元素完成视图退场动作的行为
- */
-Element.prototype._leave = function () {
-    if (this.leaveDispose) {
-        if (!this.lifeCycle.disposed) {
-            elementDispose(
-                this,
-                this.disposeNoDetach,
-                this.disposeNoTransition
-            );
-        }
-    }
-    else if (this.lifeCycle.attached) {
-        removeEl(this.el);
-        this.lifeCycle = LifeCycle.detached;
-    }
-};
+Element.prototype._leave = elementOwnLeave;
 
 /**
  * 视图更新

@@ -36,7 +36,7 @@ var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementInitTagName = require('./element-init-tag-name');
 var elementOwnAttached = require('./element-own-attached');
-var elementDispose = require('./element-dispose');
+var elementOwnLeave = require('./element-own-leave');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementUnEl = require('./element-un-el');
 var elementOwnCreate = require('./element-own-create');
@@ -789,42 +789,28 @@ Component.prototype.watch = function (dataName, listener) {
     }, this));
 };
 
+
 /**
  * 元素完成视图退场动作的行为
  */
-Component.prototype._leave = function () {
-    if (this.leaveDispose) {
-        if (!this.lifeCycle.disposed) {
-            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
-            this.slotChildren = null;
+Component.prototype._dispose = function () {
+    this.data.unlisten();
+    this.dataChanger = null;
+    this.dataChanges = null;
 
-            this.data.unlisten();
-            this.dataChanger = null;
-            this.dataChanges = null;
-
-            var len = this.implicitChildren.length;
-            while (len--) {
-                this.implicitChildren[len].dispose(0, 1);
-            }
-
-            this.implicitChildren = null;
-
-            elementDispose(
-                this,
-                this.disposeNoDetach,
-                this.disposeNoTransition
-            );
-            this.listeners = null;
-
-            this.source = null;
-            this.sourceSlots = null;
-            this.sourceSlotNameProps = null;
-        }
+    var len = this.implicitChildren.length;
+    while (len--) {
+        this.implicitChildren[len].dispose(0, 1);
     }
-    else if (this.lifeCycle.attached) {
-        removeEl(this.el);
-        this._toPhase('detached');
-    }
+
+    this.implicitChildren = null;
+
+    this.source = null;
+    this.sourceSlots = null;
+    this.sourceSlotNameProps = null;
+
+    // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+    this.slotChildren = null;
 };
 
 /**
@@ -893,6 +879,7 @@ Component.prototype.dispose = elementOwnDispose;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._onEl = elementOwnOnEl;
 Component.prototype._attached = elementOwnAttached;
+Component.prototype._leave = elementOwnLeave;
 
 
 exports = module.exports = Component;

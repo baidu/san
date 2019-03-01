@@ -16,7 +16,7 @@ var LifeCycle = require('./life-cycle');
  * @param {string} name 生命周期名称
  */
 function elementOwnToPhase(name) {
-    this.lifeCycle = LifeCycle[name] || this.lifeCycle;
+    this.lifeCycle = LifeCycle[name];
 }
 
 exports = module.exports = elementOwnToPhase;
