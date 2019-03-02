@@ -9,7 +9,6 @@
 
 
 var guid = require('../util/guid');
-var removeEl = require('../browser/remove-el');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
