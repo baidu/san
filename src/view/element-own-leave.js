@@ -20,7 +20,12 @@ function elementOwnLeave() {
                 this.children[len].dispose(1, 1);
             }
 
-            elementUnEl(this);
+            len = this._elFns.length;
+            while (len--) {
+                var fn = this._elFns[len];
+                un(this.el, fn[0], fn[1], fn[2]);
+            }
+            this._elFns = null;
 
             // 如果没有parent，说明是一个root component，一定要从dom树中remove
             if (!this.disposeNoDetach || !this.parent) {

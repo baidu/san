@@ -864,10 +864,14 @@ Component.prototype._repaint = function () {
 
     this._contentReady = 0;
 
-    elementUnEl(this);
+    var len = this._elFns.length;
+    while (len--) {
+        var fn = this._elFns[len];
+        un(this.el, fn[0], fn[1], fn[2]);
+    }
     this._elFns = [];
-    var beforeEl = this.el;
 
+    var beforeEl = this.el;
     this.el = null;
     this._attach(beforeEl.parentNode, beforeEl);
 
