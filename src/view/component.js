@@ -38,7 +38,6 @@ var elementInitTagName = require('./element-init-tag-name');
 var elementOwnAttached = require('./element-own-attached');
 var elementOwnLeave = require('./element-own-leave');
 var elementOwnOnEl = require('./element-own-on-el');
-var elementUnEl = require('./element-un-el');
 var elementOwnCreate = require('./element-own-create');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
