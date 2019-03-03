@@ -7,6 +7,7 @@
  * @file 将元素从页面上移除
  */
 
+var elementGetTransition = require('./element-get-transition');
 
 /**
  * 将元素从页面上移除

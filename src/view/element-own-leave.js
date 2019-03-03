@@ -7,6 +7,9 @@
  * @file 完成视图退场动作的行为
  */
 
+var un = require('../browser/un');
+var removeEl = require('../browser/remove-el');
+
 /**
  * 完成视图退场动作的行为
  */
