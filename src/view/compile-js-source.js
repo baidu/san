@@ -599,7 +599,8 @@ var aNodeCompiler = {
     compileSlot: function (aNode, sourceBuffer, owner) {
         var rendererId = genSSRId();
 
-        sourceBuffer.addRaw('componentCtx.slotRenderers.' + rendererId + ' = componentCtx.slotRenderers.' + rendererId + ' || function () {');
+        sourceBuffer.addRaw('componentCtx.slotRenderers.' + rendererId
+            + ' = componentCtx.slotRenderers.' + rendererId + ' || function () {');
 
         sourceBuffer.addRaw('function $defaultSlotRender(componentCtx) {');
         sourceBuffer.addRaw('  var html = "";');
@@ -750,7 +751,8 @@ var aNodeCompiler = {
 
         var renderId = compileComponentSource(sourceBuffer, extra.ComponentClass, owner.ssrContextId);
         sourceBuffer.addRaw('html += componentRenderers.' + renderId + '(');
-        sourceBuffer.addRaw(dataLiteral + ', true, componentCtx, ' + stringifier.str(aNode.tagName) + ', $sourceSlots);');
+        sourceBuffer.addRaw(dataLiteral + ', true, componentCtx, '
+            + stringifier.str(aNode.tagName) + ', $sourceSlots);');
         sourceBuffer.addRaw('$sourceSlots = null;');
     },
 
@@ -813,7 +815,8 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
             + componentIdInContext + '|| ' + componentIdInContext + ';');
 
         sourceBuffer.addRaw('var ' + componentIdInContext + 'Proto = ' + genComponentProtoCode(component));
-        sourceBuffer.addRaw('function ' + componentIdInContext + '(data, noDataOutput, parentCtx, tagName, sourceSlots) {');
+        sourceBuffer.addRaw('function ' + componentIdInContext
+            + '(data, noDataOutput, parentCtx, tagName, sourceSlots) {');
         sourceBuffer.addRaw('var html = "";');
 
         sourceBuffer.addRaw(genComponentContextCode(component, componentIdInContext));
@@ -823,7 +826,8 @@ function compileComponentSource(sourceBuffer, ComponentClass, contextId) {
         var defaultData = component.data.get();
         sourceBuffer.addRaw('if (data) {');
         Object.keys(defaultData).forEach(function (key) {
-            sourceBuffer.addRaw('componentCtx.data["' + key + '"] = componentCtx.data["' + key + '"] || ' + stringifier.any(defaultData[key]) + ';');
+            sourceBuffer.addRaw('componentCtx.data["' + key + '"] = componentCtx.data["' + key + '"] || '
+                + stringifier.any(defaultData[key]) + ';');
         });
         sourceBuffer.addRaw('}');
 
