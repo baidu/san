@@ -8,6 +8,7 @@
  */
 
 var removeEl = require('../browser/remove-el');
+var LifeCycle = require('./life-cycle');
 var elementDisposeChildren = require('./element-dispose-children');
 
 /**

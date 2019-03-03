@@ -64,85 +64,85 @@ function elementOwnAttached() {
     this._toPhase('created');
 
     if (this.el.nodeType === 1) {
-    var isComponent = this.nodeType === NodeType.CMPT;
-    var data = isComponent ? this.data : this.scope;
+        var isComponent = this.nodeType === NodeType.CMPT;
+        var data = isComponent ? this.data : this.scope;
 
-    /* eslint-disable no-redeclare */
+        /* eslint-disable no-redeclare */
 
-    // 处理自身变化时双向绑定的逻辑
-    var xProps = this.aNode.hotspot.xProps;
-    for (var i = 0, l = xProps.length; i < l; i++) {
-        var xProp = xProps[i];
+        // 处理自身变化时双向绑定的逻辑
+        var xProps = this.aNode.hotspot.xProps;
+        for (var i = 0, l = xProps.length; i < l; i++) {
+            var xProp = xProps[i];
 
-        switch (xProp.name) {
-            case 'value':
-                switch (this.tagName) {
-                    case 'input':
-                    case 'textarea':
-                        if (isBrowser && window.CompositionEvent) {
-                            this._onEl('change', inputOnCompositionEnd);
-                            this._onEl('compositionstart', inputOnCompositionStart);
-                            this._onEl('compositionend', inputOnCompositionEnd);
-                        }
+            switch (xProp.name) {
+                case 'value':
+                    switch (this.tagName) {
+                        case 'input':
+                        case 'textarea':
+                            if (isBrowser && window.CompositionEvent) {
+                                this._onEl('change', inputOnCompositionEnd);
+                                this._onEl('compositionstart', inputOnCompositionStart);
+                                this._onEl('compositionend', inputOnCompositionEnd);
+                            }
 
-                        this._onEl(
-                            ('oninput' in this.el) ? 'input' : 'propertychange',
-                            inputXPropOutputer(this, xProp, data)
-                        );
+                            this._onEl(
+                                ('oninput' in this.el) ? 'input' : 'propertychange',
+                                inputXPropOutputer(this, xProp, data)
+                            );
 
-                        break;
+                            break;
 
-                    case 'select':
-                        this._onEl('change', bind(xPropOutputer, this, xProp, data));
-                        break;
-                }
-                break;
+                        case 'select':
+                            this._onEl('change', bind(xPropOutputer, this, xProp, data));
+                            break;
+                    }
+                    break;
 
-            case 'checked':
-                switch (this.tagName) {
-                    case 'input':
-                        switch (this.el.type) {
-                            case 'checkbox':
-                            case 'radio':
-                                this._onEl('click', bind(xPropOutputer, this, xProp, data));
-                        }
-                }
-                break;
-        }
-    }
-
-    // bind events
-    var events = isComponent
-        ? this.aNode.events.concat(this.nativeEvents)
-        : this.aNode.events;
-
-    for (var i = 0, l = events.length; i < l; i++) {
-        var eventBind = events[i];
-        var owner = isComponent ? this : this.owner;
-
-        // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
-        // 依此指定eventBind.expr.name位于owner还是owner.owner上
-        if (eventBind.modifier.native) {
-            owner = owner.owner;
-            data = this.scope || owner.data;
+                case 'checked':
+                    switch (this.tagName) {
+                        case 'input':
+                            switch (this.el.type) {
+                                case 'checkbox':
+                                case 'radio':
+                                    this._onEl('click', bind(xPropOutputer, this, xProp, data));
+                            }
+                    }
+                    break;
+            }
         }
 
-        // #[begin] error
-        warnEventListenMethod(eventBind, owner);
-        // #[end]
+        // bind events
+        var events = isComponent
+            ? this.aNode.events.concat(this.nativeEvents)
+            : this.aNode.events;
 
-        this._onEl(
-            eventBind.name,
-            bind(
-                eventDeclarationListener,
-                owner,
-                eventBind,
-                0,
-                data
-            ),
-            eventBind.modifier.capture
-        );
-    }
+        for (var i = 0, l = events.length; i < l; i++) {
+            var eventBind = events[i];
+            var owner = isComponent ? this : this.owner;
+
+            // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
+            // 依此指定eventBind.expr.name位于owner还是owner.owner上
+            if (eventBind.modifier.native) {
+                owner = owner.owner;
+                data = this.scope || owner.data;
+            }
+
+            // #[begin] error
+            warnEventListenMethod(eventBind, owner);
+            // #[end]
+
+            this._onEl(
+                eventBind.name,
+                bind(
+                    eventDeclarationListener,
+                    owner,
+                    eventBind,
+                    0,
+                    data
+                ),
+                eventBind.modifier.capture
+            );
+        }
     }
 
     this._toPhase('attached');
