@@ -143,7 +143,7 @@ function preheatANode(aNode) {
                     aNode.hotspot.props.value = aNode.props.length - 1;
                 }
 
-                if (aNode.directives['if']) {
+                if (aNode.directives['if']) { // eslint-disable-line dot-notation
                     aNode.ifRinsed = {
                         children: aNode.children,
                         props: aNode.props,
@@ -158,7 +158,7 @@ function preheatANode(aNode) {
                     aNode = aNode.ifRinsed;
                 }
 
-                if (aNode.directives['for']) {
+                if (aNode.directives['for']) { // eslint-disable-line dot-notation
                     aNode.forRinsed = {
                         children: aNode.children,
                         props: aNode.props,

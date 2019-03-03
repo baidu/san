@@ -23,6 +23,8 @@ var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
+var insertBefore = require('../browser/insert-before');
+var createNode = require('./create-node');
 var compileComponent = require('./compile-component');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
@@ -254,7 +256,7 @@ function Component(options) { // eslint-disable-line
     else {
         var walker = options.reverseWalker;
         if (walker) {
-            var ifDirective = this.aNode.directives['if'];
+            var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
 
             if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
                 var currentNode = walker.current;
@@ -649,7 +651,7 @@ Component.prototype._update = function (changes) {
     if (dataChanges) {
         this.dataChanges = null;
 
-        var ifDirective = this.aNode.directives['if'];
+        var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
         var expectNodeType = (!ifDirective || evalExpr(ifDirective.value, this.data, this)) ? 1 : 8;
 
         if (this.el.nodeType === expectNodeType) {
@@ -830,7 +832,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 };
 
 Component.prototype._attach = function (parentEl, beforeEl) {
-    var ifDirective = this.aNode.directives['if'];
+    var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
 
     if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
         this._create();
