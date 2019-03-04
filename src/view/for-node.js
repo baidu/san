@@ -233,7 +233,7 @@ ForNode.prototype._createChildren = function () {
  *
  * @param {Array} changes 数据变化信息
  */
-ForNode.prototype._update = function (changes) {
+ForNode.prototype.update = function (changes) {
     var listData = evalExpr(this.param.value, this.scope, this.owner);
     var oldIsArr = this.listData instanceof Array;
     var newIsArr = listData instanceof Array;
@@ -672,7 +672,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
             if (child) {
                 if (childrenChanges[i] && (!childrenNeedUpdate || childrenNeedUpdate[i])) {
-                    child._update(childrenChanges[i]);
+                    child.update(childrenChanges[i]);
                 }
             }
             else {

@@ -164,7 +164,7 @@ SlotNode.prototype.attach = nodeOwnOnlyChildrenAttach;
  * @param {boolean=} isFromOuter 变化信息是否来源于父组件之外的组件
  * @return {boolean}
  */
-SlotNode.prototype._update = function (changes, isFromOuter) {
+SlotNode.prototype.update = function (changes, isFromOuter) {
     var me = this;
 
     if (this.nameBind && evalExpr(this.nameBind.expr, this.scope, this.owner) !== this.name) {
@@ -175,7 +175,7 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
     if (isFromOuter) {
         if (this.isInserted) {
             for (var i = 0; i < this.children.length; i++) {
-                this.children[i]._update(changes);
+                this.children[i].update(changes);
             }
         }
     }
@@ -250,12 +250,12 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
             });
 
             for (var i = 0; i < this.children.length; i++) {
-                this.children[i]._update(scopedChanges);
+                this.children[i].update(scopedChanges);
             }
         }
         else if (!this.isInserted) {
             for (var i = 0; i < this.children.length; i++) {
-                this.children[i]._update(changes);
+                this.children[i].update(changes);
             }
         }
     }

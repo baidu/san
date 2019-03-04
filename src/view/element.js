@@ -142,7 +142,7 @@ Element.prototype._leave = elementOwnLeave;
  *
  * @param {Array} changes 数据变化信息
  */
-Element.prototype._update = function (changes) {
+Element.prototype.update = function (changes) {
     if (!changesIsInDataRef(changes, this.aNode.hotspot.data)) {
         return;
     }
@@ -199,7 +199,7 @@ Element.prototype._update = function (changes) {
     }
     else {
         for (var i = 0; i < this.children.length; i++) {
-            this.children[i]._update(changes);
+            this.children[i].update(changes);
         }
     }
 };

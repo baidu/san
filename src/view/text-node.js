@@ -134,7 +134,7 @@ var textUpdateProp = isBrowser
  *
  * @param {Array} changes 数据变化信息
  */
-TextNode.prototype._update = function (changes) {
+TextNode.prototype.update = function (changes) {
     if (this.aNode.textExpr.value) {
         return;
     }

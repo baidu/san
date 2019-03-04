@@ -123,7 +123,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
  *
  * @param {Array} changes 数据变化信息
  */
-IfNode.prototype._update = function (changes) {
+IfNode.prototype.update = function (changes) {
     var me = this;
     var childANode = this.aNode.ifRinsed;
     var elseIndex;
@@ -146,7 +146,7 @@ IfNode.prototype._update = function (changes) {
     var child = this.children[0];
     if (elseIndex === this.elseIndex) {
 
-        child && child._update(changes);
+        child && child.update(changes);
     }
     else {
         this.children = [];
