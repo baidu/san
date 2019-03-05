@@ -305,10 +305,7 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     var me = this;
     var disposedChildCount = 0;
     len = children.length;
-    if (!len) {
-        childDisposed();
-    }
-    else {
+    if (len) {
         for (var i = 0; i < len; i++) {
             var disposeChild = children[i];
             if (disposeChild) {
@@ -319,6 +316,9 @@ ForNode.prototype._disposeChildren = function (children, callback) {
                 childDisposed();
             }
         }
+    }
+    else {
+        childDisposed();
     }
 
     function childDisposed() {
