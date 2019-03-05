@@ -142,6 +142,12 @@ function ForNode(aNode, owner, scope, parent, reverseWalker) {
         }
     ];
 
+    this.itemExpr = {
+        type: ExprType.ACCESSOR,
+        paths: this.itemPaths,
+        raw: this.param.item
+    };
+
     if (this.param.index) {
         this.indexExpr = createAccessor([{
             type: ExprType.STRING,
@@ -492,7 +498,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                             (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
                                 type: DataChangeType.SET,
                                 option: change.option,
-                                expr: createAccessor(this.itemPaths),
+                                expr: this.itemExpr,
                                 value: newList[newIndex]
                             });
                         }
@@ -536,7 +542,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(this.itemPaths),
+                        expr: this.itemExpr,
                         value: newList[i]
                     });
 
@@ -597,7 +603,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     (childrenChanges[i] = childrenChanges[i] || []).push({
                         type: DataChangeType.SET,
                         option: change.option,
-                        expr: createAccessor(this.itemPaths),
+                        expr: this.itemExpr,
                         value: change.insertions[deleteLen]
                     });
                     if (this.children[i]) {
