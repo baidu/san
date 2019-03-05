@@ -625,10 +625,8 @@ ForNode.prototype._updateArray = function (changes, newList) {
         }
     }
 
-    var newChildrenLen = this.children.length;
-
     // 标记 length 是否发生变化
-    if (newChildrenLen !== oldChildrenLen && this.param.value.paths) {
+    if (newLen !== oldChildrenLen && this.param.value.paths) {
         var lengthChange = {
             type: DataChangeType.SET,
             option: {},
@@ -673,7 +671,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
         // 对相应的项进行更新
         // 如果不attached则直接创建，如果存在则调用更新函数
         var j = -1;
-        for (var i = 0; i < newChildrenLen; i++) {
+        for (var i = 0; i < newLen; i++) {
             var child = me.children[i];
 
             if (child) {
@@ -685,7 +683,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 if (j < i) {
                     j = i + 1;
                     beforeEl = null;
-                    while (j < newChildrenLen) {
+                    while (j < newLen) {
                         var nextChild = me.children[j];
                         if (nextChild) {
                             beforeEl = nextChild.sel || nextChild.el;
