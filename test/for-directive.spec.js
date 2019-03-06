@@ -2043,7 +2043,7 @@ describe("ForDirective", function () {
     it("component can track owner splice change ", function (done) {
 
         var List = san.defineComponent({
-            template: '<ul><li s-for="item in list">{{item}}</li></ul>'
+            template: '<ul><li s-for="item in list trackBy item">{{item}}</li></ul>'
         });
 
         var MyComponent = san.defineComponent({
