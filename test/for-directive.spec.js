@@ -2481,4 +2481,56 @@ describe("ForDirective", function () {
         });
 
     });
+
+    it("nest for", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<form>'
+                + '<fieldset s-for="cate in cates">'
+                + '<label s-for="item in forms[cate]">{{item}}</label>'
+                + '</fieldset>'
+                + '</form>'
+        })
+
+        var myComponent = new MyComponent({
+            data: {
+                "cates": [
+                    "foo",
+                    "bar"
+                ],
+                "forms": {
+                    "foo": [
+                        1,
+                        2,
+                        3
+                    ],
+                    "bar": [
+                        4,
+                        5,
+                        6
+                    ]
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var labels = wrap.getElementsByTagName('label');
+        expect(labels.length).toBe(6);
+        expect(labels[5].innerHTML).toBe('6');
+        expect(labels[3].innerHTML).toBe('4');
+        expect(labels[1].innerHTML).toBe('2');
+        myComponent.data.set('forms.bar', [8, 9]);
+        san.nextTick(function () {
+            var labels = wrap.getElementsByTagName('label');
+            expect(labels.length).toBe(5);
+            expect(labels[4].innerHTML).toBe('9');
+            expect(labels[3].innerHTML).toBe('8');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
