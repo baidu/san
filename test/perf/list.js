@@ -1,6 +1,6 @@
 const san = require('../../dist/san.ssr');
 const art = require('art-template');
-const swig = require('swig');
+const swig = require('swig-templates');
 const etpl = require('etpl');
 const ejs = require('ejs');
 const mustache = require('mustache');

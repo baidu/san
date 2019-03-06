@@ -1,5 +1,5 @@
 const san = require('../../dist/san.ssr');
-const swig  = require('swig');
+const swig  = require('swig-templates');
 const art = require('art-template');
 const etpl = require('etpl');
 const ejs = require('ejs');
@@ -89,4 +89,3 @@ for (let i = 0; i < 100; i++) {
     mustache.render(`<div id='app'><ul>{{#items}}<li>{{.}}</li>{{/items}}</ul></div>`, data);
 }
 console.timeEnd('mustache');
-

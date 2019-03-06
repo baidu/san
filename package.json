@@ -48,7 +48,7 @@
     "mustache": "^3.0.1",
     "opener": "~1.4.0",
     "source-map": "^0.7.3",
-    "swig": "^1.4.2",
+    "swig-templates": "^2.0.3",
     "uglify-js": "^2.8.22",
     "watch": "^1.0.2",
     "wdio-jasmine-framework": "^0.3.0",
