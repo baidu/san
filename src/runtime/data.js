@@ -205,8 +205,6 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
-    expr = createAccessor(expr.paths.slice(0));
-
     dataCache.clear();
 
     var prop = expr.paths[0].value;
@@ -350,8 +348,6 @@ Data.prototype.splice = function (expr, args, option) {
 
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
-
-        expr = createAccessor(expr.paths.slice(0));
 
         dataCache.clear();
         this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, newArray, this);
