@@ -45,6 +45,17 @@ function changeExprCompareExprs(changeExpr, exprs, data) {
  * @return {number}
  */
 function changeExprCompare(changeExpr, expr, data) {
+    var result = 0;
+    if (!expr.changeCache) {
+        expr.changeCache = {};
+    }
+
+    if (changeExpr.raw && !expr.dynamic) {
+        if (expr.changeCache[changeExpr.raw] != null) {
+            return expr.changeCache[changeExpr.raw];
+        }
+    }
+
     switch (expr.type) {
         case ExprType.ACCESSOR:
             var paths = expr.paths;
@@ -52,13 +63,14 @@ function changeExprCompare(changeExpr, expr, data) {
             var changePaths = changeExpr.paths;
             var changeLen = changePaths.length;
 
-            var result = 1;
+            result = 1;
             for (var i = 0; i < pathsLen; i++) {
                 var pathExpr = paths[i];
                 var pathExprValue = pathExpr.value;
 
                 if (pathExprValue == null && changeExprCompare(changeExpr, pathExpr, data)) {
-                    return 1;
+                    result = 1;
+                    break;
                 }
 
                 if (result && i < changeLen
@@ -73,49 +85,58 @@ function changeExprCompare(changeExpr, expr, data) {
             if (result) {
                 result = Math.max(1, changeLen - pathsLen + 2);
             }
-            return result;
+            break;
 
         case ExprType.UNARY:
-            return changeExprCompare(changeExpr, expr.expr, data) ? 1 : 0;
-
+            result = changeExprCompare(changeExpr, expr.expr, data) ? 1 : 0;
+            break;
 
         case ExprType.TEXT:
         case ExprType.BINARY:
         case ExprType.TERTIARY:
-            return changeExprCompareExprs(changeExpr, expr.segs, data);
+            result = changeExprCompareExprs(changeExpr, expr.segs, data);
+            break;
 
         case ExprType.ARRAY:
         case ExprType.OBJECT:
-            for (var i = 0, l = expr.items.length; i < l; i++) {
+            for (var i = 0; i < expr.items.length; i++) {
                 if (changeExprCompare(changeExpr, expr.items[i].expr, data)) {
-                    return 1;
+                    result = 1;
+                    break;
                 }
             }
 
-            return 0;
+            break;
 
         case ExprType.INTERP:
-            if (!changeExprCompare(changeExpr, expr.expr, data)) {
-                var filterResult;
-                each(expr.filters, function (filter) {
-                    filterResult = changeExprCompareExprs(changeExpr, filter.args, data);
-                    return !filterResult;
-                });
-
-                return filterResult ? 1 : 0;
+            if (changeExprCompare(changeExpr, expr.expr, data)) {
+                result = 1;
+            }
+            else {
+                for (var i = 0; i < expr.filters.length; i++) {
+                    if (changeExprCompareExprs(changeExpr, expr.filters[i].args, data)) {
+                        result = 1;
+                        break;
+                    }
+                }
             }
 
-            return 1;
+            break;
 
         case ExprType.CALL:
             if (changeExprCompareExprs(changeExpr, expr.name.paths, data)
                 || changeExprCompareExprs(changeExpr, expr.args, data)
             ) {
-                return 1;
+                result = 1;
             }
+            break;
     }
 
-    return 0;
+    if (changeExpr.raw && !expr.dynamic) {
+        expr.changeCache[changeExpr.raw] = result;
+    }
+
+    return result;
 }
 
 exports = module.exports = changeExprCompare;

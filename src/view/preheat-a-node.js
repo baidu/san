@@ -189,17 +189,21 @@ function preheatANode(aNode) {
  * @param {Object} expr 要分析的表达式
  * @return {Array}
  */
-function analyseExprDataHotspot(expr) {
+function analyseExprDataHotspot(expr, accessorMeanDynamic) {
     var refs = [];
+    var isDynamic;
 
-    function analyseExprs(exprs) {
+    function analyseExprs(exprs, accessorMeanDynamic) {
         each(exprs, function (expr) {
-            refs = refs.concat(analyseExprDataHotspot(expr));
+            refs = refs.concat(analyseExprDataHotspot(expr, accessorMeanDynamic));
+            isDynamic = isDynamic || expr.dynamic;
         });
     }
 
     switch (expr.type) {
         case ExprType.ACCESSOR:
+            isDynamic = accessorMeanDynamic;
+
             var paths = expr.paths;
             refs.push(paths[0].value);
 
@@ -207,20 +211,23 @@ function analyseExprDataHotspot(expr) {
                 refs.push(paths[0].value + '.' + (paths[1].value || '*'));
             }
 
-            analyseExprs(paths.slice(1));
+            analyseExprs(paths.slice(1), 1);
             break;
 
         case ExprType.UNARY:
-            return analyseExprDataHotspot(expr.expr);
+            refs = analyseExprDataHotspot(expr.expr, accessorMeanDynamic);
+            isDynamic = expr.expr.dynamic;
+            break;
 
         case ExprType.TEXT:
         case ExprType.BINARY:
         case ExprType.TERTIARY:
-            analyseExprs(expr.segs);
+            analyseExprs(expr.segs, accessorMeanDynamic);
             break;
 
         case ExprType.INTERP:
             refs = analyseExprDataHotspot(expr.expr);
+            isDynamic = expr.expr.dynamic;
 
             each(expr.filters, function (filter) {
                 analyseExprs(filter.name.paths);
@@ -231,6 +238,7 @@ function analyseExprDataHotspot(expr) {
 
     }
 
+    isDynamic && (expr.dynamic = true);
     return refs;
 }
 
