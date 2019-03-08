@@ -194,10 +194,10 @@ function analyseExprDataHotspot(expr, accessorMeanDynamic) {
     var isDynamic;
 
     function analyseExprs(exprs, accessorMeanDynamic) {
-        each(exprs, function (expr) {
-            refs = refs.concat(analyseExprDataHotspot(expr, accessorMeanDynamic));
+        for (var i = 0, l = exprs.length; i < l; i++) {
+            refs = refs.concat(analyseExprDataHotspot(exprs[i], accessorMeanDynamic));
             isDynamic = isDynamic || expr.dynamic;
-        });
+        }
     }
 
     switch (expr.type) {
