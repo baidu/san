@@ -744,7 +744,7 @@ Component.prototype._repaintChildren = function () {
 
         this.slotChildren = [];
 
-        for (var i = 0; i < this.aNode.children.length; i++) {
+        for (var i = 0, l = this.aNode.children.length; i < l; i++) {
             var child = createNode(this.aNode.children[i], this);
             this.children.push(child);
             child.attach(this.el);
@@ -839,7 +839,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
-            for (var i = 0; i < this.aNode.children.length; i++) {
+            for (var i = 0, l = this.aNode.children.length; i < l; i++) {
                 var child = createNode(this.aNode.children[i], this);
                 this.children.push(child);
                 child.attach(this.el);

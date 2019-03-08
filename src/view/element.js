@@ -116,7 +116,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
             }
             else {
-                for (var i = 0; i < this.aNode.children.length; i++) {
+                for (var i = 0, l = this.aNode.children.length; i < l; i++) {
                     var child = createNode(this.aNode.children[i], this);
                     this.children.push(child);
                     child.attach(this.el);
@@ -198,7 +198,7 @@ Element.prototype._update = function (changes) {
         }
     }
     else {
-        for (var i = 0; i < this.children.length; i++) {
+        for (var i = 0, l = this.children.length; i < l; i++) {
             this.children[i]._update(changes);
         }
     }
