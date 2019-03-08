@@ -96,9 +96,9 @@ TemplateNode.prototype.dispose = function (noDetach, noTransition) {
  *
  * @param {Array} changes 数据变化信息
  */
-TemplateNode.prototype.update = function (changes) {
+TemplateNode.prototype._update = function (changes) {
     for (var i = 0; i < this.children.length; i++) {
-        this.children[i].update(changes);
+        this.children[i]._update(changes);
     }
 };
 

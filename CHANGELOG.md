@@ -6,7 +6,6 @@ ChangeLog
 -------
 
 + 【新特性】- 组件根元素支持应用 if 指令
-+ 【新特性】- 组件增加 update 方法，用于即时刷新
 + 【优化】- 提升视图渲染的性能
 + 【bug修复】- array literal 和 object literal 表达式的对应视图可能不更新
 

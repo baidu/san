@@ -550,7 +550,7 @@ Component.prototype.ref = function (name) {
  *
  * @param {Array?} changes 数据变化信息
  */
-Component.prototype.update = function (changes) {
+Component.prototype._update = function (changes) {
     if (this.lifeCycle.disposed) {
         return;
     }
@@ -641,7 +641,7 @@ Component.prototype.update = function (changes) {
                     this.slotChildren.splice(slotChildrenLen, 1);
                 }
                 else if (slotChild.isInserted) {
-                    slotChild.update(changes, 1);
+                    slotChild._update(changes, 1);
                 }
             }
         }
@@ -672,7 +672,7 @@ Component.prototype.update = function (changes) {
                 }
 
                 for (var i = 0; i < this.children.length; i++) {
-                    this.children[i].update(dataChanges);
+                    this.children[i]._update(dataChanges);
                 }
 
 
@@ -687,14 +687,14 @@ Component.prototype.update = function (changes) {
         }
 
         for (var i = 0; i < this.implicitChildren.length; i++) {
-            this.implicitChildren[i].update(dataChanges);
+            this.implicitChildren[i]._update(dataChanges);
         }
 
         this._toPhase('updated');
 
         if (this.owner) {
             this._updateBindxOwner(dataChanges);
-            this.owner.update();
+            this.owner._update();
         }
     }
 
@@ -762,7 +762,7 @@ Component.prototype._repaintChildren = function () {
 Component.prototype._dataChanger = function (change) {
     if (this.lifeCycle.created && this._aftercreated) {
         if (!this.dataChanges) {
-            nextTick(this.update, this);
+            nextTick(this._update, this);
             this.dataChanges = [];
         }
 
