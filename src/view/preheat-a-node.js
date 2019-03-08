@@ -236,6 +236,13 @@ function analyseExprDataHotspot(expr, accessorMeanDynamic) {
 
             break;
 
+        case ExprType.ARRAY:
+        case ExprType.OBJECT:
+            for (var i = 0; i < expr.items.length; i++) {
+                refs = refs.concat(analyseExprDataHotspot(expr.items[i].expr));
+                isDynamic = isDynamic || expr.items[i].expr.dynamic;
+            }
+            break;
     }
 
     isDynamic && (expr.dynamic = true);
