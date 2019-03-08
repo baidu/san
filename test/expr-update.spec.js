@@ -1072,6 +1072,43 @@ describe("Expression Update Detect", function () {
         });
     });
 
+    it("object literal to component", function (done) {
+        var Child = san.defineComponent({
+            template: '<u>{{d.msg}}</u>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: ''
+                + '<div><div>'
+                + '<x-c d="{{{msg}}}"></x-c>'
+                + '</div></div>',
+            components: {
+                'x-c': Child
+            },
+            initData: function () {
+                return { msg: 'init' };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('init');
+
+        myComponent.data.set('msg', 'san');
+        san.nextTick(function () {
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("simple call expr", function (done) {
 
         var MyComponent = san.defineComponent({
