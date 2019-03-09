@@ -50,12 +50,13 @@ function elementOwnCreate() {
 
         for (var i = 0, l = props.length; i < l; i++) {
             var prop = props[i];
+            var propName = prop.name;
             var value = isComponent
                 ? evalExpr(prop.expr, this.data, this)
                 : evalExpr(prop.expr, this.scope, this.owner);
 
-            if (value || !emptyPropWhenCreate[prop.name]) {
-                handleProp(this, value, prop);
+            if (value || !emptyPropWhenCreate[propName]) {
+                getPropHandler(this.tagName, propName).prop(this.el, value, propName, this, prop);
             }
         }
 

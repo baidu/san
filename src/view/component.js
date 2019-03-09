@@ -662,10 +662,11 @@ Component.prototype._update = function (changes) {
 
                     for (var j = 0; j < dataChanges.length; j++) {
                         var change = dataChanges[j];
-                        if (changeExprCompare(change.expr, prop.expr, me.data)
-                            || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, me.data)
+                        if (changeExprCompare(change.expr, prop.expr, this.data)
+                            || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
                         ) {
-                            handleProp(me, evalExpr(prop.expr, me.data, me), prop);
+                            getPropHandler(this.tagName, prop.name)
+                                .prop(this.el, evalExpr(prop.expr, this.data, this), prop.name, this, prop);
                             break;
                         }
                     }

@@ -166,17 +166,19 @@ Element.prototype._update = function (changes) {
     var dynamicProps = this.aNode.hotspot.dynamicProps;
     for (var i = 0, l = dynamicProps.length; i < l; i++) {
         var prop = dynamicProps[i];
+        var propName = prop.name;
 
         for (var j = 0, changeLen = changes.length; j < changeLen; j++) {
             var change = changes[j];
 
-            if (!isDataChangeByElement(change, this, prop.name)
+            if (!isDataChangeByElement(change, this, propName)
                 && (
                     changeExprCompare(change.expr, prop.expr, this.scope)
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
                 )
             ) {
-                handleProp(this, evalExpr(prop.expr, this.scope, this.owner), prop);
+                getPropHandler(this.tagName, propName)
+                    .prop(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
                 break;
             }
         }
