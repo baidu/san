@@ -29,7 +29,6 @@ var elementOwnLeave = require('./element-own-leave');
 var elementInitTagName = require('./element-init-tag-name');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
-var handleProp = require('./handle-prop');
 var warnSetHTML = require('./warn-set-html');
 var getNodePath = require('./get-node-path');
 

@@ -10,7 +10,6 @@
 
 var evalExpr = require('../runtime/eval-expr');
 var createEl = require('../browser/create-el');
-var handleProp = require('./handle-prop');
 var NodeType = require('./node-type');
 var getPropHandler = require('./get-prop-handler');
 
