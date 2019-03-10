@@ -151,11 +151,10 @@ function preheatANode(aNode) {
                         tagName: aNode.tagName,
                         vars: aNode.vars,
                         hotspot: aNode.hotspot,
-                        directives: cloneDirectives(aNode.directives, {
-                            'if': 1
-                        })
+                        directives: extend({}, aNode.directives)
                     };
                     aNode = aNode.ifRinsed;
+                    aNode.directives['if'] = null;
                 }
 
                 if (aNode.directives['for']) { // eslint-disable-line dot-notation
@@ -166,10 +165,9 @@ function preheatANode(aNode) {
                         tagName: aNode.tagName,
                         vars: aNode.vars,
                         hotspot: aNode.hotspot,
-                        directives: cloneDirectives(aNode.directives, {
-                            'for': 1
-                        })
+                        directives: extend({}, aNode.directives)
                     };
+                    aNode.forRinsed.directives['for'] = null;
                 }
                 // === analyse hotspot props: end
             }

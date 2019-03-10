@@ -537,11 +537,10 @@ var aNodeCompiler = {
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
-            directives: cloneDirectives(aNode.directives, {
-                'for': 1
-            }),
+            directives: extend({}, aNode.directives),
             hotspot: aNode.hotspot
         });
+        forElementANode.directives['for'] = null;
 
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
         var itemName = forDirective.item;
