@@ -190,3 +190,33 @@ san.defineComponent({
         exact2: san.DataTypes.exact({ x: san.DataTypes.number })
     }
 });
+
+const InputComponent = san.defineComponent({
+    template: '<input type="text" value="{{value}}"/>'
+});
+
+const LabelComponent = san.defineComponent({
+    template: '<u>{{value}}</u>'
+});
+
+san.defineComponent({
+    components: {
+        'x-input': san.createComponentLoader({
+            load: function () {
+                return new Promise(function (resolve) {
+                    setTimeout(function () {
+                        resolve(InputComponent);
+                    }, 1000);
+                });
+            },
+            placeholder: LabelComponent,
+            fallback: LabelComponent
+        })
+    },
+
+    template: '<div><x-input value="{{name}}"/></div>'
+});
+
+san.evalExpr(san.parseExpr('1+1'), new san.Data());
+
+san.parseTemplate('<div></div>', {trimWhitespace: 'all'});

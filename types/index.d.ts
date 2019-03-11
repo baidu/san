@@ -8,7 +8,8 @@ declare namespace San {
 
     type SanEventListener<T, N> = (e: SanEvent<T, N>) => any;
     interface SanData<T> {
-        parent: SanComponent<T>;
+        new(data?: {}, parent?: SanData<{}>);
+        parent: SanData<{}>;
         raw: T;
 
         listeners: SanChangeListener<T>[];
@@ -31,6 +32,8 @@ declare namespace San {
         removeAt(expr: string | ExprAccessorNode, index: number, option?: SanDataChangeOption): void;
         remove(expr: string | ExprAccessorNode, value: any, option?: SanDataChangeOption): void;
     }
+
+    const Data: SanData<{}>;
 
     interface SanChangeListener<T> {
         (this: SanData<T>, change: SanDataChangeInfo): void
@@ -67,7 +70,7 @@ declare namespace San {
             [k: string]: (value: any, ...filterOption: any[]) => any,
         };
         components?: {
-            [k: string]: ComponentConstructor<{}, {}> | SanComponentConfig<{}, {}> | 'self',
+            [k: string]: ComponentConstructor<{}, {}> | SanComponentConfig<{}, {}> | SanComponentLoader<{}, {}> | 'self',
         };
         computed?: {
             [k: string]: (this: { data: SanData<T> }) => any,
@@ -110,7 +113,23 @@ declare namespace San {
     }
 
     interface ComponentConstructor<T, D> {
-        new(option?: { data?: Partial<T> }): SanComponent<T> & D
+        new(option?: { data?: Partial<T> }): SanComponent<T> & D;
+    }
+
+    interface SanComponentLoaderOption<T, D> {
+        load(): Promise<ComponentConstructor<T, D>>;
+        placeholder?: ComponentConstructor<T, D>;
+        fallback?: ComponentConstructor<T, D>;
+    }
+
+    class SanComponentLoader<T, D> {
+        constructor(
+            load: ComponentConstructor<T, D>,
+            placeholder: ComponentConstructor<T, D>,
+            fallback: ComponentConstructor<T, D>
+        );
+        start(onload: (Component: ComponentConstructor<T, D>) => void): void;
+        done(Component: ComponentConstructor<T, D>): void;
     }
 
     interface SanSlot {
@@ -209,17 +228,24 @@ declare namespace San {
         tagName: string;
     }
 
+    interface ParseTemplateOption {
+        trimWhitespace?: 'none' | 'blank' | 'all';
+        delimiters?: [string, string];
+    }
+
     type SanRenderer<T> = (data: T) => string;
 
     const Component: ComponentConstructor<{}, {}>;
 
     function defineComponent<T, D>(config: SanComponentConfig<T, D> & D): ComponentConstructor<T, D>;
+    function createComponentLoader<T, D>(options: SanComponentLoaderOption<T, D> | SanComponentLoaderOption<T, D>['load']): SanComponentLoader<T, D>;
     function compileComponent<T extends SanComponent<{}>>(component: T): void;
     function compileToRenderer<T extends SanComponent<{}>>(component: T): SanRenderer<T>;
     function compileToSource<T extends SanComponent<{}>>(component: T): string;
 
     function parseExpr(template: string): ExprNode;
-    function parseTemplate(template: string): ANode;
+    function evalExpr<T, D extends SanComponent<{}>>(expr: ExprNode, data: SanData<T>, owner?: D): any;
+    function parseTemplate(template: string, options?: ParseTemplateOption): ANode;
     function inherits(childClazz: (...args: any[]) => void, parentClazz: ComponentConstructor<{}, {}>): void;
     function nextTick(doNextTick: () => any): void;
     const DataTypes: {
@@ -321,18 +347,22 @@ export = San;
 interface SanStaticGlobal {
 
     Component: San.ComponentConstructor<{}, {}>;
+    Data: San.SanData<{}>;
 
     defineComponent<T, D>(config: San.SanComponentConfig<T, D> & D): San.ComponentConstructor<T, D>;
+    createComponentLoader<T, D>(options: San.SanComponentLoaderOption<T, D> | San.SanComponentLoaderOption<T, D>['load']): San.SanComponentLoader<T, D>;
     compileComponent<T extends San.SanComponent<{}>>(component: T): void;
     compileToRenderer<T extends San.SanComponent<{}>>(component: T): San.SanRenderer<T>;
     compileToSource<T extends San.SanComponent<{}>>(component: T): string;
 
     parseExpr(template: string): San.ExprNode;
-    parseTemplate(template: string): San.ANode;
+    evalExpr<T, D extends San.SanComponent<{}>>(expr: San.ExprNode, data: San.SanData<T>, owner?: D): any;
+    parseTemplate(template: string, options?: San.ParseTemplateOption): San.ANode;
     inherits(childClazz: (...args: any[]) => void, parentClazz: San.ComponentConstructor<{}, {}>): void;
     nextTick(doNextTick: () => any): void;
 
-    DataTypes: typeof San.NodeType;
+    ExprType: typeof San.ExprType;
+    DataTypes: typeof San.DataTypes;
     NodeType: typeof San.NodeType;
     LifeCycle: typeof San.LifeCycle;
 
