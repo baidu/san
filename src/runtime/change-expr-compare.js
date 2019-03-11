@@ -9,7 +9,6 @@
 
 var ExprType = require('../parser/expr-type');
 var evalExpr = require('./eval-expr');
-var each = require('../util/each');
 
 /**
  * 判断变更表达式与多个表达式之间的关系，0为完全没关系，1为有关系

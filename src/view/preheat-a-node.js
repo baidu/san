@@ -9,6 +9,7 @@
 
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
+var extend = require('../util/extend');
 var createEl = require('../browser/create-el');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
@@ -154,7 +155,7 @@ function preheatANode(aNode) {
                         directives: extend({}, aNode.directives)
                     };
                     aNode = aNode.ifRinsed;
-                    aNode.directives['if'] = null;
+                    aNode.directives['if'] = null; // eslint-disable-line dot-notation
                 }
 
                 if (aNode.directives['for']) { // eslint-disable-line dot-notation
@@ -167,7 +168,7 @@ function preheatANode(aNode) {
                         hotspot: aNode.hotspot,
                         directives: extend({}, aNode.directives)
                     };
-                    aNode.forRinsed.directives['for'] = null;
+                    aNode.forRinsed.directives['for'] = null; // eslint-disable-line dot-notation
                 }
                 // === analyse hotspot props: end
             }
