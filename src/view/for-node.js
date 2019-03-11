@@ -503,7 +503,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 }
 
                 if (newCount < 0) {
-                    disposeChildren = disposeChildren.concat(this.children.splice(changeStart + insertionsLen, -newCount));
+                    disposeChildren = disposeChildren.concat(
+                        this.children.splice(changeStart + insertionsLen, -newCount)
+                    );
                     childrenChanges.splice(changeStart + insertionsLen, -newCount);
                 }
                 else if (newCount > 0) {
