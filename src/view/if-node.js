@@ -39,11 +39,9 @@ function IfNode(aNode, owner, scope, parent, reverseWalker) {
     this.id = guid();
     this.children = [];
 
-    this.cond = this.aNode.directives['if'].value; // eslint-disable-line dot-notation
-
     // #[begin] reverse
     if (reverseWalker) {
-        if (evalExpr(this.cond, this.scope, this.owner)) {
+        if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
             this.elseIndex = -1;
             this.children[0] = createReverseNode(
                 this.aNode.ifRinsed,
@@ -90,7 +88,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     var elseIndex;
     var child;
 
-    if (evalExpr(this.cond, this.scope, this.owner)) {
+    if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
         child = createNode(this.aNode.ifRinsed, this);
         elseIndex = -1;
     }
@@ -128,7 +126,7 @@ IfNode.prototype._update = function (changes) {
     var childANode = this.aNode.ifRinsed;
     var elseIndex;
 
-    if (evalExpr(this.cond, this.scope, this.owner)) {
+    if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
         elseIndex = -1;
     }
     else {
