@@ -43,7 +43,12 @@ function parseTemplate(source, options) {
     options = options || {};
     options.trimWhitespace = options.trimWhitespace || 'none';
 
-    var rootNode = createANode();
+    var rootNode = {
+        directives: {},
+        props: [],
+        events: [],
+        children: []
+    };
 
     if (typeof source !== 'string') {
         return rootNode;
@@ -130,9 +135,13 @@ function parseTemplate(source, options) {
             // #[end]
         }
         else {
-            var aElement = createANode({
+            var aElement = {
+                directives: {},
+                props: [],
+                events: [],
+                children: [],
                 tagName: tagName
-            });
+            };
             var tagClose = autoCloseTags[tagName];
 
             // 解析 attributes
@@ -232,9 +241,13 @@ function parseTemplate(source, options) {
                 }
                 else {
                     if (aElement.tagName === 'tr' && currentNode.tagName === 'table') {
-                        var tbodyNode = createANode({
+                        var tbodyNode = {
+                            directives: {},
+                            props: [],
+                            events: [],
+                            children: [],
                             tagName: 'tbody'
-                        });
+                        };
                         currentNode.children.push(tbodyNode);
                         currentNode = tbodyNode;
                         stack[++stackIndex] = tbodyNode;

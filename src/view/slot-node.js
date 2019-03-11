@@ -40,7 +40,12 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
 function SlotNode(aNode, owner, scope, parent, reverseWalker) {
-    var realANode = createANode();
+    var realANode = {
+        directives: {},
+        props: [],
+        events: [],
+        children: []
+    };
     this.aNode = realANode;
     this.owner = owner;
     this.scope = scope;

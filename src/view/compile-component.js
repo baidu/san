@@ -45,7 +45,12 @@ function compileComponent(ComponentClass) {
 
     // pre compile template
     if (!proto.hasOwnProperty('aNode')) {
-        proto.aNode = createANode();
+        proto.aNode = {
+            directives: {},
+            props: [],
+            events: [],
+            children: []
+        };
 
         var tpl = ComponentClass.template || proto.template;
         if (tpl) {
