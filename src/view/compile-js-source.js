@@ -532,14 +532,14 @@ var aNodeCompiler = {
      * @param {Component} owner 所属组件实例环境
      */
     compileFor: function (aNode, sourceBuffer, owner) {
-        var forElementANode = createANode({
+        var forElementANode = {
             children: aNode.children,
             props: aNode.props,
             events: aNode.events,
             tagName: aNode.tagName,
             directives: extend({}, aNode.directives),
             hotspot: aNode.hotspot
-        });
+        };
         forElementANode.directives['for'] = null;
 
         var forDirective = aNode.directives['for']; // eslint-disable-line dot-notation
