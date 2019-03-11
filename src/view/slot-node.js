@@ -39,13 +39,6 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
 function SlotNode(aNode, owner, scope, parent, reverseWalker) {
-    var realANode = {
-        directives: {},
-        props: [],
-        events: [],
-        children: []
-    };
-    this.aNode = realANode;
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
@@ -76,20 +69,23 @@ function SlotNode(aNode, owner, scope, parent, reverseWalker) {
         this.isInserted = true;
     }
 
-    realANode.children = matchedSlots || aNode.children.slice(0);
+    this.aNode = {
+        directives: aNode.directives,
+        props: [],
+        events: [],
+        children: matchedSlots || aNode.children.slice(0),
+        vars: aNode.vars
+    };
 
     // calc scoped slot vars
-    realANode.vars = aNode.vars;
-    realANode.directives = aNode.directives;
-
     var initData;
     if (nodeSBindInit(this, aNode.directives.bind)) {
         initData = extend({}, this._sbindData);
     }
 
-    if (realANode.vars) {
+    if (aNode.vars) {
         initData = initData || {};
-        each(realANode.vars, function (varItem) {
+        each(aNode.vars, function (varItem) {
             initData[varItem.name] = evalExpr(varItem.expr, scope, owner);
         });
     }
