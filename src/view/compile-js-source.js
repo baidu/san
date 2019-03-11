@@ -12,7 +12,6 @@ var each = require('../util/each');
 var extend = require('../util/extend');
 var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
-var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var postProp = require('../parser/post-prop');
 var autoCloseTags = require('../browser/auto-close-tags');

@@ -10,7 +10,6 @@
 var each = require('../util/each');
 var guid = require('../util/guid');
 var extend = require('../util/extend');
-var createANode = require('../parser/create-a-node');
 var ExprType = require('../parser/expr-type');
 var createAccessor = require('../parser/create-accessor');
 var evalExpr = require('../runtime/eval-expr');

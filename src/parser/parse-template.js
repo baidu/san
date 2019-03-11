@@ -8,7 +8,6 @@
  */
 
 
-var createANode = require('./create-a-node');
 var Walker = require('./walker');
 var integrateAttr = require('./integrate-attr');
 var parseText = require('./parse-text');
