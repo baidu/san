@@ -278,9 +278,9 @@ function parseTemplate(source, options) {
         }
 
         if (text) {
-            currentNode.children.push(createANode({
+            currentNode.children.push({
                 textExpr: parseText(text, options.delimiters)
-            }));
+            });
         }
     }
 }
