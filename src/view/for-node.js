@@ -338,6 +338,8 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     }
 };
 
+ForNode.prototype.flattenSplice = typeof navigator !== 'undefined'
+    && /chrome\/[0-9]+/i.test(navigator.userAgent);
 /**
  * 数组类型的视图更新
  *
@@ -452,7 +454,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
             else if (isChildrenRebuild) {
                 continue;
             }
-            else if (this.aNode.directives.transition && relation === 2 && change.type === DataChangeType.SPLICE) {
+            else if (relation === 2 && change.type === DataChangeType.SPLICE
+                && (!this.flattenSplice || this.aNode.directives.transition)
+            ) {
                 childrenNeedUpdate = null;
 
                 // 变更表达式是list绑定表达式本身数组的splice操作
