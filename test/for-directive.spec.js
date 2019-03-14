@@ -704,7 +704,7 @@ describe("ForDirective", function () {
         });
     });
 
-    it("data remove after attach", function (done) {
+    it("data remove after attach use removeAt", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name - email</li><li san-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
         });
@@ -730,6 +730,39 @@ describe("ForDirective", function () {
             expect(lis.length).toBe(3);
             expect(lis[1].getAttribute('title')).toBe('two 1/1');
             expect(lis[1].innerHTML.indexOf('two - two@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data remove after attach use remove", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name</li><li san-for="p,i in persons" title="{{p}} {{i+1}}/{{persons.length}}">{{p}}</li><li>name</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            'one',
+            'two'
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('one 1/2');
+        expect(lis[1].innerHTML.indexOf('one')).toBe(0);
+
+        myComponent.data.remove('persons', 'one');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[1].getAttribute('title')).toBe('two 1/1');
+            expect(lis[1].innerHTML.indexOf('two')).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
