@@ -87,7 +87,7 @@ describe("IfDirective", function () {
 
     it("position right when update", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><b san-if="cond" title="errorrik">errorrik</b><u>uuu</u></div>'
+            template: '<div><b san-if="cond && 1" title="errorrik">errorrik</b><u>uuu</u></div>'
         });
         var myComponent = new MyComponent();
 
@@ -116,7 +116,7 @@ describe("IfDirective", function () {
 
     it("render when true, and update soon", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<div><span san-if="cond" title="errorrik">errorrik</span></div>'
+            template: '<div><span san-if="cond || 0" title="errorrik">errorrik</span></div>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('cond', true);

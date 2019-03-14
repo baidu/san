@@ -38,6 +38,32 @@ describe("Expression Update Detect", function () {
         });
     });
 
+    it("simple text, default html filter(or ignore)", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span>{{name|html}}</span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', '<b>er</b>');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.innerHTML.indexOf('er')).toBe(0);
+        expect(span.innerHTML).not.toContain('<b>er</b>');
+        myComponent.data.set('name', 'san');
+        san.nextTick(function () {
+            expect(span.title).toBe('san');
+            expect(span.innerHTML.indexOf('san')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("complex text", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="hello {{val1}}, have dinner with {{val2}}?"></span></a>'
