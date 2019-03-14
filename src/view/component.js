@@ -648,9 +648,9 @@ Component.prototype._update = function (changes) {
         }
     }
 
-    var dataChanges = this.dataChanges;
+    var dataChanges = this._dataChanges;
     if (dataChanges) {
-        this.dataChanges = null;
+        this._dataChanges = null;
 
         var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
         var expectNodeType = (!ifDirective || evalExpr(ifDirective.value, this.data, this)) ? 1 : 8;
@@ -763,12 +763,12 @@ Component.prototype._repaintChildren = function () {
  */
 Component.prototype._dataChanger = function (change) {
     if (this.lifeCycle.created && this._aftercreated) {
-        if (!this.dataChanges) {
+        if (!this._dataChanges) {
             nextTick(this._update, this);
-            this.dataChanges = [];
+            this._dataChanges = [];
         }
 
-        this.dataChanges.push(change);
+        this._dataChanges.push(change);
     }
     else if (this.lifeCycle.inited && this.owner) {
         this._updateBindxOwner([change]);
@@ -799,7 +799,7 @@ Component.prototype.watch = function (dataName, listener) {
 Component.prototype._dispose = function () {
     this.data.unlisten();
     this.dataChanger = null;
-    this.dataChanges = null;
+    this._dataChanges = null;
 
     var len = this.implicitChildren.length;
     while (len--) {
