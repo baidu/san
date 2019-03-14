@@ -112,6 +112,10 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             var htmlDirective = this.aNode.directives.html;
 
             if (htmlDirective) {
+                // #[begin] error
+                warnSetHTML(this.el);
+                // #[end]
+
                 this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
             }
             else {
