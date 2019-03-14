@@ -1,5 +1,5 @@
 
-describe('warn', function () {
+console.warn && describe('warn', function () {
     beforeEach(function () {
         spyOn(console, 'warn');
     });
