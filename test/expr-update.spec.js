@@ -54,7 +54,6 @@ describe("Expression Update Detect", function () {
         expect(span.innerHTML).not.toContain('<b>er</b>');
         myComponent.data.set('name', 'san');
         san.nextTick(function () {
-            expect(span.title).toBe('san');
             expect(span.innerHTML.indexOf('san')).toBe(0);
 
             myComponent.dispose();
