@@ -3785,7 +3785,7 @@ describe("Component", function () {
                 var result = '{';
 
                 for (var key in source) {
-                    if (typeof source[key] === 'undefined') {
+                    if (!source.hasOwnProperty(key) || typeof source[key] === 'undefined') {
                         continue;
                     }
 
