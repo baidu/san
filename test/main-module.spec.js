@@ -1,6 +1,6 @@
-describe("nextTick", function () {
+describe("Main Module", function () {
 
-    it("work async", function (done) {
+    it("nextTick work async", function (done) {
         var div = document.createElement('div');
         document.body.appendChild(div);
 
