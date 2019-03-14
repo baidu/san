@@ -50,7 +50,7 @@ describe("Expression Update Detect", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        expect(span.innerHTML).not.toContain('&lt;b&gt;er');
+        expect(span.innerHTML).toContain('&lt;b&gt;er');
         myComponent.data.set('name', 'san');
         san.nextTick(function () {
             expect(span.innerHTML.indexOf('san')).toBe(0);
