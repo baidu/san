@@ -18,6 +18,7 @@ var warn = require('../util/warn');
  */
 function warnSetHTML(el) {
     // dont warn if not in browser runtime
+    /* istanbul ignore if */
     if (!(typeof window !== 'undefined' && typeof navigator !== 'undefined' && window.document)) {
         return;
     }

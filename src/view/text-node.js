@@ -47,6 +47,7 @@ function TextNode(aNode, owner, scope, parent, reverseWalker) {
 
                         while (1) { // eslint-disable-line
                             currentNode = reverseWalker.current;
+                            /* istanbul ignore if */
                             if (!currentNode) {
                                 throw new Error('[SAN REVERSE ERROR] Text end flag not found. \nPaths: '
                                     + getNodePath(this).join(' > '));

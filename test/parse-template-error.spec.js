@@ -210,4 +210,21 @@ describe('parseTemplate', function () {
         }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
     });
 
+    it('component allow just one root element', function () {
+
+        expect(function () {
+            var MyComponent = san.defineComponent({
+                template: '<div></div><div></div>'
+            });
+            new MyComponent();
+        }).toThrowError('[SAN FATAL] template must have a root element.');
+
+        expect(function () {
+            var MyComponent = san.defineComponent({
+                template: 'hello san'
+            });
+            new MyComponent();
+        }).toThrowError('[SAN FATAL] template must have a root element.');
+    });
+
 });
