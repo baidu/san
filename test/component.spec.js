@@ -1216,6 +1216,74 @@ describe("Component", function () {
         myComponent.data.set('layerContent', 'subtitle');
     });
 
+    it("dynamic create component, with on and un method", function () {
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+
+        var layerNum = 0;
+        function layerNumHandler(num) {
+            layerNum = num;
+        }
+        var panelLayer;
+        var Panel = san.defineComponent({
+            template: '<div>panel</div>',
+            attached: function () {
+                var layer = new Layer({
+                    data: {
+                        content: this.data.get('content')
+                    }
+                });
+
+                layer.attach(wrap);
+                panelLayer = layer;
+                layer.on('change', layerNumHandler);
+            }
+        });
+        var Layer = san.defineComponent({
+            template: '<b>{{content}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-panel': Panel
+            },
+
+            template: '<div><x-panel content="{{layerContent}}"></x-panel><u>{{title}}</u></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                layerContent: 'layer',
+                title: 'main'
+            }
+        });
+
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('main');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('layer');
+
+        expect(layerNum).toBe(0);
+
+        panelLayer.fire('change', 77);
+        expect(layerNum).toBe(77);
+
+        panelLayer.un('change', layerNumHandler);
+        panelLayer.fire('change', 66);
+        expect(layerNum).toBe(77);
+
+        panelLayer.on('change', layerNumHandler);
+        panelLayer.fire('change', 88);
+        expect(layerNum).toBe(88);
+
+        panelLayer.un('change');
+        panelLayer.fire('change', 250);
+        expect(layerNum).toBe(88);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("dispatch should pass message up, util the first component which recieve it", function (done) {
         var Select = san.defineComponent({
             template: '<ul><slot></slot></ul>',
