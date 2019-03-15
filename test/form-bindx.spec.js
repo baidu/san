@@ -38,6 +38,47 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    if (typeof window !== 'undefined' && window.CompositionEvent) {
+        it("text value input by compositionstart and compositionend", function (done) {
+            var defName = 'text value';
+
+            var MyComponent = san.defineComponent({
+                template: '<div><span title="{{name}}">{{name}}</span> <input value="{=name=}"/></div>'
+            });
+            var myComponent = new MyComponent();
+            myComponent.data.set('name', defName);
+
+            var wrap = document.createElement('div');
+            document.body.appendChild(wrap);
+            myComponent.attach(wrap);
+
+            var span = wrap.firstChild.firstChild;
+            var input = wrap.getElementsByTagName('input')[0];
+            expect(span.title).toBe(defName);
+
+            input.value = 'test' + (+new Date());
+            function doneSpec() {
+                var name = myComponent.data.get('name');
+
+                if (name !== defName) {
+                    expect(span.title).toBe(name);
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                    return;
+                }
+
+                setTimeout(doneSpec, 500);
+            }
+
+            triggerEvent(input, 'compositionstart');
+            triggerEvent(input, 'compositionend');
+            setTimeout(doneSpec, 500);
+
+        });
+    }
+
     it("text value for xss", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span>{{name}}</span> <input value="{=name=}"/><input value="{{name}}"/></div>'
