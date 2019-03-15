@@ -15,6 +15,11 @@ var splitStr2Obj = require('../util/split-str-2-obj');
  *
  * @type {Object}
  */
-var boolAttrs = splitStr2Obj('checked,readonly,selected,multiple,disabled');
+var boolAttrs = splitStr2Obj(
+    'allowpaymentrequest,async,autofocus,autoplay,'
+    + 'checked,controls,default,defer,disabled,formnovalidate,'
+    + 'hidden,ismap,itemscope,loop,multiple,muted,nomodule,novalidate,'
+    + 'open,readonly,required,reversed,selected,typemustmatch'
+);
 
 exports = module.exports = boolAttrs;
