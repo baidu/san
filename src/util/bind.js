@@ -25,7 +25,9 @@ function bind(func, thisArg) {
     // #[begin] allua
     }
 
+    /* istanbul ignore next */
     var args = slice.call(arguments, 2);
+    /* istanbul ignore next */
     return function () {
         return func.apply(thisArg, args.concat(slice.call(arguments)));
     };

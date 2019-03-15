@@ -66,6 +66,7 @@ function nextTick(fn, thisArg) {
     };
 
     // 非标准方法，但是此方法非常吻合要求。
+    /* istanbul ignore next */
     if (typeof setImmediate === 'function') {
         setImmediate(nextHandler);
     }

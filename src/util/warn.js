@@ -17,6 +17,7 @@ function warn(message) {
     message = '[SAN WARNING] ' + message;
 
     /* eslint-disable no-console */
+    /* istanbul ignore next */
     if (typeof console === 'object' && console.warn) {
         console.warn(message);
     }
