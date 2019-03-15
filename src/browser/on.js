@@ -18,6 +18,7 @@
  */
 function on(el, eventName, listener, capture) {
     // #[begin] allua
+    /* istanbul ignore else */
     if (el.addEventListener) {
     // #[end]
         el.addEventListener(eventName, listener, capture);

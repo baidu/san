@@ -18,6 +18,7 @@
  */
 function un(el, eventName, listener, capture) {
     // #[begin] allua
+    /* istanbul ignore else */
     if (el.addEventListener) {
     // #[end]
         el.removeEventListener(eventName, listener, capture);

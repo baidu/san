@@ -66,17 +66,20 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
     if (reverseWalker) {
         var currentNode = reverseWalker.current;
 
+        /* istanbul ignore if */
         if (!currentNode) {
             throw new Error('[SAN REVERSE ERROR] Element not found. \nPaths: '
                 + getNodePath(this).join(' > '));
         }
 
+        /* istanbul ignore if */
         if (currentNode.nodeType !== 1) {
             throw new Error('[SAN REVERSE ERROR] Element type not match, expect 1 but '
                 + currentNode.nodeType + '.\nPaths: '
                 + getNodePath(this).join(' > '));
         }
 
+        /* istanbul ignore if */
         if (currentNode.tagName.toLowerCase() !== this.tagName) {
             throw new Error('[SAN REVERSE ERROR] Element tagName not match, expect '
                 + this.tagName + ' but meat ' + currentNode.tagName.toLowerCase() + '.\nPaths: '
