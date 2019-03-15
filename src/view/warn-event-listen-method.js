@@ -21,10 +21,6 @@ function warnEventListenMethod(eventBind, owner) {
     var valid = true;
     var method = owner;
     each(eventBind.expr.name.paths, function (path) {
-        if (!path.value) {
-            return false;
-        }
-
         method = method[path.value];
         valid = !!method;
         return valid;
