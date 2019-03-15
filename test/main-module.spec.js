@@ -17,4 +17,25 @@ describe("Main Module", function () {
 
     });
 
+    it("parseExpr by false value", function () {
+        expect(san.parseExpr()).toBeUndefined();
+    });
+
+    it("parseExpr with a static string", function () {
+        expect(san.parseExpr('"aaa\\nbbb"').value).toBe('aaa\nbbb');
+    });
+
+    it("defineComponent by function should return itself", function () {
+        function a() {}
+        expect(san.defineComponent(a)).toBe(a);
+    });
+
+    it("defineComponent by string should throw Error", function () {
+        expect(function () {
+            san.defineComponent('test');
+        }).toThrowError('[SAN FATAL] defineComponent need a plain object.');
+    });
+
+
+
 });
