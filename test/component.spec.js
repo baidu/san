@@ -133,6 +133,18 @@ describe("Component", function () {
         expect(labelAttached).toBe(1);
         expect(labelDetached).toBe(0);
 
+        myComponent.detach();
+        expect(myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(myComponent.lifeCycle.is('attached')).toBeFalsy();
+        expect(myComponent.lifeCycle.is('detached')).toBeTruthy();
+        expect(mainCreated).toBe(1);
+        expect(mainDetached).toBe(1);
+        expect(mainAttached).toBe(0);
+        expect(labelInited).toBe(1);
+        expect(labelCreated).toBe(1);
+        expect(labelAttached).toBe(1);
+        expect(labelDetached).toBe(0);
+
         myComponent.attach(wrap);
         expect(myComponent.lifeCycle.is('created')).toBeTruthy();
         expect(myComponent.lifeCycle.is('attached')).toBeTruthy();
