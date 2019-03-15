@@ -148,10 +148,7 @@ function elementOwnAttached() {
     this._toPhase('attached');
 
 
-    if (this._isInitFromEl) {
-        this._isInitFromEl = false;
-    }
-    else if (this.el.nodeType === 1) {
+    if (this.el.nodeType === 1) {
         var transition = elementGetTransition(this);
         if (transition && transition.enter) {
             transition.enter(this.el, empty);
