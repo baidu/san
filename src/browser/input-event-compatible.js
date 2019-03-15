@@ -12,6 +12,7 @@ var on = require('./on');
 var trigger = require('./trigger');
 
 // #[begin] allua
+/* istanbul ignore if */
 if (ie === 9) {
     on(document, 'selectionchange', function () {
         var el = document.activeElement;

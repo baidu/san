@@ -19,6 +19,7 @@ function elementInitTagName(node) {
 
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
+    /* istanbul ignore if */
     if (ieOldThan9 && node.tagName.indexOf('-') > 0) {
         node.tagName = 'div';
     }
