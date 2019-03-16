@@ -159,6 +159,7 @@ var elementPropHandlers = {
                 // #[begin] allua
                 // 代码不用抽出来防重复，allua内的代码在现代浏览器版本会被编译时干掉，gzip也会处理重复问题
                 // see: #378
+                /* istanbul ignore if */
                 if (ie && ie < 8 && !element.lifeCycle.attached) {
                     boolPropHandler.prop(
                         el,
@@ -173,7 +174,7 @@ var elementPropHandlers = {
             output: function (element, bindInfo, data) {
                 var el = element.el;
                 var bindValue = getANodeProp(element.aNode, 'value');
-                var bindType = getANodeProp(element.aNode, 'type') || {};
+                var bindType = getANodeProp(element.aNode, 'type') || /* istanbul ignore next */{};
 
                 if (bindValue && bindType) {
                     switch (el.type.toLowerCase()) {
