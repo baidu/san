@@ -210,6 +210,11 @@ describe('parseTemplate', function () {
         }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
     });
 
+    it('should return normal ANode by not string', function () {
+
+        expect(san.parseTemplate({}).children.length).toBe(0);
+    });
+
     it('component allow just one root element', function () {
 
         expect(function () {
@@ -225,6 +230,15 @@ describe('parseTemplate', function () {
             });
             new MyComponent();
         }).toThrowError('[SAN FATAL] template must have a root element.');
+    });
+
+    it('for syntax error', function () {
+        expect(function () {
+            var MyComponent = san.defineComponent({
+                template: '<ul><li s-for="item inlist">{{item}}</li></ul>'
+            });
+            new MyComponent();
+        }).toThrowError('[SAN FATAL] for syntax error: item inlist');
     });
 
 });
