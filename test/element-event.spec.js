@@ -292,4 +292,50 @@ describe("Element-Event", function () {
         doneSpec();
 
     });
+
+    it("arg string literal contains colon not means modifier", function (done) {
+        if (!document.addEventListener) {
+            done();
+            return;
+        }
+
+        var clicked = 0;
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{name}}" on-click="clicker(\'te:st\')">{{name}}, please click here!</span></a>',
+
+            mainClicker: function () {
+                clicked++;
+            },
+
+            clicker: function (text) {
+                expect(text).toBe('te:st');
+                clicked++;
+            }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'errorrik');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        function doneSpec() {
+
+            if (clicked) {
+                done();
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        var span = wrap.getElementsByTagName('span')[0];
+        triggerEvent(span, 'click');
+
+        doneSpec();
+
+    });
 });
