@@ -90,7 +90,7 @@ describe("Expression Update Detect", function () {
 
     it("text has interpolation and filter", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<a><span title="hello {{name | upx(!all)}}!"></span></a>',
+            template: '<a><span prop-title="hello {{name | upx(!all)}}!"></span></a>',
             filters: {upx: upxFilter}
         });
         var myComponent = new MyComponent();
