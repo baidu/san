@@ -19,12 +19,14 @@ function unionKeys(obj1, obj2) {
     var key;
 
     for (key in obj1) {
+        /* istanbul ignore else  */
         if (obj1.hasOwnProperty(key)) {
             result.push(key);
         }
     }
 
     for (key in obj2) {
+        /* istanbul ignore else  */
         if (obj2.hasOwnProperty(key)) {
             !obj1[key] && result.push(key);
         }

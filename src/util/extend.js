@@ -16,6 +16,7 @@
  */
 function extend(target, source) {
     for (var key in source) {
+        /* istanbul ignore else  */
         if (source.hasOwnProperty(key)) {
             var value = source[key];
             if (typeof value !== 'undefined') {

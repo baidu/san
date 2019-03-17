@@ -27,7 +27,7 @@ function createDataTypesChecker(dataTypes, componentName) {
     return function (data) {
 
         for (var dataTypeName in dataTypes) {
-
+            /* istanbul ignore else  */
             if (dataTypes.hasOwnProperty(dataTypeName)) {
 
                 var dataTypeChecker = dataTypes[dataTypeName];
