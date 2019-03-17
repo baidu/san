@@ -21,6 +21,7 @@ var ieVersionMatch = typeof navigator !== 'undefined'
  *
  * @type {number}
  */
+/* istanbul ignore next */
 var ie = ieVersionMatch ? ieVersionMatch[1] - 0 : 0;
 // #[end]
 
