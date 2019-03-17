@@ -160,6 +160,7 @@ function immutableSet(source, exprPaths, pathsStart, pathsLen, value, data) {
         result = {};
 
         for (var key in source) {
+            /* istanbul ignore else  */
             if (key !== prop && source.hasOwnProperty(key)) {
                 result[key] = source[key];
             }

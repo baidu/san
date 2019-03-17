@@ -23,6 +23,7 @@ function defaultStyleFilter(source) {
     if (typeof source === 'object') {
         var result = '';
         for (var key in source) {
+            /* istanbul ignore else  */
             if (source.hasOwnProperty(key)) {
                 result += key + ':' + source[key] + ';';
             }
