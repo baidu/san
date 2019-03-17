@@ -241,4 +241,13 @@ describe('parseTemplate', function () {
         }).toThrowError('[SAN FATAL] for syntax error: item inlist');
     });
 
+    it('else not match if', function () {
+        expect(function () {
+            var MyComponent = san.defineComponent({
+                template: '<ul><li s-elif="cond">{{item}}</li></ul>'
+            });
+            new MyComponent();
+        }).toThrowError('[SAN FATEL] else not match if.');
+    });
+
 });

@@ -218,6 +218,7 @@ function parseTemplate(source, options) {
 
                 if (elseDirective) {
                     var parentChildrenLen = currentNode.children.length;
+                    var ifANode = null;
 
                     while (parentChildrenLen--) {
                         var parentChild = currentNode.children[parentChildrenLen];
@@ -226,16 +227,19 @@ function parseTemplate(source, options) {
                             continue;
                         }
 
-                        // #[begin] error
-                        if (!parentChild.directives['if']) { // eslint-disable-line dot-notation
-                            throw new Error('[SAN FATEL] else not match if.');
-                        }
-                        // #[end]
-
-                        parentChild.elses = parentChild.elses || [];
-                        parentChild.elses.push(aElement);
-
+                        ifANode = parentChild;
                         break;
+                    }
+
+                    // #[begin] error
+                    if (!ifANode || !parentChild.directives['if']) { // eslint-disable-line dot-notation
+                        throw new Error('[SAN FATEL] else not match if.');
+                    }
+                    // #[end]
+
+                    if (ifANode) {
+                        ifANode.elses = ifANode.elses || [];
+                        ifANode.elses.push(aElement);
                     }
                 }
                 else {
