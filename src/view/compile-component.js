@@ -23,6 +23,7 @@ function compileComponent(ComponentClass) {
     var proto = ComponentClass.prototype;
 
     // pre define components class
+    /* istanbul ignore else  */
     if (!proto.hasOwnProperty('_cmptReady')) {
         proto.components = ComponentClass.components || proto.components || {};
         var components = proto.components;
@@ -43,6 +44,7 @@ function compileComponent(ComponentClass) {
 
 
     // pre compile template
+    /* istanbul ignore else  */
     if (!proto.hasOwnProperty('aNode')) {
         proto.aNode = {
             directives: {},
