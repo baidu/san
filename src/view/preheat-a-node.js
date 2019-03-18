@@ -73,6 +73,7 @@ function preheatANode(aNode) {
                 });
 
                 for (var key in aNode.directives) {
+                    /* istanbul ignore else  */
                     if (aNode.directives.hasOwnProperty(key)) {
                         var directive = aNode.directives[key];
                         recordHotspotData(
