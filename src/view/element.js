@@ -23,7 +23,6 @@ var elementOwnCreate = require('./element-own-create');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
-var elementOwnToPhase = require('./element-own-to-phase');
 var elementOwnAttached = require('./element-own-attached');
 var elementOwnLeave = require('./element-own-leave');
 var elementInitTagName = require('./element-init-tag-name');
@@ -139,9 +138,12 @@ Element.prototype.attach = function (parentEl, beforeEl) {
 Element.prototype.detach = elementOwnDetach;
 Element.prototype.dispose = elementOwnDispose;
 Element.prototype._create = elementOwnCreate;
-Element.prototype._toPhase = elementOwnToPhase;
 Element.prototype._onEl = elementOwnOnEl;
 Element.prototype._leave = elementOwnLeave;
+
+Element.prototype._toPhase = function (name) {
+    this.lifeCycle = LifeCycle[name];
+};
 
 /**
  * 视图更新
