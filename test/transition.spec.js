@@ -99,6 +99,7 @@ describe("Transition", function () {
                                 }
                                 else {
                                     myComponent.detach();
+                                    myComponent.detach();
                                     expect(detached).not.toBeTruthy();
                                 }
                             });
@@ -187,6 +188,7 @@ describe("Transition", function () {
 
                             san.nextTick(function () {
                                 if (attached > 1) {
+                                    myComponent.dispose();
                                     myComponent.dispose();
                                     expect(disposed).not.toBeTruthy();
                                 }
