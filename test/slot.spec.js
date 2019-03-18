@@ -2021,6 +2021,52 @@ describe("Slot", function () {
         })
     });
 
+    it("scoped by given content with var-, splice", function (done) {
+        var Man = san.defineComponent({
+            template: '<div><slot name="test" var-n="data.name" var-emails="data.emails" var-sex="data.sex ? \'male\' : \'female\'"><p>{{n}},{{sex}},{{email}}</p></slot></div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+
+            template: '<div><x-man data="{{man}}"><h3 slot="test">{{n}}</h3><b slot="test">{{sex}}</b><u slot="test" s-for="email in emails">{{email}}</u></x-man></div>',
+
+            initData: function () {
+                return {
+                    man: {
+                        name: 'errorrik',
+                        sex: 1,
+                        emails: ['errorrik@gmail.com']
+                    }
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+        expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+        myComponent.data.push('man.emails', 'erik168@163.com');
+        san.nextTick(function () {
+
+            expect(wrap.getElementsByTagName('h3')[0].innerHTML).toBe('errorrik');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('male');
+            expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
+            expect(wrap.getElementsByTagName('u')[1].innerHTML).toBe('erik168@163.com');
+
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
+            done();
+        })
+    });
+
     it("deep", function (done) {
         var Panel = san.defineComponent({
             template: '<div><slot/></div>'
