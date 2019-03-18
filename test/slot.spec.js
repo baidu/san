@@ -2061,8 +2061,8 @@ describe("Slot", function () {
             expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('errorrik@gmail.com');
             expect(wrap.getElementsByTagName('u')[1].innerHTML).toBe('erik168@163.com');
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         })
     });
