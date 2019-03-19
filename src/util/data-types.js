@@ -23,10 +23,10 @@ var ANONYMOUS_CLASS_NAME = '<<anonymous>>';
  * @return {string}
  */
 function getDataType(obj) {
-
-    if (obj && obj.nodeType === 1) {
-        return 'element';
-    }
+    // 不支持element了。data应该是纯数据
+    // if (obj && obj.nodeType === 1) {
+    //     return 'element';
+    // }
 
     return Object.prototype.toString
         .call(obj)
@@ -42,16 +42,19 @@ function getDataType(obj) {
  * @return {Function}
  */
 function createChainableChecker(validate) {
+    /* istanbul ignore next */
     var chainedChecker = function () {};
     chainedChecker.isRequired = empty;
 
     // 只在 error 功能启用时才有实际上的 dataTypes 检测
     // #[begin] error
+    validate = validate || empty;
     var checkType = function (isRequired, data, dataName, componentName, fullDataName) {
 
         var dataValue = data[dataName];
         var dataType = getDataType(dataValue);
 
+        /* istanbul ignore next */
         componentName = componentName || ANONYMOUS_CLASS_NAME;
 
         // 如果是 null 或 undefined，那么要提前返回啦
@@ -75,8 +78,6 @@ function createChainableChecker(validate) {
     chainedChecker = bind(checkType, null, false);
     chainedChecker.isRequired = bind(checkType, null, true);
     // #[end]
-
-
 
     return chainedChecker;
 
@@ -164,8 +165,9 @@ function createInstanceOfChecker(expectedClass) {
 
         var dataValueClassName = dataValue.constructor && dataValue.constructor.name
             ? dataValue.constructor.name
-            : ANONYMOUS_CLASS_NAME;
+            : /* istanbul ignore next */ ANONYMOUS_CLASS_NAME;
 
+        /* istanbul ignore next */
         var expectedClassName = expectedClass.name || ANONYMOUS_CLASS_NAME;
 
         throw new Error('[SAN ERROR] '
@@ -426,13 +428,13 @@ function createExactChecker(shapeTypes) {
 
 /* eslint-disable fecs-valid-var-jsdoc */
 var DataTypes = {
-    array: createChainableChecker(empty),
-    object: createChainableChecker(empty),
-    func: createChainableChecker(empty),
-    string: createChainableChecker(empty),
-    number: createChainableChecker(empty),
-    bool: createChainableChecker(empty),
-    symbol: createChainableChecker(empty),
+    array: createChainableChecker(),
+    object: createChainableChecker(),
+    func: createChainableChecker(),
+    string: createChainableChecker(),
+    number: createChainableChecker(),
+    bool: createChainableChecker(),
+    symbol: createChainableChecker(),
     any: createChainableChecker,
     arrayOf: createChainableChecker,
     instanceOf: createChainableChecker,
@@ -446,7 +448,7 @@ var DataTypes = {
 // #[begin] error
 DataTypes = {
 
-    any: createChainableChecker(empty),
+    any: createChainableChecker(),
 
     // 类型检测
     array: createPrimaryTypeChecker('array'),
