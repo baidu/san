@@ -86,7 +86,7 @@ function elementOwnAttached() {
                             }
 
                             this._onEl(
-                                ('oninput' in this.el) ? 'input' : 'propertychange',
+                                ('oninput' in this.el) ? 'input' : /* istanbul ignore next */ 'propertychange',
                                 inputXPropOutputer(this, xProp, data)
                             );
 
@@ -111,37 +111,46 @@ function elementOwnAttached() {
             }
         }
 
-        // bind events
-        var events = isComponent
-            ? this.aNode.events.concat(this.nativeEvents)
-            : this.aNode.events;
-
-        for (var i = 0, l = events.length; i < l; i++) {
-            var eventBind = events[i];
-            var owner = isComponent ? this : this.owner;
-
-            // 判断是否是nativeEvent，下面的warn方法和事件绑定都需要
-            // 依此指定eventBind.expr.name位于owner还是owner.owner上
-            if (eventBind.modifier.native) {
-                owner = owner.owner;
-                data = this.scope || owner.data;
-            }
+        for (var i = 0, l = this.aNode.events.length; i < l; i++) {
+            var eventBind = this.aNode.events[i];
 
             // #[begin] error
-            warnEventListenMethod(eventBind, owner);
+            warnEventListenMethod(eventBind, isComponent ? this : this.owner);
             // #[end]
 
             this._onEl(
                 eventBind.name,
                 bind(
                     eventDeclarationListener,
-                    owner,
+                    isComponent ? this : this.owner,
                     eventBind,
                     0,
                     data
                 ),
                 eventBind.modifier.capture
             );
+        }
+
+        if (isComponent) {
+            for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
+                var eventBind = this.nativeEvents[i];
+
+                // #[begin] error
+                warnEventListenMethod(eventBind, this.owner);
+                // #[end]
+
+                this._onEl(
+                    eventBind.name,
+                    bind(
+                        eventDeclarationListener,
+                        this.owner,
+                        eventBind,
+                        0,
+                        this.scope
+                    ),
+                    eventBind.modifier.capture
+                );
+            }
         }
     }
 
