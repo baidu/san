@@ -72,9 +72,16 @@ describe("Form TwoWay Binding", function () {
                 setTimeout(doneSpec, 500);
             }
 
-            triggerEvent(input, 'compositionstart');
             triggerEvent(input, 'compositionend');
-            setTimeout(doneSpec, 500);
+            setTimeout(function () {
+                expect(myComponent.data.get('name')).toBe(defName);
+                expect(span.title).toBe(defName);
+
+                triggerEvent(input, 'compositionstart');
+                triggerEvent(input, 'compositionend');
+                setTimeout(doneSpec, 500);
+
+            }, 300)
 
         });
     }
