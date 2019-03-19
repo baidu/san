@@ -61,10 +61,6 @@ function elementOwnCreate() {
 
         this._toPhase('created');
     }
-
-    if (!this.lifeCycle.created) {
-        this._toPhase('created');
-    }
 }
 
 exports = module.exports = elementOwnCreate;
