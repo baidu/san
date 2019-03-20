@@ -130,7 +130,7 @@ describe("Main Module", function () {
         expect(san.defineComponent(a)).toBe(a);
     });
 
-    it("defineComponent by string should throw Error", function () {
+    san.debug && it("defineComponent by string should throw Error", function () {
         expect(function () {
             san.defineComponent('test');
         }).toThrowError('[SAN FATAL] defineComponent need a plain object.');
