@@ -287,13 +287,8 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     var violentClear = !this.aNode.directives.transition
         && !children
         // 是否 parent 的唯一 child
-        && (len
-            && parentFirstChild === this.children[0].el
-            && (parentLastChild === this.el
-                || parentLastChild === this.children[len - 1].el)
-            || len === 0
-            && parentFirstChild === this.el
-            && parentLastChild === this.el
+        && (len && parentFirstChild === this.children[0].el && parentLastChild === this.el
+            || len === 0 && parentFirstChild === this.el && parentLastChild === this.el
         );
 
     if (!children) {
@@ -305,20 +300,17 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     var me = this;
     var disposedChildCount = 0;
     len = children.length;
-    if (len) {
-        for (var i = 0; i < len; i++) {
-            var disposeChild = children[i];
-            if (disposeChild) {
-                disposeChild._ondisposed = childDisposed;
-                disposeChild.dispose(violentClear, violentClear);
-            }
-            else {
-                childDisposed();
-            }
+
+    // 调用入口处已保证此处必有需要被删除的 child
+    for (var i = 0; i < len; i++) {
+        var disposeChild = children[i];
+        if (disposeChild) {
+            disposeChild._ondisposed = childDisposed;
+            disposeChild.dispose(violentClear, violentClear);
         }
-    }
-    else {
-        childDisposed();
+        else {
+            childDisposed();
+        }
     }
 
     function childDisposed() {
