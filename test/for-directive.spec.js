@@ -107,6 +107,147 @@ describe("ForDirective", function () {
         });
     });
 
+    it("render list, push and pop in a tick", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    list: [1,2]
+                };
+            },
+
+            template: '<ul><li san-for="item in list">{{item}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(2);
+        expect(lis[1].innerHTML).toBe('2');
+
+        myComponent.data.push('list', 3);
+        myComponent.data.push('list', 4);
+        myComponent.data.removeAt('list', 2);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[1].innerHTML).toBe('2');
+            expect(lis[2].innerHTML).toBe('4');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, push and pop in a tick, not flatten update", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    list: [1, 2]
+                };
+            },
+
+            template: '<ul><li s-for="item in list" s-transition="test">{{item}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(2);
+        expect(lis[1].innerHTML).toBe('2');
+
+        myComponent.data.push('list', 3);
+        myComponent.data.push('list', 4);
+        myComponent.data.removeAt('list', 2);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[1].innerHTML).toBe('2');
+            expect(lis[2].innerHTML).toBe('4');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, clear by multi pop", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    list: [1, 2]
+                };
+            },
+
+            template: '<ul><li san-for="item in list">{{item}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+
+        expect(lis.length).toBe(2);
+        expect(lis[1].innerHTML).toBe('2');
+
+        myComponent.data.pop('list');
+        myComponent.data.pop('list');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("render list, init no data, push and pop", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    list: []
+                };
+            },
+
+            template: '<ul><li san-for="item in list">{{item}}</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(0);
+
+        myComponent.data.push('list', 2);
+        myComponent.data.pop('list');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("render list with template, template has sibling, no data, set soon", function (done) {
         var MyComponent = san.defineComponent({
             initData: function () {
@@ -737,6 +878,39 @@ describe("ForDirective", function () {
         });
     });
 
+    it("data remove after attach use removeAt, not flatten update mode", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li s-transition="trans" s-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            { name: 'one', email: 'one@gmail.com' },
+            { name: 'two', email: 'two@gmail.com' }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].getAttribute('title')).toBe('one 1/2');
+        expect(lis[1].innerHTML.indexOf('one - one@gmail.com')).toBe(0);
+
+        myComponent.data.removeAt('persons', 0);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+            expect(lis[1].getAttribute('title')).toBe('two 1/1');
+            expect(lis[1].innerHTML.indexOf('two - two@gmail.com')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("data remove after attach use remove", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li>name</li><li san-for="p,i in persons" title="{{p}} {{i+1}}/{{persons.length}}">{{p}}</li><li>name</li></ul>'
@@ -833,6 +1007,49 @@ describe("ForDirective", function () {
             1, 3,
             {name: 'six', email: 'six@gmail.com'},
             {name: 'seven', email: 'seven@gmail.com'}
+        ]);
+
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].getAttribute('title')).toBe('one 1/4');
+            expect(lis[2].getAttribute('title')).toBe('six 2/4');
+            expect(lis[3].getAttribute('title')).toBe('seven 3/4');
+            expect(lis[4].getAttribute('title')).toBe('five 4/4');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("data splice after attach, remove and insert, not fattern update mode", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name - email</li><li s-transition="trans" s-for="p,i in persons" title="{{p.name}} {{i+1}}/{{persons.length}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            { name: 'one', email: 'one@gmail.com' },
+            { name: 'two', email: 'two@gmail.com' },
+            { name: 'three', email: 'three@gmail.com' },
+            { name: 'four', email: 'four@gmail.com' },
+            { name: 'five', email: 'five@gmail.com' }
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(7);
+        expect(lis[1].getAttribute('title')).toBe('one 1/5');
+        expect(lis[2].getAttribute('title')).toBe('two 2/5');
+
+        myComponent.data.splice('persons', [
+            1, 3,
+            { name: 'six', email: 'six@gmail.com' },
+            { name: 'seven', email: 'seven@gmail.com' }
         ]);
 
 
