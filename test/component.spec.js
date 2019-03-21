@@ -2144,6 +2144,29 @@ describe("Component", function () {
 
     });
 
+    san.debug && it("computed method should throw Error when data.get called by empty expr", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{name}}</span></div>',
+
+            initData: function () {
+                return {
+                    'first': 'first',
+                    'last': 'last'
+                }
+            }
+        });
+
+        MyComponent.computed = {
+            name: function () {
+                return this.data.get();
+            }
+        };
+
+        expect(function () {
+            new MyComponent()
+        }).toThrowError(/call get method in computed need argument/);
+    });
+
     it("custom event listen and fire", function () {
         var receive;
 
