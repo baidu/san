@@ -561,6 +561,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
                             // 如果数据本身引用发生变化，设置变更
                             if (this.listData[oldIndex] !== newList[newIndex]) {
+                                this.children[oldIndex].scope.raw[this.param.item] = newList[newIndex];
                                 (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
                                     type: DataChangeType.SET,
                                     option: change.option,

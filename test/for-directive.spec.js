@@ -2328,6 +2328,48 @@ describe("ForDirective", function () {
         });
     });
 
+    it("component can track owner splice and set change", function (done) {
+
+        var List = san.defineComponent({
+            template: '<ul><li s-for="item in list trackBy item.id">{{item.text}}</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-list': List
+            },
+
+            template: '<div><x-list list="{{list}}" /></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [{id:1,text:1}, {id:2,text:2}, {id:3,text:3}]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var li = wrap.getElementsByTagName('li')[0];
+        expect(li.innerHTML).toBe('1');
+
+        expect(wrap.getElementsByTagName('li')[1].innerHTML).toBe('2');
+
+        myComponent.data.unshift('list', {id:9,text:9});
+        myComponent.data.set('list[2].text', 20);
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('li')[0].innerHTML).toBe('9');
+            expect(wrap.getElementsByTagName('li')[2].innerHTML).toBe('20');
+            var fli = wrap.getElementsByTagName('li')[1];
+            expect(fli === li).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("for array literal", function (done) {
 
         var MyComponent = san.defineComponent({
