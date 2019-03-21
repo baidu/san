@@ -1635,6 +1635,53 @@ describe("Component", function () {
 
     });
 
+    it("dispatch cross multi parent components", function () {
+        var received = 0;
+        var Child = san.defineComponent({
+            template: '<div>child</div>',
+            inited: function () {
+                this.dispatch('childInited');
+            }
+        });
+
+        var Parent = san.defineComponent({
+            components: {
+                'a-child': Child
+            },
+
+            template: '<div><a-child/></div>',
+
+            initData: function () {
+                return {
+                    xx: false
+                };
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'a-parent': Parent
+            },
+            messages: {
+                childInited: function () {
+                    received = 1;
+                }
+            },
+
+            template: '<div class="app"><a-parent/></div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(received).toBe(1);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("dispatch in inited, parent data change, view should change soon", function (done) {
         var Child = san.defineComponent({
             template: '<div>child</div>',
