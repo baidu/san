@@ -287,9 +287,8 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     var violentClear = !this.aNode.directives.transition
         && !children
         // 是否 parent 的唯一 child
-        && (len && parentFirstChild === this.children[0].el && parentLastChild === this.el
-            || len === 0 && parentFirstChild === this.el && parentLastChild === this.el
-        );
+        && len && parentFirstChild === this.children[0].el && parentLastChild === this.el
+    ;
 
     if (!children) {
         children = this.children;
