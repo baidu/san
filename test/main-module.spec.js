@@ -25,6 +25,32 @@ describe("Main Module", function () {
         expect(san.parseExpr('"aaa\\nbbb"').value).toBe('aaa\nbbb');
     });
 
+    it("parseExpr not support assign expr, just parse left hand", function () {
+        var expr = san.parseExpr('aaa=1');
+        var data = new san.Data({ aaa: 222 });
+        expect(typeof expr).toBe('object');
+        expect(data.get(expr)).toBe(222);
+    });
+
+    it("parseExpr not support bitand expr, just parse left hand", function () {
+        var expr = san.parseExpr('aaa&bbb');
+        var data = new san.Data({ aaa: 222 });
+        expect(typeof expr).toBe('object');
+        expect(data.get(expr)).toBe(222);
+    });
+
+    san.debug && it("parseExpr throw error when object name is invalid", function () {
+        expect(function () {
+            san.parseExpr('{[a]:2}');
+        }).toThrowError(/unexpect object name/);
+    });
+
+    san.debug && it("parseExpr throw error when start with not support expr", function () {
+        expect(function () {
+            san.parseExpr('^b');
+        }).toThrowError(/expect an ident/);
+    });
+
     it("Data new and get", function () {
         var data = new san.Data();
         expect(data.get('a.b')).toBeUndefined();
