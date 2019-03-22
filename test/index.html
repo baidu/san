@@ -4,6 +4,19 @@
     <meta charset="utf-8">
     <title>san-core Spec Runner</title>
 
+    <script>
+    var sanDevMsg;
+    var sanDevMsgReceived;
+    window.__san_devtool__ = {
+        emit: function (name, arg) {
+            sanDevMsg = {
+                name: name,
+                arg: arg
+            };
+            sanDevMsgReceived = true;
+        }
+    };
+    </script>
     <link rel="shortcut icon" type="image/png" href="../node_modules/jasmine-core/images/jasmine_favicon.png">
     <link rel="stylesheet" href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
 
@@ -32,6 +45,12 @@
             require(['san'], boot);
         };
     })();
+
+    describe("devtool", function () {
+        it("receive emit", function () {
+            expect(sanDevMsgReceived).toBeTruthy();
+        });
+    });
 
     describe("Conflict", function () {
 
