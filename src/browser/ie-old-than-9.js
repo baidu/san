@@ -21,8 +21,7 @@ var ie = require('./ie');
 /**
  * 是否 IE 并且小于 9
  */
-/* istanbul ignore next */
-var ieOldThan9 = ie && ie < 9;
+var ieOldThan9 = ie && /* istanbul ignore next */ ie < 9;
 // #[end]
 
 exports = module.exports = ieOldThan9;
