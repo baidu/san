@@ -151,6 +151,27 @@ describe("Main Module", function () {
         expect(data.get('a[0]')).toBe(3);
     });
 
+    it("Data pop, over len", function () {
+        var data = new san.Data({ a: [1, 2] });
+
+        expect(data.pop('a')).toBe(2);
+        expect(data.pop('a')).toBe(1);
+        expect(data.pop('a')).toBeUndefined();
+        expect(data.pop('a')).toBeUndefined();
+        expect(data.get('a.length')).toBe(0);
+    });
+
+    it("Data array op apply to not array, not make error", function () {
+        var data = new san.Data();
+        expect(function () {
+            data.splice('a', [10, 0, 3]);
+            data.push('a', 1);
+            data.pop('a');
+            data.unshift('a', 1);
+            data.shift('a');
+        }).not.toThrowError();
+    });
+
     it("defineComponent by function should return itself", function () {
         function a() {}
         expect(san.defineComponent(a)).toBe(a);
