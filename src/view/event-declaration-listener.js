@@ -24,11 +24,14 @@ function eventDeclarationListener(eventBind, isComponentEvent, data, e) {
     var method = findMethod(this, eventBind.expr.name, data);
 
     if (typeof method === 'function') {
-        var scope = new Data(
-            {$event: isComponentEvent ? e : e || window.event},
-            data
-        );
-        method.apply(this, evalArgs(eventBind.expr.args, scope, this));
+        method.apply(this, evalArgs(
+            eventBind.expr.args,
+            new Data(
+                { $event: isComponentEvent ? e : e || window.event },
+                data
+            ),
+            this
+        ));
     }
 }
 
