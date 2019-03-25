@@ -37,7 +37,7 @@
     // require('./view/node-type');
     // require('./view/get-prop-handler');
     // require('./view/is-data-change-by-element');
-    // require('./view/event-declaration-listener');
+    // require('./view/get-event-listener');
     // require('./view/create-node');
 
 

@@ -14,7 +14,7 @@ var isBrowser = require('../browser/is-browser');
 var trigger = require('../browser/trigger');
 var NodeType = require('./node-type');
 var elementGetTransition = require('./element-get-transition');
-var eventDeclarationListener = require('./event-declaration-listener');
+var getEventListener = require('./get-event-listener');
 var getPropHandler = require('./get-prop-handler');
 var warnEventListenMethod = require('./warn-event-listen-method');
 
@@ -120,13 +120,7 @@ function elementOwnAttached() {
 
             this._onEl(
                 eventBind.name,
-                bind(
-                    eventDeclarationListener,
-                    isComponent ? this : this.owner,
-                    eventBind,
-                    0,
-                    data
-                ),
+                getEventListener(eventBind.expr, isComponent ? this : this.owner, data),
                 eventBind.modifier.capture
             );
         }
@@ -141,13 +135,7 @@ function elementOwnAttached() {
 
                 this._onEl(
                     eventBind.name,
-                    bind(
-                        eventDeclarationListener,
-                        this.owner,
-                        eventBind,
-                        0,
-                        this.scope
-                    ),
+                    getEventListener(eventBind.expr, this.owner, this.scope),
                     eventBind.modifier.capture
                 );
             }

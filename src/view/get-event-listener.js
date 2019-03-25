@@ -20,19 +20,21 @@ var Data = require('../runtime/data');
  * @param {Data} data 数据环境
  * @param {Event} e 事件对象
  */
-function eventDeclarationListener(eventBind, isComponentEvent, data, e) {
-    var method = findMethod(this, eventBind.expr.name, data);
+function getEventListener(eventExpr, owner, data, isComponentEvent) {
+    return function (e) {
+        var method = findMethod(owner, eventExpr.name, data);
 
-    if (typeof method === 'function') {
-        method.apply(this, evalArgs(
-            eventBind.expr.args,
-            new Data(
-                { $event: isComponentEvent ? e : e || window.event },
-                data
-            ),
-            this
-        ));
-    }
+        if (typeof method === 'function') {
+            method.apply(owner, evalArgs(
+                eventExpr.args,
+                new Data(
+                    { $event: isComponentEvent ? e : e || window.event },
+                    data
+                ),
+                owner
+            ));
+        }
+    };
 }
 
-exports = module.exports = eventDeclarationListener;
+exports = module.exports = getEventListener;

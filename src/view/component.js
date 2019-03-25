@@ -32,7 +32,7 @@ var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var getPropHandler = require('./get-prop-handler');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var eventDeclarationListener = require('./event-declaration-listener');
+var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
@@ -186,7 +186,7 @@ function Component(options) { // eslint-disable-line
 
             me.on(
                 eventBind.name,
-                bind(eventDeclarationListener, options.owner, eventBind, 1, me.scope),
+                getEventListener(eventBind.expr, options.owner, me.scope, 1),
                 eventBind
             );
         });
