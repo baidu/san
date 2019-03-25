@@ -96,7 +96,6 @@ function Component(options) { // eslint-disable-line
     // compile
     compileComponent(clazz);
 
-    var me = this;
     var protoANode = clazz.prototype.aNode;
     preheatANode(protoANode);
 
@@ -173,23 +172,24 @@ function Component(options) { // eslint-disable-line
         // 组件运行时传入的结构，做slot解析
         this._initSourceSlots(1);
 
-        each(this.source.events, function (eventBind) {
+        for (var i = 0, l = this.source.events.length; i < l; i++) {
+            var eventBind = this.source.events[i];
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
-                me.nativeEvents.push(eventBind);
-                return;
+                this.nativeEvents.push(eventBind);
             }
+            else {
+                // #[begin] error
+                warnEventListenMethod(eventBind, options.owner);
+                // #[end]
 
-            // #[begin] error
-            warnEventListenMethod(eventBind, options.owner);
-            // #[end]
-
-            me.on(
-                eventBind.name,
-                getEventListener(eventBind.expr, options.owner, me.scope, 1),
-                eventBind
-            );
-        });
+                this.on(
+                    eventBind.name,
+                    getEventListener(eventBind.expr, options.owner, this.scope, 1),
+                    eventBind
+                );
+            }
+        }
 
         this.tagName = protoANode.tagName || this.source.tagName;
         this.binds = camelComponentBinds(this.source.props);
@@ -210,17 +210,20 @@ function Component(options) { // eslint-disable-line
 
     elementInitTagName(this);
 
-    each(this.binds, function (bind) {
-        postProp(bind);
+    if (this.binds) {
+        for (var i = 0, l = this.binds.length; i < l; i++) {
+            var bindInfo = this.binds[i];
+            postProp(bindInfo);
 
-        if (me.scope) {
-            var value = evalExpr(bind.expr, me.scope, me.owner);
-            if (typeof value !== 'undefined') {
-                // See: https://github.com/ecomfe/san/issues/191
-                me.data.set(bind.name, value);
+            if (this.scope) {
+                var value = evalExpr(bindInfo.expr, this.scope, this.owner);
+                if (typeof value !== 'undefined') {
+                    // See: https://github.com/ecomfe/san/issues/191
+                    this.data.set(bindInfo.name, value);
+                }
             }
         }
-    });
+    }
 
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
