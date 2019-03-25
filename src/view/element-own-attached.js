@@ -111,16 +111,17 @@ function elementOwnAttached() {
             }
         }
 
+        var owner = isComponent ? this : this.owner;
         for (var i = 0, l = this.aNode.events.length; i < l; i++) {
             var eventBind = this.aNode.events[i];
 
             // #[begin] error
-            warnEventListenMethod(eventBind, isComponent ? this : this.owner);
+            warnEventListenMethod(eventBind, owner);
             // #[end]
 
             this._onEl(
                 eventBind.name,
-                getEventListener(eventBind.expr, isComponent ? this : this.owner, data),
+                getEventListener(eventBind.expr, owner, data),
                 eventBind.modifier.capture
             );
         }
