@@ -8,7 +8,6 @@
  */
 
 
-var bind = require('../util/bind');
 var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
 var trigger = require('../browser/trigger');
@@ -29,7 +28,6 @@ function inputOnCompositionEnd() {
     }
 
     this.composing = 0;
-
     trigger(this, 'input');
 }
 
@@ -42,15 +40,16 @@ function inputOnCompositionStart() {
     this.composing = 1;
 }
 
-function xPropOutputer(xProp, data) {
-    getPropHandler(this.tagName, xProp.name).output(this, xProp, data);
+function getXPropOutputer(element, xProp, data) {
+    return function () {
+        getPropHandler(element.tagName, xProp.name).output(element, xProp, data);
+    };
 }
 
-function inputXPropOutputer(element, xProp, data) {
-    var outputer = bind(xPropOutputer, element, xProp, data);
-    return function (e) {
+function getInputXPropOutputer(element, xProp, data) {
+    return function () {
         if (!this.composing) {
-            outputer(e);
+            getPropHandler(element.tagName, xProp.name).output(element, xProp, data);
         }
     };
 }
@@ -87,13 +86,13 @@ function elementOwnAttached() {
 
                             this._onEl(
                                 ('oninput' in this.el) ? 'input' : /* istanbul ignore next */ 'propertychange',
-                                inputXPropOutputer(this, xProp, data)
+                                getInputXPropOutputer(this, xProp, data)
                             );
 
                             break;
 
                         case 'select':
-                            this._onEl('change', bind(xPropOutputer, this, xProp, data));
+                            this._onEl('change', getXPropOutputer(this, xProp, data));
                             break;
                     }
                     break;
@@ -104,7 +103,7 @@ function elementOwnAttached() {
                             switch (this.el.type) {
                                 case 'checkbox':
                                 case 'radio':
-                                    this._onEl('click', bind(xPropOutputer, this, xProp, data));
+                                    this._onEl('click', getXPropOutputer(this, xProp, data));
                             }
                     }
                     break;
