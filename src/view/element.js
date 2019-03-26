@@ -54,8 +54,6 @@ function Element(aNode, owner, scope, parent, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.id = guid();
-
     elementInitTagName(this);
 
     nodeSBindInit(this, aNode.directives.bind);
