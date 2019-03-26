@@ -36,14 +36,16 @@ function elementOwnCreate() {
             this.el = createEl(this.tagName);
         }
 
-        for (var key in this._sbindData) {
-            if (this._sbindData.hasOwnProperty(key)) {
-                getPropHandler(this.tagName, key).prop(
-                    this.el,
-                    this._sbindData[key],
-                    key,
-                    this
-                );
+        if (this._sbindData) {
+            for (var key in this._sbindData) {
+                if (this._sbindData.hasOwnProperty(key)) {
+                    getPropHandler(this.tagName, key).prop(
+                        this.el,
+                        this._sbindData[key],
+                        key,
+                        this
+                    );
+                }
             }
         }
 
