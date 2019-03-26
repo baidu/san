@@ -65,7 +65,7 @@ var defaultElementPropHandler = {
     output: function (element, bindInfo, data) {
         data.set(bindInfo.expr, element.el[bindInfo.name], {
             target: {
-                id: element.id,
+                node: element,
                 prop: bindInfo.name
             }
         });
@@ -185,7 +185,7 @@ var elementPropHandlers = {
                         case 'radio':
                             el.checked && data.set(bindInfo.expr, el.value, {
                                 target: {
-                                    id: element.id,
+                                    node: element,
                                     prop: bindInfo.name
                                 }
                             });

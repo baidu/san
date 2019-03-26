@@ -579,7 +579,7 @@ Component.prototype._update = function (changes) {
 
                 me.data.set(name, value, {
                     target: {
-                        id: me.owner.id
+                        node: me.owner
                     }
                 });
             }
@@ -612,14 +612,14 @@ Component.prototype._update = function (changes) {
                     if (relation >= 2 && change.type === DataChangeType.SPLICE) {
                         me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
                             target: {
-                                id: me.owner.id
+                                node: me.owner
                             }
                         });
                     }
                     else {
                         me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
                             target: {
-                                id: me.owner.id
+                                node: me.owner
                             }
                         });
                     }
@@ -727,7 +727,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
                     evalExpr(changeExpr, me.data, me),
                     {
                         target: {
-                            id: me.id,
+                            node: me,
                             prop: bindItem.name
                         }
                     }
