@@ -102,7 +102,9 @@ var defaultElementPropHandlers = {
 
     'class': { // eslint-disable-line
         prop: function (el, value) {
-            el.className = value;
+            if (el.className !== value) {
+                el.className = value;
+            }
         }
     },
 
