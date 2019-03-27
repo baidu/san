@@ -112,7 +112,13 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
 
         var me = this;
         each(this.aNode.children, function (aNodeChild) {
-            me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
+            me.children.push(createReverseNode(
+                aNodeChild,
+                me,
+                me.childScope || me.scope,
+                me.childOwner || me.owner,
+                reverseWalker
+            ));
         });
 
         this.el = document.createComment(this.id);

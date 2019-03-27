@@ -163,9 +163,10 @@ function ForNode(aNode, parent, scope, owner, reverseWalker) {
             for (var i = 0; i < this.listData.length; i++) {
                 this.children.push(createReverseNode(
                     this.aNode.forRinsed,
-                    reverseWalker,
                     this,
-                    new ForItemData(this, this.listData[i], i)
+                    new ForItemData(this, this.listData[i], i),
+                    this.owner,
+                    reverseWalker
                 ));
             }
         }
@@ -174,9 +175,10 @@ function ForNode(aNode, parent, scope, owner, reverseWalker) {
                 if (this.listData.hasOwnProperty(i) && this.listData[i] != null) {
                     this.children.push(createReverseNode(
                         this.aNode.forRinsed,
-                        reverseWalker,
                         this,
-                        new ForItemData(this, this.listData[i], i)
+                        new ForItemData(this, this.listData[i], i),
+                        this.owner,
+                        reverseWalker
                     ));
                 }
             }

@@ -21,34 +21,31 @@ var AsyncComponent = require('./async-component');
  * 通过组件反解创建节点
  *
  * @param {ANode} aNode 抽象节点
- * @param {DOMChildrenWalker} reverseWalker 子元素遍历对象
  * @param {Node} parent 父亲节点
- * @param {Model=} scope 所属数据环境
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
+ * @param {DOMChildrenWalker} reverseWalker 子元素遍历对象
  * @return {Node}
  */
-function createReverseNode(aNode, reverseWalker, parent, scope) {
-    var parentIsComponent = parent.nodeType === NodeType.CMPT;
-    var owner = parentIsComponent ? parent : (parent.childOwner || parent.owner);
-    scope = scope || (parentIsComponent ? parent.data : (parent.childScope || parent.scope));
-
+function createReverseNode(aNode, parent, scope, owner, reverseWalker) {
     if (aNode.textExpr) {
-        return new TextNode(aNode, owner, scope, parent, reverseWalker);
+        return new TextNode(aNode, parent, scope, owner, reverseWalker);
     }
 
     if (aNode.directives['if']) { // eslint-disable-line dot-notation
-        return new IfNode(aNode, owner, scope, parent, reverseWalker);
+        return new IfNode(aNode, parent, scope, owner, reverseWalker);
     }
 
     if (aNode.directives['for']) { // eslint-disable-line dot-notation
-        return new ForNode(aNode, owner, scope, parent, reverseWalker);
+        return new ForNode(aNode, parent, scope, owner, reverseWalker);
     }
 
     switch (aNode.tagName) {
         case 'slot':
-            return new SlotNode(aNode, owner, scope, parent, reverseWalker);
+            return new SlotNode(aNode, parent, scope, owner, reverseWalker);
 
         case 'template':
-            return new TemplateNode(aNode, owner, scope, parent, reverseWalker);
+            return new TemplateNode(aNode, parent, scope, owner, reverseWalker);
 
         default:
             var ComponentOrLoader = owner.getComponentType
@@ -76,7 +73,7 @@ function createReverseNode(aNode, reverseWalker, parent, scope) {
             }
     }
 
-    return new Element(aNode, owner, scope, parent, reverseWalker);
+    return new Element(aNode, parent, scope, owner, reverseWalker);
 }
 // #[end]
 

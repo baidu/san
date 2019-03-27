@@ -45,8 +45,10 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
             this.elseIndex = -1;
             this.children[0] = createReverseNode(
                 this.aNode.ifRinsed,
-                reverseWalker,
-                this
+                this,
+                this.scope,
+                this.owner,
+                reverseWalker
             );
         }
         else {
@@ -58,8 +60,10 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
                     me.elseIndex = index;
                     me.children[0] = createReverseNode(
                         elseANode,
-                        reverseWalker,
-                        me
+                        me,
+                        me.scope,
+                        me.owner,
+                        reverseWalker
                     );
                     return false;
                 }

@@ -19,14 +19,16 @@ var createReverseNode = require('./create-reverse-node');
  *
  * @param {Object} element 元素
  */
-function reverseElementChildren(element) {
+function reverseElementChildren(element, scope, owner) {
     var htmlDirective = element.aNode.directives.html;
 
     if (!htmlDirective) {
         var reverseWalker = new DOMChildrenWalker(element.el);
 
         each(element.aNode.children, function (aNodeChild) {
-            element.children.push(createReverseNode(aNodeChild, reverseWalker, element));
+            element.children.push(
+                createReverseNode(aNodeChild, element, scope, owner, reverseWalker)
+            );
         });
     }
 }

@@ -86,7 +86,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
         this.el = currentNode;
         reverseWalker.goNext();
 
-        reverseElementChildren(this);
+        reverseElementChildren(this, this.scope, this.owner);
 
         this._attached();
     }

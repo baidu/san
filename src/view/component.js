@@ -254,7 +254,7 @@ function Component(options) { // eslint-disable-line
 
     // #[begin] reverse
     if (this.el) {
-        reverseElementChildren(this);
+        reverseElementChildren(this, this.data, this);
         this._attached();
     }
     else {
@@ -269,7 +269,7 @@ function Component(options) { // eslint-disable-line
                     walker.goNext();
                 }
 
-                reverseElementChildren(this);
+                reverseElementChildren(this, this.data, this);
             }
             else {
                 this.el = document.createComment(this.id);

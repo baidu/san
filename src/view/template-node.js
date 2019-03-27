@@ -47,7 +47,7 @@ function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
 
         var me = this;
         each(this.aNode.children, function (aNodeChild) {
-            me.children.push(createReverseNode(aNodeChild, reverseWalker, me));
+            me.children.push(createReverseNode(aNodeChild, me, me.scope, me.owner, reverseWalker));
         });
 
         this.el = document.createComment(this.id);
