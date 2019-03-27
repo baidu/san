@@ -22,7 +22,8 @@ var AsyncComponent = require('./async-component');
  *
  * @param {ANode} aNode 抽象节点
  * @param {Node} parent 父亲节点
- * @param {Model=} scope 所属数据环境
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
  * @return {Node}
  */
 function createNode(aNode, parent, scope, owner) {
