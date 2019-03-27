@@ -24,7 +24,12 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
     insertBefore(this.sel, parentEl, beforeEl);
 
     for (var i = 0; i < this.aNode.children.length; i++) {
-        var child = createNode(this.aNode.children[i], this, this.childScope || this.scope, this.childOwner || this.owner);
+        var child = createNode(
+            this.aNode.children[i],
+            this,
+            this.childScope || this.scope,
+            this.childOwner || this.owner
+        );
         this.children.push(child);
         child.attach(parentEl, beforeEl);
     }
