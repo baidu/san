@@ -36,12 +36,12 @@ var getNodePath = require('./get-node-path');
  *
  * @class
  * @param {Object} aNode 抽象节点
- * @param {Component} owner 所属组件环境
- * @param {Model=} scope 所属数据环境
  * @param {Node} parent 父亲节点
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function Element(aNode, owner, scope, parent, reverseWalker) {
+function Element(aNode, parent, scope, owner, reverseWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -105,7 +105,43 @@ Element.prototype.nodeType = NodeType.ELEM;
  */
 Element.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        this._create();
+        if (!this.el) {
+            var sourceNode = this.aNode.hotspot.sourceNode;
+            var props = this.aNode.props;
+
+            if (sourceNode) {
+                this.el = sourceNode.cloneNode(false);
+                props = this.aNode.hotspot.dynamicProps;
+            }
+            else {
+                this.el = createEl(this.tagName);
+            }
+
+            if (this._sbindData) {
+                for (var key in this._sbindData) {
+                    if (this._sbindData.hasOwnProperty(key)) {
+                        getPropHandler(this.tagName, key).prop(
+                            this.el,
+                            this._sbindData[key],
+                            key,
+                            this
+                        );
+                    }
+                }
+            }
+
+            for (var i = 0, l = props.length; i < l; i++) {
+                var prop = props[i];
+                var propName = prop.name;
+                var value = evalExpr(prop.expr, this.scope, this.owner);
+
+                if (value || !emptyPropWhenCreate[propName]) {
+                    getPropHandler(this.tagName, propName).prop(this.el, value, propName, this, prop);
+                }
+            }
+
+            this._toPhase('created');
+        }
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
@@ -120,7 +156,8 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             }
             else {
                 for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                    var child = createNode(this.aNode.children[i], this);
+                    var childANode = this.aNode.children[i];
+                    var child = createNode(childANode, this, this.scope, this.owner);
                     this.children.push(child);
                     child.attach(this.el);
                 }

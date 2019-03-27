@@ -116,12 +116,12 @@ each(
  *
  * @class
  * @param {Object} aNode 抽象节点
- * @param {Component} owner 所属组件环境
- * @param {Model=} scope 所属数据环境
  * @param {Node} parent 父亲节点
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function ForNode(aNode, owner, scope, parent, reverseWalker) {
+function ForNode(aNode, parent, scope, owner, reverseWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -216,7 +216,7 @@ ForNode.prototype._createChildren = function () {
 
     if (listData instanceof Array) {
         for (var i = 0; i < listData.length; i++) {
-            var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i));
+            var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i), this.owner);
             this.children.push(child);
             child.attach(parentEl, this.el);
         }
@@ -224,7 +224,7 @@ ForNode.prototype._createChildren = function () {
     else if (listData && typeof listData === 'object') {
         for (var i in listData) {
             if (listData.hasOwnProperty(i) && listData[i] != null) {
-                var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i));
+                var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i), this.owner);
                 this.children.push(child);
                 child.attach(parentEl, this.el);
             }
@@ -699,7 +699,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     }
                 }
 
-                me.children[i] = createNode(me.aNode.forRinsed, me, new ForItemData(me, newList[i], i));
+                me.children[i] = createNode(me.aNode.forRinsed, me, new ForItemData(me, newList[i], i), me.owner);
                 me.children[i].attach(parentEl, beforeEl || me.el);
             }
         }

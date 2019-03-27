@@ -22,12 +22,12 @@ var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
  *
  * @class
  * @param {Object} aNode 抽象节点
- * @param {Component} owner 所属组件环境
- * @param {Model=} scope 所属数据环境
  * @param {Node} parent 父亲节点
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function IfNode(aNode, owner, scope, parent, reverseWalker) {
+function IfNode(aNode, parent, scope, owner, reverseWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -89,7 +89,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     var child;
 
     if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
-        child = createNode(this.aNode.ifRinsed, this);
+        child = createNode(this.aNode.ifRinsed, this, this.scope, this.owner);
         elseIndex = -1;
     }
     else {
@@ -97,7 +97,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
             var elif = elseANode.directives.elif;
 
             if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
-                child = createNode(elseANode, me);
+                child = createNode(elseANode, me, me.scope, me.owner);
                 elseIndex = index;
                 return false;
             }
@@ -160,7 +160,7 @@ IfNode.prototype._update = function (changes) {
 
     function newChild() {
         if (typeof elseIndex !== 'undefined') {
-            (me.children[0] = createNode(childANode, me))
+            (me.children[0] = createNode(childANode, me, me.scope, me.owner))
                 .attach(me.el.parentNode, me.el);
         }
     }

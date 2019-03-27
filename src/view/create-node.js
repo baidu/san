@@ -25,30 +25,25 @@ var AsyncComponent = require('./async-component');
  * @param {Model=} scope 所属数据环境
  * @return {Node}
  */
-function createNode(aNode, parent, scope) {
-    var parentIsComponent = parent.nodeType === NodeType.CMPT;
-    var owner = parentIsComponent ? parent : (parent.childOwner || parent.owner);
-    scope = scope || (parentIsComponent ? parent.data : (parent.childScope || parent.scope));
-
-
+function createNode(aNode, parent, scope, owner) {
     if (aNode.textExpr) {
-        return new TextNode(aNode, owner, scope, parent);
+        return new TextNode(aNode, parent, scope, owner);
     }
 
     if (aNode.directives['if']) { // eslint-disable-line dot-notation
-        return new IfNode(aNode, owner, scope, parent);
+        return new IfNode(aNode, parent, scope, owner);
     }
 
     if (aNode.directives['for']) { // eslint-disable-line dot-notation
-        return new ForNode(aNode, owner, scope, parent);
+        return new ForNode(aNode, parent, scope, owner);
     }
 
     switch (aNode.tagName) {
         case 'slot':
-            return new SlotNode(aNode, owner, scope, parent);
+            return new SlotNode(aNode, parent, scope, owner);
 
         case 'template':
-            return new TemplateNode(aNode, owner, scope, parent);
+            return new TemplateNode(aNode, parent, scope, owner);
 
         default:
             var ComponentOrLoader = owner.getComponentType
@@ -74,7 +69,7 @@ function createNode(aNode, parent, scope) {
             }
     }
 
-    return new Element(aNode, owner, scope, parent);
+    return new Element(aNode, parent, scope, owner);
 }
 
 exports = module.exports = createNode;

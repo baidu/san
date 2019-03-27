@@ -33,12 +33,12 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  *
  * @class
  * @param {Object} aNode 抽象节点
- * @param {Component} owner 所属组件环境
- * @param {Model=} scope 所属数据环境
  * @param {Node} parent 父亲节点
+ * @param {Model} scope 所属数据环境
+ * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function SlotNode(aNode, owner, scope, parent, reverseWalker) {
+function SlotNode(aNode, parent, scope, owner, reverseWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
