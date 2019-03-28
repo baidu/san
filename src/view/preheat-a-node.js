@@ -44,6 +44,7 @@ function preheatANode(aNode) {
                 aNode.hotspot = {
                     data: {}
                 };
+                aNode.Clazz = TextNode;
                 recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
             }
             else {
@@ -156,6 +157,7 @@ function preheatANode(aNode) {
                         hotspot: aNode.hotspot,
                         directives: extend({}, aNode.directives)
                     };
+                    aNode.Clazz = IfNode;
                     aNode = aNode.ifRinsed;
                     aNode.directives['if'] = null; // eslint-disable-line dot-notation
                 }
@@ -170,7 +172,18 @@ function preheatANode(aNode) {
                         hotspot: aNode.hotspot,
                         directives: extend({}, aNode.directives)
                     };
+                    aNode.Clazz = ForNode;
                     aNode.forRinsed.directives['for'] = null; // eslint-disable-line dot-notation
+                    aNode = aNode.forRinsed;
+                }
+
+                switch (aNode.tagName) {
+                    case 'slot':
+                        aNode.Clazz = SlotNode;
+                        break;
+
+                    case 'template':
+                        aNode.Clazz = TemplateNode;
                 }
                 // === analyse hotspot props: end
             }
