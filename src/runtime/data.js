@@ -13,7 +13,6 @@ var DataChangeType = require('./data-change-type');
 var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
 var guid = require('../util/guid');
-var dataCache = require('./data-cache');
 
 /**
  * 数据类
@@ -206,8 +205,6 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
-    dataCache.clear();
-
     var prop = expr.paths[0].value;
     this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, value, this);
 
@@ -350,7 +347,6 @@ Data.prototype.splice = function (expr, args, option) {
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
 
-        dataCache.clear();
         this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, newArray, this);
 
         this.fire({

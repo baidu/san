@@ -24,7 +24,6 @@ var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
-var dataCache = require('../runtime/data-cache');
 
 
 /**
@@ -100,9 +99,9 @@ each(
     ['set', 'remove', 'unshift', 'shift', 'push', 'pop', 'splice'],
     function (method) {
         ForItemData.prototype['_' + method] = Data.prototype[method];
+
         ForItemData.prototype[method] = function (expr) {
             expr = this.exprResolve(parseExpr(expr));
-            dataCache.clear();
             this.parent[method].apply(
                 this.parent,
                 [expr].concat(Array.prototype.slice.call(arguments, 1))
