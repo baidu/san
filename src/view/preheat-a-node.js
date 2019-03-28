@@ -14,6 +14,11 @@ var createEl = require('../browser/create-el');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
 var isBrowser = require('../browser/is-browser');
+var TextNode = require('./text-node');
+var SlotNode = require('./slot-node');
+var ForNode = require('./for-node');
+var IfNode = require('./if-node');
+var TemplateNode = require('./template-node');
 
 /**
  * ANode预热，分析的数据引用等信息
