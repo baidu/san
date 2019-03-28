@@ -844,10 +844,14 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 
         if (!this._contentReady) {
             for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                var child = createNode(this.aNode.children[i], this, this.data, this);
+                var childANode = this.aNode.children[i];
+                var child = childANode.Clazz
+                    ? new childANode.Clazz(childANode, this, this.data, this)
+                    : createNode(childANode, this, this.data, this);
                 this.children.push(child);
                 child.attach(this.el);
             }
+
             this._contentReady = 1;
         }
     }

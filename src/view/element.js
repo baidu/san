@@ -157,7 +157,9 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             else {
                 for (var i = 0, l = this.aNode.children.length; i < l; i++) {
                     var childANode = this.aNode.children[i];
-                    var child = createNode(childANode, this, this.scope, this.owner);
+                    var child = childANode.Clazz
+                        ? new childANode.Clazz(childANode, this, this.scope, this.owner)
+                        : createNode(childANode, this, this.scope, this.owner);
                     this.children.push(child);
                     child.attach(this.el);
                 }
