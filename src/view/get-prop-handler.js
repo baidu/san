@@ -41,50 +41,37 @@ var HTML_ATTR_PROP_MAP = {
  * @inner
  * @type {Object}
  */
-var defaultElementPropHandler = {
-    prop: function (el, value, name) {
-        var propName = HTML_ATTR_PROP_MAP[name] || name;
-        value = value == null ? '' : value;
-        // input 的 type 是个特殊属性，其实也应该用 setAttribute
-        // 但是 type 不应该运行时动态改变，否则会有兼容性问题
-        // 所以这里直接就不管了
-        if (propName in el) {
-            el[propName] = value;
-        }
-        else {
-            el.setAttribute(name, value);
-        }
 
-        // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
-        // 换句话来说，san 是做不到 attribute 时有时无的
-        // if (value == null) {
-        //     el.removeAttribute(name);
-        // }
-    },
 
-    output: function (element, bindInfo, data) {
-        data.set(bindInfo.expr, element.el[bindInfo.name], {
-            target: {
-                node: element,
-                prop: bindInfo.name
-            }
-        });
+function defaultElementPropHandler(el, value, name) {
+    var propName = HTML_ATTR_PROP_MAP[name] || name;
+    value = value == null ? '' : value;
+    // input 的 type 是个特殊属性，其实也应该用 setAttribute
+    // 但是 type 不应该运行时动态改变，否则会有兼容性问题
+    // 所以这里直接就不管了
+    if (propName in el) {
+        el[propName] = value;
     }
-};
-
-var svgPropHandler = {
-    prop: function (el, value, name) {
+    else {
         el.setAttribute(name, value);
     }
-};
 
-var boolPropHandler = {
-    prop: function (el, value, name, element, prop) {
-        var propName = HTML_ATTR_PROP_MAP[name] || name;
-        el[propName] = !!(prop && prop.raw === ''
-            || value && value !== 'false' && value !== '0');
-    }
-};
+    // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
+    // 换句话来说，san 是做不到 attribute 时有时无的
+    // if (value == null) {
+    //     el.removeAttribute(name);
+    // }
+}
+
+function svgPropHandler(el, value, name) {
+    el.setAttribute(name, value);
+}
+
+function boolPropHandler(el, value, name, element, prop) {
+    var propName = HTML_ATTR_PROP_MAP[name] || name;
+    el[propName] = !!(prop && prop.raw === ''
+        || value && value !== 'false' && value !== '0');
+}
 
 /* eslint-disable fecs-properties-quote */
 /**
@@ -94,23 +81,17 @@ var boolPropHandler = {
  * @type {Object}
  */
 var defaultElementPropHandlers = {
-    style: {
-        prop: function (el, value) {
-            el.style.cssText = value;
+    style: function (el, value) {
+        el.style.cssText = value;
+    },
+
+    'class': function (el, value) { // eslint-disable-line
+        if (el.className !== value) {
+            el.className = value;
         }
     },
 
-    'class': { // eslint-disable-line
-        prop: function (el, value) {
-            if (el.className !== value) {
-                el.className = value;
-            }
-        }
-    },
-
-    slot: {
-        prop: empty
-    },
+    slot: empty,
 
     draggable: boolPropHandler
 };
@@ -147,56 +128,29 @@ function analInputCheckedState(element, value) {
 var elementPropHandlers = {
     input: {
         multiple: boolPropHandler,
-        checked: {
-            prop: function (el, value, name, element) {
-                var state = analInputCheckedState(element, value);
+        checked: function (el, value, name, element) {
+            var state = analInputCheckedState(element, value);
 
+            boolPropHandler.prop(
+                el,
+                state != null ? state : value,
+                'checked',
+                element
+            );
+
+            // #[begin] allua
+            // 代码不用抽出来防重复，allua内的代码在现代浏览器版本会被编译时干掉，gzip也会处理重复问题
+            // see: #378
+            /* istanbul ignore if */
+            if (ie && ie < 8 && !element.lifeCycle.attached) {
                 boolPropHandler.prop(
                     el,
                     state != null ? state : value,
-                    'checked',
+                    'defaultChecked',
                     element
                 );
-
-                // #[begin] allua
-                // 代码不用抽出来防重复，allua内的代码在现代浏览器版本会被编译时干掉，gzip也会处理重复问题
-                // see: #378
-                /* istanbul ignore if */
-                if (ie && ie < 8 && !element.lifeCycle.attached) {
-                    boolPropHandler.prop(
-                        el,
-                        state != null ? state : value,
-                        'defaultChecked',
-                        element
-                    );
-                }
-                // #[end]
-            },
-
-            output: function (element, bindInfo, data) {
-                var el = element.el;
-                var bindValue = getANodeProp(element.aNode, 'value');
-                var bindType = getANodeProp(element.aNode, 'type') || /* istanbul ignore next */{};
-
-                if (bindValue && bindType) {
-                    switch (el.type.toLowerCase()) {
-                        case 'checkbox':
-                            data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
-                            return;
-
-                        case 'radio':
-                            el.checked && data.set(bindInfo.expr, el.value, {
-                                target: {
-                                    node: element,
-                                    prop: bindInfo.name
-                                }
-                            });
-                            return;
-                    }
-                }
-
-                defaultElementPropHandler.output(element, bindInfo, data);
             }
+            // #[end]
         },
         readonly: boolPropHandler,
         disabled: boolPropHandler,
@@ -205,24 +159,18 @@ var elementPropHandlers = {
     },
 
     option: {
-        value: {
-            prop: function (el, value, name, element) {
-                defaultElementPropHandler.prop(el, value, name, element);
+        value: function (el, value, name, element) {
+            defaultElementPropHandler.prop(el, value, name, element);
 
-                if (isOptionSelected(element, value)) {
-                    el.selected = true;
-                }
+            if (isOptionSelected(element, value)) {
+                el.selected = true;
             }
         }
     },
 
     select: {
-        value: {
-            prop: function (el, value) {
-                el.value = value || '';
-            },
-
-            output: defaultElementPropHandler.output
+        value: function (el, value) {
+            el.value = value || '';
         },
         readonly: boolPropHandler,
         disabled: boolPropHandler,
@@ -240,10 +188,8 @@ var elementPropHandlers = {
     button: {
         disabled: boolPropHandler,
         autofocus: boolPropHandler,
-        type: {
-            prop: function (el, value) {
-                el.setAttribute('type', value || '');
-            }
+        type: function (el, value) {
+            el.setAttribute('type', value || '');
         }
     }
 };
