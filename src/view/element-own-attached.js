@@ -14,7 +14,6 @@ var trigger = require('../browser/trigger');
 var NodeType = require('./node-type');
 var elementGetTransition = require('./element-get-transition');
 var getEventListener = require('./get-event-listener');
-var getPropHandler = require('./get-prop-handler');
 var warnEventListenMethod = require('./warn-event-listen-method');
 
 /**
@@ -42,16 +41,49 @@ function inputOnCompositionStart() {
 
 function getXPropOutputer(element, xProp, data) {
     return function () {
-        getPropHandler(element.tagName, xProp.name).output(element, xProp, data);
+        xPropOutput(element, xProp, data);
     };
 }
 
 function getInputXPropOutputer(element, xProp, data) {
     return function () {
         if (!this.composing) {
-            getPropHandler(element.tagName, xProp.name).output(element, xProp, data);
+            xPropOutput(element, xProp, data);
         }
     };
+}
+
+function xPropOutput(element, bindInfo, data) {
+    var el = element.el;
+
+    if (element.tagName === 'input' && bindInfo.name === 'checked') {
+        var bindValue = getANodeProp(element.aNode, 'value');
+        var bindType = getANodeProp(element.aNode, 'type') || /* istanbul ignore next */{};
+
+        if (bindValue && bindType) {
+            switch (el.type.toLowerCase()) {
+                case 'checkbox':
+                    data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                    return;
+
+                case 'radio':
+                    el.checked && data.set(bindInfo.expr, el.value, {
+                        target: {
+                            node: element,
+                            prop: bindInfo.name
+                        }
+                    });
+                    return;
+            }
+        }
+    }
+
+    data.set(bindInfo.expr, el[bindInfo.name], {
+        target: {
+            node: element,
+            prop: bindInfo.name
+        }
+    });
 }
 
 /**
