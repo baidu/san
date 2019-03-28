@@ -110,6 +110,7 @@ function preheatANode(aNode) {
                 // === analyse hotspot props: start
                 each(aNode.props, function (prop, index) {
                     aNode.hotspot.props[prop.name] = index;
+                    prop.handler = getPropHandler(aNode.tagName, prop.name);
 
                     if (prop.name === 'id') {
                         prop.id = true;
@@ -118,8 +119,7 @@ function preheatANode(aNode) {
                     }
                     else if (prop.expr.value != null) {
                         if (sourceNode) {
-                            getPropHandler(aNode.tagName, prop.name)
-                                .prop(sourceNode, prop.expr.value, prop.name, aNode);
+                            prop.handler(sourceNode, prop.expr.value, prop.name, aNode);
                         }
                     }
                     else {
@@ -138,7 +138,8 @@ function preheatANode(aNode) {
                 ) {
                     var valueProp = {
                         name: 'value',
-                        expr: aNode.children[0].textExpr
+                        expr: aNode.children[0].textExpr,
+                        handler: getPropHandler(aNode.tagName, 'value')
                     };
                     aNode.props.push(valueProp);
                     aNode.hotspot.dynamicProps.push(valueProp);
