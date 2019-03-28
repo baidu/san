@@ -120,7 +120,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             if (this._sbindData) {
                 for (var key in this._sbindData) {
                     if (this._sbindData.hasOwnProperty(key)) {
-                        getPropHandler(this.tagName, key).prop(
+                        getPropHandler(this.tagName, key)(
                             this.el,
                             this._sbindData[key],
                             key,
@@ -136,7 +136,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 var value = evalExpr(prop.expr, this.scope, this.owner);
 
                 if (value || !emptyPropWhenCreate[propName]) {
-                    getPropHandler(this.tagName, propName).prop(this.el, value, propName, this, prop);
+                    prop.handler(this.el, value, propName, this, prop);
                 }
             }
 
@@ -201,7 +201,7 @@ Element.prototype._update = function (changes) {
                 return;
             }
 
-            getPropHandler(me.tagName, name).prop(me.el, value, name, me);
+            getPropHandler(me.tagName, name)(me.el, value, name, me);
         }
     );
 
@@ -220,8 +220,7 @@ Element.prototype._update = function (changes) {
                     || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
                 )
             ) {
-                getPropHandler(this.tagName, propName)
-                    .prop(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
+                prop.handler(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
                 break;
             }
         }

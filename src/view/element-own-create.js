@@ -39,7 +39,7 @@ function elementOwnCreate() {
         if (this._sbindData) {
             for (var key in this._sbindData) {
                 if (this._sbindData.hasOwnProperty(key)) {
-                    getPropHandler(this.tagName, key).prop(
+                    getPropHandler(this.tagName, key)(
                         this.el,
                         this._sbindData[key],
                         key,
@@ -57,7 +57,7 @@ function elementOwnCreate() {
                 : evalExpr(prop.expr, this.scope, this.owner);
 
             if (value || !emptyPropWhenCreate[propName]) {
-                getPropHandler(this.tagName, propName).prop(this.el, value, propName, this, prop);
+                prop.handler(this.el, value, propName, this, prop);
             }
         }
 
