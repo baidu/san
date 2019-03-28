@@ -7,13 +7,7 @@
  * @file 通过组件反解创建节点的工厂方法
  */
 
-var NodeType = require('./node-type');
-var TextNode = require('./text-node');
 var Element = require('./element');
-var SlotNode = require('./slot-node');
-var ForNode = require('./for-node');
-var IfNode = require('./if-node');
-var TemplateNode = require('./template-node');
 var AsyncComponent = require('./async-component');
 
 // #[begin] reverse
@@ -28,49 +22,32 @@ var AsyncComponent = require('./async-component');
  * @return {Node}
  */
 function createReverseNode(aNode, parent, scope, owner, reverseWalker) {
-    if (aNode.textExpr) {
-        return new TextNode(aNode, parent, scope, owner, reverseWalker);
+    if (aNode.Clazz) {
+        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
     }
 
-    if (aNode.directives['if']) { // eslint-disable-line dot-notation
-        return new IfNode(aNode, parent, scope, owner, reverseWalker);
-    }
+    var ComponentOrLoader = owner.getComponentType
+        ? owner.getComponentType(aNode)
+        : owner.components[aNode.tagName];
 
-    if (aNode.directives['for']) { // eslint-disable-line dot-notation
-        return new ForNode(aNode, parent, scope, owner, reverseWalker);
-    }
-
-    switch (aNode.tagName) {
-        case 'slot':
-            return new SlotNode(aNode, parent, scope, owner, reverseWalker);
-
-        case 'template':
-            return new TemplateNode(aNode, parent, scope, owner, reverseWalker);
-
-        default:
-            var ComponentOrLoader = owner.getComponentType
-                ? owner.getComponentType(aNode)
-                : owner.components[aNode.tagName];
-
-            if (ComponentOrLoader) {
-                return typeof ComponentOrLoader === 'function'
-                    ? new ComponentOrLoader({
-                        source: aNode,
-                        owner: owner,
-                        scope: scope,
-                        parent: parent,
-                        subTag: aNode.tagName,
-                        reverseWalker: reverseWalker
-                    })
-                    : new AsyncComponent({
-                        source: aNode,
-                        owner: owner,
-                        scope: scope,
-                        parent: parent,
-                        subTag: aNode.tagName,
-                        reverseWalker: reverseWalker
-                    }, ComponentOrLoader);
-            }
+    if (ComponentOrLoader) {
+        return typeof ComponentOrLoader === 'function'
+            ? new ComponentOrLoader({
+                source: aNode,
+                owner: owner,
+                scope: scope,
+                parent: parent,
+                subTag: aNode.tagName,
+                reverseWalker: reverseWalker
+            })
+            : new AsyncComponent({
+                source: aNode,
+                owner: owner,
+                scope: scope,
+                parent: parent,
+                subTag: aNode.tagName,
+                reverseWalker: reverseWalker
+            }, ComponentOrLoader);
     }
 
     return new Element(aNode, parent, scope, owner, reverseWalker);
