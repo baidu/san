@@ -131,7 +131,7 @@ var elementPropHandlers = {
         checked: function (el, value, name, element) {
             var state = analInputCheckedState(element, value);
 
-            boolPropHandler.prop(
+            boolPropHandler(
                 el,
                 state != null ? state : value,
                 'checked',
@@ -143,7 +143,7 @@ var elementPropHandlers = {
             // see: #378
             /* istanbul ignore if */
             if (ie && ie < 8 && !element.lifeCycle.attached) {
-                boolPropHandler.prop(
+                boolPropHandler(
                     el,
                     state != null ? state : value,
                     'defaultChecked',
@@ -160,7 +160,7 @@ var elementPropHandlers = {
 
     option: {
         value: function (el, value, name, element) {
-            defaultElementPropHandler.prop(el, value, name, element);
+            defaultElementPropHandler(el, value, name, element);
 
             if (isOptionSelected(element, value)) {
                 el.selected = true;
