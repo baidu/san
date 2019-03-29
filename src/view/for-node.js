@@ -525,36 +525,93 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     var newListKeys = [];
                     var oldListKeys = [];
 
-                    each(newList, function (item) {
-                        newListKeys.push(getItemKey(item));
-                    });
+                    for (var i = 0; i < newList.length; i++) {
+                        newListKeys.push(getItemKey(newList[i]));
+                    };
 
-                    each(this.listData, function (item) {
-                        oldListKeys.push(getItemKey(item));
-                    });
+                    for (var i = 0; i < this.listData.length; i++) {
+                        oldListKeys.push(getItemKey(this.listData[i]));
+                    };
+
+                    var newIndexStart = 0;
+                    var newIndexEnd = newLen;
+                    var oldIndexStart = 0;
+                    var oldIndexEnd = oldChildrenLen;
+
+                    while (newIndexStart < newLen
+                        && oldIndexStart < oldChildrenLen
+                        && newListKeys[newIndexStart] === oldListKeys[oldIndexStart]
+                    ) {
+                        if (this.listData[oldIndexStart] !== newList[newIndexStart]) {
+                            this.children[oldIndexStart].scope.raw[this.param.item] = newList[newIndexStart];
+                            (childrenChanges[oldIndexStart] = childrenChanges[oldIndexStart] || []).push({
+                                type: DataChangeType.SET,
+                                option: change.option,
+                                expr: this.itemExpr,
+                                value: newList[newIndexStart]
+                            });
+                        }
+
+                        // 对list更上级数据的直接设置
+                        if (relation < 2) {
+                            (childrenChanges[oldIndexStart] = childrenChanges[oldIndexStart] || []).push(change);
+                        }
+
+                        newIndexStart++;
+                        oldIndexStart++;
+                    }
+
+                    while (newIndexEnd && oldIndexEnd
+                        && newListKeys[newIndexEnd - 1] === oldListKeys[oldIndexEnd - 1]
+                    ) {
+                        newIndexEnd--;
+                        oldIndexEnd--;
+
+                        if (this.listData[oldIndexEnd] !== newList[newIndexEnd]) {
+                            this.children[oldIndexEnd].scope.raw[this.param.item] = newList[newIndexEnd];
+                            (childrenChanges[oldIndexEnd] = childrenChanges[oldIndexEnd] || []).push({
+                                type: DataChangeType.SET,
+                                option: change.option,
+                                expr: this.itemExpr,
+                                value: newList[newIndexEnd]
+                            });
+                        }
+
+                        // 对list更上级数据的直接设置
+                        if (relation < 2) {
+                            (childrenChanges[oldIndexEnd] = childrenChanges[oldIndexEnd] || []).push(change);
+                        }
+                    }
 
 
                     var newIndex;
                     var oldIndex;
-                    for (oldIndex = 0; oldIndex <= oldChildrenLen; oldIndex++) {
-                        lcsFlags.push([]);
 
-                        for (newIndex = 0; newIndex <= newLen; newIndex++) {
+                    for (oldIndex = oldIndexStart; oldIndex <= oldIndexEnd; oldIndex++) {
+                        var lcsFlagsItem = [];
+                        lcsFlags.push(lcsFlagsItem);
+
+                        for (newIndex = newIndexStart; newIndex <= newIndexEnd; newIndex++) {
                             var lcsFlag = 0;
-                            if (newIndex && oldIndex) {
+                            if (newIndex > newIndexStart && oldIndex > oldIndexStart) {
                                 lcsFlag = newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]
-                                    ? lcsFlags[oldIndex - 1][newIndex - 1] + 1
-                                    : Math.max(lcsFlags[oldIndex - 1][newIndex], lcsFlags[oldIndex][newIndex - 1]);
+                                    ? lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart - 1] + 1
+                                    : Math.max(
+                                        lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart],
+                                        lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1]);
                             }
 
-                            lcsFlags[oldIndex].push(lcsFlag);
+                            lcsFlagsItem.push(lcsFlag);
                         }
                     }
 
                     newIndex--;
                     oldIndex--;
                     while (1) {
-                        if (oldIndex && newIndex && oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]) {
+                        if (oldIndex > oldIndexStart
+                            && newIndex > newIndexStart
+                            && oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]
+                        ) {
                             newIndex--;
                             oldIndex--;
 
@@ -574,15 +631,17 @@ ForNode.prototype._updateArray = function (changes, newList) {
                                 (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push(change);
                             }
                         }
-                        else if (newIndex
-                            && (!oldIndex || lcsFlags[oldIndex][newIndex - 1] >= lcsFlags[oldIndex - 1][newIndex])
+                        else if (newIndex > newIndexStart
+                            && (oldIndex === oldIndexStart
+                                || lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1] >= lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart])
                         ) {
                             newIndex--;
                             childrenChanges.splice(oldIndex, 0, 0);
                             this.children.splice(oldIndex, 0, 0);
                         }
-                        else if (oldIndex
-                            && (!newIndex || lcsFlags[oldIndex][newIndex - 1] < lcsFlags[oldIndex - 1][newIndex])
+                        else if (oldIndex > oldIndexStart
+                            && (newIndex === newIndexStart
+                                || lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1] < lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart])
                         ) {
                             oldIndex--;
                             disposeChildren.push(this.children[oldIndex]);
