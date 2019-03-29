@@ -12,7 +12,6 @@ var evalExpr = require('./eval-expr');
 var DataChangeType = require('./data-change-type');
 var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
-var guid = require('../util/guid');
 
 /**
  * 数据类
@@ -22,7 +21,6 @@ var guid = require('../util/guid');
  * @param {Model?} parent 父级数据容器
  */
 function Data(data, parent) {
-    this.id = guid();
     this.parent = parent;
     this.raw = data || {};
     this.listeners = [];

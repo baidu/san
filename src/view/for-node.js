@@ -36,7 +36,6 @@ var nodeOwnCreateStump = require('./node-own-create-stump');
  * @param {number} index 当前项的索引
  */
 function ForItemData(forElement, item, index) {
-    this.id = guid();
     this.parent = forElement.scope;
     this.raw = {};
     this.listeners = [];
