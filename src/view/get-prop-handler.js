@@ -86,7 +86,13 @@ var defaultElementPropHandlers = {
     },
 
     'class': function (el, value) { // eslint-disable-line
-        if (el.className !== value) {
+        if (
+            // #[begin] allua
+            ie
+            ||
+            // #[end]
+            el.className !== value
+        ) {
             el.className = value;
         }
     },
