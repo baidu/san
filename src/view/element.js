@@ -25,7 +25,6 @@ var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnAttached = require('./element-own-attached');
 var elementOwnLeave = require('./element-own-leave');
-var elementInitTagName = require('./element-init-tag-name');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var warnSetHTML = require('./warn-set-html');
@@ -54,7 +53,15 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    elementInitTagName(this);
+    this.tagName = aNode.tagName || 'div';
+
+    // #[begin] allua
+    // ie8- 不支持innerHTML输出自定义标签
+    /* istanbul ignore if */
+    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
+        this.tagName = 'div';
+    }
+    // #[end]
 
     nodeSBindInit(this, aNode.directives.bind);
     this.lifeCycle = LifeCycle.inited;

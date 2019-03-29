@@ -30,7 +30,6 @@ var compileComponent = require('./compile-component');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
-var getPropHandler = require('./get-prop-handler');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
@@ -38,7 +37,6 @@ var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
-var elementInitTagName = require('./element-init-tag-name');
 var elementOwnAttached = require('./element-own-attached');
 var elementOwnLeave = require('./element-own-leave');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -100,7 +98,7 @@ function Component(options) { // eslint-disable-line
     preheatANode(protoANode);
 
 
-
+    this.tagName = protoANode.tagName;
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;
@@ -191,7 +189,7 @@ function Component(options) { // eslint-disable-line
             }
         }
 
-        this.tagName = protoANode.tagName || this.source.tagName;
+        this.tagName = this.tagName || this.source.tagName;
         this.binds = camelComponentBinds(this.source.props);
 
         // init s-bind data
@@ -208,7 +206,15 @@ function Component(options) { // eslint-disable-line
         )
     );
 
-    elementInitTagName(this);
+    this.tagName = this.tagName || 'div';
+
+    // #[begin] allua
+    // ie8- 不支持innerHTML输出自定义标签
+    /* istanbul ignore if */
+    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
+        this.tagName = 'div';
+    }
+    // #[end]
 
     if (this.binds) {
         for (var i = 0, l = this.binds.length; i < l; i++) {
