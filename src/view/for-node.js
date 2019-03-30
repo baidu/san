@@ -128,7 +128,7 @@ function ForNode(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.id = guid();
+    this.id = guid++;
     this.children = [];
 
     this.param = aNode.directives['for']; // eslint-disable-line dot-notation

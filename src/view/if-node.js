@@ -36,7 +36,7 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.id = guid();
+    this.id = guid++;
     this.children = [];
 
     // #[begin] reverse

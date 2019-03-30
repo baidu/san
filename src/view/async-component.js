@@ -24,7 +24,7 @@ var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 function AsyncComponent(options, loader) {
     this.options = options;
     this.loader = loader;
-    this.id = guid();
+    this.id = guid++;
     this.children = [];
 
     // #[begin] reverse

@@ -36,7 +36,7 @@ function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.id = guid();
+    this.id = guid++;
     this.lifeCycle = LifeCycle.start;
     this.children = [];
 

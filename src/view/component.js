@@ -127,7 +127,7 @@ function Component(options) { // eslint-disable-line
         this.scope = this.owner.data;
     }
 
-    this.id = guid();
+    this.id = guid++;
 
     // #[begin] reverse
     if (this.el) {
@@ -337,6 +337,8 @@ Component.prototype.nodeType = NodeType.CMPT;
  * @param {Function} fn 要运行的函数
  */
 Component.prototype.nextTick = nextTick;
+
+Component.prototype._ctx = (new Date()).getTime().toString(16);
 
 /* eslint-disable operator-linebreak */
 /**
