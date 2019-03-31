@@ -252,10 +252,9 @@ function Component(options) { // eslint-disable-line
         }
     }
 
-    if (!this.dataChanger) {
-        this.dataChanger = bind(this._dataChanger, this);
-        this.data.listen(this.dataChanger);
-    }
+    this.dataChanger = bind(this._dataChanger, this);
+    this.data.listen(this.dataChanger);
+
     this._toPhase('inited');
 
     // #[begin] reverse
