@@ -197,7 +197,7 @@ function preheatANode(aNode) {
         }
     }
 
-    if (aNode && !aNode.hotspot) {
+    if (aNode) {
         analyseANodeHotspot(aNode);
     }
 }
