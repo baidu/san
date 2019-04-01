@@ -140,7 +140,7 @@ TextNode.prototype._update = function (changes) {
         return;
     }
 
-    var len = changes ? changes.length : 0;
+    var len = changes.length;
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
             var text = evalExpr(this.aNode.textExpr, this.scope, this.owner);
