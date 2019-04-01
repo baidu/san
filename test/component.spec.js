@@ -722,6 +722,30 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("components as getComponentType", function () {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+        var MyComponent = san.defineComponent({
+            getComponentType: function () {
+                return Label;
+            }
+        });
+
+        MyComponent.template = '<div><ui-label text="erik"></ui-label></div>';
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("components in inherits structure", function () {
         var Span = san.defineComponent({});
         Span.template = '<span title="span">span</span>';
