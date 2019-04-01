@@ -53,7 +53,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.tagName = aNode.tagName || 'div';
+    this.tagName = aNode.tagName;
 
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
