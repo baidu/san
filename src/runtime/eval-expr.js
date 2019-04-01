@@ -32,67 +32,84 @@ function evalExpr(expr, data, owner) {
             value = evalExpr(expr.expr, data, owner);
             switch (expr.operator) {
                 case 33:
-                    return !value;
+                    value = !value;
+                    break;
 
                 case 45:
-                    return 0 - value;
+                    value = 0 - value;
+                    break;
             }
             return value;
 
         case ExprType.BINARY:
-            var leftValue = evalExpr(expr.segs[0], data, owner);
+            value = evalExpr(expr.segs[0], data, owner);
             var rightValue = evalExpr(expr.segs[1], data, owner);
 
             /* eslint-disable eqeqeq */
             switch (expr.operator) {
                 case 37:
-                    return leftValue % rightValue;
+                    value = value % rightValue;
+                    break;
 
                 case 43:
-                    return leftValue + rightValue;
+                    value = value + rightValue;
+                    break;
 
                 case 45:
-                    return leftValue - rightValue;
+                    value = value - rightValue;
+                    break;
 
                 case 42:
-                    return leftValue * rightValue;
+                    value = value * rightValue;
+                    break;
 
                 case 47:
-                    return leftValue / rightValue;
+                    value = value / rightValue;
+                    break;
 
                 case 60:
-                    return leftValue < rightValue;
+                    value = value < rightValue;
+                    break;
 
                 case 62:
-                    return leftValue > rightValue;
+                    value = value > rightValue;
+                    break;
 
                 case 76:
-                    return leftValue && rightValue;
+                    value = value && rightValue;
+                    break;
 
                 case 94:
-                    return leftValue != rightValue;
+                    value = value != rightValue;
+                    break;
 
                 case 121:
-                    return leftValue <= rightValue;
+                    value = value <= rightValue;
+                    break;
 
                 case 122:
-                    return leftValue == rightValue;
+                    value = value == rightValue;
+                    break;
 
                 case 123:
-                    return leftValue >= rightValue;
+                    value = value >= rightValue;
+                    break;
 
                 case 155:
-                    return leftValue !== rightValue;
+                    value = value !== rightValue;
+                    break;
 
                 case 183:
-                    return leftValue === rightValue;
+                    value = value === rightValue;
+                    break;
 
                 case 248:
-                    return leftValue || rightValue;
+                    value = value || rightValue;
+                    break;
 
             }
             /* eslint-enable eqeqeq */
-            return;
+            return value;
 
         case ExprType.TERTIARY:
             return evalExpr(
