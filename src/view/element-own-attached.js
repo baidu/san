@@ -58,7 +58,7 @@ function xPropOutput(element, bindInfo, data) {
 
     if (element.tagName === 'input' && bindInfo.name === 'checked') {
         var bindValue = getANodeProp(element.aNode, 'value');
-        var bindType = getANodeProp(element.aNode, 'type') || /* istanbul ignore next */{};
+        var bindType = getANodeProp(element.aNode, 'type');
 
         if (bindValue && bindType) {
             switch (el.type.toLowerCase()) {
