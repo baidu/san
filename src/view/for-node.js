@@ -318,10 +318,19 @@ ForNode.prototype._disposeChildren = function (children, callback) {
             if (violentClear) {
                 // cloneNode + replaceChild is faster
                 // parentEl.innerHTML = '';
-                var replaceNode = parentEl.cloneNode(false);
-                parentEl.parentNode.replaceChild(replaceNode, parentEl);
+                // #[begin] allua
+                if (ie) {
+                    parentEl.innerHTML = '';
+                }
+                else {
+                // #[end]
+                    parentEl.textContent = '';
+                // #[begin] allua
+                }
+                // #[end]
+
                 me.el = document.createComment(me.id);
-                replaceNode.appendChild(me.el);
+                parentEl.appendChild(me.el);
             }
 
             callback && callback();

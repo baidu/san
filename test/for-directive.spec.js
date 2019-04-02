@@ -2965,4 +2965,53 @@ describe("ForDirective", function () {
             done();
         });
     });
+
+    it("clear and repush", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<div><h3 title="{{title}}"><a s-for="item in list">{{item}}</a></h3></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                title: 'san'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var as = wrap.getElementsByTagName('a');
+        expect(as.length).toBe(10);
+        expect(as[0].innerHTML).toContain('1');
+        expect(as[1].innerHTML).toContain('2');
+
+        expect(wrap.getElementsByTagName('h3')[0].title).toBe('san');
+
+        myComponent.data.set('list', []);
+
+
+        san.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(0);
+
+            myComponent.data.set('list', [1, 2, 3]);
+            myComponent.data.set('title', 'er');
+
+            san.nextTick(function () {
+                var as = wrap.getElementsByTagName('a');
+                expect(as.length).toBe(3);
+                expect(as[0].innerHTML).toContain('1');
+                expect(as[1].innerHTML).toContain('2');
+
+                expect(wrap.getElementsByTagName('h3')[0].title).toBe('er');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
 });
