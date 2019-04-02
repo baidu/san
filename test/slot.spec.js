@@ -2322,6 +2322,177 @@ describe("Slot", function () {
         });
     });
 
+    it("a complex spec may cause component _update re-in", function (done) {
+        var ColFilter = san.defineComponent({
+            template: '<div>'
+                + '<a on-click="toggleDisplay(i)" s-for="col,i in cols" class="{{col.hidden ? \'col-hidden\' : \'\'}}">{{col.name}}</a>'
+                + '</div>',
+
+            toggleDisplay: function (index) {
+                var cols = this.data.get('cols').slice(0);
+
+                for (var i = 0; i < cols.length; i++) {
+                    var col = cols[i];
+                    this.data.set('cols[' + i + ']', {
+                        name: col.name,
+                        label: col.label,
+                        hidden: i === index ? !col.hidden : !!col.hidden
+                    });
+                }
+
+            }
+        });
+
+        var Man = san.defineComponent({
+            template: '<u>{{man.label}}</u>'
+        })
+        var Table = san.defineComponent({
+            components: {
+                'x-man': Man
+            },
+            computed: {
+                cols: function () {
+                    var result = [];
+                    var cols = this.data.get('columns');
+                    for (var i = 0; i < cols.length; i++) {
+                        if (!cols[i].hidden) {
+                            result.push(cols[i]);
+                        }
+                    }
+
+                    return result;
+                }
+            },
+            template: ''
+                + '<div>'
+                + '    <div><b s-for="col in cols"><slot name="h-{{col.name}}" var-col="col"><x-man man="{{col}}"/></slot></b></div>'
+                + '    <ul s-for="row, i in datasource">'
+                + '      <li s-for="col in cols"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></li>'
+                + '    </ul>'
+                + '</div>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-filter': ColFilter,
+                'x-p': Table
+            },
+
+            computed: {
+                columns: function () {
+                    var result = [];
+                    var cols = this.data.get('list.columns');
+                    for (var i = 0; i < cols.length; i++) {
+                        if (!cols[i].hidden) {
+                            result.push(cols[i]);
+                        }
+                    }
+
+                    return result;
+                }
+            },
+
+            template:
+                '<div>'
+                + '<x-filter cols="{=list.columns=}" s-ref="fi"/>'
+                + '<x-p columns="{{list.columns}}" datasource="{{list.data}}" selected="{=list.selectedIndex=}"/>'
+                + '</div>'
+
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: {
+                    columns: [
+                        { name: 'name', label: '名' },
+                        { name: 'email', label: '邮' },
+                        { name: 'sex', label: '性' }
+                    ],
+                    data: [
+                        { name: 'errorrik', email: 'errorrik@gmail.com', sex: 1 },
+                        { name: 'leeight', email: 'leeight@gmail.com', sex: 1 },
+                        { name: 'otakustay', email: 'otakustay@gmail.com', sex: 1 }
+                    ]
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us.length).toBe(3);
+        expect(us[0].innerHTML).toBe('名');
+        expect(us[1].innerHTML).toBe('邮');
+        expect(us[2].innerHTML).toBe('性');
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(9);
+        expect(lis[0].innerHTML).toContain('errorrik');
+        expect(lis[1].innerHTML).toContain('errorrik@gmail.com');
+        expect(lis[3].innerHTML).toContain('leeight');
+        expect(lis[4].innerHTML).toContain('leeight@gmail.com');
+        expect(lis[6].innerHTML).toContain('otakustay');
+        expect(lis[7].innerHTML).toContain('otakustay@gmail.com');
+
+
+        myComponent.ref('fi').toggleDisplay(1);
+
+        myComponent.nextTick(function () {
+            var us = wrap.getElementsByTagName('u');
+            expect(us.length).toBe(2);
+            expect(us[0].innerHTML).toBe('名');
+            expect(us[1].innerHTML).toBe('性');
+
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[0].innerHTML).toContain('errorrik');
+            expect(lis[1].innerHTML).toContain('1');
+            expect(lis[2].innerHTML).toContain('leeight');
+            expect(lis[3].innerHTML).toContain('1');
+            expect(lis[4].innerHTML).toContain('otakustay');
+            expect(lis[5].innerHTML).toContain('1');
+
+            myComponent.ref('fi').toggleDisplay(0);
+
+            myComponent.nextTick(function () {
+                var us = wrap.getElementsByTagName('u');
+                expect(us.length).toBe(1);
+                expect(us[0].innerHTML).toBe('性');
+
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(3);
+                expect(lis[0].innerHTML).toContain('1');
+                expect(lis[1].innerHTML).toContain('1');
+                expect(lis[2].innerHTML).toContain('1');
+
+                myComponent.ref('fi').toggleDisplay(1);
+
+                myComponent.nextTick(function () {
+                    var us = wrap.getElementsByTagName('u');
+                    expect(us.length).toBe(2);
+                    expect(us[0].innerHTML).toBe('邮');
+                    expect(us[1].innerHTML).toBe('性');
+
+                    var lis = wrap.getElementsByTagName('li');
+                    expect(lis.length).toBe(6);
+                    expect(lis[0].innerHTML).toContain('errorrik@gmail.com');
+                    expect(lis[1].innerHTML).toContain('1');
+                    expect(lis[2].innerHTML).toContain('leeight@gmail.com');
+                    expect(lis[3].innerHTML).toContain('1');
+                    expect(lis[4].innerHTML).toContain('otakustay@gmail.com');
+                    expect(lis[5].innerHTML).toContain('1');
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+            });
+
+        });
+    });
+
     it("dynamic slot name description and dynamic name in given slot element", function (done) {
         var Table = san.defineComponent({
             template: ''
