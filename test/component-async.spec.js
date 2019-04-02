@@ -17,7 +17,7 @@ describe("Component Async", function () {
                 })
             },
 
-            template: '<div><x-label text="{{text}}"/></div>',
+            template: '<div><x-label text="{{text}}"/><b>bbb</b></div>',
 
             attached: function () {
                 this.nextTick(function () {
@@ -36,10 +36,12 @@ describe("Component Async", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
         expect(wrap.getElementsByTagName('u').length).toBe(0);
 
         setTimeout(function () {
             expect(wrap.getElementsByTagName('u').length).toBe(1);
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
             expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello San');
 
             myComponent.dispose();
