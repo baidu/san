@@ -319,6 +319,7 @@ ForNode.prototype._disposeChildren = function (children, callback) {
                 // cloneNode + replaceChild is faster
                 // parentEl.innerHTML = '';
                 // #[begin] allua
+                /* istanbul ignore next */
                 if (ie) {
                     parentEl.innerHTML = '';
                 }
