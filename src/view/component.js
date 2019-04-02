@@ -703,8 +703,7 @@ Component.prototype._update = function (changes) {
 
         this._toPhase('updated');
 
-        if (this.owner) {
-            this._updateBindxOwner(dataChanges);
+        if (this.owner && this._updateBindxOwner(dataChanges)) {
             this.owner._update();
         }
     }
@@ -714,6 +713,8 @@ Component.prototype._update = function (changes) {
 
 Component.prototype._updateBindxOwner = function (dataChanges) {
     var me = this;
+    var xbindUped;
+
     each(dataChanges, function (change) {
         each(me.binds, function (bindItem) {
             var changeExpr = change.expr;
@@ -728,6 +729,7 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
                     );
                 }
 
+                xbindUped = 1;
                 me.scope.set(
                     updateScopeExpr,
                     evalExpr(changeExpr, me.data, me),
@@ -741,6 +743,8 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
             }
         });
     });
+
+    return xbindUped;
 };
 
 /**
