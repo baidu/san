@@ -2543,8 +2543,7 @@ describe("ForDirective", function () {
                         { id: 1, name: 'errorrik' },
                         { id: 2, name: 'leeight' },
                         { id: 4, name: 'firede' },
-                        { id: 3, name: 'otakustay' },
-
+                        { id: 3, name: 'otakustay' }
                     ]
                 }
             }
