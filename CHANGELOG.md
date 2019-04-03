@@ -9,7 +9,9 @@ ChangeLog
 + 【优化】- 提升视图渲染的性能
 + 【bug修复】- array literal 和 object literal 表达式的对应视图可能不更新
 + 【bug修复】- 对应用了 trackBy 的 for 指令，同时进行 splice 和 item set 数据更新时，视图更新可能不完全
++ 【bug修复】- 列表数据清除时，父元素节点状态同步错误，导致未来的视图更新可能出错
 + 【bug修复】- slot 中组件不必要的双绑更新可能导致父组件视图更新过程错误
+
 
 3.7.2
 -------
