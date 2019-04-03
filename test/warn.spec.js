@@ -1,5 +1,5 @@
 
-console.warn && describe('warn', function () {
+typeof console !== 'undefined' &&  san.debug && describe('warn', function () {
     beforeEach(function () {
         spyOn(console, 'warn');
     });
