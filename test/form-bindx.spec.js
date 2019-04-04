@@ -213,8 +213,8 @@ describe("Form TwoWay Binding", function () {
         var textarea = wrap.getElementsByTagName('textarea')[0];
         expect(textarea.value).toBe(defName);
 
-        doneSpec();
         triggerEvent(textarea, 'input', 'added2')
+        setTimeout(doneSpec, 500);
 
 
         function doneSpec() {
@@ -258,7 +258,7 @@ describe("Form TwoWay Binding", function () {
 
         triggerEvent(inputs[1], 'input', 'added3');
 
-        doneSpec();
+        setTimeout(doneSpec, 500);
         function doneSpec() {
             var list = myComponent.data.get('list');
             if (list[0] !== 'errorrik' || list[1] !== 'varsha' || list[2] !== 'firede') {

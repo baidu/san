@@ -51,6 +51,12 @@ window.triggerEvent = function() {
             }
 
             if (document.createEventObject) {
+                if ((nodeName(elem, 'input') || nodeName(elem, 'textarea'))
+                    && ontype === 'oninput'
+                ) {
+                    elem.fireEvent('onfocusin', document.createEventObject());
+                }
+
                 event = document.createEventObject();
                 return elem.fireEvent(ontype, event);
             }
