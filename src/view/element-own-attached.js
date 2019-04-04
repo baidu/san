@@ -66,7 +66,6 @@ function getInputBlurXPropHandler(element) {
     return function () {
         clearInterval(element._inputTimer);
         element._inputTimer = null;
-        alert('out')
     };
 }
 // #[end]
