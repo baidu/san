@@ -53,7 +53,29 @@ function getInputXPropOutputer(element, xProp, data) {
     };
 }
 
+// #[begin] allua
+function getInputFocusXPropHandler(element, xProp, data) {
+    return function () {
+        element._inputTimer = setInterval(function () {
+            xPropOutput(element, xProp, data);
+        }, 16);
+    };
+}
+
+function getInputBlurXPropHandler(element) {
+    return function () {
+        clearInterval(element._inputTimer);
+        element._inputTimer = null;
+        alert('out')
+    };
+}
+// #[end]
+
 function xPropOutput(element, bindInfo, data) {
+    if (!element.lifeCycle.created) {
+        return;
+    }
+
     var el = element.el;
 
     if (element.tagName === 'input' && bindInfo.name === 'checked') {
@@ -116,10 +138,18 @@ function elementOwnAttached() {
                                 this._onEl('compositionend', inputOnCompositionEnd);
                             }
 
-                            this._onEl(
-                                ('oninput' in this.el) ? 'input' : /* istanbul ignore next */ 'propertychange',
-                                getInputXPropOutputer(this, xProp, data)
-                            );
+                            // #[begin] allua
+                            /* istanbul ignore else */
+                            if ('oninput' in this.el) {
+                            // #[end]
+                                this._onEl('input', getInputXPropOutputer(this, xProp, data));
+                            // #[begin] allua
+                            }
+                            else {
+                                this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
+                                this._onEl('focusout', getInputBlurXPropHandler(this));
+                            }
+                            // #[end]
 
                             break;
 

@@ -30,6 +30,13 @@ function elementOwnLeave() {
             }
             this._elFns = null;
 
+            // #[begin] allua
+            if (this._inputTimer) {
+                clearInterval(this._inputTimer);
+                this._inputTimer = null;
+            }
+            // #[end]
+
             // 如果没有parent，说明是一个root component，一定要从dom树中remove
             if (!this.disposeNoDetach || !this.parent) {
                 removeEl(this.el);
