@@ -456,7 +456,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 continue;
             }
             else if (relation === 2 && change.type === DataChangeType.SPLICE
-                && (!this.flattenSplice || this.aNode.directives.transition)
+                && (this.owner.updateMode !== 'optimized' || !this.flattenSplice || this.aNode.directives.transition)
             ) {
                 childrenNeedUpdate = null;
 
