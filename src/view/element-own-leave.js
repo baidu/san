@@ -31,6 +31,7 @@ function elementOwnLeave() {
             this._elFns = null;
 
             // #[begin] allua
+            /* istanbul ignore if */
             if (this._inputTimer) {
                 clearInterval(this._inputTimer);
                 this._inputTimer = null;

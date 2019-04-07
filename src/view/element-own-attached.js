@@ -54,6 +54,7 @@ function getInputXPropOutputer(element, xProp, data) {
 }
 
 // #[begin] allua
+/* istanbul ignore next */
 function getInputFocusXPropHandler(element, xProp, data) {
     return function () {
         element._inputTimer = setInterval(function () {
@@ -62,6 +63,7 @@ function getInputFocusXPropHandler(element, xProp, data) {
     };
 }
 
+/* istanbul ignore next */
 function getInputBlurXPropHandler(element) {
     return function () {
         clearInterval(element._inputTimer);
@@ -71,6 +73,7 @@ function getInputBlurXPropHandler(element) {
 // #[end]
 
 function xPropOutput(element, bindInfo, data) {
+    /* istanbul ignore if */
     if (!element.lifeCycle.created) {
         return;
     }
