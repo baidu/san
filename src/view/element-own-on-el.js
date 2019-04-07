@@ -17,12 +17,9 @@ var on = require('../browser/on');
  * @param {boolean} capture 是否是捕获阶段触发
  */
 function elementOwnOnEl(name, listener, capture) {
-    /* istanbul ignore else */
-    if (typeof listener === 'function') {
-        capture = !!capture;
-        this._elFns.push([name, listener, capture]);
-        on(this.el, name, listener, capture);
-    }
+    capture = !!capture;
+    this._elFns.push([name, listener, capture]);
+    on(this.el, name, listener, capture);
 }
 
 exports = module.exports = elementOwnOnEl;
