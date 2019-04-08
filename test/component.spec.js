@@ -405,6 +405,17 @@ describe("Component", function () {
         expect(!!myComponent.lifeCycle.is('detached')).toBeFalsy();
         expect(!!myComponent.lifeCycle.is('disposed')).toBeFalsy();
 
+        myComponent.attach(document.body);
+        expect(myComponent.el.parentNode).toBe(wrap);
+
+        expect(!!myComponent.lifeCycle.is('inited')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('compiled')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('created')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('attached')).toBeTruthy();
+        expect(!!myComponent.lifeCycle.is('detached')).toBeFalsy();
+        expect(!!myComponent.lifeCycle.is('disposed')).toBeFalsy();
+
+
         myComponent.dispose();
 
 
