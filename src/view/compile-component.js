@@ -46,60 +46,56 @@ function compileComponent(ComponentClass) {
     // pre compile template
     /* istanbul ignore else  */
     if (!proto.hasOwnProperty('aNode')) {
-        proto.aNode = {
+        var aNode = parseTemplate(ComponentClass.template || proto.template, {
+            trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
+            delimiters: proto.delimiters || ComponentClass.delimiters
+        });
+        var firstChild = aNode.children[0];
+
+        // #[begin] error
+        if (aNode.children.length !== 1 || firstChild.textExpr) {
+            throw new Error('[SAN FATAL] template must have a root element.');
+        }
+        // #[end]
+
+        proto.aNode = firstChild || {
             directives: {},
             props: [],
             events: [],
             children: []
         };
 
-        var tpl = ComponentClass.template || proto.template;
-        if (tpl) {
-            var aNode = parseTemplate(tpl, {
-                trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
-                delimiters: proto.delimiters || ComponentClass.delimiters
-            });
-            var firstChild = aNode.children[0];
+        if (firstChild.tagName === 'template') {
+            firstChild.tagName = null;
+        }
 
-            // #[begin] error
-            if (aNode.children.length !== 1 || firstChild.textExpr) {
-                throw new Error('[SAN FATAL] template must have a root element.');
-            }
-            // #[end]
+        var componentPropExtra = {
+            'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
+            'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
+            'id': {name: 'id', expr: parseText('{{id}}')}
+        };
 
-            proto.aNode = firstChild;
-            if (firstChild.tagName === 'template') {
-                firstChild.tagName = null;
-            }
+        var len = firstChild.props.length;
+        while (len--) {
+            var prop = firstChild.props[len];
+            var extra = componentPropExtra[prop.name];
 
-            var componentPropExtra = {
-                'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
-                'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
-                'id': {name: 'id', expr: parseText('{{id}}')}
-            };
+            if (extra) {
+                firstChild.props.splice(len, 1);
+                componentPropExtra[prop.name] = prop;
 
-            var len = firstChild.props.length;
-            while (len--) {
-                var prop = firstChild.props[len];
-                var extra = componentPropExtra[prop.name];
-
-                if (extra) {
-                    firstChild.props.splice(len, 1);
-                    componentPropExtra[prop.name] = prop;
-
-                    if (prop.name !== 'id') {
-                        prop.expr.segs.push(extra.expr.segs[0]);
-                        prop.expr.value = null;
-                    }
+                if (prop.name !== 'id') {
+                    prop.expr.segs.push(extra.expr.segs[0]);
+                    prop.expr.value = null;
                 }
             }
-
-            firstChild.props.push(
-                componentPropExtra['class'], // eslint-disable-line dot-notation
-                componentPropExtra.style,
-                componentPropExtra.id
-            );
         }
+
+        firstChild.props.push(
+            componentPropExtra['class'], // eslint-disable-line dot-notation
+            componentPropExtra.style,
+            componentPropExtra.id
+        );
     }
 }
 
