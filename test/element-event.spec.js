@@ -51,6 +51,36 @@ describe("Element-Event", function () {
 
     });
 
+    it("bind click to noexists method, dont throw error", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{name}}" on-click="nothingclicker(name, email, $event)">{{name}}, please click here!</span></a>',
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('name', 'errorrik');
+        myComponent.data.set('email', 'errorrik@gmail.com');
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.getAttribute('title')).toBe('errorrik');
+
+        function doneSpec() {
+            done();
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+        }
+
+        expect(function () {
+            triggerEvent(span, 'click');
+        }).not.toThrow();
+
+
+        setTimeout(doneSpec, 500);
+
+    });
+
     it("bind click fire default event when no args description, empty args description dont add default arg", function (done) {
         var clicked = 0;
 
