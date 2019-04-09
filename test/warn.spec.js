@@ -102,14 +102,6 @@ typeof console !== 'undefined' &&  san.debug && describe('warn', function () {
         var msg = console.warn.calls.first().args[0];
         expect(msg).toContain('Component template must have a root element');
         expect(msg).toContain('[SAN WARNING]');
-
-
-        expect(function () {
-            var MyComponent = san.defineComponent({
-                template: 'hello san'
-            });
-            new MyComponent();
-        }).toThrowError('[SAN FATAL] template must have a root element.');
     });
 
     it('component template not allow text', function () {
