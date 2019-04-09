@@ -66,7 +66,7 @@ typeof console !== 'undefined' &&  san.debug && describe('warn', function () {
     });
 
 
-    it('undefine template', function () {
+    it('component undefined template', function () {
         var MyComponent = san.defineComponent({
             initData: function () {
                 return {
@@ -88,5 +88,42 @@ typeof console !== 'undefined' &&  san.debug && describe('warn', function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+    });
+
+    it('component allow just one root element', function () {
+
+        var MyComponent = san.defineComponent({
+            template: '<div></div><div></div>'
+        });
+        new MyComponent();
+
+        expect(console.warn).toHaveBeenCalled();
+
+        var msg = console.warn.calls.first().args[0];
+        expect(msg).toContain('Component template must have a root element');
+        expect(msg).toContain('[SAN WARNING]');
+
+
+        expect(function () {
+            var MyComponent = san.defineComponent({
+                template: 'hello san'
+            });
+            new MyComponent();
+        }).toThrowError('[SAN FATAL] template must have a root element.');
+    });
+
+    it('component template not allow text', function () {
+
+        var MyComponent = san.defineComponent({
+            template: 'hello san'
+        });
+        new MyComponent();
+
+        expect(console.warn).toHaveBeenCalled();
+
+        var msg = console.warn.calls.first().args[0];
+        expect(msg).toContain('Component template must have a root element');
+        expect(msg).toContain('[SAN WARNING]');
+
     });
 });

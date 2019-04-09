@@ -215,23 +215,6 @@ describe('parseTemplate', function () {
         expect(san.parseTemplate({}).children.length).toBe(0);
     });
 
-    it('component allow just one root element', function () {
-
-        expect(function () {
-            var MyComponent = san.defineComponent({
-                template: '<div></div><div></div>'
-            });
-            new MyComponent();
-        }).toThrowError('[SAN FATAL] template must have a root element.');
-
-        expect(function () {
-            var MyComponent = san.defineComponent({
-                template: 'hello san'
-            });
-            new MyComponent();
-        }).toThrowError('[SAN FATAL] template must have a root element.');
-    });
-
     it('for syntax error', function () {
         expect(function () {
             var MyComponent = san.defineComponent({
