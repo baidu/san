@@ -64,4 +64,29 @@ typeof console !== 'undefined' &&  san.debug && describe('warn', function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+
+    it('undefine template', function () {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    selectText: '<option>1</option>'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(console.warn).toHaveBeenCalled();
+
+        var msg = console.warn.calls.first().args[0];
+        expect(msg).toContain('Component template must have a root element');
+        expect(msg).toContain('[SAN WARNING]');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
