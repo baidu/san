@@ -58,7 +58,7 @@ function compileComponent(ComponentClass) {
         }
         // #[end]
 
-        proto.aNode = firstChild || {
+        proto.aNode = firstChild = firstChild || {
             directives: {},
             props: [],
             events: [],
