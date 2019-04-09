@@ -7,7 +7,7 @@
  * @file 编译组件类
  */
 
-
+var warn = require('../util/warn');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
 var defineComponent = require('./define-component');
@@ -54,7 +54,7 @@ function compileComponent(ComponentClass) {
 
         // #[begin] error
         if (aNode.children.length !== 1 || firstChild.textExpr) {
-            throw new Error('[SAN FATAL] template must have a root element.');
+            warn('Component template must have a root element.');
         }
         // #[end]
 
