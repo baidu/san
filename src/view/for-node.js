@@ -339,7 +339,7 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     }
 };
 
-ForNode.prototype.flattenSplice = typeof navigator !== 'undefined'
+ForNode.prototype.opti = typeof navigator !== 'undefined'
     && /chrome\/[0-9]+/i.test(navigator.userAgent);
 /**
  * 数组类型的视图更新
@@ -456,7 +456,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 continue;
             }
             else if (relation === 2 && change.type === DataChangeType.SPLICE
-                && (this.owner.updateMode !== 'optimized' || !this.flattenSplice || this.aNode.directives.transition)
+                && (this.owner.updateMode !== 'optimized' || !this.opti || this.aNode.directives.transition)
             ) {
                 childrenNeedUpdate = null;
 
