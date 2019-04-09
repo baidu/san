@@ -50,10 +50,14 @@ function compileComponent(ComponentClass) {
             trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
             delimiters: proto.delimiters || ComponentClass.delimiters
         });
+
         var firstChild = aNode.children[0];
+        if (firstChild.textExpr) {
+            firstChild = null;
+        }
 
         // #[begin] error
-        if (aNode.children.length !== 1 || firstChild.textExpr) {
+        if (aNode.children.length !== 1 || !firstChild) {
             warn('Component template must have a root element.');
         }
         // #[end]
