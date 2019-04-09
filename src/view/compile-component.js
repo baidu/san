@@ -52,7 +52,7 @@ function compileComponent(ComponentClass) {
         });
 
         var firstChild = aNode.children[0];
-        if (firstChild.textExpr) {
+        if (firstChild && firstChild.textExpr) {
             firstChild = null;
         }
 
