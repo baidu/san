@@ -2304,6 +2304,57 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("custom event listen, use scope data", function () {
+        var sum = 0;
+        var receive = [];
+
+        var Label = san.defineComponent({
+            template: '<u class="ui-label" title="{{text}}">{{text}}</u>',
+
+            attached: function () {
+                this.fire('haha', this.data.get('text') + 'haha');
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'ui-label': Label
+            },
+
+            template: '<div><ui-label s-for="item, index in list" text="{{item}}" on-haha="labelHaha($event, index)"/></div>',
+
+            labelHaha: function (e, index) {
+                sum += index;
+                receive.push(e);
+            }
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                list: ['one', 'two', 'three']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var us = wrap.getElementsByTagName('u');
+        expect(us[0].innerHTML).toBe('one');
+        expect(us[1].innerHTML).toBe('two');
+        expect(us[2].innerHTML).toBe('three');
+
+        expect(receive[0]).toBe('onehaha');
+        expect(receive[1]).toBe('twohaha');
+        expect(receive[2]).toBe('threehaha');
+
+        expect(sum).toBe(3);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("ref", function () {
         var MyComponent = san.defineComponent({
             components: {
