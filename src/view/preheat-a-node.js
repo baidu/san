@@ -29,14 +29,13 @@ function preheatANode(aNode) {
     var stack = [];
 
     function recordHotspotData(refs, notContentData) {
-        var len = stack.length;
-        each(stack, function (aNode, index) {
-            if (!notContentData || index !== len - 1) {
+        for (var i = 0, len = stack.length; i < len; i++) {
+            if (!notContentData || i !== len - 1) {
                 each(refs, function (ref) {
-                    aNode.hotspot.data[ref] = 1;
+                    stack[i].hotspot.data[ref] = 1;
                 });
             }
-        });
+        }
     }
 
 
