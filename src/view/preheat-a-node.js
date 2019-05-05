@@ -28,7 +28,8 @@ var TemplateNode = require('./template-node');
 function preheatANode(aNode) {
     var stack = [];
 
-    function recordHotspotData(refs, notContentData) {
+    function recordHotspotData(expr, notContentData) {
+        var refs = analyseExprDataHotspot(expr);
         for (var i = 0, len = stack.length; i < len; i++) {
             if (!notContentData || i !== len - 1) {
                 each(refs, function (ref) {
@@ -49,7 +50,7 @@ function preheatANode(aNode) {
                     data: {}
                 };
                 aNode.Clazz = TextNode;
-                recordHotspotData(analyseExprDataHotspot(aNode.textExpr));
+                recordHotspotData(aNode.textExpr);
             }
             else {
                 var sourceNode;
@@ -70,11 +71,11 @@ function preheatANode(aNode) {
 
                 // === analyse hotspot data: start
                 each(aNode.vars, function (varItem) {
-                    recordHotspotData(analyseExprDataHotspot(varItem.expr));
+                    recordHotspotData(varItem.expr);
                 });
 
                 each(aNode.props, function (prop) {
-                    recordHotspotData(analyseExprDataHotspot(prop.expr));
+                    recordHotspotData(prop.expr);
                 });
 
                 for (var key in aNode.directives) {
@@ -82,7 +83,7 @@ function preheatANode(aNode) {
                     if (aNode.directives.hasOwnProperty(key)) {
                         var directive = aNode.directives[key];
                         recordHotspotData(
-                            analyseExprDataHotspot(directive.value),
+                            directive.value,
                             !/^(html|bind)$/.test(key)
                         );
 
