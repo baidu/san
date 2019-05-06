@@ -248,22 +248,20 @@ ForNode.prototype._update = function (changes) {
         if (!listData || newIsArr && listData.length === 0) {
             this._disposeChildren();
             this.listData = listData;
-            return;
         }
-
-        // 就是这么暴力
-        // 不推荐使用for遍历object，用的话自己负责
-        if (oldIsArr !== newIsArr || !newIsArr) {
+        else if (oldIsArr !== newIsArr || !newIsArr) {
+            // 就是这么暴力
+            // 不推荐使用for遍历object，用的话自己负责
             this.listData = listData;
             var me = this;
             this._disposeChildren(null, function () {
                 me._createChildren();
             });
-            return;
         }
-
-        this._updateArray(changes, listData);
-        this.listData = listData;
+        else {
+            this._updateArray(changes, listData);
+            this.listData = listData;
+        }
     }
     else {
         this.listData = listData;
