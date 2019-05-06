@@ -147,7 +147,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 }
             }
 
-            this._toPhase('created');
+            this.lifeCycle = LifeCycle.created;
         }
         insertBefore(this.el, parentEl, beforeEl);
 
@@ -181,9 +181,53 @@ Element.prototype.attach = function (parentEl, beforeEl) {
 
 Element.prototype.detach = elementOwnDetach;
 Element.prototype.dispose = elementOwnDispose;
-Element.prototype._create = elementOwnCreate;
 Element.prototype._onEl = elementOwnOnEl;
-Element.prototype._leave = elementOwnLeave;
+Element.prototype._leave = function () {
+    if (this.leaveDispose) {
+        if (!this.lifeCycle.disposed) {
+            var len = this.children.length;
+            while (len--) {
+                this.children[len].dispose(1, 1);
+            }
+
+            len = this._elFns.length;
+            while (len--) {
+                var fn = this._elFns[len];
+                un(this.el, fn[0], fn[1], fn[2]);
+            }
+            this._elFns = null;
+
+            // #[begin] allua
+            /* istanbul ignore if */
+            if (this._inputTimer) {
+                clearInterval(this._inputTimer);
+                this._inputTimer = null;
+            }
+            // #[end]
+
+            // 如果没有parent，说明是一个root component，一定要从dom树中remove
+            if (!this.disposeNoDetach || !this.parent) {
+                removeEl(this.el);
+            }
+
+            this.lifeCycle = LifeCycle.detached;
+
+            this.el = null;
+            this.owner = null;
+            this.scope = null;
+            this.children = null;
+            this.lifeCycle = LifeCycle.disposed;
+
+            if (this._ondisposed) {
+                this._ondisposed();
+            }
+        }
+    }
+    else if (this.lifeCycle.attached) {
+        removeEl(this.el);
+        this.lifeCycle = LifeCycle.detached;
+    }
+};
 
 Element.prototype._toPhase = function (name) {
     this.lifeCycle = LifeCycle[name];

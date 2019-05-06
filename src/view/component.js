@@ -807,29 +807,6 @@ Component.prototype.watch = function (dataName, listener) {
 
 
 /**
- * 元素完成视图退场动作的行为
- */
-Component.prototype._dispose = function () {
-    this.data.unlisten();
-    this.dataChanger = null;
-    this._dataChanges = null;
-
-    var len = this.implicitChildren.length;
-    while (len--) {
-        this.implicitChildren[len].dispose(0, 1);
-    }
-
-    this.implicitChildren = null;
-
-    this.source = null;
-    this.sourceSlots = null;
-    this.sourceSlotNameProps = null;
-
-    // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
-    this.slotChildren = null;
-};
-
-/**
  * 将组件attach到页面
  *
  * @param {HTMLElement} parentEl 要添加到的父元素
@@ -903,7 +880,72 @@ Component.prototype.dispose = elementOwnDispose;
 Component.prototype._create = elementOwnCreate;
 Component.prototype._onEl = elementOwnOnEl;
 Component.prototype._attached = elementOwnAttached;
-Component.prototype._leave = elementOwnLeave;
+Component.prototype._leave = function () {
+    if (this.leaveDispose) {
+        if (!this.lifeCycle.disposed) {
+            this.data.unlisten();
+            this.dataChanger = null;
+            this._dataChanges = null;
+
+            var len = this.implicitChildren.length;
+            while (len--) {
+                this.implicitChildren[len].dispose(0, 1);
+            }
+
+            this.implicitChildren = null;
+
+            this.source = null;
+            this.sourceSlots = null;
+            this.sourceSlotNameProps = null;
+
+            // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
+            this.slotChildren = null;
+
+            var len = this.children.length;
+            while (len--) {
+                this.children[len].dispose(1, 1);
+            }
+
+            len = this._elFns.length;
+            while (len--) {
+                var fn = this._elFns[len];
+                un(this.el, fn[0], fn[1], fn[2]);
+            }
+            this._elFns = null;
+
+            // #[begin] allua
+            /* istanbul ignore if */
+            if (this._inputTimer) {
+                clearInterval(this._inputTimer);
+                this._inputTimer = null;
+            }
+            // #[end]
+
+            // 如果没有parent，说明是一个root component，一定要从dom树中remove
+            if (!this.disposeNoDetach || !this.parent) {
+                removeEl(this.el);
+            }
+
+            this._toPhase('detached');
+
+            this.sel = null;
+            this.el = null;
+            this.owner = null;
+            this.scope = null;
+            this.children = null;
+
+            this._toPhase('disposed');
+
+            if (this._ondisposed) {
+                this._ondisposed();
+            }
+        }
+    }
+    else if (this.lifeCycle.attached) {
+        removeEl(this.el);
+        this._toPhase('detached');
+    }
+};
 
 
 exports = module.exports = Component;
