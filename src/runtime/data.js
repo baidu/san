@@ -101,7 +101,9 @@ Data.prototype.get = function (expr, callee) {
         return value;
     }
 
-    expr = parseExpr(expr);
+    if (typeof expr !== 'object') {
+        expr = parseExpr(expr);
+    }
 
     var paths = expr.paths;
     callee = callee || this;
