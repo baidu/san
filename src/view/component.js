@@ -827,7 +827,47 @@ Component.prototype._attach = function (parentEl, beforeEl) {
     var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
 
     if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
-        this._create();
+        if (!this.el) {
+            var isComponent = this.nodeType === NodeType.CMPT;
+            var sourceNode = this.aNode.hotspot.sourceNode;
+            var props = this.aNode.props;
+
+            if (sourceNode) {
+                this.el = sourceNode.cloneNode(false);
+                props = this.aNode.hotspot.dynamicProps;
+            }
+            else {
+                this.el = createEl(this.tagName);
+            }
+
+            if (this._sbindData) {
+                for (var key in this._sbindData) {
+                    if (this._sbindData.hasOwnProperty(key)) {
+                        getPropHandler(this.tagName, key)(
+                            this.el,
+                            this._sbindData[key],
+                            key,
+                            this
+                        );
+                    }
+                }
+            }
+
+            for (var i = 0, l = props.length; i < l; i++) {
+                var prop = props[i];
+                var propName = prop.name;
+                var value = isComponent
+                    ? evalExpr(prop.expr, this.data, this)
+                    : evalExpr(prop.expr, this.scope, this.owner);
+
+                if (value || !emptyPropWhenCreate[propName]) {
+                    prop.handler(this.el, value, propName, this, prop);
+                }
+            }
+
+            this._toPhase('created');
+        }
+
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
@@ -877,7 +917,6 @@ Component.prototype._repaint = function () {
 
 Component.prototype.detach = elementOwnDetach;
 Component.prototype.dispose = elementOwnDispose;
-Component.prototype._create = elementOwnCreate;
 Component.prototype._onEl = elementOwnOnEl;
 Component.prototype._attached = elementOwnAttached;
 Component.prototype._leave = function () {
