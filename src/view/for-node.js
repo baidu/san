@@ -296,44 +296,46 @@ ForNode.prototype._disposeChildren = function (children, callback) {
     }
 
 
-    var me = this;
     var disposedChildCount = 0;
     len = children.length;
 
     // 调用入口处已保证此处必有需要被删除的 child
     for (var i = 0; i < len; i++) {
         var disposeChild = children[i];
-        if (disposeChild) {
+
+        if (violentClear) {
+            disposeChild && disposeChild.dispose(violentClear, violentClear);
+        }
+        else if (disposeChild) {
             disposeChild._ondisposed = childDisposed;
-            disposeChild.dispose(violentClear, violentClear);
+            disposeChild.dispose();
         }
         else {
             childDisposed();
         }
     }
 
+    if (violentClear) {
+        // #[begin] allua
+        /* istanbul ignore next */
+        if (ie) {
+            parentEl.innerHTML = '';
+        }
+        else {
+            // #[end]
+            parentEl.textContent = '';
+            // #[begin] allua
+        }
+        // #[end]
+
+        this.el = document.createComment(this.id);
+        parentEl.appendChild(this.el);
+        callback && callback();
+    }
+
     function childDisposed() {
         disposedChildCount++;
         if (disposedChildCount >= len) {
-            if (violentClear) {
-                // cloneNode + replaceChild is faster
-                // parentEl.innerHTML = '';
-                // #[begin] allua
-                /* istanbul ignore next */
-                if (ie) {
-                    parentEl.innerHTML = '';
-                }
-                else {
-                // #[end]
-                    parentEl.textContent = '';
-                // #[begin] allua
-                }
-                // #[end]
-
-                me.el = document.createComment(me.id);
-                parentEl.appendChild(me.el);
-            }
-
             callback && callback();
         }
     }
