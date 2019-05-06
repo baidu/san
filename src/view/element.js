@@ -239,64 +239,64 @@ Element.prototype._toPhase = function (name) {
  * @param {Array} changes 数据变化信息
  */
 Element.prototype._update = function (changes) {
-    if (!changesIsInDataRef(changes, this.aNode.hotspot.data)) {
-        return;
-    }
+    var dataHotspot = this.aNode.hotspot.data;
+    if (dataHotspot && changesIsInDataRef(changes, dataHotspot)) {
 
-    // update s-bind
-    var me = this;
-    nodeSBindUpdate(
-        this,
-        this.aNode.directives.bind,
-        changes,
-        function (name, value) {
-            if (name in me.aNode.hotspot.props) {
-                return;
+        // update s-bind
+        var me = this;
+        nodeSBindUpdate(
+            this,
+            this.aNode.directives.bind,
+            changes,
+            function (name, value) {
+                if (name in me.aNode.hotspot.props) {
+                    return;
+                }
+
+                getPropHandler(me.tagName, name)(me.el, value, name, me);
             }
+        );
 
-            getPropHandler(me.tagName, name)(me.el, value, name, me);
-        }
-    );
+        // update prop
+        var dynamicProps = this.aNode.hotspot.dynamicProps;
+        for (var i = 0, l = dynamicProps.length; i < l; i++) {
+            var prop = dynamicProps[i];
+            var propName = prop.name;
 
-    // update prop
-    var dynamicProps = this.aNode.hotspot.dynamicProps;
-    for (var i = 0, l = dynamicProps.length; i < l; i++) {
-        var prop = dynamicProps[i];
-        var propName = prop.name;
+            for (var j = 0, changeLen = changes.length; j < changeLen; j++) {
+                var change = changes[j];
 
-        for (var j = 0, changeLen = changes.length; j < changeLen; j++) {
-            var change = changes[j];
-
-            if (!isDataChangeByElement(change, this, propName)
-                && (
-                    changeExprCompare(change.expr, prop.expr, this.scope)
-                    || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
-                )
-            ) {
-                prop.handler(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
-                break;
-            }
-        }
-    }
-
-    // update content
-    var htmlDirective = this.aNode.directives.html;
-    if (htmlDirective) {
-        var len = changes.length;
-        while (len--) {
-            if (changeExprCompare(changes[len].expr, htmlDirective.value, this.scope)) {
-                // #[begin] error
-                warnSetHTML(this.el);
-                // #[end]
-
-                this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
-                break;
+                if (!isDataChangeByElement(change, this, propName)
+                    && (
+                        changeExprCompare(change.expr, prop.expr, this.scope)
+                        || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
+                    )
+                ) {
+                    prop.handler(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
+                    break;
+                }
             }
         }
-    }
-    else {
-        for (var i = 0, l = this.children.length; i < l; i++) {
-            this.children[i]._update(changes);
+
+        // update content
+        var htmlDirective = this.aNode.directives.html;
+        if (htmlDirective) {
+            var len = changes.length;
+            while (len--) {
+                if (changeExprCompare(changes[len].expr, htmlDirective.value, this.scope)) {
+                    // #[begin] error
+                    warnSetHTML(this.el);
+                    // #[end]
+
+                    this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
+                    break;
+                }
+            }
+        }
+        else {
+            for (var i = 0, l = this.children.length; i < l; i++) {
+                this.children[i]._update(changes);
+            }
         }
     }
 };
