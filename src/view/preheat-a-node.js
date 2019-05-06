@@ -30,11 +30,19 @@ function preheatANode(aNode) {
 
     function recordHotspotData(expr, notContentData) {
         var refs = analyseExprDataHotspot(expr);
-        for (var i = 0, len = stack.length; i < len; i++) {
-            if (!notContentData || i !== len - 1) {
-                each(refs, function (ref) {
-                    stack[i].hotspot.data[ref] = 1;
-                });
+
+        if (refs.length) {
+            for (var i = 0, len = stack.length; i < len; i++) {
+                if (!notContentData || i !== len - 1) {
+                    var data = stack[i].hotspot.data;
+                    if (!data) {
+                        data = stack[i].hotspot.data = {};
+                    }
+
+                    each(refs, function (ref) {
+                        data[ref] = 1;
+                    });
+                }
             }
         }
     }
@@ -46,9 +54,7 @@ function preheatANode(aNode) {
 
 
             if (aNode.textExpr) {
-                aNode.hotspot = {
-                    data: {}
-                };
+                aNode.hotspot = {};
                 aNode.Clazz = TextNode;
                 recordHotspotData(aNode.textExpr);
             }
@@ -61,7 +67,6 @@ function preheatANode(aNode) {
                 }
 
                 aNode.hotspot = {
-                    data: {},
                     dynamicProps: [],
                     xProps: [],
                     props: {},
