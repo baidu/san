@@ -22,7 +22,13 @@ function elementOwnDetach() {
         var transition = elementGetTransition(this);
 
         if (transition && transition.leave) {
-            this._toPhase('leaving');
+            if (this._toPhase) {
+                this._toPhase('leaving');
+            }
+            else {
+                this.lifeCycle = LifeCycle.leaving;
+            }
+
             var me = this;
             transition.leave(this.el, function () {
                 me._leave();
