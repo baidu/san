@@ -35,6 +35,7 @@ var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var camelComponentBinds = require('./camel-component-binds');
 var NodeType = require('./node-type');
+var baseProps = require('./base-props');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementOwnAttached = require('./element-own-attached');
@@ -862,7 +863,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
                     ? evalExpr(prop.expr, this.data, this)
                     : evalExpr(prop.expr, this.scope, this.owner);
 
-                if (value || !emptyPropWhenCreate[propName]) {
+                if (value || !baseProps[propName]) {
                     prop.handler(this.el, value, propName, this, prop);
                 }
             }

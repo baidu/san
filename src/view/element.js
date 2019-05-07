@@ -14,6 +14,7 @@ var evalExpr = require('../runtime/eval-expr');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
+var baseProps = require('./base-props');
 var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
@@ -141,7 +142,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 var propName = prop.name;
                 var value = evalExpr(prop.expr, this.scope, this.owner);
 
-                if (value || !emptyPropWhenCreate[propName]) {
+                if (value || !baseProps[propName]) {
                     prop.handler(this.el, value, propName, this, prop);
                 }
             }
