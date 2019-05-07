@@ -95,7 +95,9 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
 
         reverseElementChildren(this, this.scope, this.owner);
 
+        this.lifeCycle = LifeCycle.created;
         this._attached();
+        this.lifeCycle = LifeCycle.attached;
     }
     // #[end]
 }
@@ -176,6 +178,8 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         }
 
         this._attached();
+
+        this.lifeCycle = LifeCycle.attached;
     }
 };
 
@@ -227,10 +231,6 @@ Element.prototype._leave = function () {
         removeEl(this.el);
         this.lifeCycle = LifeCycle.detached;
     }
-};
-
-Element.prototype._toPhase = function (name) {
-    this.lifeCycle = LifeCycle[name];
 };
 
 /**

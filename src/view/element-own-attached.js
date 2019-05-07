@@ -116,8 +116,6 @@ function xPropOutput(element, bindInfo, data) {
  * @param {Object} element 元素节点
  */
 function elementOwnAttached() {
-    this._toPhase('created');
-
     if (this.el.nodeType === 1) {
         var isComponent = this.nodeType === NodeType.CMPT;
         var data = isComponent ? this.data : this.scope;
@@ -205,9 +203,6 @@ function elementOwnAttached() {
             }
         }
     }
-
-    this._toPhase('attached');
-
 
     if (this.el.nodeType === 1) {
         var transition = elementGetTransition(this);

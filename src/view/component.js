@@ -260,7 +260,9 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     if (this.el) {
         reverseElementChildren(this, this.data, this);
+        this._toPhase('created');
         this._attached();
+        this._toPhase('attached');
     }
     else {
         var walker = options.reverseWalker;
@@ -281,7 +283,9 @@ function Component(options) { // eslint-disable-line
                 insertBefore(this.el, walker.target, walker.current);
             }
 
+            this._toPhase('created');
             this._attached();
+            this._toPhase('attached');
         }
     }
     // #[end]
@@ -882,13 +886,16 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 
             this._contentReady = 1;
         }
+
+        this._attached();
     }
     else {
         this.el = document.createComment(this.id);
+        this._toPhase('created');
         insertBefore(this.el, parentEl, beforeEl);
     }
 
-    this._attached();
+    this._toPhase('attached');
 };
 
 /**
@@ -967,7 +974,6 @@ Component.prototype._leave = function () {
 
             this._toPhase('detached');
 
-            this.sel = null;
             this.el = null;
             this.owner = null;
             this.scope = null;
