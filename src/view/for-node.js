@@ -586,7 +586,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         oldIndexStart++;
                     }
 
-                    while (newIndexEnd && oldIndexEnd
+                    while (newIndexEnd > newIndexStart && oldIndexEnd > oldIndexStart
                         && newListKeys[newIndexEnd - 1] === oldListKeys[oldIndexEnd - 1]
                     ) {
                         newIndexEnd--;
