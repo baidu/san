@@ -73,33 +73,35 @@ function compileComponent(ComponentClass) {
             firstChild.tagName = null;
         }
 
-        var componentPropExtra = {
-            'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
-            'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
-            'id': {name: 'id', expr: parseText('{{id}}')}
-        };
+        if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false) {
+            var componentPropExtra = {
+                'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
+                'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
+                'id': {name: 'id', expr: parseText('{{id}}')}
+            };
 
-        var len = firstChild.props.length;
-        while (len--) {
-            var prop = firstChild.props[len];
-            var extra = componentPropExtra[prop.name];
+            var len = firstChild.props.length;
+            while (len--) {
+                var prop = firstChild.props[len];
+                var extra = componentPropExtra[prop.name];
 
-            if (extra) {
-                firstChild.props.splice(len, 1);
-                componentPropExtra[prop.name] = prop;
+                if (extra) {
+                    firstChild.props.splice(len, 1);
+                    componentPropExtra[prop.name] = prop;
 
-                if (prop.name !== 'id') {
-                    prop.expr.segs.push(extra.expr.segs[0]);
-                    prop.expr.value = null;
+                    if (prop.name !== 'id') {
+                        prop.expr.segs.push(extra.expr.segs[0]);
+                        prop.expr.value = null;
+                    }
                 }
             }
-        }
 
-        firstChild.props.push(
-            componentPropExtra['class'], // eslint-disable-line dot-notation
-            componentPropExtra.style,
-            componentPropExtra.id
-        );
+            firstChild.props.push(
+                componentPropExtra['class'], // eslint-disable-line dot-notation
+                componentPropExtra.style,
+                componentPropExtra.id
+            );
+        }
     }
 }
 
