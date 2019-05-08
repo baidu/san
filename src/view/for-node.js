@@ -286,7 +286,7 @@ ForNode.prototype._disposeChildren = function (children, callback) {
         && !children
         // 是否 parent 的唯一 child
         && len && parentFirstChild === this.children[0].el && parentLastChild === this.el
-    ;
+        ;
 
     if (!children) {
         children = this.children;
@@ -530,17 +530,32 @@ ForNode.prototype._updateArray = function (changes, newList) {
                 // 此时需要更新整个列表
 
                 if (getItemKey && newLen && oldChildrenLen) {
-                    // 如果设置了trackBy，用lcs更新。开始 ====
-                    var lcsFlags = [];
+                    // 如果设置了trackBy，用lis更新。开始 ====
                     var newListKeys = [];
                     var oldListKeys = [];
+                    var newListKeysMap = {};
+                    var oldListInNew = [];
+                    var oldListKeyIndex = {};
 
                     for (var i = 0; i < newList.length; i++) {
-                        newListKeys.push(getItemKey(newList[i]));
+                        var itemKey = getItemKey(newList[i]);
+                        newListKeys.push(itemKey);
+                        newListKeysMap[itemKey] = i;
                     };
 
                     for (var i = 0; i < this.listData.length; i++) {
-                        oldListKeys.push(getItemKey(this.listData[i]));
+                        var itemKey = getItemKey(this.listData[i]);
+
+                        oldListKeys.push(itemKey);
+                        oldListKeyIndex[itemKey] = i;
+
+                        if (newListKeysMap[itemKey] != null) {
+                            oldListInNew[i] = newListKeysMap[itemKey];
+                        }
+                        else {
+                            oldListInNew[i] = -1;
+                            disposeChildren.push(this.children[i]);
+                        }
                     };
 
                     var newIndexStart = 0;
@@ -593,76 +608,109 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         }
                     }
 
+                    var oldListLIS = [];
+                    var lisIdx = [];
+                    var lisPos = -1;
+                    var lisSource = oldListInNew.slice(oldIndexStart, oldIndexEnd);
+                    var len = oldIndexEnd - oldIndexStart;
+                    var preIdx = new Array(len);
 
-                    var newIndex;
-                    var oldIndex;
-
-                    for (oldIndex = oldIndexStart; oldIndex <= oldIndexEnd; oldIndex++) {
-                        var lcsFlagsItem = [];
-                        lcsFlags.push(lcsFlagsItem);
-
-                        for (newIndex = newIndexStart; newIndex <= newIndexEnd; newIndex++) {
-                            var lcsFlag = 0;
-                            if (newIndex > newIndexStart && oldIndex > oldIndexStart) {
-                                lcsFlag = newListKeys[newIndex - 1] === oldListKeys[oldIndex - 1]
-                                    ? lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart - 1] + 1
-                                    : Math.max(
-                                        lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart],
-                                        lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1]);
-                            }
-
-                            lcsFlagsItem.push(lcsFlag);
+                    for (var i = 0; i < len; i++) {
+                        var oldItemInNew = lisSource[i];
+                        if (oldItemInNew === -1) {
+                            continue;
                         }
-                    }
 
-                    newIndex--;
-                    oldIndex--;
-                    while (1) {
-                        if (oldIndex > oldIndexStart
-                            && newIndex > newIndexStart
-                            && oldListKeys[oldIndex - 1] === newListKeys[newIndex - 1]
-                        ) {
-                            newIndex--;
-                            oldIndex--;
+                        var rePos = -1;
+                        var rePosEnd = oldListLIS.length;
 
-                            // 如果数据本身引用发生变化，设置变更
-                            if (this.listData[oldIndex] !== newList[newIndex]) {
-                                this.children[oldIndex].scope.raw[this.param.item] = newList[newIndex];
-                                (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push({
-                                    type: DataChangeType.SET,
-                                    option: change.option,
-                                    expr: this.itemExpr,
-                                    value: newList[newIndex]
-                                });
-                            }
-
-                            // 对list更上级数据的直接设置
-                            if (relation < 2) {
-                                (childrenChanges[oldIndex] = childrenChanges[oldIndex] || []).push(change);
-                            }
-                        }
-                        else if (newIndex > newIndexStart
-                            && (oldIndex === oldIndexStart
-                                || lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1] >= lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart])
-                        ) {
-                            newIndex--;
-                            childrenChanges.splice(oldIndex, 0, 0);
-                            this.children.splice(oldIndex, 0, 0);
-                        }
-                        else if (oldIndex > oldIndexStart
-                            && (newIndex === newIndexStart
-                                || lcsFlags[oldIndex - oldIndexStart][newIndex - newIndexStart - 1] < lcsFlags[oldIndex - oldIndexStart - 1][newIndex - newIndexStart])
-                        ) {
-                            oldIndex--;
-                            disposeChildren.push(this.children[oldIndex]);
-                            childrenChanges.splice(oldIndex, 1);
-                            this.children.splice(oldIndex, 1);
+                        if (rePosEnd > 0 && oldListLIS[rePosEnd - 1] <= oldItemInNew) {
+                            rePos = rePosEnd - 1;
                         }
                         else {
-                            break;
+                            while (rePosEnd - rePos > 1) {
+                                var mid = Math.floor((rePos + rePosEnd) / 2);
+                                if (oldListLIS[mid] > oldItemInNew) {
+                                    rePosEnd = mid;
+                                } else {
+                                    rePos = mid;
+                                }
+                            }
+                        }
+
+                        if (rePos !== -1) {
+                            preIdx[i] = lisIdx[rePos];
+                        }
+
+                        if (rePos === lisPos) {
+                            lisPos++;
+                            oldListLIS[lisPos] = oldItemInNew;
+                            lisIdx[lisPos] = i;
+                        } else if (oldItemInNew < oldListLIS[rePos + 1]) {
+                            oldListLIS[rePos + 1] = oldItemInNew;
+                            lisIdx[rePos + 1] = i;
                         }
                     }
-                    // 如果设置了trackBy，用lcs更新。结束 ====
+
+                    for (var i = lisIdx[lisPos]; lisPos >= 0; i = preIdx[i], lisPos--) {
+                        oldListLIS[lisPos] = i;
+                    }
+
+                    var oldListLISPos = oldListLIS.length;
+                    var staticPos = oldListLISPos ? oldListInNew[oldListLIS[--oldListLISPos] + oldIndexStart] : -1;
+
+                    var newChildren = [];
+                    var newChildrenChanges = [];
+
+                    for (var i = newLen - 1; i >= 0; i--) {
+                        if (i >= newIndexEnd) {
+                            newChildren[i] = this.children[oldChildrenLen - newLen + i];
+                            newChildrenChanges[i] = childrenChanges[oldChildrenLen - newLen + i];
+                        }
+                        else if (i < newIndexStart) {
+                            newChildren[i] = this.children[i];
+                            newChildrenChanges[i] = childrenChanges[i];
+                        }
+                        else {
+                            var oldListIndex = oldListKeyIndex[newListKeys[i]];
+
+                            if (i === staticPos) {
+                                // 如果数据本身引用发生变化，设置变更
+                                if (this.listData[oldListIndex] !== newList[i]) {
+                                    this.children[oldListIndex].scope.raw[this.param.item] = newList[i];
+                                    (childrenChanges[oldListIndex] = childrenChanges[oldListIndex] || []).push({
+                                        type: DataChangeType.SET,
+                                        option: change.option,
+                                        expr: this.itemExpr,
+                                        value: newList[i]
+                                    });
+                                }
+
+                                // 对list更上级数据的直接设置
+                                if (relation < 2) {
+                                    (childrenChanges[oldListIndex] = childrenChanges[oldListIndex] || []).push(change);
+                                }
+
+                                newChildren[i] = this.children[oldListIndex];
+                                newChildrenChanges[i] = childrenChanges[oldListIndex];
+
+                                staticPos = oldListLISPos ? oldListInNew[oldListLIS[--oldListLISPos] + oldIndexStart] : -1;
+                            }
+                            else {
+                                if (oldListIndex) {
+                                    disposeChildren.push(this.children[oldListIndex]);
+                                }
+
+                                newChildren[i] = 0;
+                                newChildrenChanges[i] = 0;
+                            }
+
+                        }
+                    }
+
+                    this.children = newChildren;
+                    childrenChanges = newChildrenChanges;
+                    // 如果设置了trackBy，用lis更新。结束 ====
                 }
                 else {
                     // 老的比新的多的部分，标记需要dispose
@@ -774,6 +822,5 @@ ForNode.prototype._updateArray = function (changes, newList) {
         }
     }
 };
-
 
 exports = module.exports = ForNode;
