@@ -4,17 +4,17 @@
         <meta charset="UTF-8">
         <title>Todos</title>
         <link rel="stylesheet" href="src/index.css">
-        <link rel="stylesheet" href="dep/font-awesome/font-awesome.css">
+        <link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.css">
 
-        <script src="dep/esl-2.1.4.js"></script>
+        <script src="node_modules/esljs/dist/esl.js"></script>
         <script>
             require.config({
                 baseUrl: 'src',
                 paths: {
-                    moment: '../dep/moment-2.11.0',
-                    jquery: '../dep/jquery-2.1.4',
-                    san: '../dep/san/dist/san',
-                    'san-router': '../dep/san-router/dist/san-router.source'
+                    moment: '../node_modules/moment/moment',
+                    jquery: '../node_modules/jquery/dist/jquery',
+                    san: '../node_modules/san/dist/san',
+                    'san-router': '../node_modules/san-router/dist/san-router.source'
                 },
                 waitSeconds: 3
             });
