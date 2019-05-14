@@ -1,0 +1,21 @@
+{
+    "name": "todos-amd",
+    "version": "0.1.0",
+    "scripts": {
+        "dev": "npx http-server"
+    },
+    "keywords": [
+        "san"
+    ],
+    "devDependencies": {
+        "http-server": "0.11.1"
+    },
+    "dependencies": {
+        "font-awesome": "^4.6.3",
+        "jquery": "^3.1.1",
+        "moment": "^2.15.1",
+        "san": "^3.7.5",
+        "san-router": "^1.1.2",
+        "esljs": "2.2.0"
+    }
+}
