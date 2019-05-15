@@ -61,6 +61,7 @@ function preheatANode(aNode) {
             else {
                 var sourceNode;
                 if (isBrowser && aNode.tagName
+                    && aNode.tagName.indexOf('-') < 0
                     && !/^(template|slot|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName)
                 ) {
                     sourceNode = createEl(aNode.tagName);
