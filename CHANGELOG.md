@@ -2,6 +2,11 @@
 ChangeLog
 ========
 
+3.7.6
+-------
+
++ 【bug修复】- replaced element 和 custom element 预创建可能导致问题，比如视频或音频播放
+
 
 3.7.5
 -------
