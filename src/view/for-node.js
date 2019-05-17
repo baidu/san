@@ -253,10 +253,18 @@ ForNode.prototype._update = function (changes) {
             // 就是这么暴力
             // 不推荐使用for遍历object，用的话自己负责
             this.listData = listData;
-            var me = this;
-            this._disposeChildren(null, function () {
-                me._createChildren();
-            });
+
+            var isListChanged;
+            for (var cIndex = 0; !isListChanged && cIndex < changes.length; cIndex++) {
+                isListChanged = changeExprCompare(changes[cIndex].expr, this.param.value, this.scope);
+            }
+            var dataHotspot = this.aNode.hotspot.data;
+            if (isListChanged || dataHotspot && changesIsInDataRef(changes, dataHotspot)) {
+                var me = this;
+                this._disposeChildren(null, function () {
+                    me._createChildren();
+                });
+            }
         }
         else {
             this._updateArray(changes, listData);

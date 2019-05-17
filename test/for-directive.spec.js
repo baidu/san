@@ -2854,6 +2854,43 @@ describe("ForDirective", function () {
 
     });
 
+    it("render object, do nothing if irrelevant prop modified", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                irrelevantProp: 'a',
+                persons: {
+                    'erik': 'errorrik@gmail.com',
+                    'otakustay': 'otakustay@gmail.com'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        var keptLis = Array.prototype.slice.call(lis);
+
+        myComponent.data.set('irrelevantProp', 'b');
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+
+            expect(myComponent.data.get('irrelevantProp')).toBe('b');
+            expect(lis.length).toBe(2);
+            expect(lis[0] === keptLis[0]).toBe(true);
+            expect(lis[1] === keptLis[1]).toBe(true);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("render object, start with undefined", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in dep.persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
