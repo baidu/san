@@ -1,0 +1,196 @@
+<template>
+<div class="todos">
+    <router-link to="/add" class="todo-add"><i class="fa fa-plus-square"></i></router-link>
+    <ul class="filter-category">
+        <li
+            san-for="item in categories"
+            style="background: {{item.color}}"
+            class="{{item.id == route.query.category ? 'checked' : ''}}"
+        >
+            <router-link to="/todos/category/{{ item.id }}">{{ item.title }}</router-link>
+        </li>
+    </ul>
+
+    <router-link to="/" class="fa fa-close filter-category-clear" style="display: {{route.query.category ? '' : 'none')}}"></router-link>
+
+    <ul class="todo-list">
+        <li san-for="item, index in todos"
+            style="border-color: {{item.category.color}}"
+            class="{{item.done ? 'todo-done' : ''}}"
+        >
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+            <div class="todo-meta">
+                <span v-if="item.category">{{ item.category.title }} | </span>
+                <span>预期完成时间: {{ item.endTime | formatDate('YYYY-MM-DD, h:mm a') }}</span>
+            </div>
+            <router-link class="fa fa-pencil" to="/edit/{{ item.id }}"></router-link>
+            <i class="fa fa-check" on-click="doneTodo(index)"></i>
+            <i class="fa fa-trash-o" on-click="rmTodo(index)"></i>
+        </li>
+    </ul>
+</div>
+</template>
+
+<script>
+
+import { formatDate } from '../filters'
+import { Link } from 'san-router'
+import { connect } from 'san-store'
+
+export default connect.san(
+    {todos: 'todos', categories: 'categories'},
+    {
+        list: 'fetchTodos',
+        categories: 'fetchCategories',
+        rm: 'startRmTodo',
+        done: 'startDoneTodo'
+    }
+)({
+    components: {
+        'router-link': Link
+    },
+
+    filters: {
+        formatDate: formatDate
+    },
+
+    route: function () {
+        let route = this.data.get('route');
+        let category = +(route.query.category || 0);
+
+        this.actions.list(category);
+        this.actions.categories();
+    },
+
+
+    doneTodo: function (index) {
+        var todo = this.data.get('todos')[index];
+        this.actions.done(todo.id);
+    },
+
+    rmTodo: function (index) {
+        var todo = this.data.get('todos')[index];
+        this.actions.rm(todo.id);
+    }
+})
+</script>
+
+<style>
+.todo-add {
+    display: block;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0;
+    margin: 10px auto;
+    max-width: 800px;
+    background: #6a6a6a;
+    color: #fff;
+    font-size: 32px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.todo-add:hover {
+    background: #222;
+}
+.filter-category {
+    display: inline-block;
+}
+
+.filter-category li {
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.filter-category li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.filter-category .checked {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
+
+.filter-category-clear {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 5px;
+}
+
+.todo-list {
+    list-style: none;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 0;
+    margin: 10px auto;
+    max-width: 800px;
+}
+
+.todo-list h3 {
+    font-size: 18px;
+    height: 30px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.todo-list li {
+    padding: 10px;
+    background: #eee;
+    border-radius: 5px;
+    position: relative;
+    font-size: 14px;
+    color: #666;
+    border-left: 8px solid #555;
+    margin-bottom: 5px;
+}
+
+.todo-list .fa {
+    font-size: 14px;
+    position: absolute;
+    top: 5px;
+    display: none;
+    color: #60a917;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.todo-list .fa-trash-o {
+    right: 5px;
+}
+
+.todo-list .fa-check {
+    right: 25px;
+}
+
+.todo-list .fa-pencil {
+    right: 45px;
+}
+
+.todo-list li:hover .fa {
+    display: block;
+    color: #999;
+}
+
+.todo-list .todo-done .fa {
+    display: block;
+}
+.todo-list .todo-done:hover .fa {
+    color: #60a917;
+}
+
+.todo-list .todo-done {
+    cursor: default;
+    opacity: .4;
+}
+
+.todo-meta {
+    font-size: 10px;
+    color: #999;
+}
+
+</style>

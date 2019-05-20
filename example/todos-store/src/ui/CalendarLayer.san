@@ -1,0 +1,105 @@
+<template>
+<div class="ui-layer ui-calendar-layer" style="left: {{left}}px; top: {{top}}px">
+    <div class="ui-calendar-func">
+        <i class="fa fa-angle-left" on-click="prevMonth"></i>
+        <b>{{ viewYear }}-{{ viewMonth + 1 }}</b>
+        <i class="fa fa-angle-right" on-click="nextMonth"></i>
+    </div>
+    <ol class="date-head">
+        <li>一</li>
+        <li>二</li>
+        <li>三</li>
+        <li>四</li>
+        <li>五</li>
+        <li>六</li>
+        <li>日</li>
+    </ol>
+    <ol>
+        <li san-for="item in dates" on-click="select(item)"
+            class="{{ item | selectedClass(value)}}">{{item}}</li>
+    </ol>
+</div>
+</template>
+
+
+<script>
+
+export default {
+
+    filters: {
+        selectedClass: function (date, value) {
+            return date === value.getDate()
+                && this.data.get('viewMonth') === value.getMonth()
+                && this.data.get('viewYear') === value.getFullYear()
+                ? 'selected'
+                : '';
+        }
+    },
+
+    updateViewState: function () {
+        var viewYear = this.data.get('viewYear');
+        var viewMonth = this.data.get('viewMonth');
+
+
+        var viewDate = new Date(viewYear, viewMonth, 1);
+        viewYear = viewDate.getFullYear();
+        viewMonth = viewDate.getMonth();
+        this.data.set('viewYear', viewYear);
+        this.data.set('viewMonth', viewMonth);
+
+        var dates = [];
+        var day = viewDate.getDay() - 1;
+        for (; day % 7; day--) {
+            dates.push('');
+        }
+        var nextMonth = new Date(viewYear, viewMonth + 1, 1);
+        var days = (nextMonth - viewDate) / 24 / 60 / 60 / 1000;
+        for (var i = 1; i <= days; i++) {
+            dates.push(i);
+        }
+
+        this.data.set('dates', dates);
+    },
+
+    hide: function () {
+        this.data.set('left', -1000);
+    },
+
+    show: function (pos) {
+        this.data.set('left', pos.left);
+        this.data.set('top', pos.top);
+
+        var value = this.data.get('value');
+        this.data.set('viewYear', value.getFullYear());
+        this.data.set('viewMonth', value.getMonth());
+
+        this.updateViewState();
+    },
+
+    isHide: function () {
+        return this.data.get('left') < 0;
+    },
+
+    presanonth: function () {
+        var viewMonth = this.data.get('viewMonth');
+        this.data.set('viewMonth', viewMonth - 1);
+        this.updateViewState();
+    },
+
+    nextMonth: function () {
+        var viewMonth = this.data.get('viewMonth');
+        this.data.set('viewMonth', viewMonth + 1);
+        this.updateViewState();
+    },
+
+    select: function (date) {
+        this.fire('select', new Date(
+            this.data.get('viewYear'),
+            this.data.get('viewMonth'),
+            date
+        ));
+        this.hide();
+    }
+}
+</script>
+

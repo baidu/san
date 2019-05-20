@@ -1,0 +1,84 @@
+<template>
+    <div class="form">
+        <input type="text" placeholder="分类" class="form-title" value="{= title =}">
+        <ui-colorpicker value="{= color =}"></ui-colorpicker>
+        <div class="form-op">
+            <button type="button" class="form-ok" on-click="submit"><i class="fa fa-check-circle-o"></i></button>
+            <button type="button" class="form-cancel" on-click="cancel"><i class="fa fa-times-circle-o"></i></button>
+        </div>
+    </div>
+</template>
+
+<script>
+
+import ColorPicker from '../ui/ColorPicker.san'
+
+import { connect } from 'san-store'
+
+
+export default connect.san(
+    {
+        title: 'addingCategory.title',
+        color: 'addingCategory.color',
+        finished: 'addingCategoryFinished'
+    },
+    {
+        start: 'startAddCategory',
+        submit: 'submitAddCategory'
+    }
+)({
+    components: {
+        'ui-colorpicker': ColorPicker
+    },
+
+    initData: function () {
+        return {
+            title: '',
+            color: ''
+        };
+    },
+
+    attached: function () {
+        this.actions.start();
+
+        this.watch('finished', value => {
+            if (value) {
+                this.finish();
+            }
+        });
+    },
+
+    submit: function () {
+        var title = this.data.get('title');
+        if (!title) {
+            return;
+        }
+
+        this.actions.submit({
+            title: title,
+            color: this.data.get('color')
+        });
+    },
+
+    cancel: function () {
+        this.finish();
+    },
+
+    finish: function () {
+        this.actions.start();
+        this.fire('finished');
+
+        if (!this.data.get('inDialog')) {
+            history.go(-1);
+        }
+    }
+})
+</script>
+
+<style>
+.add-category {
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+</style>

@@ -1,0 +1,48 @@
+<template>
+    <ul class="ui-colorpicker">
+        <li
+            san-for="item, index in datasource"
+            style="background: {{item}}"
+            class="{{item == value ? 'selected' : ''}}"
+            on-click="itemClick(item)"
+        >{{ item.title }}</li>
+    </ul>
+</template>
+
+<script>
+
+export default {
+    initData: function () {
+        return {
+            datasource: [
+                '#c23531', '#314656', '#dd8668', '#91c7ae',
+                '#6e7074', '#bda29a', '#44525d', '#c4ccd3'
+            ]
+        };
+    },
+
+    itemClick: function (item) {
+        this.data.set('value', item);
+    }
+}
+
+</script>
+
+
+<style>
+.ui-colorpicker {
+    list-style: none;
+    display: inline-block;
+}
+
+.ui-colorpicker li {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.ui-colorpicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}
+</style>
