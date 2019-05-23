@@ -195,7 +195,7 @@ var elementPropHandlers = {
         disabled: boolPropHandler,
         autofocus: boolPropHandler,
         type: function (el, value) {
-            el.setAttribute('type', value || '');
+            el.setAttribute('type', value);
         }
     }
 };
