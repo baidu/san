@@ -225,10 +225,6 @@ Element.prototype._leave = function () {
             }
         }
     }
-    else if (this.lifeCycle.attached) {
-        removeEl(this.el);
-        this.lifeCycle = LifeCycle.detached;
-    }
 };
 
 /**
