@@ -831,7 +831,6 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 
     if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
         if (!this.el) {
-            var isComponent = this.nodeType === NodeType.CMPT;
             var sourceNode = this.aNode.hotspot.sourceNode;
             var props = this.aNode.props;
 
@@ -858,13 +857,10 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 
             for (var i = 0, l = props.length; i < l; i++) {
                 var prop = props[i];
-                var propName = prop.name;
-                var value = isComponent
-                    ? evalExpr(prop.expr, this.data, this)
-                    : evalExpr(prop.expr, this.scope, this.owner);
+                var value = evalExpr(prop.expr, this.data, this);
 
-                if (value || !baseProps[propName]) {
-                    prop.handler(this.el, value, propName, this, prop);
+                if (value || !baseProps[prop.name]) {
+                    prop.handler(this.el, value, prop.name, this, prop);
                 }
             }
 
