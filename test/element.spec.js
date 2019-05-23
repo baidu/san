@@ -927,4 +927,22 @@ describe("Element", function () {
             document.body.removeChild(wrap);
         }, 2000)
     });
+
+    it("s- and san- attr should be ignore", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div><a s-b="b" san-c="c">test</a></div>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var a = wrap.getElementsByTagName('a')[0];
+        expect(a.hasAttribute('s-b')).toBeFalsy();
+        expect(a.hasAttribute('san-c')).toBeFalsy();
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
