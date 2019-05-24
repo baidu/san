@@ -125,7 +125,9 @@ function analInputCheckedState(element, value) {
 
             return !!analInputChecker[type](
                 value,
-                evalExpr(bindValue.expr, element.scope, element.owner)
+                element.data
+                    ? evalExpr(bindValue.expr, element.data, element)
+                    : evalExpr(bindValue.expr, element.scope, element.owner)
             );
         }
     }
