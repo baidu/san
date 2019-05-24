@@ -4665,5 +4665,51 @@ describe("Component", function () {
         });
 
     });
+
+    it("checkbox as component root", function (done) {
+        var Checkbox = san.defineComponent({
+            template: '<input type="checkbox" value="{{value}}" checked="{{checked}}">'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-cb': Checkbox
+            },
+
+            template: '<div>'
+                + '<label s-for="p in ps"><x-cb value="{{p}}" checked="{{online}}"/>{{p}}</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: ['varsha'],
+                    ps: ['errorrik', 'varsha', 'firede']
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBeFalsy();
+        expect(inputs[1].checked).toBeTruthy();
+        expect(inputs[2].checked).toBeFalsy();
+
+        myComponent.data.push('online', 'errorrik');
+        myComponent.nextTick(function () {
+
+            expect(inputs[0].checked).toBeTruthy();
+            expect(inputs[1].checked).toBeTruthy();
+            expect(inputs[2].checked).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 });
 
