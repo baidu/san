@@ -2330,16 +2330,8 @@ describe("ForDirective", function () {
 
     it("complex trackBy", function (done) {
 
-        var List = san.defineComponent({
-            template: '<ul><li s-for="item in list trackBy item">{{item}}</li></ul>'
-        });
-
         var MyComponent = san.defineComponent({
-            components: {
-                'x-list': List
-            },
-
-            template: '<div><x-list list="{{list}}" /></div>'
+            template: '<ul><li s-for="item in list trackBy item">{{item}}</li></ul>'
         });
 
         var myComponent = new MyComponent({
@@ -2353,22 +2345,22 @@ describe("ForDirective", function () {
 
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(9);
-        var li1 = lis[0];
-        var li3 = lis[2];
+        var li2 = lis[1];
         var li4 = lis[3];
+        var li5 = lis[4];
         var li8 = lis[7];
         var li9 = lis[8];
 
-        myComponent.data.set('list', [20, 10, 50, 30, 60, 40, 80, 90, 70]);
+        myComponent.data.set('list', [20, 60, 10, 40, 50, 30, 80, 90, 70]);
         myComponent.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(9);
 
-            expect(li1 === lis[1]);
-            expect(li3 === lis[3]);
-            expect(li4 === lis[5]);
-            expect(li8 === lis[6]);
-            expect(li9 === lis[7]);
+            expect(li2 === lis[0]).toBeTruthy();
+            expect(li4 === lis[3]).toBeTruthy();
+            expect(li5 === lis[4]).toBeTruthy();
+            expect(li8 === lis[6]).toBeTruthy();
+            expect(li9 === lis[7]).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
