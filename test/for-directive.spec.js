@@ -2328,6 +2328,54 @@ describe("ForDirective", function () {
         });
     });
 
+    it("complex trackBy", function (done) {
+
+        var List = san.defineComponent({
+            template: '<ul><li s-for="item in list trackBy item">{{item}}</li></ul>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-list': List
+            },
+
+            template: '<div><x-list list="{{list}}" /></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(9);
+        var li1 = lis[0];
+        var li3 = lis[2];
+        var li4 = lis[3];
+        var li8 = lis[7];
+        var li9 = lis[8];
+
+        myComponent.data.set('list', [20, 10, 50, 30, 60, 40, 80, 90, 70]);
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(9);
+
+            expect(li1 === lis[1]);
+            expect(li3 === lis[3]);
+            expect(li4 === lis[5]);
+            expect(li8 === lis[6]);
+            expect(li9 === lis[7]);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("component can track owner splice and set change", function (done) {
 
         var List = san.defineComponent({
