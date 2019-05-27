@@ -669,7 +669,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
                     var newChildren = [];
                     var newChildrenChanges = [];
-
+debugger
                     for (var i = newLen - 1; i >= 0; i--) {
                         if (i >= newIndexEnd) {
                             newChildren[i] = this.children[oldChildrenLen - newLen + i];
@@ -705,7 +705,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                                 staticPos = oldListLISPos ? oldListInNew[oldListLIS[--oldListLISPos] + oldIndexStart] : -1;
                             }
                             else {
-                                if (oldListIndex) {
+                                if (oldListIndex != null) {
                                     disposeChildren.push(this.children[oldListIndex]);
                                 }
 
