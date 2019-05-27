@@ -669,7 +669,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
 
                     var newChildren = [];
                     var newChildrenChanges = [];
-debugger
+
                     for (var i = newLen - 1; i >= 0; i--) {
                         if (i >= newIndexEnd) {
                             newChildren[i] = this.children[oldChildrenLen - newLen + i];
