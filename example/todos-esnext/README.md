@@ -16,7 +16,7 @@ $ npm i
 First, run dev script:
 
 ```
-$ npm run dev
+$ npm start
 ```
 
 And then, open <http://localhost:8888/>
