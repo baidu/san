@@ -26,7 +26,7 @@ function createNode(aNode, parent, scope, owner) {
     }
 
     var ComponentOrLoader = owner.getComponentType
-        ? owner.getComponentType(aNode)
+        ? owner.getComponentType(aNode, scope)
         : owner.components[aNode.tagName];
 
     if (ComponentOrLoader) {
