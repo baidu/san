@@ -4775,11 +4775,10 @@ describe("Component", function () {
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('last');
 
-        myComponent.data.set('list[0].type', 'button')
         myComponent.nextTick(function () {
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         });
 
