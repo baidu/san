@@ -4711,5 +4711,78 @@ describe("Component", function () {
         });
 
     });
+
+    it("getComponentType called by aNode and scope", function (done) {
+        var Button = san.defineComponent({
+            template: '<button><slot/></button>'
+        });
+
+        var Link = san.defineComponent({
+            template: '<a><slot/></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-button': Button
+            },
+
+            template: '<div>'
+                + '<x-link s-for="item in list">{{item.title}}</x-link>'
+                + '<x-button>last</x-button>'
+                + '</div>',
+
+            getComponentType: function (aNode, scope) {
+                var tagName = aNode.tagName;
+                if (tagName === 'x-link') {
+                    return scope.get('item.type') === 'a' ? Link : Button
+                }
+
+                return this.components[tagName];
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [
+                    { type: 'a', title: 'one' },
+                    { type: 'button', title: 'two' },
+                    { type: 'button', title: 'three' },
+                    { type: 'a', title: 'four' }
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var child = myComponent.el.firstChild;
+        expect(child.tagName).toBe('A');
+        expect(child.innerHTML).toContain('one');
+
+        child = child.nextSibling;
+        expect(child.tagName).toBe('BUTTON');
+        expect(child.innerHTML).toContain('two');
+
+        child = child.nextSibling;
+        expect(child.tagName).toBe('BUTTON');
+        expect(child.innerHTML).toContain('three');
+
+        child = child.nextSibling;
+        expect(child.tagName).toBe('A');
+        expect(child.innerHTML).toContain('four');
+
+        child = myComponent.el.lastChild;
+        expect(child.tagName).toBe('BUTTON');
+        expect(child.innerHTML).toContain('last');
+
+        myComponent.data.set('list[0].type', 'button')
+        myComponent.nextTick(function () {
+
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
+            done();
+        });
+
+    });
 });
 
