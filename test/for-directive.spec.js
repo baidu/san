@@ -3090,4 +3090,60 @@ describe("ForDirective", function () {
             });
         });
     });
+
+    it("with call", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="num in plus(nums)">{{num}}</li></ul>',
+
+            plus: function (list) {
+                var result = [];
+                for (var i = 0; i < list.length; i++) {
+                    result.push(list[i] + 1);
+                }
+
+                return result;
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                nums: [2,3,4,5]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+
+        expect(lis[0].innerHTML).toBe('3');
+        expect(lis[1].innerHTML).toBe('4');
+        expect(lis[2].innerHTML).toBe('5');
+        expect(lis[3].innerHTML).toBe('6');
+
+        myComponent.data.removeAt('nums', 1);
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(3);
+
+            expect(lis[0].innerHTML).toBe('3');
+            expect(lis[1].innerHTML).toBe('5');
+            expect(lis[2].innerHTML).toBe('6');
+
+            myComponent.data.set('nums', [5,6]);
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(2);
+
+                expect(lis[0].innerHTML).toBe('6');
+                expect(lis[1].innerHTML).toBe('7');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
 });
