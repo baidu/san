@@ -3093,12 +3093,21 @@ describe("ForDirective", function () {
 
     it("with call", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<ul><li san-for="num in plus(nums)">{{num}}</li></ul>',
+            template: '<div><ul><li san-for="num in plus(ten(nums))">{{num}}</li></ul></div>',
 
             plus: function (list) {
                 var result = [];
                 for (var i = 0; i < list.length; i++) {
                     result.push(list[i] + 1);
+                }
+
+                return result;
+            },
+
+            ten: function (list) {
+                var result = [];
+                for (var i = 0; i < list.length; i++) {
+                    result.push(list[i] * 10);
                 }
 
                 return result;
@@ -3118,30 +3127,30 @@ describe("ForDirective", function () {
         var lis = wrap.getElementsByTagName('li');
         expect(lis.length).toBe(4);
 
-        expect(lis[0].innerHTML).toBe('3');
-        expect(lis[1].innerHTML).toBe('4');
-        expect(lis[2].innerHTML).toBe('5');
-        expect(lis[3].innerHTML).toBe('6');
+        expect(lis[0].innerHTML).toBe('21');
+        expect(lis[1].innerHTML).toBe('31');
+        expect(lis[2].innerHTML).toBe('41');
+        expect(lis[3].innerHTML).toBe('51');
 
         myComponent.data.removeAt('nums', 1);
         myComponent.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(3);
 
-            expect(lis[0].innerHTML).toBe('3');
-            expect(lis[1].innerHTML).toBe('5');
-            expect(lis[2].innerHTML).toBe('6');
+            expect(lis[0].innerHTML).toBe('21');
+            expect(lis[1].innerHTML).toBe('41');
+            expect(lis[2].innerHTML).toBe('51');
 
             myComponent.data.set('nums', [5,6]);
             myComponent.nextTick(function () {
                 var lis = wrap.getElementsByTagName('li');
                 expect(lis.length).toBe(2);
 
-                expect(lis[0].innerHTML).toBe('6');
-                expect(lis[1].innerHTML).toBe('7');
+                expect(lis[0].innerHTML).toBe('51');
+                expect(lis[1].innerHTML).toBe('61');
 
-                myComponent.dispose();
-                document.body.removeChild(wrap);
+                // myComponent.dispose();
+                // document.body.removeChild(wrap);
                 done();
             });
         });
