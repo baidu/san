@@ -3149,8 +3149,8 @@ describe("ForDirective", function () {
                 expect(lis[0].innerHTML).toBe('51');
                 expect(lis[1].innerHTML).toBe('61');
 
-                // myComponent.dispose();
-                // document.body.removeChild(wrap);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
                 done();
             });
         });
