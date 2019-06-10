@@ -261,6 +261,11 @@ function analyseExprDataHotspot(expr, accessorMeanDynamic) {
 
             break;
 
+        case ExprType.CALL:
+            analyseExprs(expr.name.paths);
+            analyseExprs(expr.args);
+            break;
+
         case ExprType.ARRAY:
         case ExprType.OBJECT:
             for (var i = 0; i < expr.items.length; i++) {
