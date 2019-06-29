@@ -4783,5 +4783,29 @@ describe("Component", function () {
         });
 
     });
+
+    it("data prop with empty string, should not autotrans true", function () {
+        var Child = san.defineComponent({
+            template: '<b>{{text}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child text="" s-ref="child" /></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('');
+        expect(myComponent.ref('child').data.get('text')).toBe('');
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
 });
 
