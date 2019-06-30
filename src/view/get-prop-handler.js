@@ -69,7 +69,7 @@ function svgPropHandler(el, value, name) {
 
 function boolPropHandler(el, value, name, element, prop) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
-    el[propName] = !!(prop && prop.raw === ''
+    el[propName] = !!(prop && prop.raw == null
         || value && value !== 'false' && value !== '0');
 }
 
