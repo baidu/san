@@ -29,10 +29,12 @@ function postProp(prop) {
     if (expr.type === ExprType.TEXT) {
         switch (expr.segs.length) {
             case 0:
-                prop.expr = {
-                    type: ExprType.BOOL,
-                    value: true
-                };
+                if (prop.raw == null) {
+                    prop.expr = {
+                        type: ExprType.BOOL,
+                        value: true
+                    };
+                }
                 break;
 
             case 1:

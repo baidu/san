@@ -210,7 +210,7 @@ var elementSourceCompiler = {
                 case 'readonly':
                 case 'disabled':
                 case 'multiple':
-                    if (prop.raw === '') {
+                    if (prop.raw == null) {
                         sourceBuffer.joinString(' ' + prop.name);
                     }
                     else {
