@@ -97,12 +97,13 @@ function integrateAttr(aNode, name, value, options) {
  * @inner
  * @param {ANode} aNode 抽象节点
  * @param {string} name 属性名称
- * @param {string} value 属性值
+ * @param {string} rawValue 属性值
  * @param {Object} options 解析参数
  * @param {Array?} options.delimiters 插值分隔符列表
  */
-function integrateProp(aNode, name, value, options) {
+function integrateProp(aNode, name, rawValue, options) {
     // parse two way binding, e.g. value="{=ident=}"
+    var value = rawValue || '';
     var xMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
 
     if (xMatch) {
@@ -120,7 +121,7 @@ function integrateProp(aNode, name, value, options) {
     var prop = {
         name: name,
         expr: parseText(value, options.delimiters),
-        raw: value
+        raw: rawValue
     };
 
     // 这里不能把只有一个插值的属性抽取
