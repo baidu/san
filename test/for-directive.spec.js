@@ -2914,7 +2914,8 @@ describe("ForDirective", function () {
         myComponent.attach(wrap);
 
         var lis = wrap.getElementsByTagName('li');
-        var keptLis = Array.prototype.slice.call(lis);
+        var lis0 = lis[0];
+        var lis1 = lis[1];
 
         myComponent.data.set('irrelevantProp', 'b');
         myComponent.nextTick(function () {
@@ -2922,8 +2923,8 @@ describe("ForDirective", function () {
 
             expect(myComponent.data.get('irrelevantProp')).toBe('b');
             expect(lis.length).toBe(2);
-            expect(lis[0] === keptLis[0]).toBe(true);
-            expect(lis[1] === keptLis[1]).toBe(true);
+            expect(lis[0] === lis0).toBe(true);
+            expect(lis[1] === lis1).toBe(true);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
