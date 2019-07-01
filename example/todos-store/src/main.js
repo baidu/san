@@ -1,3 +1,4 @@
+import '@babel/polyfill';
 import san from 'san'
 
 // style
