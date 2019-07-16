@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>表单 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。 输入框输入框的绑定方法比较简单，直接对输入框的 value 属性应用双向绑定就行了。 1&amp;lt;input type=&quot;text&quot; value=&quot;&amp;#123;= name =&amp;#125;&quot;&amp;gt; checkboxcheckbox 常见的使用场景是分组，在组件模板中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="表单">
+<meta property="og:url" content="http://baidu.github.io/tutorial/form/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。 输入框输入框的绑定方法比较简单，直接对输入框的 value 属性应用双向绑定就行了。 1&amp;lt;input type=&quot;text&quot; value=&quot;&amp;#123;= name =&amp;#125;&quot;&amp;gt; checkboxcheckbox 常见的使用场景是分组，在组件模板中">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-03-22T06:33:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="表单">
+<meta name="twitter:description" content="表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 双向绑定。 输入框输入框的绑定方法比较简单，直接对输入框的 value 属性应用双向绑定就行了。 1&amp;lt;input type=&quot;text&quot; value=&quot;&amp;#123;= name =&amp;#125;&quot;&amp;gt; checkboxcheckbox 常见的使用场景是分组，在组件模板中">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/tutorial/form/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/" class="recommend-active">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/form" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      表单
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/form.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>表单是常见的用户输入承载元素，本篇介绍一些常用表单元素的用法。在 MVVM 中，我们一般在用户输入的表单元素或组件上应用 <strong>双向绑定</strong>。</p>
+<h2 id="输入框"><a href="#输入框" class="headerlink" title="输入框"></a>输入框</h2><p>输入框的绑定方法比较简单，直接对输入框的 value 属性应用双向绑定就行了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">value</span>=<span class="string">"&#123;= name =&#125;"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="checkbox"><a href="#checkbox" class="headerlink" title="checkbox"></a>checkbox</h2><p>checkbox 常见的使用场景是分组，在组件模板中，我们把需要分组的 checkbox 将 checked 属性双向绑定到同名的组件数据中。</p>
+<p><code>提示</code>：除非你需要进行传统的表单提交，否则无需指定 checkbox 的 name 属性。San 仅以 checked 作为分组的依据。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"otakustay"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"checkbox"</span> <span class="attr">value</span>=<span class="string">"firede"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们期望 checkbox 绑定到的数据项是一个 <strong>Array&lt;string&gt;</strong> 。当 checkbox 被选中时，其 value 会被添加到绑定的数据项中；当 checkbox 被取消选中时，其 value 会从绑定数据项中移除。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            online: []</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'online'</span>, [<span class="string">'errorrik'</span>, <span class="string">'otakustay'</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="radio"><a href="#radio" class="headerlink" title="radio"></a>radio</h2><p>与 checkbox 类似，我们在组件模板中，把需要分组的 radio 将 checked 属性绑定到同名的组件数据中。</p>
+<p><code>提示</code>：你需要手工指定分组 radio 的 name 属性，使浏览器能处理 radio 选择的互斥。可以把它设置成与绑定数据的名称相同。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"otakustay"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">label</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"radio"</span> <span class="attr">value</span>=<span class="string">"firede"</span> <span class="attr">checked</span>=<span class="string">"&#123;= online =&#125;"</span> <span class="attr">name</span>=<span class="string">"online"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们期望 radio 绑定到的数据项是一个 <strong>string</strong> 。当 radio 被选中时，绑定的数据项值被设置成选中的 radio 的 value 属性值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            online: <span class="string">'errorrik'</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="select"><a href="#select" class="headerlink" title="select"></a>select</h2><p>select 的使用方式和输入框类似，直接对 value 属性应用双向绑定。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">value</span>=<span class="string">"&#123;= online =&#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"errorrik"</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"otakustay"</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"firede"</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>提示</code>：在浏览器中，select 的 value 属性并不控制其选中项，select 的选中项是由 option 的 selected 属性控制的。考虑到开发的方便，开发者不需要编写 option 的 selected 属性，San 会在下一个视图更新时间片中刷新 select 的选中状态。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            online: <span class="string">'errorrik'</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#输入框"><span class="toc-text">输入框</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#checkbox"><span class="toc-text">checkbox</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#radio"><span class="toc-text">radio</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#select"><span class="toc-text">select</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/form/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/" class="recommend-active">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

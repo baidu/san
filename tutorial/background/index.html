@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>背景 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="引言2008年，V8 引擎随 Chrome 浏览器横空出世，JavaScript 这门通用的 Web 脚本语言的执行效率得到质的提升。 V8 引擎的出现，注定是 JavaScript 发展史上一个光辉的里程碑。它的出现，让当时研究高性能服务器开发、长时间一筹莫展的 Ryan Dahl 有了新的、合适的选择，不久，在2009年的柏林的 JSConf 大会上，基于 JavaScript 的服务端项目">
+<meta property="og:type" content="article">
+<meta property="og:title" content="背景">
+<meta property="og:url" content="http://baidu.github.io/tutorial/background/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="引言2008年，V8 引擎随 Chrome 浏览器横空出世，JavaScript 这门通用的 Web 脚本语言的执行效率得到质的提升。 V8 引擎的出现，注定是 JavaScript 发展史上一个光辉的里程碑。它的出现，让当时研究高性能服务器开发、长时间一筹莫展的 Ryan Dahl 有了新的、合适的选择，不久，在2009年的柏林的 JSConf 大会上，基于 JavaScript 的服务端项目">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png">
+<meta property="og:updated_time" content="2018-04-04T02:38:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="背景">
+<meta name="twitter:description" content="引言2008年，V8 引擎随 Chrome 浏览器横空出世，JavaScript 这门通用的 Web 脚本语言的执行效率得到质的提升。 V8 引擎的出现，注定是 JavaScript 发展史上一个光辉的里程碑。它的出现，让当时研究高性能服务器开发、长时间一筹莫展的 Ryan Dahl 有了新的、合适的选择，不久，在2009年的柏林的 JSConf 大会上，基于 JavaScript 的服务端项目">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/tutorial/background/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/" class="recommend-active">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/background" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      背景
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/background.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>2008年，V8 引擎随 Chrome 浏览器横空出世，JavaScript 这门通用的 Web 脚本语言的执行效率得到质的提升。 V8 引擎的出现，注定是 JavaScript 发展史上一个光辉的里程碑。它的出现，让当时研究高性能服务器开发、长时间一筹莫展的 <a href="http://tinyclouds.org/" target="_blank" rel="noopener">Ryan Dahl</a> 有了新的、合适的选择，不久，在2009年的柏林的 JSConf 大会上，基于 JavaScript 的服务端项目 Node.js 正式对外发布。Node.js 的发布，不仅为开发者带来了一个高性能的服务器，还很大程度上推动了前端的工程化，带来了前端的大繁荣。与此同时，因为 JavaScript 执行效率的巨大提升，越来越多的业务逻辑开始在浏览器端实现，前端逻辑越来越重，前端架构随之提上日程。于是，我们谈论的主角，MVVM 模式，走进了 Web 前端的架构设计中。</p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>MVVM 模式，顾名思义即 Model-View-ViewModel 模式。它萌芽于2005年微软推出的基于 Windows 的用户界面框架 WPF ，前端最早的 MVVM 框架 <a href="https://github.com/knockout/knockout" target="_blank" rel="noopener">knockout</a> 在2010年发布。</p>
+<p>一句话总结 Web 前端 MVVM：操作数据，就是操作视图，就是操作 DOM（所以无须操作 DOM ）。</p>
+<p>无须操作 DOM ！借助 MVVM 框架，开发者只需完成包含 <strong>声明绑定</strong> 的视图模板，编写 ViewModel 中业务数据变更逻辑，View 层则完全实现了自动化。这将极大的降低前端应用的操作复杂度、极大提升应用的开发效率。MVVM 最标志性的特性就是 <strong>数据绑定</strong> ，MVVM 的核心理念就是通过 <strong>声明式的数据绑定</strong> 来实现 View 层和其他层的分离。完全解耦 View 层这种理念，也使得 Web 前端的单元测试用例编写变得更容易。</p>
+<p>MVVM，说到底还是一种分层架构。它的分层如下：</p>
+<ul>
+<li>Model: 域模型，用于持久化</li>
+<li>View: 作为视图模板存在</li>
+<li>ViewModel: 作为视图的模型，为视图服务</li>
+</ul>
+<h3 id="Model-层"><a href="#Model-层" class="headerlink" title="Model 层"></a>Model 层</h3><p>Model 层，对应数据层的域模型，它主要做<code>域模型的同步</code>。通过 Ajax/fetch 等 API 完成客户端和服务端业务 Model 的同步。在层间关系里，它主要用于抽象出 ViewModel 中视图的 Model。</p>
+<h3 id="View-层"><a href="#View-层" class="headerlink" title="View 层"></a>View 层</h3><p>View 层，作为视图模板存在，在 MVVM 里，整个 View 是一个动态模板。除了定义结构、布局外，它展示的是 ViewModel 层的数据和状态。View 层不负责处理状态，View 层做的是 <strong>数据绑定的声明</strong>、 <strong>指令的声明</strong>、 <strong>事件绑定的声明</strong>。</p>
+<h3 id="ViewModel-层"><a href="#ViewModel-层" class="headerlink" title="ViewModel 层"></a>ViewModel 层</h3><p>ViewModel 层把 View 需要的层数据暴露，并对 View 层的 <strong>数据绑定声明</strong>、 <strong>指令声明</strong>、 <strong>事件绑定声明</strong> 负责，也就是处理 View 层的具体业务逻辑。ViewModel 底层会做好绑定属性的监听。当 ViewModel 中数据变化，View 层会得到更新；而当 View 中声明了数据的双向绑定（通常是表单元素），框架也会监听 View 层（表单）值的变化。一旦值变化，View 层绑定的 ViewModel 中的数据也会得到自动更新。</p>
+<h3 id="前端-MVVM-图示"><a href="#前端-MVVM-图示" class="headerlink" title="前端 MVVM 图示"></a>前端 MVVM 图示</h3><p><img src="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png" width="540" alt="前端MVVM"></p>
+<p>如图所示，在前端 MVVM 框架中，往往没有清晰、独立的 Model 层。在实际业务开发中，我们通常按 <strong>Web Component</strong> 规范来组件化的开发应用，Model 层的域模型往往分散在在一个或几个 Component 的 ViewModel 层，而 ViewModel 层也会引入一些 View 层相关的中间状态，目的就是为了更好的为 View 层服务。</p>
+<p>开发者在 View 层的视图模板中声明 <strong>数据绑定</strong>、 <strong>事件绑定</strong> 后，在 ViewModel 中进行业务逻辑的 <strong>数据</strong> 处理。事件触发后，ViewModel 中 <strong>数据</strong> 变更， View 层自动更新。因为 MVVM 框架的引入，开发者只需关注业务逻辑、完成数据抽象、聚焦数据，MVVM 的视图引擎会帮你搞定 View。因为数据驱动，一切变得更加简单。</p>
+<h2 id="MVVM框架的工作"><a href="#MVVM框架的工作" class="headerlink" title="MVVM框架的工作"></a>MVVM框架的工作</h2><p>不可置否，MVVM 框架极大的提升了应用的开发效率。It’s amazing！But，MVVM 框架到底做了什么？</p>
+<ul>
+<li>视图引擎</li>
+</ul>
+<p>视图引擎：我是视图引擎，我为 View 层作为视图模板提供强力支持，开发者，你们不需要操作 DOM ，丢给我来做！</p>
+<ul>
+<li>数据存取器</li>
+</ul>
+<p>数据存取器：我是数据存取器，我可以通过 <code>Object.defineProperty()</code> API 轻松定义，或通过自行封装存取函数的方式曲线完成。我的内部往往封装了 <strong>发布/订阅模式</strong>，以此来完成对数据的监听、数据变更时通知更新。我是 <strong>数据绑定</strong> 实现的基础。</p>
+<ul>
+<li>组件机制</li>
+</ul>
+<p>组件机制：我是组件机制。有追求的开发者往往希望按照面向未来的组件标准 － <strong>Web Components</strong> 的方式开发，我是为了满足你的追求而生。MVVM 框架提供组件的定义、继承、生命周期、组件间通信机制，为开发者面向未来开发点亮明灯。</p>
+<ul>
+<li>more…</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><blockquote>
+<p>有了前端 MVVM 框架，应用开发如此简单!</p>
+</blockquote>
+<p>前端 MVVM 已是趋势，是大型 Web 应用开发效率提升的利器。由百度 EFE 出品的 MVVM 框架 － <a href="https://baidu.github.io/san/">san</a>，在保持功能强大、特性支持完整的前提下，还兼顾到IE8的市场份额，对老版本浏览器提供了良好的兼容性，更难能可贵的是 GZip 后体积仅 <strong>11k</strong>， 现已为百度内多个产品提供了强劲驱动，可谓百度 EFE 又一精工之作！开源的 <a href="https://baidu.github.io/san/">san</a> 欢迎广大开发者体验、使用，更欢迎广大开发者加入到 <a href="https://github.com/baidu?utf8=%E2%9C%93&amp;q=san&amp;type=&amp;language=" target="_blank" rel="noopener">san 生态</a> 的建设中来，让 <a href="https://baidu.github.io/san/">san</a> 变得更好！</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#引言"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概念"><span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Model-层"><span class="toc-text">Model 层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#View-层"><span class="toc-text">View 层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ViewModel-层"><span class="toc-text">ViewModel 层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#前端-MVVM-图示"><span class="toc-text">前端 MVVM 图示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MVVM框架的工作"><span class="toc-text">MVVM框架的工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结语"><span class="toc-text">结语</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/background/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/" class="recommend-active">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>组件API | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="该文档描述了组件的 API，在 San 主模块上暴露的 API 请参考文档 主模块API。 初始化参数data解释： 组件初始化数据。通常在组件反解的场景下使用。 类型： Object 用法： 1234567891011121314var MyComponent = san.defineComponent(&amp;#123;&amp;#125;);var myComponent = new MyComponen">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组件API">
+<meta property="og:url" content="http://baidu.github.io/doc/api/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="该文档描述了组件的 API，在 San 主模块上暴露的 API 请参考文档 主模块API。 初始化参数data解释： 组件初始化数据。通常在组件反解的场景下使用。 类型： Object 用法： 1234567891011121314var MyComponent = san.defineComponent(&amp;#123;&amp;#125;);var myComponent = new MyComponen">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-07-16T06:12:21.202Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="组件API">
+<meta name="twitter:description" content="该文档描述了组件的 API，在 San 主模块上暴露的 API 请参考文档 主模块API。 初始化参数data解释： 组件初始化数据。通常在组件反解的场景下使用。 类型： Object 用法： 1234567891011121314var MyComponent = san.defineComponent(&amp;#123;&amp;#125;);var myComponent = new MyComponen">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/doc/api/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/" class="recommend-active">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-doc/api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      组件API
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/doc/api.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>该文档描述了组件的 API，在 San 主模块上暴露的 API 请参考文档 <a href="../../doc/main-members/">主模块API</a>。</p>
+<h2 id="初始化参数"><a href="#初始化参数" class="headerlink" title="初始化参数"></a>初始化参数</h2><h3 id="data"><a href="#data" class="headerlink" title="data"></a>data</h3><p><code>解释</code>：</p>
+<p>组件初始化数据。通常在<a href="../../tutorial/reverse/">组件反解</a>的场景下使用。</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'my-label'</span>),</span><br><span class="line">    data: &#123;</span><br><span class="line">        email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">        name: <span class="string">'errorrik'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* html:</span></span><br><span class="line"><span class="comment">&lt;label id="my-label"&gt;</span></span><br><span class="line"><span class="comment">    &lt;span title="errorrik@gmail.com" prop-title="&#123;&#123;email&#125;&#125;"&gt;errorrik&lt;/span&gt;</span></span><br><span class="line"><span class="comment">&lt;/label&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="el"><a href="#el" class="headerlink" title="el"></a>el</h3><p><code>解释</code>：</p>
+<p>组件根元素。传入此参数意味着不使用组件的 <strong>template</strong> 作为视图模板，组件视图由 San 自动反解。详情可参考<a href="../../tutorial/reverse/">组件反解</a>文档。</p>
+<p><code>类型</code>： HTMLElement</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'my-label'</span>),</span><br><span class="line">    data: &#123;</span><br><span class="line">        email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">        name: <span class="string">'errorrik'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* html:</span></span><br><span class="line"><span class="comment">&lt;label id="my-label"&gt;</span></span><br><span class="line"><span class="comment">    &lt;span title="errorrik@gmail.com" prop-title="&#123;&#123;email&#125;&#125;"&gt;errorrik&lt;/span&gt;</span></span><br><span class="line"><span class="comment">&lt;/label&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="owner"><a href="#owner" class="headerlink" title="owner"></a>owner</h3><p><code>版本</code>：&gt;= 3.7.0</p>
+<p><code>类型</code>： Object</p>
+<p><code>解释</code>：</p>
+<p>指定组件所属的 owner 组件。指定 owner 组件后：</p>
+<ul>
+<li>组件无需手工 dispose，owner dispose 时会自动释放</li>
+<li>组件及其子组件 dispatch 的消息，owner 组件可以接收</li>
+</ul>
+<p>更多说明请参考<a href="../../tutorial/component/#owner-%E4%B8%8E-parent">owner 与 parent</a>文档。</p>
+<p><code>注意</code>：</p>
+<p>指定 owner 后，不允许将组件 push 到 owner 的 children 中</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    mainClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.layer) &#123;</span><br><span class="line">            <span class="comment">// 为动态创建的子组件指定 owner</span></span><br><span class="line">            <span class="keyword">this</span>.layer = <span class="keyword">new</span> Layer(&#123;</span><br><span class="line">                owner: <span class="keyword">this</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.layer.attach(<span class="built_in">document</span>.body);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.layer.show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="source"><a href="#source" class="headerlink" title="source"></a>source</h3><p><code>版本</code>：&gt;= 3.7.0</p>
+<p><code>类型</code>： string|Object</p>
+<p><code>解释</code>：</p>
+<p>通过 HTML 格式的一个标签，声明组件与 owner 之间的数据绑定和事件。指定 source 同时需要指定 owner。更详细的用法请参考 <a href="../../tutorial/component/#动态子组件">动态子组件</a> 文档，更多声明格式细节请参考 <a href="../../tutorial/template/">模板</a> 与 <a href="../../tutorial/event/">事件</a> 文档。</p>
+<p><code>提醒</code>：</p>
+<p>source 串的标签名称通常没什么用，除了以下情况：组件本身根节点为 template 时，以 source 的标签名称为准。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    mainClick: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.calendar) &#123;</span><br><span class="line">            <span class="keyword">this</span>.calendar = <span class="keyword">new</span> Calendar(&#123;</span><br><span class="line">                owner: <span class="keyword">this</span>,</span><br><span class="line">                source: <span class="string">'&lt;x-cal value="&#123;&#123;birthday&#125;&#125;'</span> on-change=<span class="string">"birthdayChange($event)"</span>/&gt;<span class="string">'</span></span><br><span class="line"><span class="string">            &#125;);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            this.calendar.attach(document.body);</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;,</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    birthdayChange: function (value) &#123;</span></span><br><span class="line"><span class="string">        this.data.set('</span>birthday<span class="string">', value);</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;);</span></span><br></pre></td></tr></table></figure>
+<h3 id="transition"><a href="#transition" class="headerlink" title="transition"></a>transition</h3><p><code>版本</code>：&gt;= 3.6.0</p>
+<p><code>类型</code>： Object</p>
+<p><code>解释</code>：</p>
+<p>组件的过渡动画控制器。可参考 <a href="../../tutorial/transition/#动画控制器">动画控制器</a> 和 <a href="../../tutorial/transition/#动画控制器-Creator">动画控制器 Creator</a> 文档。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;transition&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    transition: &#123;</span><br><span class="line">        enter: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* 进入时的过渡动画 */</span> &#125;,</span><br><span class="line">        leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* 离开时的过渡动画 */</span> &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="生命周期钩子"><a href="#生命周期钩子" class="headerlink" title="生命周期钩子"></a>生命周期钩子</h2><p>生命周期代表组件的生存过程，在每个过程到达时将触发钩子函数。具体请参考<a href="../../tutorial/component/#生命周期">生命周期</a>文档。</p>
+<h3 id="compiled"><a href="#compiled" class="headerlink" title="compiled"></a>compiled</h3><p><code>解释</code>：</p>
+<p>组件视图模板编译完成。组件上的 <strong>compiled</strong> 方法将会被调用。</p>
+<h3 id="inited"><a href="#inited" class="headerlink" title="inited"></a>inited</h3><p><code>解释</code>：</p>
+<p>组件实例初始化完成。组件上的 <strong>inited</strong> 方法将会被调用。</p>
+<h3 id="created"><a href="#created" class="headerlink" title="created"></a>created</h3><p><code>解释</code>：</p>
+<p>组件元素创建完成。组件上的 <strong>created</strong> 方法将会被调用。</p>
+<h3 id="attached"><a href="#attached" class="headerlink" title="attached"></a>attached</h3><p><code>解释</code>：</p>
+<p>组件已被附加到页面中。组件上的 <strong>attached</strong> 方法将会被调用。</p>
+<h3 id="detached"><a href="#detached" class="headerlink" title="detached"></a>detached</h3><p><code>解释</code>：</p>
+<p>组件从页面中移除。组件上的 <strong>detached</strong> 方法将会被调用。</p>
+<h3 id="disposed"><a href="#disposed" class="headerlink" title="disposed"></a>disposed</h3><p><code>解释</code>：</p>
+<p>组件卸载完成。组件上的 <strong>disposed</strong> 方法将会被调用。</p>
+<h3 id="updated"><a href="#updated" class="headerlink" title="updated"></a>updated</h3><p><code>解释</code>：</p>
+<p>组件由于数据变化，视图完成一次刷新。组件上的 <strong>updated</strong> 方法将会被调用。</p>
+<h2 id="定义组件成员"><a href="#定义组件成员" class="headerlink" title="定义组件成员"></a>定义组件成员</h2><h3 id="template"><a href="#template" class="headerlink" title="template"></a>template</h3><p><code>解释</code>：</p>
+<p>组件的视图模板。详细描述请参考<a href="../../tutorial/component/#视图模板">视图模板</a>文档。</p>
+<p><code>类型</code>： string</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="filters"><a href="#filters" class="headerlink" title="filters"></a>filters</h3><p><code>解释</code>：</p>
+<p>声明组件视图模板中可以使用哪些过滤器。详细描述请参考<a href="../../tutorial/component/#过滤器">过滤器</a>文档。</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&#123;&#123;createTime | dateFormat('</span>yyyy-MM-dd<span class="string">')&#125;&#125;&lt;/a&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        dateFormat: <span class="function"><span class="keyword">function</span> (<span class="params">value, format</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> moment(value).format(format);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>警告</code>：</p>
+<p>filter 方法在运行时通过 this.data 可以触及组件的数据。但是，这么干会造成对数据的隐式依赖，导致数据变化时，视图不会随着更新。所以，filter 方法应该是无副作用的 pure function。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Bad = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;u&gt;&#123;&#123;num | enhance&#125;&#125;&lt;/u&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        enhance: <span class="function"><span class="keyword">function</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> n * <span class="keyword">this</span>.data.get(<span class="string">'times'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            num: <span class="number">2</span>,</span><br><span class="line">            times: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Good = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;u&gt;&#123;&#123;num | enhance(times)&#125;&#125;&lt;/u&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        enhance: <span class="function"><span class="keyword">function</span> (<span class="params">n, times</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> n * times;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            num: <span class="number">2</span>,</span><br><span class="line">            times: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="components"><a href="#components" class="headerlink" title="components"></a>components</h3><p><code>解释</code>：</p>
+<p>声明组件中可以使用哪些类型的子组件。详细描述请参考<a href="../../tutorial/component/#components">components</a>文档。</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> AddForm = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-timepicker'</span>: TimePicker,</span><br><span class="line">        <span class="string">'ui-calendar'</span>: Calendar</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h3><p><code>解释</code>：</p>
+<p>声明组件中的计算数据。详细描述请参考<a href="../../tutorial/component/#计算数据">计算数据</a>文档。</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&#123;&#123;name&#125;&#125;&lt;/a&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// name 数据项由 firstName 和 lastName 计算得来</span></span><br><span class="line">    computed: &#123;</span><br><span class="line">        name: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.data.get(<span class="string">'firstName'</span>) + <span class="string">' '</span> + <span class="keyword">this</span>.data.get(<span class="string">'lastName'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="messages"><a href="#messages" class="headerlink" title="messages"></a>messages</h3><p><code>解释</code>：</p>
+<p>声明处理子组件派发消息的方法。详细描述请参考<a href="../../tutorial/component/#消息">消息</a>文档。</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Select = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    messages: &#123;</span><br><span class="line">        <span class="string">'UI:select-item-selected'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// arg.target 可以拿到派发消息的组件</span></span><br><span class="line">            <span class="keyword">var</span> value = arg.value;</span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="initData"><a href="#initData" class="headerlink" title="initData"></a>initData</h3><p><code>解释</code>：</p>
+<p>返回组件实例的初始数据。详细描述请参考<a href="../../tutorial/component/#初始数据">初始数据</a>文档。</p>
+<p><code>类型</code>： function():Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;li s-for="item in list"&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            list: [<span class="string">'san'</span>, <span class="string">'er'</span>, <span class="string">'esui'</span>, <span class="string">'etpl'</span>, <span class="string">'esl'</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="trimWhitespace"><a href="#trimWhitespace" class="headerlink" title="trimWhitespace"></a>trimWhitespace</h3><p>定义组件模板解析时对空白字符的 trim 模式。</p>
+<ul>
+<li>默认为 <strong>none</strong>，不做任何事情</li>
+<li><strong>blank</strong> 时将清除空白文本节点</li>
+<li><strong>all</strong> 时将清除所有文本节点的前后空白字符</li>
+</ul>
+<p><code>版本</code>：&gt;= 3.2.5</p>
+<p><code>类型</code>： string</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    trimWhitespace: <span class="string">'blank'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ,</span></span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="delimiters"><a href="#delimiters" class="headerlink" title="delimiters"></a>delimiters</h3><p><code>解释</code>：</p>
+<p>定义组件模板解析时插值的分隔符。值为2个项的数组，分别为起始分隔符和结束分隔符。默认为:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'&#123;&#123;'</span>, <span class="string">'&#125;&#125;'</span>]</span><br></pre></td></tr></table></figure>
+<p><code>版本</code>：&gt;= 3.5.0</p>
+<p><code>类型</code>： Array</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    delimiters: [<span class="string">'&#123;%'</span>, <span class="string">'%&#125;'</span>],</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="Good &#123;%name%&#125;"&gt;Hello &#123;%name%&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="transition-1"><a href="#transition-1" class="headerlink" title="transition"></a>transition</h3><p><code>解释</code>：</p>
+<p>定义组件根节点的过渡动画控制器。已废弃。</p>
+<p><code>版本</code>：&gt;= 3.3.0, &lt; 3.6.0</p>
+<p><code>类型</code>： Object</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;transition&lt;/span&gt;'</span>,</span><br><span class="line">    transition: &#123;</span><br><span class="line">        enter: <span class="function"><span class="keyword">function</span> (<span class="params">el</span>) </span>&#123; <span class="comment">/* 根节点进入时的过渡动画 */</span> &#125;,</span><br><span class="line">        leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* 根节点离开时的过渡动画 */</span> &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="updateMode"><a href="#updateMode" class="headerlink" title="updateMode"></a>updateMode</h3><p><code>解释</code>：</p>
+<p>可控制视图刷新的逻辑，当前仅支持 <code>optimized</code>。当取值为 <code>optimized</code> 时，对 s-for 指令的视图更新会根据不同浏览器环境进行优化，更新过程对 DOM 的操作和数据变化可能无法对应。</p>
+<p><code>版本</code>：&gt;= 3.7.4</p>
+<p><code>类型</code>： string</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    updateMode: <span class="string">'optimized'</span>,</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;li s-for="item in list"&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="组件方法"><a href="#组件方法" class="headerlink" title="组件方法"></a>组件方法</h2><h3 id="fire"><a href="#fire" class="headerlink" title="fire"></a>fire</h3><p><code>描述</code>： fire({string}eventName, {*}eventArgument)</p>
+<p><code>解释</code>：</p>
+<p>派发一个自定义事件。San 为组件提供了自定义事件功能，组件开发者可以通过该方法派发事件。事件可以在视图模板中通过 <strong>on-</strong> 的方式绑定监听，也可以通过组件实例的 <strong>on</strong> 方法监听。可参考<a href="../../tutorial/event/#自定义事件">Event</a>文档。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Label = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;template class="ui-label"&gt;&lt;a on-click="clicker" title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/a&gt;&lt;/template&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    clicker: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.fire(<span class="string">'customclick'</span>, <span class="keyword">this</span>.data.get(<span class="string">'text'</span>) + <span class="string">' clicked'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'San'</span>&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;ui-label text="&#123;&#123;name&#125;&#125;" on-customclick="labelClicker($event)"&gt;&lt;/ui-label&gt;&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    labelClicker: <span class="function"><span class="keyword">function</span> (<span class="params">doneMsg</span>) </span>&#123;</span><br><span class="line">        alert(doneMsg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="on"><a href="#on" class="headerlink" title="on"></a>on</h3><p><code>描述</code>： on({string}eventName, {Function}eventListener)</p>
+<p><code>解释</code>：</p>
+<p>添加自定义事件监听器。 <strong>on</strong> 一般仅用在使用 JavaScript 动态创建的组件中，通过视图模板创建的子组件应通过 <strong>on-</strong> 的方式绑定监听。可参考<a href="../../tutorial/component/#动态子组件">动态子组件</a>文档</p>
+<h3 id="un"><a href="#un" class="headerlink" title="un"></a>un</h3><p><code>描述</code>： un({string}eventName, {Function=}eventListener)</p>
+<p><code>解释</code>：</p>
+<p>移除事件监听器。 当 eventListener 参数为空时，移除所有 eventName 事件的监听器。</p>
+<h3 id="dispatch"><a href="#dispatch" class="headerlink" title="dispatch"></a>dispatch</h3><p><code>描述</code>： dispatch({string}name, {*}value)</p>
+<p><code>解释</code>：</p>
+<p>派发一个消息。消息将沿着组件树向上传递，直到遇到第一个处理该消息的组件。上层组件通过 <strong>messages</strong> 声明组件要处理的消息。消息主要用于组件与非 <strong>owner</strong> 的上层组件进行通信。可参考<a href="../../tutorial/component/#消息">消息</a>文档。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> SelectItem = san.defineComponent(&#123;</span><br><span class="line">    template:</span><br><span class="line">        <span class="string">'&lt;li on-click="select" class="&#123;&#123;value === selectValue ? \'selected\' : \'\'"&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;slot&gt;&lt;/slot&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 子组件在各种时机派发消息</span></span><br><span class="line">    select: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> value = <span class="keyword">this</span>.data.get(<span class="string">'value'</span>);</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-selected'</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-attached'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    detached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-detached'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Select = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 上层组件处理自己想要的消息</span></span><br><span class="line">    messages: &#123;</span><br><span class="line">        <span class="string">'UI:select-item-selected'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> value = arg.value;</span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 原则上上层组件允许更改下层组件的数据，因为更新流是至上而下的</span></span><br><span class="line">            <span class="keyword">var</span> len = <span class="keyword">this</span>.items.length;</span><br><span class="line">            <span class="keyword">while</span> (len--) &#123;</span><br><span class="line">                <span class="keyword">this</span>.items[len].data.set(<span class="string">'selectValue'</span>, value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="string">'UI:select-item-attached'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.items.push(arg.target);</span><br><span class="line">            arg.target.data.set(<span class="string">'selectValue'</span>, <span class="keyword">this</span>.data.get(<span class="string">'value'</span>));</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="string">'UI:select-item-detached'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> len = <span class="keyword">this</span>.items.length;</span><br><span class="line">            <span class="keyword">while</span> (len--) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.items[len] === arg.target) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.items.splice(len, <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    inited: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.items = [];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-select'</span>: Select,</span><br><span class="line">        <span class="string">'ui-selectitem'</span>: SelectItem</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">''</span></span><br><span class="line">        + <span class="string">'&lt;div&gt;'</span></span><br><span class="line">        + <span class="string">'  &lt;ui-select value="&#123;=value=&#125;"&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="1"&gt;one&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="2"&gt;two&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="3"&gt;three&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'  &lt;/ui-select&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/div&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h3><p><code>描述</code>： watch({string}dataName, {function({*}value)}listener)</p>
+<p><code>解释</code>：</p>
+<p>监听组件的数据变化。通常我们使用绑定，在子组件数据变化时自动更新父组件的对应数据。 <strong>watch</strong> 一般仅用在使用 JavaScript 动态创建的组件中。可参考<a href="../../tutorial/component/#动态子组件">动态子组件</a>文档</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    initLayer: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.monthView) &#123;</span><br><span class="line">            <span class="keyword">var</span> monthView = <span class="keyword">new</span> MonthView();</span><br><span class="line">            <span class="keyword">this</span>.monthView = monthView;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.monthView.watch(<span class="string">'value'</span>, (<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">            &#125;).bind(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.watch(<span class="string">'value'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">                monthView.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.monthView.attach(<span class="built_in">document</span>.body);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h3><p><code>描述</code>： ref({string}name)</p>
+<p><code>解释</code>：</p>
+<p>获取定义了 <strong>s-ref</strong> 的子组件或 HTMLElement。详细请参考<a href="../../tutorial/component/#组件层级">组件层级</a>文档。</p>
+<p><code>注意</code>：组件根元素即使定义了 <strong>s-ref</strong>，也无法通过 <strong>ref</strong> 方法获得。获取组件根元素请使用 <strong>this.el</strong>。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> AddForm = san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-timepicker'</span>: <span class="built_in">require</span>(<span class="string">'../ui/TimePicker'</span>),</span><br><span class="line">        <span class="string">'ui-calendar'</span>: <span class="built_in">require</span>(<span class="string">'../ui/Calendar'</span>)</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    submit: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'endDate'</span>);</span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'endHour'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'rootNode'</span>); <span class="comment">// undefined</span></span><br><span class="line">        <span class="keyword">this</span>.el;  <span class="comment">//根元素 &lt;div class="form"&gt; ... &lt;/div&gt;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* template:</span></span><br><span class="line"><span class="comment">&lt;div class="form" s-ref="rootNode"&gt;</span></span><br><span class="line"><span class="comment">    &lt;div&gt;预期完成时间：</span></span><br><span class="line"><span class="comment">        &lt;ui-calendar bindx-value="endTimeDate" s-ref="endDate"&gt;&lt;/ui-calendar&gt;</span></span><br><span class="line"><span class="comment">        &lt;ui-timepicker bindx-value="endTimeHour" s-ref="endHour"&gt;&lt;/ui-timepicker&gt;</span></span><br><span class="line"><span class="comment">    &lt;/div&gt;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    &lt;div class="form-op"&gt;</span></span><br><span class="line"><span class="comment">        &lt;button type="button" on-click="submit"&gt;ok&lt;/button&gt;</span></span><br><span class="line"><span class="comment">    &lt;/div&gt;</span></span><br><span class="line"><span class="comment">&lt;/div&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h3><p><code>版本</code>：&gt;= 3.3.0</p>
+<p><code>描述</code>： {Array} slot({string=}name)</p>
+<p><code>解释</code>：</p>
+<p>获取组件插槽的节点信息。返回值是一个数组，数组中的项是节点对象。通常只有一项，当 slot 声明中应用了 if 或 for 时可能为 0 项或多项。节点对象包含 isScoped 、 isInserted 和 children。</p>
+<p>插槽详细用法请参考 <a href="../../tutorial/component/#slot">slot</a> 文档。</p>
+<p><code>注意</code>：不要对返回的 slot 对象进行任何修改。如果希望操作视图变更，请操作数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Panel = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;slot s-if="!hidden"/&gt;&lt;/div&gt;'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">      <span class="string">'x-panel'</span>: Panel</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">''</span></span><br><span class="line">        + <span class="string">'&lt;div&gt;'</span></span><br><span class="line">          + <span class="string">'&lt;x-panel hidden="&#123;&#123;folderHidden&#125;&#125;" s-ref="panel"&gt;&lt;p&gt;&#123;&#123;desc&#125;&#125;&lt;/p&gt;&lt;/x-panel&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'panel'</span>).slot().length</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> contentSlot = <span class="keyword">this</span>.ref(<span class="string">'panel'</span>).slot()[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// truthy</span></span><br><span class="line">        contentSlot.isInserted</span><br><span class="line"></span><br><span class="line">        <span class="comment">// falsy</span></span><br><span class="line">        contentSlot.isScoped</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    data: &#123;</span><br><span class="line">        desc: <span class="string">'MVVM component framework'</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="nextTick"><a href="#nextTick" class="headerlink" title="nextTick"></a>nextTick</h3><p><code>解释</code>：</p>
+<p>San 的视图更新是异步的。组件数据变更后，将在下一个时钟周期更新视图。如果你修改了某些数据，想要在 DOM 更新后做某些事情，则需要使用 <code>nextTick</code> 方法。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Component = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;div s-ref="name"&gt;&#123;&#123;name&#125;&#125;&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="clicker"&gt;change name&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'erik'</span>&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    clicker() &#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'name'</span>, <span class="string">'leeight'</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.ref(<span class="string">'name'</span>).innerHTML); <span class="comment">// erik</span></span><br><span class="line">        <span class="keyword">this</span>.nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="keyword">this</span>.ref(<span class="string">'name'</span>).innerHTML); <span class="comment">// leeight</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初始化参数"><span class="toc-text">初始化参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data"><span class="toc-text">data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#el"><span class="toc-text">el</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#owner"><span class="toc-text">owner</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#source"><span class="toc-text">source</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#transition"><span class="toc-text">transition</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#生命周期钩子"><span class="toc-text">生命周期钩子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#compiled"><span class="toc-text">compiled</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inited"><span class="toc-text">inited</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#created"><span class="toc-text">created</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#attached"><span class="toc-text">attached</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#detached"><span class="toc-text">detached</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#disposed"><span class="toc-text">disposed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updated"><span class="toc-text">updated</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#定义组件成员"><span class="toc-text">定义组件成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#template"><span class="toc-text">template</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filters"><span class="toc-text">filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#components"><span class="toc-text">components</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed"><span class="toc-text">computed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#messages"><span class="toc-text">messages</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initData"><span class="toc-text">initData</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trimWhitespace"><span class="toc-text">trimWhitespace</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#delimiters"><span class="toc-text">delimiters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#transition-1"><span class="toc-text">transition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updateMode"><span class="toc-text">updateMode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#组件方法"><span class="toc-text">组件方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fire"><span class="toc-text">fire</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#on"><span class="toc-text">on</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#un"><span class="toc-text">un</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dispatch"><span class="toc-text">dispatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch"><span class="toc-text">watch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ref"><span class="toc-text">ref</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slot"><span class="toc-text">slot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nextTick"><span class="toc-text">nextTick</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/doc/api/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/" class="recommend-active">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>组件反解（old） | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="该文档已经过期。新的组件反解基于数据和模板匹配的机制，代替原来的标记机制。 版本：&amp;lt; 3.4.0 提示：通过 San 进行服务端渲染，一定能通过相同版本的 San 在浏览器端进行反解。 概述组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。 该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组件反解（old）">
+<meta property="og:url" content="http://baidu.github.io/tutorial/reverse-flag/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="该文档已经过期。新的组件反解基于数据和模板匹配的机制，代替原来的标记机制。 版本：&amp;lt; 3.4.0 提示：通过 San 进行服务端渲染，一定能通过相同版本的 San 在浏览器端进行反解。 概述组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。 该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-03-22T06:33:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="组件反解（old）">
+<meta name="twitter:description" content="该文档已经过期。新的组件反解基于数据和模板匹配的机制，代替原来的标记机制。 版本：&amp;lt; 3.4.0 提示：通过 San 进行服务端渲染，一定能通过相同版本的 San 在浏览器端进行反解。 概述组件初始化时传入 el，其将作为组件根元素，并以此反解析出视图结构。 该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/tutorial/reverse-flag/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/reverse-flag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      组件反解（old）
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/reverse-flag.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>该文档已经过期。新的组件反解基于数据和模板匹配的机制，代替原来的标记机制。</strong></p>
+<p><code>版本</code>：&lt; 3.4.0</p>
+<p><code>提示</code>：通过 San 进行<a href="../ssr/">服务端渲染</a>，一定能通过相同版本的 San 在浏览器端进行反解。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>组件初始化时传入 <strong>el</strong>，其将作为组件根元素，并以此反解析出视图结构。</p>
+<p>该特性的意图是：有时我们为了首屏时间，期望初始的视图是直接的 HTML，不由组件渲染。但是我们希望组件为我们管理数据、逻辑与视图，后续的用户交互行为与视图变换通过组件管理。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'wrap'</span>).firstChild</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>以 <strong>el</strong> 初始化组件时，San 会尊重 <strong>el</strong> 的现时 HTML 形态，不会执行任何额外影响视觉的渲染动作。</p>
+<ul>
+<li>不会使用预设的 template 渲染视图</li>
+<li>不会创建根元素</li>
+<li>直接到达 compiled、created、attached 生命周期</li>
+</ul>
+<p>但是，<strong>el</strong> 可能需要一些额外的标记，来帮助 San 认识数据与视图的结构（插值、绑定、循环、分支、组件等），以便于后续的行为管理与视图刷新。</p>
+<p>数据和视图是组件重要的组成部分，我们将从这两个方面说明组件反解的功能。</p>
+<p><code>提示</code>：如果使用 NodeJS 做服务端，San 提供了 <a href="../ssr/">服务端渲染</a> 的支持，能够天然输出标记好可被组件反解的 HTML，你无需了解组件反解的标记形式。如果你服务端使用其他的语言（比如PHP），请继续往下阅读。</p>
+<h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><p>该章节介绍如何对视图的结构（插值、绑定、循环、分支、组件等）进行标记。</p>
+<h3 id="插值文本"><a href="#插值文本" class="headerlink" title="插值文本"></a>插值文本</h3><p>插值文本的标记方式是：在文本的前后各添加一个注释。</p>
+<ul>
+<li>文本前的注释以 <strong>s-text:</strong> 开头，紧跟着插值文本的声明。</li>
+<li>文本后的注释内容为 <strong>/s-text</strong>，代表插值文本片段结束。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>提示</code>：<strong>s- 开头的 HTML Comment</strong> 是重要的标记手段，在循环与分支标记中也会用到它。</p>
+<h3 id="插值属性"><a href="#插值属性" class="headerlink" title="插值属性"></a>插值属性</h3><p>插值属性的标记方式是：在 <strong>prop-</strong> 为前缀的属性上声明属性的内容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik - errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="绑定"><a href="#绑定" class="headerlink" title="绑定"></a>绑定</h3><p>绑定属性的标记方式与插值属性完全一样：在 <strong>prop-</strong> 为前缀的属性上声明属性的内容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;jokeName&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>双向绑定用 <strong>{= expression =}</strong> 的形式。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">prop-value</span>=<span class="string">"&#123;=name=&#125;"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><p>对于循环，我们需要以桩元素，分别标记循环的 <strong>起始</strong> 和 <strong>结束</strong>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--/s-for--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>起始</strong> 的桩元素标记是一个以 <strong>s-for:</strong> 开头的 HTML Comment，接着是声明循环的标签内容。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>结束</strong> 的桩元素标记是一个内容为 <strong>/s-for</strong> 的 HTML Comment。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--/s-for--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>对于循环的每个元素，按照普通元素标记，无需标记 <strong>for</strong> directive。通常它们在 HTML 输出端也是以循环的形式存在，不会带来重复编写的工作量。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>提示</code>：当初始没有数据时，标记循环只需要声明 <strong>起始</strong> 和 <strong>结束</strong> 桩即可。</p>
+<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>分支的标记比较简单，以 <strong>s-if</strong> 标记分支元素即可。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-if</span>=<span class="string">"condition"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当初始条件为假时，分支元素不会出现，此时以 <strong>HTML Comment</strong> 为桩，标记分支。在桩的内部声明分支的语句。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-if:&lt;span s-if="cond" title="&#123;&#123;name&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-if--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>一个包含完整 if-else 的分支，总有一个元素是具体元素，有一个元素是桩。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-if:&lt;span s-if="isErik" title="&#123;&#123;name&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-if--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-else</span> <span class="attr">title</span>=<span class="string">"otakustay"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name2&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name2&#125;&#125;--&gt;</span>otakustay<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-if</span>=<span class="string">"isErik"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--s-else:&lt;span s-else title="&#123;&#123;name2&#125;&#125;"&gt;&#123;&#123;name2&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-else--&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>组件的标记与视图模板中声明是一样的，在相应的自定义元素上标记绑定。San 将根据自定义元素的标签自动识别组件。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们可能因为样式、兼容性等原因不想使用自定义元素。当组件未使用自定义元素时，可以在元素上通过 <strong>s-component</strong> 标记组件类型。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">s-component</span>=<span class="string">"ui-label"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h3><p>slot 的标记与循环类似，我们需要以桩元素，分别标记循环的 <strong>起始</strong> 和 <strong>结束</strong>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;"tabText":"tab","text":"one","title":"1"&#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">s-component</span>=<span class="string">"ui-tab"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;tabText&#125;&#125;"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">prop-class</span>=<span class="string">"head"</span> <span class="attr">class</span>=<span class="string">"head"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--s-slot:title--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">h3</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"1"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;title&#125;&#125;--&gt;</span>1<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--/s-slot--&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--s-slot--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;text&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"one"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>one<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--/s-slot--&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Tab = san.defineComponent(&#123;</span><br><span class="line">    template: [</span><br><span class="line">        <span class="string">'&lt;div&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;div class="head"&gt;&lt;slot name="title"&gt;&lt;/slot&gt;&lt;/div&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;div&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;'</span>,</span><br><span class="line">        <span class="string">'&lt;/div&gt;'</span></span><br><span class="line">    ].join(<span class="string">'\n'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-tab'</span>: Tab</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: [</span><br><span class="line">        <span class="string">'&lt;div&gt;&lt;ui-tab text="&#123;&#123;tabText&#125;&#125;"&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;h3 slot="title" title="&#123;&#123;title&#125;&#125;"&gt;&#123;&#123;title&#125;&#125;&lt;/h3&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;p title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/p&gt;'</span>,</span><br><span class="line">        <span class="string">'&lt;/ui-tab&gt;&lt;/div&gt;'</span></span><br><span class="line">    ].join(<span class="string">'\n'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'main'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><strong>起始</strong> 的桩元素标记是一个以 <strong>s-slot:</strong> 开头的 HTML Comment，接着是 slot 名称。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-slot:title--&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>结束</strong> 的桩元素标记是一个内容为 <strong>/s-slot</strong> 的 HTML Comment。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--/s-slot--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当 owner 未给予相应内容时，slot 的内容为组件内声明的默认内容，这时 slot 内环境为组件内环境，而不是组件外环境。对默认内容，需要在 <strong>起始</strong> 的桩元素 name 之前加上 <strong>!</strong> 声明。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-slot:!title--&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><p>组件的视图是数据的呈现。我们需要通过在组件起始时标记 <strong>data</strong>，以指定正确的初始数据。初始数据标记是一个 <strong>s-data:</strong> 开头的 HTML Comment，在其中声明数据。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"wrap"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;</span></span><br><span class="line"><span class="comment">        email: 'error@gmail.com',</span></span><br><span class="line"><span class="comment">        name: 'errorrik'</span></span><br><span class="line"><span class="comment">    &#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'wrap'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>警告</code>：如果 HTML 中只包含视图结果，不包含数据，组件无法从视图的 DOM 结构中解析出其代表数据，在后续的操作中可能会导致不期望的后果。</p>
+<p>比如，对于列表数据应该在初始化时保证数据与视图的一致，因为列表的添加删除等复杂操作与视图更新上关系密切，如果一开始对应不上，视图更新可能产生难以预测的结果。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--/s-for--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'list'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 组件不包含初始数据标记</span></span><br><span class="line"><span class="comment">// 下面的语句将导致错误</span></span><br><span class="line">myComponent.data.removeAt(<span class="string">'persons'</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p><code>提示</code>：如果一个组件拥有 owner，可以不用标记初始数据。其初始数据由 owner 根据绑定关系灌入。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- ui-label 组件拥有 owner，无需进行初始数据标记 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;"name":"errorrik"&#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">s-component</span>=<span class="string">"ui-label"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Label = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;&#123;&#123;text&#125;&#125;&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;ui-label text="&#123;&#123;name&#125;&#125;"&gt;&lt;/ui-label&gt;&lt;/div&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'main'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#视图"><span class="toc-text">视图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#插值文本"><span class="toc-text">插值文本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插值属性"><span class="toc-text">插值属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#绑定"><span class="toc-text">绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#循环"><span class="toc-text">循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分支"><span class="toc-text">分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组件"><span class="toc-text">组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slot"><span class="toc-text">slot</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据"><span class="toc-text">数据</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/reverse-flag/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

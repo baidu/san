@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>Background | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="IntroductionV8 engine was shipped with Chrome in 2008 which enormously improved the performance of running JavaScript. The emergence of V8 engine is destined to be a significant milestone in the histo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Background">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/background/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="IntroductionV8 engine was shipped with Chrome in 2008 which enormously improved the performance of running JavaScript. The emergence of V8 engine is destined to be a significant milestone in the histo">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png">
+<meta property="og:updated_time" content="2018-11-02T09:29:56.025Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Background">
+<meta name="twitter:description" content="IntroductionV8 engine was shipped with Chrome in 2008 which enormously improved the performance of running JavaScript. The emergence of V8 engine is destined to be a significant milestone in the histo">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/tutorial/background/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/background" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Background
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/background.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>V8 engine was shipped with Chrome in 2008 which enormously improved the performance of running JavaScript. The emergence of V8 engine is destined to be a significant milestone in the history of JavaScript development.</p>
+<p>It provides the best choice for <a href="http://tinyclouds.org/" target="_blank" rel="noopener">Ryan Dahl</a>, wanted to develop a high-performance server with no progress for a long time.</p>
+<p>Soon after, at JSConf Berlin 2009, JavaScript-based server project Node.js was officially released.</p>
+<p>It gives JavaScript developers a high-performance server and brought prosperity to front-end tooling.</p>
+<p>In the meantime, because of the performance improved, more and more business logic migrate from server side to browser.</p>
+<p>Browser-side business logic becomes complex, and developers realized that they need a framework to solve these problems.</p>
+<p>San, the JavaScript MVVM framework. The architecture solution for web development. </p>
+<h2 id="Concept"><a href="#Concept" class="headerlink" title="Concept"></a>Concept</h2><p>MVVM(Model-View-ViewModel) pattern. Is first introduced in WPF framework from windows user application framework in 2005. </p>
+<p>The earliest JavaScript MVVM framework – <a href="https://github.com/knockout/knockout" target="_blank" rel="noopener">knockout</a>, was released in 2010. </p>
+<p>With MVVM pattern, data maps to views, and there is no need to write any code to operate the DOM. All the DOM mutations are taken over by MVVM frameworks. </p>
+<p>JavaScript developers only need to write declarative templates and concentrate on the business logic and application data in ViewModel. </p>
+<p>The template will update automatically when the bound data changed. This design significantly reduces the complexity of the application while increase the efficiency of application development.</p>
+<p>The most significant feature of MVVM pattern is <strong>data bindings</strong>. It use <strong>data bindings</strong> syntax to separate the View layer from other layers without any UI code. Unit test becomes more easier.</p>
+<p>After all, MVVM pattern is a hierarchical architecture, organized as followed: </p>
+<ul>
+<li>Model: used to store persistent data</li>
+<li>View: the templates including <strong>data bindings</strong> syntax</li>
+<li>ViewModel: the reflection of template in data’s perspective, automatically syncs view changes. </li>
+</ul>
+<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><p>The model layer is used to store data. We can sync data between client server with AJAX/fetch API. Is used to abstract the View’s Model of ViewModel in layer relations. </p>
+<h3 id="View"><a href="#View" class="headerlink" title="View"></a>View</h3><p>View: the template. In MVVM pattern, Entire View is a dynamic template. It shows the ViewModel’s data and state besides of structure and layout. View does not deal with component state, the main character of View is to declare data binding, commands, and events.</p>
+<h3 id="ViewModel"><a href="#ViewModel" class="headerlink" title="ViewModel"></a>ViewModel</h3><p>ViewModel exports the data which View needs and controls View’s data binding, commands, event declarations. </p>
+<p>Developers write custom business logic code to process the data from View. When the data from ViewModel changed, View will get updated automatically; when View declares the two-way bindings, the framework will bind event handlers to the DOM, and update ViewModel’s data upon user inputs.</p>
+<h3 id="MVVM-diagram"><a href="#MVVM-diagram" class="headerlink" title="MVVM diagram"></a>MVVM diagram</h3><p><img src="https://raw.githubusercontent.com/X-Jray/blog/master/assets/mvvm.png" width="540" alt="前端MVVM"></p>
+<p>In MVVM framework. There is no clear boundary to determine which kind of code belongs to Model in MVVM frameworks. In actual production development, we usually use <strong>Web Component</strong> standard to manage our code. The concept of Model is sometimes separated into one or many component’s ViewModel, and ViewModel have some temporary state, to better serve the View layer/</p>
+<p>Developers write declarative data and bindings in the View template, and write business logic in ViewModel. Whenever a event is fired, the data of ViewModel will change and View will update. With the power of MVVM framework, developers only need to focus on business logic, the abstraction of data and MVVM framework will help you make everything right in the View. Data-driven make everything simpler.</p>
+<h2 id="What-MVVM-framework-do"><a href="#What-MVVM-framework-do" class="headerlink" title="What MVVM framework do"></a>What MVVM framework do</h2><p>MVVM can increase the productivity of application development. It’s amazing! But, what’s actually inside a MVVM framework?</p>
+<ul>
+<li>View Engine</li>
+</ul>
+<p>View Engine: full support of template parsing and rendering. As a developer, you don’t need to known what is DOM and how to operate it.</p>
+<ul>
+<li>Data Store</li>
+</ul>
+<p>Data store: implemented by <code>Object.defineProperty()</code> API, or completed by self-encapsulating functions. Integrated with pub/sub patten to watch the data changes and subscribe the view to update when changing the data. This is the basic of <strong>data bindings</strong>.</p>
+<ul>
+<li>Component Mechanism</li>
+</ul>
+<p>Component Mechanism: Cutting edge developers frequently ask for a development style aligned to the future proof standard - Web Component. San was born to satisfy your pursuit. The MVVM framework provides component definition, inheritance, lifecycle, and cross-component communication mechanisms to enable developers to develop bright lights for the future.</p>
+<ul>
+<li>more…</li>
+</ul>
+<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><blockquote>
+<p>With MVVM framework, application development more simple any more!</p>
+</blockquote>
+<p>MVVM framework had been a trend, a tool for improving the efficiency of large-scale Web application development. San was produced by Baidu EFE - <a href="https://baidu.github.io/San/">San</a>; A JavaScript framework compatible with IE8 with all the powerful and complete features of MVVM. What is more valuable is that the GZipped source code is only <strong>11k</strong> in size. There are large products in Baidu based on the San. It is another masterpiece of Baidu EFE! MVVM is already the trend; it’s the most powerful techniques for large web applications. <a href="https://baidu.github.io/San/">San</a> is an open source project and contributions always welcome. We warmly welcome developers to join the San Ecosystem and make San better and better.</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Concept"><span class="toc-text">Concept</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Model"><span class="toc-text">Model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#View"><span class="toc-text">View</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ViewModel"><span class="toc-text">ViewModel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MVVM-diagram"><span class="toc-text">MVVM diagram</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#What-MVVM-framework-do"><span class="toc-text">What MVVM framework do</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#The-end"><span class="toc-text">The end</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/background/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

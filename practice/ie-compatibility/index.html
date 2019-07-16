@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>IE兼容性问题以及解决方案 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="开始虽然 San 支持 IE6，但是在实际开发过程中，多少会碰到一些兼容性问题。兼容性问题主要来源于老旧浏览器可能对如下特性不支持：  新的 JavaScript 语法特性 新的 JavaScript API 或 DOM API 新的 CSS 特性  对于应用开发而言，如果想要支持老旧的 IE 浏览器，建议遵循如下原则：  使用 ES5 或 ES3 语法进行开发 仅使用当前浏览器环境下支持的 AP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IE兼容性问题以及解决方案">
+<meta property="og:url" content="http://baidu.github.io/practice/ie-compatibility/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="开始虽然 San 支持 IE6，但是在实际开发过程中，多少会碰到一些兼容性问题。兼容性问题主要来源于老旧浏览器可能对如下特性不支持：  新的 JavaScript 语法特性 新的 JavaScript API 或 DOM API 新的 CSS 特性  对于应用开发而言，如果想要支持老旧的 IE 浏览器，建议遵循如下原则：  使用 ES5 或 ES3 语法进行开发 仅使用当前浏览器环境下支持的 AP">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-21T02:28:59.969Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IE兼容性问题以及解决方案">
+<meta name="twitter:description" content="开始虽然 San 支持 IE6，但是在实际开发过程中，多少会碰到一些兼容性问题。兼容性问题主要来源于老旧浏览器可能对如下特性不支持：  新的 JavaScript 语法特性 新的 JavaScript API 或 DOM API 新的 CSS 特性  对于应用开发而言，如果想要支持老旧的 IE 浏览器，建议遵循如下原则：  使用 ES5 或 ES3 语法进行开发 仅使用当前浏览器环境下支持的 AP">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/practice/ie-compatibility/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/ie-compatibility" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      IE兼容性问题以及解决方案
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/ie-compatibility.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h3><p>虽然 San 支持 IE6，但是在实际开发过程中，多少会碰到一些兼容性问题。兼容性问题主要来源于老旧浏览器可能对如下特性不支持：</p>
+<ul>
+<li>新的 JavaScript 语法特性</li>
+<li>新的 JavaScript API 或 DOM API</li>
+<li>新的 CSS 特性</li>
+</ul>
+<p>对于应用开发而言，如果想要支持老旧的 IE 浏览器，建议遵循如下原则：</p>
+<ul>
+<li>使用 ES5 或 ES3 语法进行开发</li>
+<li>仅使用当前浏览器环境下支持的 API</li>
+<li>使用老一些的模块管理方式，比如 AMD</li>
+<li>仅使用当前浏览器环境支持的布局与样式定义</li>
+<li>不使用较新的打包构建工具，或自己开发打包构建</li>
+</ul>
+<p>但是，某些应用仅期望在老旧 IE 下基本可用，对性能等因素并没有严苛的要求，应用开发工程师期望使用现代的开发模式、语言特性、开发过程与开发工具。本文的下面部分，主要梳理了在这种情况下，可能遇到的 JavaScript 常见问题和解决办法。主要思路是：</p>
+<ul>
+<li>通过实现不支持的 API 解决 API 差异性</li>
+<li>通过编译解决旧环境不支持新语法</li>
+</ul>
+<p>本文内容不涵盖 CSS 兼容性问题和解决方案。</p>
+<h3 id="shim"><a href="#shim" class="headerlink" title="shim"></a>shim</h3><p>一些 shim 库使用老旧浏览器下的 API，实现现代浏览器的 API，帮助开发者抹平浏览器环境的差异。下面推荐一些常用的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://wzrd.in/standalone/es7-shim@latest"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这些 shim 可以通过 IE 的条件注释，按需引入。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--[if lt IE 9]&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="es5-shim/es5-shim.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="es5-shim/es5-sham.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="/json2/json2.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">&lt;![endif]--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>想要更详细的了解条件注释，可以参考 <a href="https://www.cnblogs.com/dtdxrk/archive/2012/03/06/2381868.html" target="_blank" rel="noopener">https://www.cnblogs.com/dtdxrk/archive/2012/03/06/2381868.html</a></p>
+<h3 id="babel-polyfill"><a href="#babel-polyfill" class="headerlink" title="@babel/polyfill"></a>@babel/polyfill</h3><p><strong>@babel/polyfill</strong> 模拟了一个 ES6+ 的环境，让我们能够使用 ES6+ 的 APIs，我们在使用的时候要确保它在其他代码或者引用前被调用（比如可以在入口文件中直接引入）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save @babel/polyfill</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 引入方式1</span></span><br><span class="line"><span class="built_in">require</span>(<span class="string">"@babel/polyfill"</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 引入方式2</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"@babel/polyfill"</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 引入方式3--在webpack的entry入口处添加</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry:[<span class="string">'@babel/polyfill'</span>,<span class="string">'src/index.js'</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在实际应用场景下，整个 <strong>@babel/polyfill</strong> 体积较大。我们可以配置 <strong>.babelrc</strong> 来按需加载</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [[<span class="string">"@babel/preset-env"</span>, &#123;</span><br><span class="line">    <span class="string">"useBuiltIns"</span>: <span class="string">"usage"</span>, <span class="comment">//如果我们配置了该项 就不需要在webpack中配置entry了</span></span><br><span class="line">    <span class="string">"corejs"</span>: <span class="number">3</span></span><br><span class="line">  &#125;]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="es3ify-loader"><a href="#es3ify-loader" class="headerlink" title="es3ify-loader"></a>es3ify-loader</h3><p>老旧的 JavaScript 引擎在对象声明或属性访问表达式中，不支持保留字。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 提示 SCRIPTxxx: 缺少标识符</span></span><br><span class="line">e.n = <span class="function"><span class="keyword">function</span> (<span class="params">t</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> n = t &amp;&amp; t.__esModule ? <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t.default</span><br><span class="line">    &#125; : <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> t</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> e.d(n, <span class="string">"a"</span>, n), n</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 <strong>es3ify-loader</strong> 编译，可以解决这个问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm intall --save-dev es3ify-loader post-loader</span><br></pre></td></tr></table></figure>
+<p><strong>es3ify-loader</strong> 可以结合 <strong>webpack</strong> 使用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// webpack 配置 es3ify-loader</span></span><br><span class="line"><span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [&#123;</span><br><span class="line">            test: <span class="regexp">/.js$/</span>,</span><br><span class="line">            enforce: <span class="string">'post'</span>, <span class="comment">// post-loader处理</span></span><br><span class="line">            loader: <span class="string">'es3ify-loader'</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是 es3ify-loader 编译后的简单示例。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译前</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params">t</span>) </span>&#123; <span class="keyword">return</span> t.default; &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译后</span></span><br><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params">t</span>) </span>&#123; <span class="keyword">return</span> t[<span class="string">"default"</span>]; &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Object-defineProperty"><a href="#Object-defineProperty" class="headerlink" title="Object.defineProperty"></a>Object.defineProperty</h3><p>如果使用了 <code>import &amp; export</code>，<strong>babel</strong> 编译后会产生 <code>Object.defineProperty</code> 问题。</p>
+<p>在IE8下，<code>Object.defineProperty</code> 只能对 DOM 对象使用，对原生对象使用 <code>Object.defineProperty</code> 会报错。下面提供一个方案，仅供参考</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">Object</span>.defineProperty ||</span><br><span class="line">    !(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="built_in">Object</span>.defineProperty(&#123;&#125;, <span class="string">'x'</span>, &#123;&#125;);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;())) &#123;</span><br><span class="line">    <span class="keyword">var</span> orig = <span class="built_in">Object</span>.defineProperty;</span><br><span class="line">    <span class="built_in">Object</span>.defineProperty = <span class="function"><span class="keyword">function</span> (<span class="params">o, prop, desc</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// In IE8 try built-in implementation for defining properties on DOM prototypes.</span></span><br><span class="line">      <span class="keyword">if</span> (orig) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> orig(o, prop, desc);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e) &#123;&#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (o !== <span class="built_in">Object</span>(o)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">TypeError</span>(<span class="string">"Object.defineProperty called on non-object"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">Object</span>.prototype.__defineGetter__ &amp;&amp; (<span class="string">'get'</span> <span class="keyword">in</span> desc)) &#123;</span><br><span class="line">        <span class="built_in">Object</span>.prototype.__defineGetter__.call(o, prop, desc.get);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">Object</span>.prototype.__defineSetter__ &amp;&amp; (<span class="string">'set'</span> <span class="keyword">in</span> desc)) &#123;</span><br><span class="line">        <span class="built_in">Object</span>.prototype.__defineSetter__.call(o, prop, desc.set);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (<span class="string">'value'</span> <span class="keyword">in</span> desc) &#123;</span><br><span class="line">        o[prop] = desc.value;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> o;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;());</span><br></pre></td></tr></table></figure>
+<h3 id="querySelector-and-querySelectorAll"><a href="#querySelector-and-querySelectorAll" class="headerlink" title="querySelector and querySelectorAll"></a>querySelector and querySelectorAll</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!<span class="built_in">document</span>.querySelectorAll) &#123;</span><br><span class="line">  <span class="built_in">document</span>.querySelectorAll = <span class="function"><span class="keyword">function</span> (<span class="params">selectors</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> style = <span class="built_in">document</span>.createElement(<span class="string">'style'</span>),</span><br><span class="line">      elements = [],</span><br><span class="line">      element;</span><br><span class="line">    <span class="built_in">document</span>.documentElement.firstChild.appendChild(style);</span><br><span class="line">    <span class="built_in">document</span>._qsa = [];</span><br><span class="line"></span><br><span class="line">    style.styleSheet.cssText = selectors + <span class="string">'&#123;x-qsa:expression(document._qsa &amp;&amp; document._qsa.push(this))&#125;'</span>;</span><br><span class="line">    <span class="built_in">window</span>.scrollBy(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    style.parentNode.removeChild(style);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="built_in">document</span>._qsa.length) &#123;</span><br><span class="line">      element = <span class="built_in">document</span>._qsa.shift();</span><br><span class="line">      element.style.removeAttribute(<span class="string">'x-qsa'</span>);</span><br><span class="line">      elements.push(element);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">document</span>._qsa = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">return</span> elements;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!<span class="built_in">document</span>.querySelector) &#123;</span><br><span class="line">  <span class="built_in">document</span>.querySelector = <span class="function"><span class="keyword">function</span> (<span class="params">selectors</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> elements = <span class="built_in">document</span>.querySelectorAll(selectors);</span><br><span class="line">    <span class="keyword">return</span> (elements.length) ? elements[<span class="number">0</span>] : <span class="literal">null</span>;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用于在IE6和IE7浏览器中，支持Element.querySelectorAll方法</span></span><br><span class="line"><span class="keyword">var</span> qsaWorker = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> idAllocator = <span class="number">10000</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">qsaWorkerShim</span>(<span class="params">element, selector</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> needsID = element.id === <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">if</span> (needsID) &#123;</span><br><span class="line">      ++idAllocator;</span><br><span class="line">      element.id = <span class="string">"__qsa"</span> + idAllocator;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">document</span>.querySelectorAll(<span class="string">"#"</span> + element.id + <span class="string">" "</span> + selector);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (needsID) &#123;</span><br><span class="line">        element.id = <span class="string">""</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">qsaWorkerWrap</span>(<span class="params">element, selector</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> element.querySelectorAll(selector);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Return the one this browser wants to use</span></span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">document</span>.createElement(<span class="string">'div'</span>).querySelectorAll ? qsaWorkerWrap : qsaWorkerShim;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<h3 id="Object-assign"><a href="#Object-assign" class="headerlink" title="Object.assign"></a>Object.assign</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="built_in">Object</span>.assign != <span class="string">'function'</span>) &#123;</span><br><span class="line">  <span class="built_in">Object</span>.assign = <span class="function"><span class="keyword">function</span> (<span class="params">target</span>) </span>&#123;</span><br><span class="line"><span class="meta">    'use strict'</span>;</span><br><span class="line">    <span class="keyword">if</span> (target == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'Cannot convert undefined or null to object'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    target = <span class="built_in">Object</span>(target);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> index = <span class="number">1</span>; index &lt; <span class="built_in">arguments</span>.length; index++) &#123;</span><br><span class="line">      <span class="keyword">var</span> source = <span class="built_in">arguments</span>[index];</span><br><span class="line">      <span class="keyword">if</span> (source != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">          <span class="keyword">if</span> (<span class="built_in">Object</span>.prototype.hasOwnProperty.call(source, key)) &#123;</span><br><span class="line">            target[key] = source[key];</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Webpack"><a href="#Webpack" class="headerlink" title="Webpack"></a>Webpack</h3><p>IE9- 环境下，不支持 webpack4 打包代码中的 <code>getter/setter</code> 访问器属性。建议更换其他构建工具来进行打包构建。</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>要兼容老旧 IE 浏览器，问题还有很多。这里只是提供了一些解决办法，无法做到全部囊括。欢迎大家整理和贡献</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#开始"><span class="toc-text">开始</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shim"><span class="toc-text">shim</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#babel-polyfill"><span class="toc-text">@babel/polyfill</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#es3ify-loader"><span class="toc-text">es3ify-loader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-defineProperty"><span class="toc-text">Object.defineProperty</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#querySelector-and-querySelectorAll"><span class="toc-text">querySelector and querySelectorAll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-assign"><span class="toc-text">Object.assign</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Webpack"><span class="toc-text">Webpack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最后"><span class="toc-text">最后</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/practice/ie-compatibility/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>Component API | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="This document describes components API, the San module APIplease refer to San API. Initialization ArgumentsdataExplanation: Component initialization data. Usually used in the component reversion scena">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Component API">
+<meta property="og:url" content="http://baidu.github.io/en/doc/api/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="This document describes components API, the San module APIplease refer to San API. Initialization ArgumentsdataExplanation: Component initialization data. Usually used in the component reversion scena">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-02-18T07:31:20.152Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Component API">
+<meta name="twitter:description" content="This document describes components API, the San module APIplease refer to San API. Initialization ArgumentsdataExplanation: Component initialization data. Usually used in the component reversion scena">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/doc/api/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/doc/api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Component API
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/doc/api.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>This document describes components API, the San module API<br>please refer to <a href="../main-members/">San API</a>.</p>
+<h2 id="Initialization-Arguments"><a href="#Initialization-Arguments" class="headerlink" title="Initialization Arguments"></a>Initialization Arguments</h2><h3 id="data"><a href="#data" class="headerlink" title="data"></a>data</h3><p><code>Explanation</code>:</p>
+<p>Component initialization data. Usually used in the <a href="../../tutorial/reverse/">component reversion</a> scenario.</p>
+<p><code>Type</code>: Object</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'my-label'</span>),</span><br><span class="line">    data: &#123;</span><br><span class="line">        email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">        name: <span class="string">'errorrik'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* html:</span></span><br><span class="line"><span class="comment">&lt;label id="my-label"&gt;</span></span><br><span class="line"><span class="comment">    &lt;span title="errorrik@gmail.com" prop-title="&#123;&#123;email&#125;&#125;"&gt;errorrik&lt;/span&gt;</span></span><br><span class="line"><span class="comment">&lt;/label&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="el"><a href="#el" class="headerlink" title="el"></a>el</h3><p><code>explanation</code>:</p>
+<p>Component root element. Passing in this parameter means that the component’s <strong>template</strong> is not used as the view template, and the component view is automatically reversed by San. See <a href="../../tutorial/reverse/">here</a> for more details.</p>
+<p><code>type</code>: HTMLElement</p>
+<p><code>code</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'my-label'</span>),</span><br><span class="line">    data: &#123;</span><br><span class="line">        email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">        name: <span class="string">'errorrik'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* html:</span></span><br><span class="line"><span class="comment">&lt;label id="my-label"&gt;</span></span><br><span class="line"><span class="comment">    &lt;span title="errorrik@gmail.com" prop-title="&#123;&#123;email&#125;&#125;"&gt;errorrik&lt;/span&gt;</span></span><br><span class="line"><span class="comment">&lt;/label&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="transition"><a href="#transition" class="headerlink" title="transition"></a>transition</h3><p><code>explanation</code>:</p>
+<p>The transition animation controller for the component. See <a href="../../tutorial/transition/#Animation-Controller">animation controller</a> and <a href="../../tutorial/transition/#Animation-Controller-Creator">animation controller creator</a> for more details.</p>
+<p><code>version</code>: &gt;= 3.6.0</p>
+<p><code>type</code>: Object</p>
+<p><code>code</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;transition&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    transition: &#123;</span><br><span class="line">        enter: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* Transition animation when entering */</span> &#125;,</span><br><span class="line">        leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* Transition animation when leaving */</span> &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="Lifecycle-hooks"><a href="#Lifecycle-hooks" class="headerlink" title="Lifecycle hooks"></a>Lifecycle hooks</h2><p>The life cycle represents the survival process of the component, and the hook function is triggered when each process arrives. See <a href="../../tutorial/component/#lifecycle">lifecycle</a> for more details.</p>
+<h3 id="compiled"><a href="#compiled" class="headerlink" title="compiled"></a>compiled</h3><p><code>explanation</code>:</p>
+<p>The component view template is compiled. The <strong>compiled</strong> method on the component will be called. </p>
+<h3 id="inited"><a href="#inited" class="headerlink" title="inited"></a>inited</h3><p><code>explanation</code>:</p>
+<p>The component instance initialization is complete. The <strong>inited</strong> method on the component will be called.</p>
+<h3 id="created"><a href="#created" class="headerlink" title="created"></a>created</h3><p><code>explanation</code>:</p>
+<p>The component element is created. The <strong>created</strong> method on the component will be called.</p>
+<h3 id="attached"><a href="#attached" class="headerlink" title="attached"></a>attached</h3><p><code>explanation</code>:</p>
+<p>The component has been attached to the page. The <strong>attached</strong> method on the component will be called.</p>
+<h3 id="detached"><a href="#detached" class="headerlink" title="detached`"></a>detached`</h3><p><code>explanation</code>:</p>
+<p>The component is removed from the DOM. The <strong>detached</strong> method on the component will be called.</p>
+<h3 id="disposed"><a href="#disposed" class="headerlink" title="disposed"></a>disposed</h3><p><code>explanation</code>:</p>
+<p>The component is removed from the DOM and components had destroyed. The <strong>disposed</strong> method on the component will be called.</p>
+<h3 id="updated"><a href="#updated" class="headerlink" title="updated"></a>updated</h3><p><code>explanation</code>:</p>
+<p>The component completes a refresh due to data changes. The <strong>updated</strong> method on the component will be called. </p>
+<h2 id="define-Component"><a href="#define-Component" class="headerlink" title="define Component"></a>define Component</h2><h3 id="template"><a href="#template" class="headerlink" title="template"></a>template</h3><p><code>explanation</code>:</p>
+<p>The view template for the component. see <a href="../../tutorial/component/#component-template">component template</a> for more details.</p>
+<p><code>type</code>: string</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="filters"><a href="#filters" class="headerlink" title="filters"></a>filters</h3><p><code>explanation</code>:</p>
+<p>Declare which filters can be used in a component view template. see <a href="../../tutorial/component/#filter">filter</a> for more details.</p>
+<p><code>type</code>: Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&#123;&#123;createTime | dateFormat('</span>yyyy-MM-dd<span class="string">')&#125;&#125;&lt;/a&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        dateFormat: <span class="function"><span class="keyword">function</span> (<span class="params">value, format</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> moment(value).format(format);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>Warning</code>:</p>
+<p>The filter method can access the component’s data through <code>this.data</code> at runtime, however doing so can result in an implicit dependency on the data, causing the view to not update as the data changes. Therefore, the filter method should be a pure function with no side effects. </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Bad = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;u&gt;&#123;&#123;num | enhance&#125;&#125;&lt;/u&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        enhance: <span class="function"><span class="keyword">function</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> n * <span class="keyword">this</span>.data.get(<span class="string">'times'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            num: <span class="number">2</span>,</span><br><span class="line">            times: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Good = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;u&gt;&#123;&#123;num | enhance(times)&#125;&#125;&lt;/u&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    filters: &#123;</span><br><span class="line">        enhance: <span class="function"><span class="keyword">function</span> (<span class="params">n, times</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> n * times;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            num: <span class="number">2</span>,</span><br><span class="line">            times: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="components"><a href="#components" class="headerlink" title="components"></a>components</h3><p><code>explanation</code>:</p>
+<p>Declare which types of subcomponents can be used in a component. see <a href="../../tutorial/component/#components">components</a> for more details.</p>
+<p><code>type</code>: Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> AddForm = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-timepicker'</span>: TimePicker,</span><br><span class="line">        <span class="string">'ui-calendar'</span>: Calendar</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h3><p><code>explanation</code>:</p>
+<p>Declare the calculated data in the component. see <a href="../../tutorial/component/#computed-data">computed data</a> for more details.</p>
+<p><code>type</code>: Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&#123;&#123;name&#125;&#125;&lt;/a&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The name data item is calculated from firstName and lastName</span></span><br><span class="line">    computed: &#123;</span><br><span class="line">        name: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.data.get(<span class="string">'firstName'</span>) + <span class="string">' '</span> + <span class="keyword">this</span>.data.get(<span class="string">'lastName'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="messages"><a href="#messages" class="headerlink" title="messages"></a>messages</h3><p><code>explanation</code>:</p>
+<p>declare how to handle subcomponent dispatch messages. see <a href="../../tutorial/component/#message">message</a> for more details. </p>
+<p><code>type</code>: Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Select = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    messages: &#123;</span><br><span class="line">        <span class="string">'UI:select-item-selected'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// arg.target can get the component that dispatches the message</span></span><br><span class="line">            <span class="keyword">var</span> value = arg.value;</span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="initData"><a href="#initData" class="headerlink" title="initData"></a>initData</h3><p><code>explanation</code>:</p>
+<p>Return the initial data of the component instance. see <a href="../../tutorial/component/#init-data">init data</a> for more details.</p>
+<p><code>type</code>: function():Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;li s-for="item in list"&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            list: [<span class="string">'san'</span>, <span class="string">'er'</span>, <span class="string">'esui'</span>, <span class="string">'etpl'</span>, <span class="string">'esl'</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="trimWhitespace"><a href="#trimWhitespace" class="headerlink" title="trimWhitespace"></a>trimWhitespace</h3><p>Defines the trim mode for whitespace characters when parsing component templates.</p>
+<ul>
+<li><strong>none</strong>(default) nothing</li>
+<li><strong>blank</strong> clear blank text node</li>
+<li><strong>all</strong> clear the leading and trailing whitespace characters of all text nodes.</li>
+</ul>
+<p><code>version</code>: &gt;= 3.2.5</p>
+<p><code>type</code>: string</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    trimWhitespace: <span class="string">'blank'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ,</span></span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="delimiters"><a href="#delimiters" class="headerlink" title="delimiters"></a>delimiters</h3><p><code>explanation</code>:</p>
+<p>Define the separator for interpolation when parsing a component template. An array of 2 items with starting and ending delimiters. </p>
+<p>default:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'&#123;&#123;'</span>, <span class="string">'&#125;&#125;'</span>]</span><br></pre></td></tr></table></figure>
+<p><code>version</code>: &gt;= 3.5.0</p>
+<p><code>type</code>: Array</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    delimiters: [<span class="string">'&#123;%'</span>, <span class="string">'%&#125;'</span>],</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="Good &#123;%name%&#125;"&gt;Hello &#123;%name%&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="transition-Deprecated"><a href="#transition-Deprecated" class="headerlink" title="transition (Deprecated)"></a>transition (Deprecated)</h3><p><code>explanation</code>:</p>
+<p>Transition animation controller that defines the root node of the component.</p>
+<p><code>版本</code>:&gt;= 3.3.0, &lt; 3.6.0</p>
+<p><code>type</code>: Object</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;transition&lt;/span&gt;'</span>,</span><br><span class="line">    transition: &#123;</span><br><span class="line">        enter: <span class="function"><span class="keyword">function</span> (<span class="params">el</span>) </span>&#123; <span class="comment">/* transition animation when the root node enters */</span> &#125;,</span><br><span class="line">        leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123; <span class="comment">/* transition animation when the root node leaves */</span> &#125;,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="Component-Method"><a href="#Component-Method" class="headerlink" title="Component Method"></a>Component Method</h2><h3 id="fire"><a href="#fire" class="headerlink" title="fire"></a>fire</h3><p><code>description</code>: fire({string}eventName, {*}eventArgument)</p>
+<p><code>explanation</code>:</p>
+<p>Fire a custom event. San provides custom event functionality for components. Component developers can fire events through this method. Events can be bound in the view template by <strong>on-</strong>, or be listened to by the <strong>on</strong> method of the component instance. see <a href="../../tutorial/event/#customized-event">customized event</a> for more details. </p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Label = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;template class="ui-label"&gt;&lt;a on-click="clicker" title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/a&gt;&lt;/template&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    clicker: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.fire(<span class="string">'customclick'</span>, <span class="keyword">this</span>.data.get(<span class="string">'text'</span>) + <span class="string">' clicked'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'San'</span>&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;ui-label text="&#123;&#123;name&#125;&#125;" on-customclick="labelClicker($event)"&gt;&lt;/ui-label&gt;&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    labelClicker: <span class="function"><span class="keyword">function</span> (<span class="params">doneMsg</span>) </span>&#123;</span><br><span class="line">        alert(doneMsg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="on"><a href="#on" class="headerlink" title="on"></a>on</h3><p><code>description</code>: on({string}eventName, {Function}eventListener)</p>
+<p><code>explanation</code>:</p>
+<p>Add a custom event listener.  <strong>on</strong> is generally only used in components that are dynamically created using JavaScript. Subcomponents created through view template should be bound by <strong>on-</strong>. see <a href="../../tutorial/component/#dynamic-child-components">dynamic child components</a> for more details.</p>
+<h3 id="un"><a href="#un" class="headerlink" title="un"></a>un</h3><p><code>description</code>: un({string}eventName, {Function=}eventListener)</p>
+<p><code>explanation</code>:</p>
+<p>Remove event listener. Remote the listeners for all eventName events when the eventListener params is empty.</p>
+<h3 id="dispatch"><a href="#dispatch" class="headerlink" title="dispatch"></a>dispatch</h3><p><code>description</code>: dispatch({string}name, {*}value)</p>
+<p><code>explanation</code>:</p>
+<p>Dispatch a message. The message will be passed up in the component tree util it encounters the first component that processes the message. The upper component declares the message to be processed by the component via <strong>message</strong>. The message is mainly used for communication between components with none owner upper components. see <a href="../../tutorial/component/#message">message</a> for more details.</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> SelectItem = san.defineComponent(&#123;</span><br><span class="line">    template: </span><br><span class="line">        <span class="string">'&lt;li on-click="select" class="&#123;&#123;value === selectValue ? \'selected\' : \'\'"&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;slot&gt;&lt;/slot&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/li&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// child component dispatch message anytime.</span></span><br><span class="line">    select: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> value = <span class="keyword">this</span>.data.get(<span class="string">'value'</span>);</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-selected'</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-attached'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    detached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'UI:select-item-detached'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Select = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// upper component process message when needed.</span></span><br><span class="line">    messages: &#123;</span><br><span class="line">        <span class="string">'UI:select-item-selected'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> value = arg.value;</span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Upper component can modify child component's data in principle. Because the update stream is top-down.</span></span><br><span class="line">            <span class="keyword">var</span> len = <span class="keyword">this</span>.items.length;</span><br><span class="line">            <span class="keyword">while</span> (len--) &#123;</span><br><span class="line">                <span class="keyword">this</span>.items[len].data.set(<span class="string">'selectValue'</span>, value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="string">'UI:select-item-attached'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.items.push(arg.target);</span><br><span class="line">            arg.target.data.set(<span class="string">'selectValue'</span>, <span class="keyword">this</span>.data.get(<span class="string">'value'</span>));</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="string">'UI:select-item-detached'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> len = <span class="keyword">this</span>.items.length;</span><br><span class="line">            <span class="keyword">while</span> (len--) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.items[len] === arg.target) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.items.splice(len, <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    inited: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.items = [];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-select'</span>: Select,</span><br><span class="line">        <span class="string">'ui-selectitem'</span>: SelectItem</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">''</span></span><br><span class="line">        + <span class="string">'&lt;div&gt;'</span></span><br><span class="line">        + <span class="string">'  &lt;ui-select value="&#123;=value=&#125;"&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="1"&gt;one&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="2"&gt;two&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'    &lt;ui-selectitem value="3"&gt;three&lt;/ui-selectitem&gt;'</span></span><br><span class="line">        + <span class="string">'  &lt;/ui-select&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/div&gt;'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h3><p><code>description</code>: watch({string}dataName, {function({*}value)}listener)</p>
+<p><code>explanation</code>:</p>
+<p>Watch component’s data changes. Usually we use bindings to automatically update the corresponding data of the parent component when the child component data changes. <strong>watch</strong> is generally only used in components that are dynamically created using JavaScript. see <a href="../../tutorial/component/#dynamic-child-components">dynamic child components</a> for more details. </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    initLayer: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.monthView) &#123;</span><br><span class="line">            <span class="keyword">var</span> monthView = <span class="keyword">new</span> MonthView();</span><br><span class="line">            <span class="keyword">this</span>.monthView = monthView;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.monthView.watch(<span class="string">'value'</span>, (<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">            &#125;).bind(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.watch(<span class="string">'value'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">                monthView.data.set(<span class="string">'value'</span>, value);</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.monthView.attach(<span class="built_in">document</span>.body);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h3><p><code>description</code>: ref({string}name)</p>
+<p><code>explanation</code>:</p>
+<p>Get the subcomponents that define <strong>s-ref</strong>. see <a href="../../tutorial/component/#component-level">component level</a> for more details. </p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> AddForm = san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-timepicker'</span>: <span class="built_in">require</span>(<span class="string">'../ui/TimePicker'</span>),</span><br><span class="line">        <span class="string">'ui-calendar'</span>: <span class="built_in">require</span>(<span class="string">'../ui/Calendar'</span>)</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    submit: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'endDate'</span>)</span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'endHour'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* template:</span></span><br><span class="line"><span class="comment">&lt;div class="form"&gt;</span></span><br><span class="line"><span class="comment">    &lt;div&gt;Expected completion time:</span></span><br><span class="line"><span class="comment">        &lt;ui-calendar bindx-value="endTimeDate" s-ref="endDate"&gt;&lt;/ui-calendar&gt;</span></span><br><span class="line"><span class="comment">        &lt;ui-timepicker bindx-value="endTimeHour" s-ref="endHour"&gt;&lt;/ui-timepicker&gt;</span></span><br><span class="line"><span class="comment">    &lt;/div&gt;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    &lt;div class="form-op"&gt;</span></span><br><span class="line"><span class="comment">        &lt;button type="button" on-click="submit"&gt;ok&lt;/button&gt;</span></span><br><span class="line"><span class="comment">    &lt;/div&gt;</span></span><br><span class="line"><span class="comment">&lt;/div&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h3 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h3><p><code>version</code>: &gt;= 3.3.0</p>
+<p><code>description</code>: {Array} slot({string=}name)</p>
+<p><code>explanation</code>:</p>
+<p>Get the node information of the component slot. The return value is an array, and the items in the array are node objects and usually only one. And there will be more that one node objects when if or for is applied in the slot declaration. The node objects include <code>isScoped</code>, <code>isInserted</code>, and <code>children</code> property. see <a href="../../tutorial/component/#slot">slot</a> for more details. </p>
+<p><code>attention</code>: do not make any modifications to the returned slot object. If you want to manipulate the view changes, please manipulate the data.</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Panel = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;slot s-if="!hidden"/&gt;&lt;/div&gt;'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">      <span class="string">'x-panel'</span>: Panel</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">''</span></span><br><span class="line">        + <span class="string">'&lt;div&gt;'</span></span><br><span class="line">          + <span class="string">'&lt;x-panel hidden="&#123;&#123;folderHidden&#125;&#125;" s-ref="panel"&gt;&lt;p&gt;&#123;&#123;desc&#125;&#125;&lt;/p&gt;&lt;/x-panel&gt;'</span></span><br><span class="line">        + <span class="string">'&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        <span class="keyword">this</span>.ref(<span class="string">'panel'</span>).slot().length</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> contentSlot = <span class="keyword">this</span>.ref(<span class="string">'panel'</span>).slot()[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// truthy</span></span><br><span class="line">        contentSlot.isInserted</span><br><span class="line"></span><br><span class="line">        <span class="comment">// falsy</span></span><br><span class="line">        contentSlot.isScoped</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    data: &#123;</span><br><span class="line">        desc: <span class="string">'MVVM component framework'</span>,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="nextTick"><a href="#nextTick" class="headerlink" title="nextTick"></a>nextTick</h3><p><code>explanation</code>:</p>
+<p>San’s view update is asynchronous. After the component data is changed, the view will be updated in the next clock cycle. If you modify some data and want to do something after the DOM update, you need to use the <code>nextTick</code> method.</p>
+<p><code>usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Component = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;div s-ref="name"&gt;&#123;&#123;name&#125;&#125;&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="clicker"&gt;change name&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'erik'</span>&#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    clicker() &#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'name'</span>, <span class="string">'leeight'</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.ref(<span class="string">'name'</span>).innerHTML); <span class="comment">// erik</span></span><br><span class="line">        <span class="keyword">this</span>.nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="keyword">this</span>.ref(<span class="string">'name'</span>).innerHTML); <span class="comment">// leeight</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Initialization-Arguments"><span class="toc-text">Initialization Arguments</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#data"><span class="toc-text">data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#el"><span class="toc-text">el</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#transition"><span class="toc-text">transition</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lifecycle-hooks"><span class="toc-text">Lifecycle hooks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#compiled"><span class="toc-text">compiled</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inited"><span class="toc-text">inited</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#created"><span class="toc-text">created</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#attached"><span class="toc-text">attached</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#detached"><span class="toc-text">detached`</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#disposed"><span class="toc-text">disposed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#updated"><span class="toc-text">updated</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#define-Component"><span class="toc-text">define Component</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#template"><span class="toc-text">template</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filters"><span class="toc-text">filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#components"><span class="toc-text">components</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed"><span class="toc-text">computed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#messages"><span class="toc-text">messages</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initData"><span class="toc-text">initData</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#trimWhitespace"><span class="toc-text">trimWhitespace</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#delimiters"><span class="toc-text">delimiters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#transition-Deprecated"><span class="toc-text">transition (Deprecated)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Component-Method"><span class="toc-text">Component Method</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#fire"><span class="toc-text">fire</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#on"><span class="toc-text">on</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#un"><span class="toc-text">un</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dispatch"><span class="toc-text">dispatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch"><span class="toc-text">watch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ref"><span class="toc-text">ref</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slot"><span class="toc-text">slot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nextTick"><span class="toc-text">nextTick</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/doc/api/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

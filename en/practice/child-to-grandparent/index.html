@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>How child components communicate with higher layer components | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="usageThe child component dispatches messages to the upper layer of the component tree via the dispatch method. 12345678910111213class Son extends san.Component &amp;#123;    static template = `        &amp;lt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How child components communicate with higher layer components">
+<meta property="og:url" content="http://baidu.github.io/en/practice/child-to-grandparent/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="usageThe child component dispatches messages to the upper layer of the component tree via the dispatch method. 12345678910111213class Son extends san.Component &amp;#123;    static template = `        &amp;lt">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-02-18T07:31:20.153Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How child components communicate with higher layer components">
+<meta name="twitter:description" content="usageThe child component dispatches messages to the upper layer of the component tree via the dispatch method. 12345678910111213class Son extends san.Component &amp;#123;    static template = `        &amp;lt">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/practice/child-to-grandparent/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/practice/child-to-grandparent" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      How child components communicate with higher layer components
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/child-to-grandparent.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="usage"><a href="#usage" class="headerlink" title="usage"></a>usage</h4><p>The child component dispatches messages to the upper layer of the component tree via the <strong>dispatch</strong> method.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click='onClick'&gt;pass up&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="keyword">const</span> value = <span class="keyword">this</span>.data.get(<span class="string">'value'</span>);</span><br><span class="line">        <span class="comment">// Distribute messages to the upper level of the component tree</span></span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'son-clicked'</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>The message will be passed up the component tree until it encounters the first component that processes the message. Use <strong>messages</strong> to declare the message the component will process. <strong>messages</strong> is an object, the key is the name of a message, and value is the processing function of a message, which receives an object parameter containing <code>target</code> (the component that dispatches the message) and <code>value</code>(the value of the message).</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GrandParent</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">'&lt;div&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Declare messages that the component will process</span></span><br><span class="line">    <span class="keyword">static</span> messages = &#123;</span><br><span class="line">        <span class="string">'son-clicked'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// arg.target can get the component dispatched by the message</span></span><br><span class="line">            <span class="comment">// arg.value can get the value of the message</span></span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'value'</span>, arg.value);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="examples"><a href="#examples" class="headerlink" title="examples"></a>examples</h4><p></p><p data-height="265" data-theme-id="0" data-slug-hash="oeBmvZ" data-default-tab="js,result" data-user="jiangjiu8357" data-embed-version="2" data-pen-title="higher-communication" class="codepen">See the Pen <a href="https://codepen.io/jiangjiu8357/pen/oeBmvZ/" target="_blank" rel="noopener">higher-communication</a> by Swan (<a href="https://codepen.io/jiangjiu8357" target="_blank" rel="noopener">@jiangjiu8357</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script><script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script><script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script><script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#usage"><span class="toc-text">usage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#examples"><span class="toc-text">examples</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/practice/child-to-grandparent/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

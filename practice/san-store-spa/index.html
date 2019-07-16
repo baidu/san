@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>如何使用 san-store 实现后台系统的状态管理？ | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="引言首先确保已经理解了san-store 中是否需要状态管理的内容以及相关概念，下面开始。 本项目代码在 https://github.com/jiangjiu/san-store-spa 可以查看。 搭建环境上一篇文档 如何使用 san-router 建立一个单页应用的后台系统? 已经搭建了一个san+san-router的单页后台应用，我们在它的基础上加入san-store来管理应用状态。 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用 san-store 实现后台系统的状态管理？">
+<meta property="og:url" content="http://baidu.github.io/practice/san-store-spa/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="引言首先确保已经理解了san-store 中是否需要状态管理的内容以及相关概念，下面开始。 本项目代码在 https://github.com/jiangjiu/san-store-spa 可以查看。 搭建环境上一篇文档 如何使用 san-router 建立一个单页应用的后台系统? 已经搭建了一个san+san-router的单页后台应用，我们在它的基础上加入san-store来管理应用状态。 1">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-04-04T02:36:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何使用 san-store 实现后台系统的状态管理？">
+<meta name="twitter:description" content="引言首先确保已经理解了san-store 中是否需要状态管理的内容以及相关概念，下面开始。 本项目代码在 https://github.com/jiangjiu/san-store-spa 可以查看。 搭建环境上一篇文档 如何使用 san-router 建立一个单页应用的后台系统? 已经搭建了一个san+san-router的单页后台应用，我们在它的基础上加入san-store来管理应用状态。 1">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/practice/san-store-spa/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/san-store-spa" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      如何使用 san-store 实现后台系统的状态管理？
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/san-store-spa.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>首先确保已经理解了<a href="https://github.com/baidu/san-store" target="_blank" rel="noopener">san-store</a> 中是否需要状态管理的内容以及相关概念，下面开始。</p>
+<p>本项目代码在 <a href="https://github.com/jiangjiu/san-store-spa" target="_blank" rel="noopener">https://github.com/jiangjiu/san-store-spa</a> 可以查看。</p>
+<h4 id="搭建环境"><a href="#搭建环境" class="headerlink" title="搭建环境"></a>搭建环境</h4><p>上一篇文档 <a href="https://baidu.github.io/san/practice/san-router-spa/">如何使用 san-router 建立一个单页应用的后台系统?</a> 已经搭建了一个san+san-router的单页后台应用，我们在它的基础上加入san-store来管理应用状态。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只需安装san-store和san-update</span></span><br><span class="line">npm i san-update san-store --save</span><br></pre></td></tr></table></figure>
+<h4 id="状态设计"><a href="#状态设计" class="headerlink" title="状态设计"></a>状态设计</h4><p>目前系统有三个频道，home、about、list。</p>
+<p>假设这是一个类似电商后台管理订单的系统：</p>
+<ol>
+<li>不同的频道都需要同步当前订单的状态（待付款、待发货、交易完成 =&gt; orderState:1、2、3）</li>
+<li>不同频道有权利修改当前订单状态</li>
+<li>每次修改都需要异步请求到服务端进行确认</li>
+</ol>
+<p>这里的状态管理混合了异步请求，为了简单起见，暂不考虑安全性及异常处理。</p>
+<h4 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h4><p>如果不使用san-store，每一个频道都需要自行发起异步请求，同时要和其他频道通信当前的订单状态，在实际业务中会是件很头疼的事儿。</p>
+<p>使用san-store后，异步请求在action中发起而无需在不同组件中分别处理，同时store作为唯一应用状态源，无需考虑信息同步问题，系统流程清晰很多，简单可靠。</p>
+<h4 id="创建store"><a href="#创建store" class="headerlink" title="创建store"></a>创建store</h4><p>首先新建一个文件来初始化和管理store。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;updateBuilder&#125; <span class="keyword">from</span> <span class="string">'san-update/src/index'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;store&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第一个action，处理边界条件和异步请求</span></span><br><span class="line">store.addAction(<span class="string">'changeOrderState'</span>, (state, &#123;getState, dispatch&#125;) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 取出当前订单状态值，如果为空就初始化为1</span></span><br><span class="line">    <span class="keyword">const</span> orderState = getState(<span class="string">'orderState'</span>);</span><br><span class="line">    <span class="keyword">if</span> (!state) &#123;</span><br><span class="line">        <span class="keyword">return</span> dispatch(<span class="string">'fillOrderState'</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果改变的订单值和原来状态相同或异常值就不更新了</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (state === orderState || state &lt; <span class="number">1</span> || state &gt; <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 符合修改条件后，发起异步请求</span></span><br><span class="line">    axios.post(<span class="string">'/api/orderState'</span>, &#123;state&#125;)</span><br><span class="line">        .then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">// 状态码正确，修改store中的订单值</span></span><br><span class="line">            <span class="keyword">if</span> (res.status === <span class="number">200</span>) &#123;</span><br><span class="line">                dispatch(<span class="string">'fillOrderState'</span>, state);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;)</span><br><span class="line">        .catch(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(error);</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 同步orderState值</span></span><br><span class="line">store.addAction(<span class="string">'fillOrderState'</span>, state =&gt; updateBuilder().set(<span class="string">'orderState'</span>, state));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 给订单状态一个初始值</span></span><br><span class="line">store.dispatch(<span class="string">'fillOrderState'</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<h4 id="初始值"><a href="#初始值" class="headerlink" title="初始值"></a>初始值</h4><p>看到上面的<code>store.dispatch(&#39;fillOrderState&#39;, 1)</code>了吗？<br>这是为了给订单状态一个初始值。<br>为什么会这样做？</p>
+<p>也许你会想到san-store手动实例化store时中提供了initData属性:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> myStore = <span class="keyword">new</span> Store(&#123;</span><br><span class="line">    initData: &#123;</span><br><span class="line">        user: &#123;</span><br><span class="line">            name: <span class="string">'your name'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    actions: &#123;</span><br><span class="line">        changeUserName(name) &#123;</span><br><span class="line">            <span class="keyword">return</span> builder().set(<span class="string">'user.name'</span>, name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这确实是个很不错的初始办法。<br>可惜的是，<code>connect.san</code>方法只能连接san-store默认提供的store，手动实例化的store无法使用<code>connect.san</code>方法。</p>
+<p>而且erik和灰大在设计之初认为：</p>
+<ol>
+<li>store应该只存在一个（按常理出牌），如果提供连接其他store的方法，可能会在业务中被玩坏</li>
+<li>大部分初始值都是异步获取的，仍然需要dispatch action获得</li>
+</ol>
+<p>所以当初并没有提供手动指定store进行连接的能力。<br>好消息是，我们会在近期开放这个功能，敬请期待。</p>
+<h4 id="入口文件引入store-js"><a href="#入口文件引入store-js" class="headerlink" title="入口文件引入store.js"></a>入口文件引入store.js</h4><p>别忘了在main.js中添加store.js。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 入口文件 main.js</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./store'</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="修改频道"><a href="#修改频道" class="headerlink" title="修改频道"></a>修改频道</h4><p>为不同频道增加显示以及修改订单状态。</p>
+<p>首先修改Home频道。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 修改Home.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;connect&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">'san'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Home = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;目前状态：&#123;&#123;orderState&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="onClick"&gt;订单更改为状态2：待发货&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="comment">// 改变订单状态至待发货，简单起见就不做成下拉框可选形式了</span></span><br><span class="line">        <span class="keyword">this</span>.actions.changeOrderState(<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 连接这个组件至store</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> connect.san(</span><br><span class="line">    &#123;<span class="attr">orderState</span>: <span class="string">'orderState'</span>&#125;,</span><br><span class="line">    &#123;<span class="attr">changeOrderState</span>: <span class="string">'changeOrderState'</span>&#125;</span><br><span class="line">)(Home);</span><br></pre></td></tr></table></figure>
+<p>然后修改About频道。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 修改 About.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;connect&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">'san'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> About = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;目前状态：&#123;&#123;orderState&#125;&#125;&lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="onClick"&gt;订单更改为状态3：交易完成&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="comment">// 改变订单状态至交易完成，简单起见就不做成下拉框可选形式了</span></span><br><span class="line">        <span class="keyword">this</span>.actions.changeOrderState(<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> connect.san(</span><br><span class="line">    &#123;<span class="attr">orderState</span>: <span class="string">'orderState'</span>&#125;,</span><br><span class="line">    &#123;<span class="attr">changeOrderState</span>: <span class="string">'changeOrderState'</span>&#125;</span><br><span class="line">)(About);</span><br></pre></td></tr></table></figure>
+<p>就改两个频道好了。<br>可以看到，不同路由下（Home、About）都正确显示了订单状态orderState，同时不同频道修改成不同的订单状态也无需手动监听通信，san-store自动完成了orderState的更新。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>以上只是一个简单的例子，演示了后台系统如何添加store来管理应用状态。</p>
+<blockquote>
+<p>我们并不认为 san-store 适合所有场景。统一的进行应用状态管理，只有当你的应用足够大时，它带来维护上的便利才会逐渐显现出来。如果你只是开发一个小系统，并且预期不会有陆续的新需求，那我们并不推荐你使用它。大多数增加可维护性的手段意味着拆分代码到多处，意味着你没有办法在实现一个功能的时候一路到尾畅快淋漓，意味着开发成本可能会上升。</p>
+</blockquote>
+<p>所以，你应该根据你要做的是一个什么样的应用，决定要不要使用 san-store。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#引言"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#搭建环境"><span class="toc-text">搭建环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#状态设计"><span class="toc-text">状态设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#思考"><span class="toc-text">思考</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#创建store"><span class="toc-text">创建store</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#初始值"><span class="toc-text">初始值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#入口文件引入store-js"><span class="toc-text">入口文件引入store.js</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#修改频道"><span class="toc-text">修改频道</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/practice/san-store-spa/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

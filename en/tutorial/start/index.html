@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>Start | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="San is an MVVM component-based framework. Its compact size (&amp;lt; 15K), good compatibility (supports IE6), and excellent performance make it a reliable solution for implementing responsive user interfa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Start">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/start/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="San is an MVVM component-based framework. Its compact size (&amp;lt; 15K), good compatibility (supports IE6), and excellent performance make it a reliable solution for implementing responsive user interfa">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-04-03T01:16:04.823Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Start">
+<meta name="twitter:description" content="San is an MVVM component-based framework. Its compact size (&amp;lt; 15K), good compatibility (supports IE6), and excellent performance make it a reliable solution for implementing responsive user interfa">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/tutorial/start/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/start" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Start
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/start.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>San is an MVVM component-based framework. Its compact size (&lt; 15K), good compatibility (supports IE6), and excellent performance make it a reliable solution for implementing responsive user interfaces.</p>
+<p>San declaratively renders data to the DOM using an HTML-based template syntax. In the process, San compiles string-based templates to <a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank" rel="noopener">ANode</a>, builds UI view instantly by high-performance view engine. Apart from raw HTML features, all San templates implement HTML-data binding, and usual syntaxes such as branching, loop, etc. Combined with the reactivity system(two-way binding and <a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank" rel="noopener">ANode</a>), San is able to intelligently figure out the minimal number of components to re-render asynchronously and apply the minimal amount of DOM manipulations when the app state changes.</p>
+<p>Component, the basic unit of San, is an independent unit of data, logic, and view. From a page perspective, a component is an extension of an HTML element; from a functional mode perspective, a component is a ViewModel. San components provide a complete lifecycle, which is part of the Web Components Spec. Also, San components can be tree-nested and communicated with each other via cross-component data flow. Therefore, San’s component mechanism can effectively support the componentization requirements of business development.</p>
+<p>Based on the <a href="https://baidu.github.io/san/tutorial/reverse/">component reversion</a>, San provides server side rendering features through which we can create SEO friendly apps with faster initial page rendering and other pros compared with pure client side rendering. Meanwhile, the ecosystem of San offer a series of modern tooling and supporting libraries. In short, San is perfectly capable of powering large-scaled maintainable Single-Page Applications.</p>
+<p>The easiest way to try out San is using some simple [examples]. Now, Here we go.</p>
+<h2 id="Hello"><a href="#Hello" class="headerlink" title="Hello"></a>Hello</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;p&gt;Hello &#123;&#123;name&#125;&#125;!&lt;/p&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            name: <span class="string">'San'</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> MyApp();</span><br><span class="line">myApp.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<p>We create our San app following steps below:</p>
+<ol>
+<li>First, we define a San component that specifies the component’s <strong>content template</strong> and <strong>initial data</strong> .</li>
+<li>Initialize the component object.</li>
+<li>Attach the component to a HTML element to render.</li>
+</ol>
+<p><code>tips</code>：It is unfriendly for maintenance to write HTML snippets in JavaScript. We can manage it through WebPack, AMD plugin, asynchronous request, etc. The example here is for convenience.</p>
+<h2 id="List-rendering"><a href="#List-rendering" class="headerlink" title="List rendering"></a>List rendering</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;ul&gt;&lt;li s-for="item in list"&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'list'</span>, [<span class="string">'san'</span>, <span class="string">'er'</span>, <span class="string">'esui'</span>, <span class="string">'etpl'</span>, <span class="string">'esl'</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> MyApp();</span><br><span class="line">myApp.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<p>We can use the <strong>for</strong> directive to render a list of items based on an array. Here is a usual practice: inject data in <strong>attached</strong> lifecycle method to re-render. For we can initiate a request to get data and update the data in <strong>attached</strong> after the request returns.</p>
+<h2 id="Two-way-binding"><a href="#Two-way-binding" class="headerlink" title="Two-way binding"></a>Two-way binding</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">''</span></span><br><span class="line">        + <span class="string">'&lt;div&gt;'</span></span><br><span class="line">        +   <span class="string">'&lt;input value="&#123;= name =&#125;" placeholder="please input"&gt;'</span></span><br><span class="line">        +   <span class="string">'Hello &#123;&#123;name&#125;&#125;!'</span></span><br><span class="line">        + <span class="string">'&lt;/div&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> MyApp();</span><br><span class="line">myApp.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<p>In this case, We use the <strong>{= expression =}</strong> directive to create two-way data bindings on the input element. It automatically picks the correct way to update the element based on the input. </p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hello"><span class="toc-text">Hello</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#List-rendering"><span class="toc-text">List rendering</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Two-way-binding"><span class="toc-text">Two-way binding</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/start/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

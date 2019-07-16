@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>Transitions | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="In order to deliver better user experience, it’s common to introduce transitions during view components insertion or removal. San provides basic transition mechanism to facilitate the development of e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transitions">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/transition/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="In order to deliver better user experience, it’s common to introduce transitions during view components insertion or removal. San provides basic transition mechanism to facilitate the development of e">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-10-31T01:25:40.052Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Transitions">
+<meta name="twitter:description" content="In order to deliver better user experience, it’s common to introduce transitions during view components insertion or removal. San provides basic transition mechanism to facilitate the development of e">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/tutorial/transition/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/transition" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Transitions
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/transition.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>In order to deliver better user experience, it’s common to introduce transitions during view components insertion or removal. San provides basic transition mechanism to facilitate the development of experience-rich web apps.</p>
+<p><code>version</code>: &gt;= 3.3.0</p>
+<h2 id="s-transition"><a href="#s-transition" class="headerlink" title="s-transition"></a>s-transition</h2><p>Transition controllers can be specified on elements using <strong>s-transition</strong> directives.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">s-transition</span>=<span class="string">"opacityTransition"</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>The directive value is the corresponding property name of the element’s owner component.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;button s-transition="opacityTransition"&gt;click&lt;/button&gt;&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    opacityTransition: &#123;</span><br><span class="line">        <span class="comment">// The controller structure will be described in the following sections.</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><strong>s-transition</strong> directives are typically used with <strong>if</strong> or <strong>for</strong> directives.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">s-transition</span>=<span class="string">"opacityTransition"</span> <span class="attr">s-if</span>=<span class="string">"allowEdit"</span>&gt;</span>Edit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">b</span> <span class="attr">s-transition</span>=<span class="string">"opacityTransition"</span> <span class="attr">s-else</span>&gt;</span>Edit not allow<span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>The transition controller specified by <strong>s-transition</strong> directive can be a deep property of the owner component.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;button s-transition="trans.opacity"&gt;click&lt;/button&gt;&lt;/div&gt;'</span>,</span><br><span class="line"></span><br><span class="line">    trans: &#123;</span><br><span class="line">        opacity: &#123;</span><br><span class="line">            <span class="comment">// The controller structure will be described in the following sections.</span></span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>Note</code>: <strong>s-transition</strong> can be used on concrete elements only. If used on virtual elements, like <strong>template</strong>, <strong>s-transition</strong> will have no effect.</p>
+<h2 id="Animation-Controller"><a href="#Animation-Controller" class="headerlink" title="Animation Controller"></a>Animation Controller</h2><p>Animation controllers are objects that have <strong>enter</strong> and <strong>leave</strong> methods.</p>
+<p>The signature for both <strong>enter</strong> and <strong>leave</strong> methods are: <strong>function({HTMLElement}el, {Function}done)</strong>. They will be called with the element to be transitioned, and shall call the <strong>done()</strong> callback when the transition is complete.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="toggle"&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if="isShow" s-transition="opacityTrans"&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition="opacityTrans"&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    toggle: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'isShow'</span>, !<span class="keyword">this</span>.data.get(<span class="string">'isShow'</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    opacityTrans: &#123;</span><br><span class="line">        enter: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">            <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                    el.style.opacity = <span class="number">1</span>;</span><br><span class="line">                    done();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                el.style.opacity = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                requestAnimationFrame(goStep);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            goStep();</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">            <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                    el.style.opacity = <span class="number">0</span>;</span><br><span class="line">                    done();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                el.style.opacity = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                requestAnimationFrame(goStep);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            goStep();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>Note</code>:</p>
+<p>There’s no transition controllers built in san. They’re left to the developers to implement, by means of:</p>
+<ul>
+<li>Using CSS transitions or animations. Call <code>done</code> on <code>transitionend</code> or <code>animationend</code> events.</li>
+<li>Using <code>requestAnimationFrame</code>. Call <code>done</code> when it’s complete.</li>
+<li>Using <code>setTimeout</code> / <code>setInterval</code> in legacy browsers, call <code>done</code> when it’s complete.</li>
+<li>Any way within your imagination.</li>
+</ul>
+<h2 id="Animation-Controller-Creator"><a href="#Animation-Controller-Creator" class="headerlink" title="Animation Controller Creator"></a>Animation Controller Creator</h2><p>If the property specified by <strong>s-transition</strong> directive is a <code>function</code>, it will be treated as a <strong>transition controller creator</strong>.</p>
+<p>Each time a transition is requested, the <strong>transition controller creator</strong> gets called and it’s return value is used as the <strong>transition controller</strong>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="toggle"&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if="isShow" s-transition="opacityTrans"&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition="opacityTrans"&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    toggle: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'isShow'</span>, !<span class="keyword">this</span>.data.get(<span class="string">'isShow'</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    opacityTrans: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            enter: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.style.opacity = <span class="number">1</span>;</span><br><span class="line">                        done();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.style.opacity = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    requestAnimationFrame(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                goStep();</span><br><span class="line">            &#125;,</span><br><span class="line"></span><br><span class="line">            leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.style.opacity = <span class="number">0</span>;</span><br><span class="line">                        done();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.style.opacity = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    requestAnimationFrame(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                goStep();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>As with <a href="../event/">the event attributes</a>, <strong>transition controller creator</strong>s accept arguments.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="toggle"&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="toggleTrans"&gt;toggle transition&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if="isShow" s-transition="opacityTrans(noTransition)"&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition="opacityTrans(noTransition)"&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    toggle: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'isShow'</span>, !<span class="keyword">this</span>.data.get(<span class="string">'isShow'</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    toggleTrans: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'noTransition'</span>, !<span class="keyword">this</span>.data.get(<span class="string">'noTransition'</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            noTransition: <span class="literal">false</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    opacityTrans: <span class="function"><span class="keyword">function</span> (<span class="params">disabled</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            enter: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (disabled) &#123;</span><br><span class="line">                    done();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.style.opacity = <span class="number">1</span>;</span><br><span class="line">                        done();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.style.opacity = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    requestAnimationFrame(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                goStep();</span><br><span class="line">            &#125;,</span><br><span class="line"></span><br><span class="line">            leave: <span class="function"><span class="keyword">function</span> (<span class="params">el, done</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (disabled) &#123;</span><br><span class="line">                    done();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="function"><span class="keyword">function</span> <span class="title">goStep</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.style.opacity = <span class="number">0</span>;</span><br><span class="line">                        done();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.style.opacity = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    requestAnimationFrame(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                goStep();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#s-transition"><span class="toc-text">s-transition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Animation-Controller"><span class="toc-text">Animation Controller</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Animation-Controller-Creator"><span class="toc-text">Animation Controller Creator</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/transition/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

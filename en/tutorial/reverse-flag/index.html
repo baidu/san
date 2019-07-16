@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>component reversed parsing（old） | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="This document was deprecated. The new component reverses mechanism is based on data and template matching instead of the original markup mechanism. version：&amp;lt; 3.4.0 hint：With [Server Rendering] (../">
+<meta property="og:type" content="article">
+<meta property="og:title" content="component reversed parsing（old）">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/reverse-flag/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="This document was deprecated. The new component reverses mechanism is based on data and template matching instead of the original markup mechanism. version：&amp;lt; 3.4.0 hint：With [Server Rendering] (../">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-12T06:39:16.133Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="component reversed parsing（old）">
+<meta name="twitter:description" content="This document was deprecated. The new component reverses mechanism is based on data and template matching instead of the original markup mechanism. version：&amp;lt; 3.4.0 hint：With [Server Rendering] (../">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/tutorial/reverse-flag/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/reverse-flag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      component reversed parsing（old）
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/reverse-flag.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>This document was deprecated. The new component reverses mechanism is based on data and template matching instead of the original markup mechanism.</strong></p>
+<p><code>version</code>：&lt; 3.4.0</p>
+<p><code>hint</code>：With [Server Rendering] (../ssr/) via San, you can definitely reverse the browser side with the same version of San.</p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>When the component is initialized, it is passed to <strong>el</strong> element, which will be the root element of the component, and the view structure will be parsed backwards.</p>
+<p>The intent of this feature is that sometimes we want the initial view to be direct HTML, rather than being rendered by components. But we want components to manage data, logic, and views for us, and subsequent user interactions and view transformations are managed through components.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'wrap'</span>).firstChild</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>When <strong>el</strong> initializes the component, San will respect the current HTML form of <strong>el</strong> and will not perform any additional rendering actions that affect the visual.</p>
+<ul>
+<li>Will not render the view using the default template</li>
+<li>Will not create a root element</li>
+<li>Direct access to compiled, created, attached lifecycle</li>
+</ul>
+<p>However, <strong>el</strong> may require some additional markup to help San understand the structure of data and views (interpolation, bindings, loops, branches, components, etc.) for subsequent behavior management and view refresh.</p>
+<p>Data and views are an important part of the component, and we will explain the reverse function of the component from these two aspects.</p>
+<p><code>Hint</code>: If you use NodeJS as the server, San provides support for [server-side rendering] (../ssr/), which can naturally output HTML that can be reversed by the component. You don’t need to know the tag of component resolving form. If your server uses a different language (such as PHP), please read on.</p>
+<h2 id="View"><a href="#View" class="headerlink" title="View"></a>View</h2><p>This section describes how to mark the structure of the view (interpolation, binding, loops, branches, components, etc).</p>
+<h3 id="Interpolated-text"><a href="#Interpolated-text" class="headerlink" title="Interpolated text"></a>Interpolated text</h3><p>Interpolated text is marked by adding a comment before and after the text.</p>
+<ul>
+<li>The comment before the text begins with <strong>s-text:</strong> followed by the declaration of the interpolated text.</li>
+<li>The comment content after the text is <strong>/s-text</strong>, which means the end of the interpolated text fragment.</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>Hint</code>: <strong>s- [html comment]</strong> at the beginning is an important tagging method, and it is also used in loops and branch tags.</p>
+<h3 id="Interpolated-props"><a href="#Interpolated-props" class="headerlink" title="Interpolated props"></a>Interpolated props</h3><p>The interpolation props is marked by: Declaring the content of the attribute on the attribute whose <strong>prop-</strong> is prefixed.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik - errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125; - &#123;&#123;email&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Bindings"><a href="#Bindings" class="headerlink" title="Bindings"></a>Bindings</h3><p>The binding attribute is marked exactly the same as the interpolation attribute: the content of the attribute is declared on the attribute whose <strong>prop-</strong> is prefixed.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;jokeName&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Two-way binding is in the form of <strong>{= expression =}</strong>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">prop-value</span>=<span class="string">"&#123;=name=&#125;"</span> <span class="attr">value</span>=<span class="string">"errorrik"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Loops"><a href="#Loops" class="headerlink" title="Loops"></a>Loops</h3><p>For loops, we need to mark the <strong>start</strong> and <strong>end</strong> of the loop with the stub element.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--/s-for--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>The start</strong> stub element tag is an HTML comment that begins with <strong>s-for:</strong>, followed by the tag content that declares the loop.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>The End</strong> sub element tag is an HTML Comment with the content <strong>/s-for</strong>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--/s-for--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>For each element of the loop, mark it as a normal element without marking the <strong>for</strong> directive. Usually they also exist in a loop on the HTML output, without the burden of rewriting.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>Hint</code>: When there is no data at the beginning, the markup loop only needs to declare <strong>start</strong> and <strong>end</strong>.</p>
+<h3 id="Branch"><a href="#Branch" class="headerlink" title="Branch"></a>Branch</h3><p>The branch tag is simpler, and the branch element can be marked with <strong>s-if</strong>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-if</span>=<span class="string">"condition"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>When the initial condition is false, the branch element does not appear. At this time, the branch is marked with <strong>HTML Comment</strong>. A statement that declares a branch inside the pile.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-if:&lt;span s-if="cond" title="&#123;&#123;name&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-if--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>A branch that contains a complete if-else, there is always one element that is a concrete element, and one element that is a stub.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-if:&lt;span s-if="isErik" title="&#123;&#123;name&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-if--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-else</span> <span class="attr">title</span>=<span class="string">"otakustay"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name2&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name2&#125;&#125;--&gt;</span>otakustay<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-if</span>=<span class="string">"isErik"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--s-else:&lt;span s-else title="&#123;&#123;name2&#125;&#125;"&gt;&#123;&#123;name2&#125;&#125;&lt;/span&gt;--&gt;</span><span class="comment">&lt;!--/s-else--&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>The markup of the component is the same as the declaration in the view template, marking the binding on the corresponding custom element. San will automatically identify the component based on the label of the custom element.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>We may not want to use custom elements for style, compatibility, etc. When a component does not use a custom element, you can mark the component type with <strong>s-component</strong> on the element.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span> <span class="attr">s-component</span>=<span class="string">"ui-label"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">b</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h3><p>The slot’s tag is similar to the loop, we need to mark the loop’s <strong>start</strong> and <strong>end</strong> with the stub element.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;"tabText":"tab","text":"one","title":"1"&#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">s-component</span>=<span class="string">"ui-tab"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;tabText&#125;&#125;"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">prop-class</span>=<span class="string">"head"</span> <span class="attr">class</span>=<span class="string">"head"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--s-slot:title--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">h3</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;title&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"1"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;title&#125;&#125;--&gt;</span>1<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--/s-slot--&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--s-slot--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">p</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;text&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"one"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>one<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--/s-slot--&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Tab = san.defineComponent(&#123;</span><br><span class="line">    template: [</span><br><span class="line">        <span class="string">'&lt;div&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;div class="head"&gt;&lt;slot name="title"&gt;&lt;/slot&gt;&lt;/div&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;div&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;'</span>,</span><br><span class="line">        <span class="string">'&lt;/div&gt;'</span></span><br><span class="line">    ].join(<span class="string">'\n'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-tab'</span>: Tab</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: [</span><br><span class="line">        <span class="string">'&lt;div&gt;&lt;ui-tab text="&#123;&#123;tabText&#125;&#125;"&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;h3 slot="title" title="&#123;&#123;title&#125;&#125;"&gt;&#123;&#123;title&#125;&#125;&lt;/h3&gt;'</span>,</span><br><span class="line">        <span class="string">'    &lt;p title="&#123;&#123;text&#125;&#125;"&gt;&#123;&#123;text&#125;&#125;&lt;/p&gt;'</span>,</span><br><span class="line">        <span class="string">'&lt;/ui-tab&gt;&lt;/div&gt;'</span></span><br><span class="line">    ].join(<span class="string">'\n'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'main'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><strong>The start</strong> element’s stub element tag is an HTML Comment starting with <strong>s-slot:</strong> followed by the slot name.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-slot:title--&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>The end</strong> element’s stub elements tag is an HTML Comments with the content <strong>/s-slot</strong>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--/s-slot--&gt;</span></span><br></pre></td></tr></table></figure>
+<p>When the owner does not give the content, the content of the slot is the default content declared in the component, and the environment inside the slot is the environment inside the component, not the environment outside the component. For the default content, you need to add a <strong>!</strong> declaration before the pile element name of the <strong>start</strong>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--s-slot:!title--&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><p>The view of the component is the rendering of the data. We need to specify the correct initial data by marking <strong>data</strong> at the beginning of the component. The initial data tag is an HTML Comment starting with <strong>s-data:</strong>, in which the data is declared.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"wrap"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;</span></span><br><span class="line"><span class="comment">        email: 'error@gmail.com',</span></span><br><span class="line"><span class="comment">        name: 'errorrik'</span></span><br><span class="line"><span class="comment">    &#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">"errorrik@gmail.com"</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;email&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;name&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'wrap'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p><code>Warning</code>: If the HTML contains only view results and no data, the component cannot parse its representative data from the view’s DOM structure, which may cause undesired consequences in subsequent operations.</p>
+<p>For example, for the list data, the data should be consistent with the view at the time of initialization, because the complicated operations such as adding and deleting the list are closely related to the view update. If the initial correspondence is not matched, the view update may produce unpredictable results.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">"list"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-for:&lt;li s-for="p,i in persons" title="&#123;&#123;p.name&#125;&#125;"&gt;&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;&lt;/li&gt;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"errorrik"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>errorrik - errorrik@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">prop-title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span> <span class="attr">title</span>=<span class="string">"otakustay"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;p.name&#125;&#125; - &#123;&#123;p.email&#125;&#125;--&gt;</span>otakustay - otakustay@gmail.com<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--/s-for--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'list'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// component does not contain initial data tag</span></span><br><span class="line"><span class="comment">// The following statement will cause an error</span></span><br><span class="line">myComponent.data.removeAt(<span class="string">'persons'</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<p><code>Hint</code>: If a component has owner, you can not mark the initial data. Its initial data is populated by the owner based on the binding relationship.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- the ui-label component has owner and does not require initial data tagging --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"main"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--s-data:&#123;"name":"errorrik"&#125;--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">s-component</span>=<span class="string">"ui-label"</span> <span class="attr">prop-text</span>=<span class="string">"&#123;&#123;name&#125;&#125;"</span>&gt;</span><span class="comment">&lt;!--s-text:&#123;&#123;text&#125;&#125;--&gt;</span>errorrik<span class="comment">&lt;!--/s-text--&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Label = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;span&gt;&#123;&#123;text&#125;&#125;&lt;/span&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">        <span class="string">'ui-label'</span>: Label</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    template: <span class="string">'&lt;div&gt;&lt;ui-label text="&#123;&#123;name&#125;&#125;"&gt;&lt;/ui-label&gt;&lt;/div&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myComponent = <span class="keyword">new</span> MyComponent(&#123;</span><br><span class="line">    el: <span class="built_in">document</span>.getElementById(<span class="string">'main'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Overview"><span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#View"><span class="toc-text">View</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Interpolated-text"><span class="toc-text">Interpolated text</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Interpolated-props"><span class="toc-text">Interpolated props</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bindings"><span class="toc-text">Bindings</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Loops"><span class="toc-text">Loops</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Branch"><span class="toc-text">Branch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Component"><span class="toc-text">Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#slot"><span class="toc-text">slot</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data"><span class="toc-text">Data</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/tutorial/reverse-flag/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>How to use san-store to implement state management of the backend system? | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="IntroductionFirst make sure you understand the necessity of state management content and related concepts in san-store. Here we go. This project code can be viewed in https://github.com/jiangjiu/san-s">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to use san-store to implement state management of the backend system?">
+<meta property="og:url" content="http://baidu.github.io/en/practice/san-store-spa/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="IntroductionFirst make sure you understand the necessity of state management content and related concepts in san-store. Here we go. This project code can be viewed in https://github.com/jiangjiu/san-s">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-03-12T06:39:16.132Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to use san-store to implement state management of the backend system?">
+<meta name="twitter:description" content="IntroductionFirst make sure you understand the necessity of state management content and related concepts in san-store. Here we go. This project code can be viewed in https://github.com/jiangjiu/san-s">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/en/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/en/tutorial/start/">Tutorial</a>
+                <li><a class="router" href="/san/en/practice/">Practice</a>
+                <li><a class="router" href="/san/en/example/">Example</a>
+                <li><a class="router" href="/san/en/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/practice/san-store-spa/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/practice/san-store-spa" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      How to use san-store to implement state management of the backend system?
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/san-store-spa.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h4><p>First make sure you understand the necessity of state management content and related concepts in <a href="https://github.com/baidu/san-store" target="_blank" rel="noopener">san-store</a>. Here we go.</p>
+<p>This project code can be viewed in <a href="https://github.com/jiangjiu/san-store-spa" target="_blank" rel="noopener">https://github.com/jiangjiu/san-store-spa</a>.</p>
+<h4 id="Setup"><a href="#Setup" class="headerlink" title="Setup"></a>Setup</h4><p>The previous document <a href="https://baidu.github.io/san/practice/san-router-spa/">How to use san-router to create a back-end system for a single-page application?</a> has built a single-page back-end application with san+san-router. We added san-store to manage the application state based on it.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// only need to install san-store and san-update</span></span><br><span class="line">npm i san-update san-store --save</span><br></pre></td></tr></table></figure>
+<h4 id="State-design"><a href="#State-design" class="headerlink" title="State design"></a>State design</h4><p>Currently the system has three channels, home, about, and list.</p>
+<p>Suppose this is a system similar to e-commerce back-office orders management</p>
+<ol>
+<li>Different channels need to synchronize the status of the current order (pending payment, pending delivery, transaction completed =&gt; orderState:1、2、3)</li>
+<li>Different channels have the permission to modify the current order status</li>
+<li>Each modification requires an asynchronous request to the server for confirmation</li>
+</ol>
+<p>The state management here mixes asynchronous requests, and for the sake of simplicity, security and exception handling are not considered.</p>
+<h4 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h4><p>If you do not use san-store, each channel needs to initiate an asynchronous request by itself, and it is a headache in the actual business to communicate the current order status with other channels.</p>
+<p>After using san-store, asynchronous requests are initiated in the action without having to deal with them separately in different components. At the same time, store is the only application state source, no need to consider the information synchronization problem, the system flow is clear, simple and reliable.</p>
+<h4 id="Create-store"><a href="#Create-store" class="headerlink" title="Create store"></a>Create store</h4><p>First create a new file to initialize and manage the store.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;updateBuilder&#125; <span class="keyword">from</span> <span class="string">'san-update/src/index'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;store&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// First action: handling boundary conditions and asynchronous requests</span></span><br><span class="line">store.addAction(<span class="string">'changeOrderState'</span>, (state, &#123;getState, dispatch&#125;) =&gt; &#123;</span><br><span class="line">    <span class="comment">// Take the current order status value, initialize to 1 if it is empty</span></span><br><span class="line">    <span class="keyword">const</span> orderState = getState(<span class="string">'orderState'</span>);</span><br><span class="line">    <span class="keyword">if</span> (!state) &#123;</span><br><span class="line">        <span class="keyword">return</span> dispatch(<span class="string">'fillOrderState'</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Not update if the changed order value is the same as the original state or is the abnormal value</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (state === orderState || state &lt; <span class="number">1</span> || state &gt; <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Initiate an asynchronous request after the modification condition is met</span></span><br><span class="line">    axios.post(<span class="string">'/api/orderState'</span>, &#123;state&#125;)</span><br><span class="line">        .then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">// The status code is correct, modify the order value in the store</span></span><br><span class="line">            <span class="keyword">if</span> (res.status === <span class="number">200</span>) &#123;</span><br><span class="line">                dispatch(<span class="string">'fillOrderState'</span>, state);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;)</span><br><span class="line">        .catch(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="built_in">console</span>.log(error);</span><br><span class="line">        &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// Synchronize orderState value</span></span><br><span class="line">store.addAction(<span class="string">'fillOrderState'</span>, state =&gt; updateBuilder().set(<span class="string">'orderState'</span>, state));</span><br><span class="line"></span><br><span class="line"><span class="comment">// Give the order status an initial value</span></span><br><span class="line">store.dispatch(<span class="string">'fillOrderState'</span>, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<h4 id="Initial-value"><a href="#Initial-value" class="headerlink" title="Initial value"></a>Initial value</h4><p>See the <code>store.dispatch(&#39;fillOrderState&#39;, 1)</code> above?<br>This is to give the order status an initial value.<br>Why we do it in this way?</p>
+<p>Maybe you will think of the <code>initData</code> property provided by san-store when manually instantiating the store:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> myStore = <span class="keyword">new</span> Store(&#123;</span><br><span class="line">    initData: &#123;</span><br><span class="line">        user: &#123;</span><br><span class="line">            name: <span class="string">'your name'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    actions: &#123;</span><br><span class="line">        changeUserName(name) &#123;</span><br><span class="line">            <span class="keyword">return</span> builder().set(<span class="string">'user.name'</span>, name);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>This is indeed a very good initial approach.<br>Unfortunately, the <code>connect.san</code> method can only be connected to the store provided by san-store by default. The manually instantiated store cannot use the <code>connect.san</code> method.</p>
+<p>And at the beginning of the design, Erik and Gray think:</p>
+<ol>
+<li>Store should only have one (by common sense), if you provide a way to connect to other stores, unpredictable errors may occur in the business.</li>
+<li>Most of the initial values are obtained asynchronously and still require <code>dispatch action</code> to get</li>
+</ol>
+<p>So San didn’t provide the ability to manually specify the store to connect.<br>The good news is that we will be opening this feature in the near future, so stay tuned.</p>
+<h4 id="Import-store-js-in-the-entry-file"><a href="#Import-store-js-in-the-entry-file" class="headerlink" title="Import store.js in the entry file."></a>Import store.js in the entry file.</h4><p>Don’t forget to add <code>store.js</code> to <code>main.js</code>.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// entry file main.js</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'./store'</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="Modify-channel"><a href="#Modify-channel" class="headerlink" title="Modify channel"></a>Modify channel</h4><p>Add displays to different channels and method to modify order status.</p>
+<p>First, modify the Home channel.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// modify Home.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;connect&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">'san'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Home = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;current status: &#123;&#123;orderState&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="onClick"&gt;Order changed to status 2: pending delivery&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="comment">// Change the order status to be shipped, for the sake of simplicity, it is not made into a drop-down box.</span></span><br><span class="line">        <span class="keyword">this</span>.actions.changeOrderState(<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Connect this component to the store</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> connect.san(</span><br><span class="line">    &#123;<span class="attr">orderState</span>: <span class="string">'orderState'</span>&#125;,</span><br><span class="line">    &#123;<span class="attr">changeOrderState</span>: <span class="string">'changeOrderState'</span>&#125;</span><br><span class="line">)(Home);</span><br></pre></td></tr></table></figure>
+<p>Then modify the About channel.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// modify About.js</span></span><br><span class="line"><span class="keyword">import</span> &#123;connect&#125; <span class="keyword">from</span> <span class="string">'san-store'</span>;</span><br><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">'san'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> About = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;current status: &#123;&#123;orderState&#125;&#125;&lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click="onClick"&gt;Order changed to status 3: transaction completed&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="comment">// Change the order status to the transaction completed. For the sake of simplicity, the drop-down box is not available.</span></span><br><span class="line">        <span class="keyword">this</span>.actions.changeOrderState(<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> connect.san(</span><br><span class="line">    &#123;<span class="attr">orderState</span>: <span class="string">'orderState'</span>&#125;,</span><br><span class="line">    &#123;<span class="attr">changeOrderState</span>: <span class="string">'changeOrderState'</span>&#125;</span><br><span class="line">)(About);</span><br></pre></td></tr></table></figure>
+<p>Just change the two channels.<br>It can be seen that the order status orderState is correctly displayed under different routes (Home, About), and different channels are modified into different order states without manual monitoring communication. The san-store automatically completes the orderState update.</p>
+<h4 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h4><p>The above is just a simple example that demonstrates how the background system adds a store to manage application state.</p>
+<blockquote>
+<p>We don’t think san-store is suitable for all scenarios. Only when your application is large enough, the unified maintenance of application state management will gradually show the convenience of maintenance. If you are only developing a small system and anticipate that there will be no new requirements, we do not recommend you to use it. Most methods of increasing maintainability mean splitting code into multiple locations, meaning that you have no way to get through the way when you implement a feature, which means development costs may increase.</p>
+</blockquote>
+<p>So, you should decide whether you want to use san-store depending on what kind of application you are going to do.</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Setup"><span class="toc-text">Setup</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#State-design"><span class="toc-text">State design</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Thinking"><span class="toc-text">Thinking</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Create-store"><span class="toc-text">Create store</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Initial-value"><span class="toc-text">Initial value</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Import-store-js-in-the-entry-file"><span class="toc-text">Import store.js in the entry file.</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Modify-channel"><span class="toc-text">Modify channel</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Summary"><span class="toc-text">Summary</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/en/">HOME</a>
+        <li><a href="/san/en/tutorial/start/">Tutorial</a>
+        <li><a href="/san/en/practice/">Practice</a>
+        <li><a href="/san/en/example/">Example</a>
+        <li><a href="/san/en/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/practice/san-store-spa/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="/san/en/tutorial/setup/">Setup</a></dd>
+        <dd><a href="/san/en/tutorial/background/">Background</a></dd>
+        <dd><a href="/san/en/tutorial/start/">Start</a></dd>
+        <dd><a href="/san/en/tutorial/template/">Template</a></dd>
+        <dd><a href="/san/en/tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="/san/en/tutorial/data-checking/">Data Validation</a></dd>
+        <dd><a href="/san/en/tutorial/style/">Style</a></dd>
+        <dd><a href="/san/en/tutorial/if/">Conditional</a></dd>
+        <dd><a href="/san/en/tutorial/for/">Loop</a></dd>
+        <dd><a href="/san/en/tutorial/event/">Event</a></dd>
+        <dd><a href="/san/en/tutorial/form/">Form</a></dd>
+        <dd><a href="/san/en/tutorial/slot/">Slot</a></dd>
+        <dd><a href="/san/en/tutorial/transition/">Transition</a></dd>
+        <dd><a href="/san/en/tutorial/component/">Component</a></dd>
+        <dd><a href="/san/en/tutorial/reverse/">Component Reversion</a></dd>
+        <dd><a href="/san/en/tutorial/ssr/">SSR</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="/san/en/doc/api/">Component API</a></dd>
+        <dd><a href="/san/en/doc/main-members/">San API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>

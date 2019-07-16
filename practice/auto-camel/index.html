@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
+  
+  <title>data bind时的auto camel | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在 san 组件中，data 的键值必须遵守 camelCase (驼峰式)的命名规范，不得使用 kebab-case (短横线隔开式)规范。 场景一当一个父组件调用子组件并进行 data 绑定时，如果某一项属性写法使用了 kebab-case，san 会自动将其转换为 camelCase，然后传入子组件。下面的一个例子说明了这一点： 示例一1234567891011121314151617181">
+<meta property="og:type" content="article">
+<meta property="og:title" content="data bind时的auto camel">
+<meta property="og:url" content="http://baidu.github.io/practice/auto-camel/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="在 san 组件中，data 的键值必须遵守 camelCase (驼峰式)的命名规范，不得使用 kebab-case (短横线隔开式)规范。 场景一当一个父组件调用子组件并进行 data 绑定时，如果某一项属性写法使用了 kebab-case，san 会自动将其转换为 camelCase，然后传入子组件。下面的一个例子说明了这一点： 示例一1234567891011121314151617181">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-03-22T06:33:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="data bind时的auto camel">
+<meta name="twitter:description" content="在 san 组件中，data 的键值必须遵守 camelCase (驼峰式)的命名规范，不得使用 kebab-case (短横线隔开式)规范。 场景一当一个父组件调用子组件并进行 data 绑定时，如果某一项属性写法使用了 kebab-case，san 会自动将其转换为 camelCase，然后传入子组件。下面的一个例子说明了这一点： 示例一1234567891011121314151617181">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="/san/manifest.json">
+
+  <link rel="stylesheet" href="/san/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/san/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/san/css/style.css">
+  <link rel="stylesheet" href="/san/css/site.css">
+  <link rel="stylesheet" href="/san/css/article.css">
+  <link rel="stylesheet" href="/san/css/code.css">
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+</head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="/san/" class="logo-s-link">
+        <img height="80" src="/san/img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="/san/tutorial/start/">教程</a>
+                <li><a class="router" href="/san/practice/">指南</a>
+                <li><a class="router" href="/san/example/">示例</a>
+                <li><a class="router" href="/san/doc/api/">API</a>
+                <li><a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                    <img src="/san/img/github2.svg" width="20" height="20">
+                </a>
+                <li>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="/san/en/practice/auto-camel/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/auto-camel" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      data bind时的auto camel
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/auto-camel.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在 san 组件中，data 的键值必须遵守 camelCase (驼峰式)的命名规范，不得使用 kebab-case (短横线隔开式)规范。</p>
+<h2 id="场景一"><a href="#场景一" class="headerlink" title="场景一"></a>场景一</h2><p>当一个父组件调用子组件并进行 data 绑定时，如果某一项属性写法使用了 kebab-case，san 会自动将其转换为 camelCase，然后传入子组件。下面的一个例子说明了这一点：</p>
+<h3 id="示例一"><a href="#示例一" class="headerlink" title="示例一"></a>示例一</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;ol&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;dataParent&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;data-parent&#125;&#125;&lt;/li&gt; </span></span><br><span class="line"><span class="string">    &lt;/ol&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Parent</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div&gt;</span></span><br><span class="line"><span class="string">      &lt;san-child data-parent="data from parent!"/&gt;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> components = &#123;</span><br><span class="line">    <span class="string">'san-child'</span>: Child</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Parent().attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<p></p><p data-height="265" data-theme-id="0" data-slug-hash="vJQgWm" data-default-tab="js,result" data-user="mly-zju" data-embed-version="2" data-pen-title="vJQgWm" class="codepen">See the Pen <a href="https://codepen.io/mly-zju/pen/vJQgWm/" target="_blank" rel="noopener">vJQgWm</a> by Ma Lingyang (<a href="https://codepen.io/mly-zju" target="_blank" rel="noopener">@mly-zju</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>上面例子中，父组件调用子组件，为<code>data-parent</code>属性传入了”data from parent!”字符串。在子组件中，同时在li标签中输出<code>dataParent</code>和<code>data-parent</code>属性的值，可以看到，<code>dataParent</code>打印出的正是父组件绑定的值，作为对比，<code>data-parent</code>并没有输出我们期望的绑定值。从这个例子中可以很明显看出，对于传入的属性键值，san会自动将 kebab-case 写法转换为 camelCase。而作为对比，在原生 html 标签中，并不会有 auto-camel 的特性，我们如果传入一个自定义的 kebab-case 写法的属性，依然可以通过<code>dom.getAttribute(&#39;kebab-case&#39;)</code>来进行读取。san 的 template 与原生 html 的这一点不同值得我们注意。</p>
+<p>在这个场景中的 auto camel 是很有迷惑性的，这个特性很容易让我们误以为在开发中，定义组件的属性键值时候我们可以随心所欲的混用 camelCase 和 kebab-case，因为反正 san 会自动帮我们转换为 camelCase 形式。那么，实际上是不是如此呢？来看场景二。</p>
+<h2 id="场景二"><a href="#场景二" class="headerlink" title="场景二"></a>场景二</h2><p>在场景一中，父组件为子组件绑定了一个 kebab-case 写法的属性，被自动转换为 camelCase。那么在子组件中，如果自身返回的初始 data 属性本身就是 kebab-case 类型，又会出现怎样的情况呢？我们看第二个例子：</p>
+<h3 id="示例二"><a href="#示例二" class="headerlink" title="示例二"></a>示例二</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;ol&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;dataSelf&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;data-self&#125;&#125;&lt;/li&gt; </span></span><br><span class="line"><span class="string">    &lt;/ol&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line"></span><br><span class="line">  initData() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="string">'data-self'</span>: <span class="string">'data from myself!'</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Child().attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<p></p><p data-height="265" data-theme-id="0" data-slug-hash="QMJpvL" data-default-tab="js,result" data-user="mly-zju" data-embed-version="2" data-pen-title="QMJpvL" class="codepen">See the Pen <a href="https://codepen.io/mly-zju/pen/QMJpvL/" target="_blank" rel="noopener">QMJpvL</a> by Ma Lingyang (<a href="https://codepen.io/mly-zju" target="_blank" rel="noopener">@mly-zju</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>在上面例子中，Child 组件初始 data 中包含一项键值为<code>data-self</code>的数据。我们将其分别以<code>dataSelf</code>和<code>data-self</code>打印到 li 标签中，可以看到，两种都没有正确打印出我们初始化的值。说明对于自身 data 属性而言，如果属性的键值不是 camelCase 的形式，san 并不会对其进行 auto camel 转换，所以我们无论以哪种方式，都无法拿到这个数据。</p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>在 san 的 compile 过程中，对 template 的解析会返回一个 ANODE 类的实例。其中 template 中绑定属性的时候，属性对象的信息会解析为 ANODE 实例中的 props 属性。对于子组件来说，会根据父组件的 aNode.props 来生成自身的 data binds。</p>
+<p>在 san 中，非根组件做 data binds 过程中，接受父组件的 aNode.props 这一步时，会做 auto camel 处理。这就解释了上述两个例子为什么父组件 kebab 属性传入后，子组件 camel 属性表现正常，其余情况都是异常的。事实上在 san 的源码中，我们可以找到相关的处理函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">kebab2camel</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> source.replace(<span class="regexp">/-([a-z])/g</span>, <span class="function"><span class="keyword">function</span> (<span class="params">match, alpha</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> alpha.toUpperCase();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">camelComponentBinds</span>(<span class="params">binds</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">new</span> IndexedList();</span><br><span class="line">    binds.each(<span class="function"><span class="keyword">function</span> (<span class="params">bind</span>) </span>&#123;</span><br><span class="line">        result.push(&#123;</span><br><span class="line">            name: kebab2camel(bind.name),</span><br><span class="line">            expr: bind.expr,</span><br><span class="line">            x: bind.x,</span><br><span class="line">            raw: bind.raw</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在生成子组件的绑定过程中，正是由于调用了 camelComponentBinds 这个函数，所以才有 auto camel 的特性。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>san 的 auto camel 只适用于父组件调用子组件时候的数据绑定。对于一个组件自身的初始数据，如果属性为 kebab-case，我们将无法正确拿到数据。因此，在写 san 组件的过程中，无论何时，对于 data 中的属性键值，我们都应该自觉地严格遵循 camelCase 规范。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景一"><span class="toc-text">场景一</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例一"><span class="toc-text">示例一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析"><span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#场景二"><span class="toc-text">场景二</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#示例二"><span class="toc-text">示例二</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分析-1"><span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原理分析"><span class="toc-text">原理分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="/san/">HOME</a>
+        <li><a href="/san/tutorial/start/">教程</a>
+        <li><a href="/san/practice/">指南</a>
+        <li><a href="/san/example/">示例</a>
+        <li><a href="/san/doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="/san/practice/auto-camel/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="/san/tutorial/setup/">安装</a></dd>
+        <dd><a href="/san/tutorial/background/">背景</a></dd>
+        <dd><a href="/san/tutorial/start/">开始</a></dd>
+        <dd><a href="/san/tutorial/template/">模板</a></dd>
+        <dd><a href="/san/tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="/san/tutorial/data-checking/">数据校验</a></dd>
+        <dd><a href="/san/tutorial/style/">样式</a></dd>
+        <dd><a href="/san/tutorial/if/">条件</a></dd>
+        <dd><a href="/san/tutorial/for/">循环</a></dd>
+        <dd><a href="/san/tutorial/event/">事件处理</a></dd>
+        <dd><a href="/san/tutorial/form/">表单</a></dd>
+        <dd><a href="/san/tutorial/slot/">插槽</a></dd>
+        <dd><a href="/san/tutorial/transition/">过渡</a></dd>
+        <dd><a href="/san/tutorial/component/">组件</a></dd>
+        <dd><a href="/san/tutorial/reverse/">组件反解</a></dd>
+        <dd><a href="/san/tutorial/ssr/">服务端渲染</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="/san/doc/api/">组件 API</a></dd>
+        <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="/san/js/layout_control.js"></script>
+</body>
+</html>
