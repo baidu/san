@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file 声明式事件的监听函数
+ * @file 获取声明式事件的监听函数
  */
 
 
@@ -13,12 +13,13 @@ var findMethod = require('../runtime/find-method');
 var Data = require('../runtime/data');
 
 /**
- * 声明式事件的监听函数
+ * 获取声明式事件的监听函数
  *
  * @param {Object} eventBind 绑定信息对象
- * @param {boolean} isComponentEvent 是否组件自定义事件
+ * @param {Component} owner 所属组件环境
  * @param {Data} data 数据环境
- * @param {Event} e 事件对象
+ * @param {boolean} isComponentEvent 是否组件自定义事件
+ * @return {Function}
  */
 function getEventListener(eventBind, owner, data, isComponentEvent) {
     return function (e) {
