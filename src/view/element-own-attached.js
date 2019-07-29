@@ -182,7 +182,7 @@ function elementOwnAttached() {
 
             this._onEl(
                 eventBind.name,
-                getEventListener(eventBind.expr, owner, data),
+                getEventListener(eventBind, owner, data, eventBind.modifier),
                 eventBind.modifier.capture
             );
         }
@@ -197,7 +197,7 @@ function elementOwnAttached() {
 
                 this._onEl(
                     eventBind.name,
-                    getEventListener(eventBind.expr, this.owner, this.scope),
+                    getEventListener(eventBind, this.owner, this.scope),
                     eventBind.modifier.capture
                 );
             }

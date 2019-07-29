@@ -182,7 +182,7 @@ function Component(options) { // eslint-disable-line
 
                 this.on(
                     eventBind.name,
-                    getEventListener(eventBind.expr, options.owner, this.scope, 1),
+                    getEventListener(eventBind, options.owner, this.scope, 1),
                     eventBind
                 );
             }
