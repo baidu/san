@@ -25,15 +25,28 @@ function getEventListener(eventBind, owner, data, isComponentEvent) {
     return function (e) {
         var method = findMethod(owner, eventBind.expr.name, data);
 
+        e = isComponentEvent ? e : e || window.event;
+
         if (typeof method === 'function') {
             method.apply(owner, evalArgs(
                 eventBind.expr.args,
-                new Data(
-                    { $event: isComponentEvent ? e : e || window.event },
-                    data
-                ),
+                new Data({ $event: e }, data),
                 owner
             ));
+        }
+
+        if (eventBind.modifier.stop) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            else {
+                e.cancelBubble = true;
+            }
+        }
+
+        if (eventBind.modifier.prevent) {
+            e.preventDefault && e.preventDefault();
+            return false;
         }
     };
 }
