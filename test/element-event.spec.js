@@ -368,4 +368,55 @@ describe("Element-Event", function () {
         doneSpec();
 
     });
+
+    it("stop modifier", function (done) {
+        var clicked = 0;
+        var MyComponent = san.defineComponent({
+            template: '<a on-click="mainClicker"><span on-click="stop:clicker">please click here!</span><b>{{name}}</b></a>',
+
+            mainClicker: function () {
+                this.data.set('name', 'erik');
+            },
+
+            clicker: function () {
+                clicked = 1;
+                this.data.set('name', 'Erik');
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'errorrik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.innerHTML).toBe('errorrik');
+
+        function doneSpec() {
+
+            if (clicked) {
+                expect(myComponent.data.get('name')).toBe('errorrik');
+                myComponent.nextTick(function () {
+                    expect(b.innerHTML).toBe('errorrik');
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                })
+
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent(wrap.getElementsByTagName('span')[0], 'click');
+
+        doneSpec();
+
+    });
 });
