@@ -419,4 +419,49 @@ describe("Element-Event", function () {
         doneSpec();
 
     });
+
+    it("prevent modifier", function (done) {
+        var clicked = 0;
+        var MyComponent = san.defineComponent({
+            template: '<a on-click="mainClicker" href="https://www.baidu.com/">{{name}}</a>',
+
+            mainClicker: function () {
+                clicked = 1;
+                this.data.set('name', 'erik');
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'errorrik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.innerHTML).toBe('errorrik');
+
+        function doneSpec() {
+
+            if (clicked) {
+                myComponent.nextTick(function () {
+                    expect(wrap.firstChild.innerHTML).toBe('erik');
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                })
+
+                return;
+            }
+
+            setTimeout(doneSpec, 500);
+        }
+
+        triggerEvent(wrap.firstChild, 'click');
+
+        doneSpec();
+
+    });
 });
