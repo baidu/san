@@ -380,7 +380,6 @@ describe("Element-Event", function () {
 
             clicker: function () {
                 clicked = 1;
-                this.data.set('name', 'Erik');
             }
         });
         var myComponent = new MyComponent({
@@ -423,7 +422,7 @@ describe("Element-Event", function () {
     it("prevent modifier", function (done) {
         var clicked = 0;
         var MyComponent = san.defineComponent({
-            template: '<a on-click="mainClicker" href="https://www.baidu.com/">{{name}}</a>',
+            template: '<a on-click="prevent:mainClicker" href="https://www.baidu.com/">{{name}}</a>',
 
             mainClicker: function () {
                 clicked = 1;
