@@ -35,6 +35,11 @@ function getEventListener(eventBind, owner, data, isComponentEvent) {
             ));
         }
 
+        if (eventBind.modifier.prevent) {
+            e.preventDefault && e.preventDefault();
+            return false;
+        }
+
         if (eventBind.modifier.stop) {
             if (e.stopPropagation) {
                 e.stopPropagation();
@@ -42,11 +47,6 @@ function getEventListener(eventBind, owner, data, isComponentEvent) {
             else {
                 e.cancelBubble = true;
             }
-        }
-
-        if (eventBind.modifier.prevent) {
-            e.preventDefault && e.preventDefault();
-            return false;
         }
     };
 }
