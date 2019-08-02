@@ -22,17 +22,17 @@ var Data = require('../runtime/data');
  * @return {Function}
  */
 function getEventListener(eventBind, owner, data, isComponentEvent) {
-    return function (e) {
-        var method = findMethod(owner, eventBind.expr.name, data);
+    var args = eventBind.expr.args;
 
+    return function (e) {
         e = isComponentEvent ? e : e || window.event;
 
+        var method = findMethod(owner, eventBind.expr.name, data);
         if (typeof method === 'function') {
-            method.apply(owner, evalArgs(
-                eventBind.expr.args,
-                new Data({ $event: e }, data),
-                owner
-            ));
+            method.apply(
+                owner,
+                args.length ? evalArgs(args, new Data({ $event: e }, data), owner) : []
+            );
         }
 
         if (eventBind.modifier.prevent) {
