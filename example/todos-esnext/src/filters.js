@@ -1,9 +1,8 @@
 import moment from 'moment';
 
 export const formatDate = (value, format) => {
-    return value instanceof Date
-        ? moment(value).format(format)
-        : '';
+    let time = moment(value).format(format);
+    return  time ? time : '';
 };
 
 export const formatHour = hour => {
