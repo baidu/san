@@ -131,9 +131,9 @@ export default {
 
     addCategory(category) {
         let first = data.category[0];
-        let id = 1;
+        let id;
         if (first) {
-            id = first.id + 1;
+            id = data.category.length + 1;
         }
 
         category = extend({}, category);
