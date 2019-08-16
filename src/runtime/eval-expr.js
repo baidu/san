@@ -174,7 +174,7 @@ function evalExpr(expr, data, owner) {
                             break;
 
                         default:
-                            value = owner.filters[filterName].apply(
+                            value = owner.filters[filterName] && owner.filters[filterName].apply(
                                 owner,
                                 [value].concat(evalArgs(filter.args, data, owner))
                             );
