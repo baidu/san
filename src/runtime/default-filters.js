@@ -52,35 +52,33 @@ var DEFAULT_FILTERS = {
     },
     _style: defaultStyleFilter,
 
-    _1arg: {
-        _xclass: function (outer, inner) {
-            if (outer instanceof Array) {
-                outer = outer.join(' ');
-            }
-
-            if (outer) {
-                if (inner) {
-                    return inner + ' ' + outer;
-                }
-
-                return outer;
-            }
-
-            return inner;
-        },
-
-        _xstyle: function (outer, inner) {
-            outer = outer && defaultStyleFilter(outer);
-            if (outer) {
-                if (inner) {
-                    return inner + ';' + outer;
-                }
-
-                return outer;
-            }
-
-            return inner;
+    _xclass: function (outer, inner) {
+        if (outer instanceof Array) {
+            outer = outer.join(' ');
         }
+
+        if (outer) {
+            if (inner) {
+                return inner + ' ' + outer;
+            }
+
+            return outer;
+        }
+
+        return inner;
+    },
+
+    _xstyle: function (outer, inner) {
+        outer = outer && defaultStyleFilter(outer);
+        if (outer) {
+            if (inner) {
+                return inner + ';' + outer;
+            }
+
+            return outer;
+        }
+
+        return inner;
     }
 };
 /* eslint-enable fecs-camelcase */

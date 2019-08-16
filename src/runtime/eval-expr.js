@@ -161,17 +161,23 @@ function evalExpr(expr, data, owner) {
                     var filter = expr.filters[i];
                     var filterName = filter.name.paths[0].value;
 
-                    if (DEFAULT_FILTERS[filterName]) {
-                        value = DEFAULT_FILTERS[filterName](value);
-                    }
-                    else if (DEFAULT_FILTERS._1arg[filterName]) {
-                        value = DEFAULT_FILTERS._1arg[filterName](value, evalExpr(filter.args[0], data, owner));
-                    }
-                    else if (owner.filters[filterName]) {
-                        value = owner.filters[filterName].apply(
-                            owner,
-                            [value].concat(evalArgs(filter.args, data, owner))
-                        );
+                    switch (filterName) {
+                        case 'url':
+                        case '_class':
+                        case '_style':
+                            value = DEFAULT_FILTERS[filterName](value);
+                            break;
+
+                        case '_xclass':
+                        case '_xstyle':
+                            value = value = DEFAULT_FILTERS[filterName](value, evalExpr(filter.args[0], data, owner));
+                            break;
+
+                        default:
+                            value = owner.filters[filterName].apply(
+                                owner,
+                                [value].concat(evalArgs(filter.args, data, owner))
+                            );
                     }
                 }
             }
