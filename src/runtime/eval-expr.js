@@ -161,14 +161,17 @@ function evalExpr(expr, data, owner) {
                     var filter = expr.filters[i];
                     var filterName = filter.name.paths[0].value;
 
-                    if (owner.filters[filterName]) {
+                    if (DEFAULT_FILTERS[filterName]) {
+                        value = DEFAULT_FILTERS[filterName](value);
+                    }
+                    else if (DEFAULT_FILTERS._1arg[filterName]) {
+                        value = DEFAULT_FILTERS._1arg[filterName](value, evalExpr(filter.args[0], data, owner));
+                    }
+                    else if (owner.filters[filterName]) {
                         value = owner.filters[filterName].apply(
                             owner,
                             [value].concat(evalArgs(filter.args, data, owner))
                         );
-                    }
-                    else if (DEFAULT_FILTERS[filterName]) {
-                        value = DEFAULT_FILTERS[filterName](value);
                     }
                 }
             }

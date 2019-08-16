@@ -11,14 +11,6 @@
 /* eslint-disable fecs-camelcase */
 
 
-function defaultClassFilter(source) {
-    if (source instanceof Array) {
-        return source.join(' ');
-    }
-
-    return source;
-}
-
 function defaultStyleFilter(source) {
     if (typeof source === 'object') {
         var result = '';
@@ -51,17 +43,44 @@ var DEFAULT_FILTERS = {
      */
     url: encodeURIComponent,
 
-    _class: defaultClassFilter,
+    _class: function (source) {
+        if (source instanceof Array) {
+            return source.join(' ');
+        }
+
+        return source;
+    },
     _style: defaultStyleFilter,
 
-    _xclass: function (source) {
-        var result = defaultClassFilter(source);
-        return result ? ' ' + result : '';
-    },
+    _1arg: {
+        _xclass: function (outer, inner) {
+            if (outer instanceof Array) {
+                outer = outer.join(' ');
+            }
 
-    _xstyle: function (source) {
-        var result = defaultStyleFilter(source);
-        return result ? ';' + result : '';
+            if (outer) {
+                if (inner) {
+                    return inner + ' ' + outer;
+                }
+
+                return outer;
+            }
+
+            return inner;
+        },
+
+        _xstyle: function (outer, inner) {
+            outer = outer && defaultStyleFilter(outer);
+            if (outer) {
+                if (inner) {
+                    return inner + ';' + outer;
+                }
+
+                return outer;
+            }
+
+            return inner;
+        }
     }
 };
 /* eslint-enable fecs-camelcase */

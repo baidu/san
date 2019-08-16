@@ -74,32 +74,49 @@ function compileComponent(ComponentClass) {
         }
 
         if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false) {
-            var componentPropExtra = {
-                'class': {name: 'class', expr: parseText('{{class | _xclass}}')},
-                'style': {name: 'style', expr: parseText('{{style | _xstyle}}')},
-                'id': {name: 'id', expr: parseText('{{id}}')}
+            var toExtraProp = {
+                'class': 0, style: 0, id: 0
             };
 
             var len = firstChild.props.length;
             while (len--) {
                 var prop = firstChild.props[len];
-                var extra = componentPropExtra[prop.name];
-
-                if (extra) {
+                if (toExtraProp[prop.name] != null) {
+                    toExtraProp[prop.name] = prop;
                     firstChild.props.splice(len, 1);
-                    componentPropExtra[prop.name] = prop;
-
-                    if (prop.name !== 'id') {
-                        prop.expr.segs.push(extra.expr.segs[0]);
-                        prop.expr.value = null;
-                    }
                 }
             }
 
+            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseText('{{id}}') };
+
+            if (toExtraProp['class']) {
+                var classExpr = parseText('{{class | _xclass}}').segs[0];
+                classExpr.filters[0].args.push(toExtraProp['class'].expr);
+                toExtraProp['class'].expr = classExpr;
+            }
+            else {
+                toExtraProp['class'] = {
+                    name: 'class',
+                    expr: parseText('{{class | _class}}')
+                };
+            }
+
+            if (toExtraProp.style) {
+                var styleExpr = parseText('{{style | _xstyle}}').segs[0];
+                styleExpr.filters[0].args.push(toExtraProp.style.expr);
+                toExtraProp.style.expr = styleExpr;
+            }
+            else {
+                toExtraProp.style = {
+                    name: 'style',
+                    expr: parseText('{{style | _style}}')
+                };
+            }
+
             firstChild.props.push(
-                componentPropExtra['class'], // eslint-disable-line dot-notation
-                componentPropExtra.style,
-                componentPropExtra.id
+                toExtraProp['class'], // eslint-disable-line dot-notation
+                toExtraProp.style,
+                toExtraProp.id
             );
         }
     }
