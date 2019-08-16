@@ -117,10 +117,13 @@ var compileExprSource = {
 
             switch (filterName) {
                 case '_style':
-                case '_xstyle':
                 case '_class':
-                case '_xclass':
                     code = filterName + 'Filter(' + code + ')';
+                    break;
+
+                case '_xstyle':
+                case '_xclass':
+                    code = filterName + 'Filter(' + code + ', ' + compileExprSource.expr(filter.args[0]) + ')';
                     break;
 
                 case 'url':

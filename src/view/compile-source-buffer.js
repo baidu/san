@@ -248,30 +248,35 @@ function compileSourcePreCode() {
         return source;
     }
 
-    function _xclassFilter(source) {
-        if (source instanceof Array) {
-            source = source.join(' ');
+    function _xclassFilter(outer, inner) {
+        if (outer instanceof Array) {
+            outer = outer.join(' ');
         }
 
-        return source ? ' ' + source : '';
-    }
-
-    function _xstyleFilter(source) {
-        var result;
-        if (typeof source === 'object') {
-            result = '';
-            if (source) {
-                Object.keys(source).forEach(function (key) {
-                    result += key + ':' + source[key] + ';';
-                });
+        if (outer) {
+            if (inner) {
+                return inner + ' ' + outer;
             }
-        }
-        else {
-            result = source;
+
+            return outer;
         }
 
-        return result ? ';' + result : '';
+        return inner;
     }
+
+     function _xstyleFilter(outer, inner) {
+        outer = outer && defaultStyleFilter(outer);
+        if (outer) {
+            if (inner) {
+                return inner + ';' + outer;
+            }
+
+            return outer;
+        }
+
+        return inner;
+    }
+
 
     function attrFilter(name, value) {
         if (value) {

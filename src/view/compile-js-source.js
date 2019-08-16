@@ -262,7 +262,7 @@ var elementSourceCompiler = {
                         onlyOneAccessor = true;
                         preCondExpr = prop.expr;
                     }
-                    else if (prop.expr.segs.length === 1) {
+                    else if (prop.expr.type === ExprType.TEXT && prop.expr.segs.length === 1) {
                         var interpExpr = prop.expr.segs[0];
                         var interpFilters = interpExpr.filters;
 
