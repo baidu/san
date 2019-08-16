@@ -7,6 +7,7 @@ ChangeLog
 
 + 【新特性】- 事件声明支持 stop modifier，阻止事件冒泡
 + 【新特性】- 事件声明支持 prevent modifier，阻止事件默认行为
++ 【优化】- 删除组件根元素 class 属性的最前方可能出现的空格
 
 
 3.7.7
