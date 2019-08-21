@@ -16,24 +16,26 @@
  * @return {boolean}
  */
 function changesIsInDataRef(changes, dataRef) {
-    for (var i = 0; i < changes.length; i++) {
-        var change = changes[i];
+    if (dataRef) {
+        for (var i = 0; i < changes.length; i++) {
+            var change = changes[i];
 
-        if (!change.overview) {
-            var paths = change.expr.paths;
-            change.overview = paths[0].value;
+            if (!change.overview) {
+                var paths = change.expr.paths;
+                change.overview = paths[0].value;
 
-            if (paths.length > 1) {
-                change.extOverview = paths[0].value + '.' + paths[1].value;
-                change.wildOverview = paths[0].value + '.*';
+                if (paths.length > 1) {
+                    change.extOverview = paths[0].value + '.' + paths[1].value;
+                    change.wildOverview = paths[0].value + '.*';
+                }
             }
-        }
 
-        if (dataRef[change.overview]
-            || change.wildOverview && dataRef[change.wildOverview]
-            || change.extOverview && dataRef[change.extOverview]
-        ) {
-            return true;
+            if (dataRef[change.overview]
+                || change.wildOverview && dataRef[change.wildOverview]
+                || change.extOverview && dataRef[change.extOverview]
+            ) {
+                return true;
+            }
         }
     }
 }
