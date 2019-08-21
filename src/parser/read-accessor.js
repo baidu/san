@@ -27,6 +27,10 @@ function readAccessor(walker) {
                 type: ExprType.BOOL,
                 value: firstSeg === 'true'
             };
+        case 'null':
+            return {
+                type: ExprType.NULL
+            };
     }
 
     var result = createAccessor([

@@ -28,6 +28,9 @@ function evalExpr(expr, data, owner) {
     var value;
 
     switch (expr.type) {
+        case ExprType.NULL:
+            return null;
+
         case ExprType.UNARY:
             value = evalExpr(expr.expr, data, owner);
             switch (expr.operator) {

@@ -25,7 +25,8 @@ var ExprType = {
     UNARY: 9,
     TERTIARY: 10,
     OBJECT: 11,
-    ARRAY: 12
+    ARRAY: 12,
+    NULL: 13
 };
 
 exports = module.exports = ExprType;
