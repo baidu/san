@@ -38,6 +38,22 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("null", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><b s-if="nullValue === null">b</b></a>'
+        });
+        var myComponent = new MyComponent({ data: { nullValue: null }});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("unary -", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{-val1 | tobe(-10)}}</b>',
