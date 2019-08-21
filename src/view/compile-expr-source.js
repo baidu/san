@@ -296,6 +296,9 @@ var compileExprSource = {
 
             case ExprType.CALL:
                 return compileExprSource.callExpr(expr);
+
+            case ExprType.NULL:
+                return 'null';
         }
     }
 };
