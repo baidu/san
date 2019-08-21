@@ -107,6 +107,44 @@ describe("ForDirective", function () {
         });
     });
 
+    it("render list which is static content, and update", function (done) {
+        var MyComponent = san.defineComponent({
+            initData: function () {
+                return {
+                    list: [1, 2]
+                };
+            },
+
+            template: '<ul><li s-for="item in list">san</li></ul>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(2);
+
+        myComponent.data.set('list', [5]);
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(1);
+
+            myComponent.data.push('list', 6);
+            myComponent.data.push('list', 7);
+
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(3);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("render list, push and pop in a tick", function (done) {
         var MyComponent = san.defineComponent({
             initData: function () {
