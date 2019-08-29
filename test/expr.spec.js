@@ -358,6 +358,22 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("binary number <, no whitespaces between", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{val1<0 | tobe(!1)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 1);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("binary number >=", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{val1 >= val2 | tobe(!0)}}</b>',

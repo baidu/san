@@ -56,7 +56,7 @@ function parseTemplate(source, options) {
     source = source.replace(/<!--([\s\S]*?)-->/mg, '').replace(/(^\s+|\s+$)/g, '');
     var walker = new Walker(source);
 
-    var tagReg = /<(\/)?([a-z0-9-]+)\s*/ig;
+    var tagReg = /<(\/)?([a-z][a-z0-9-]*)\s*/ig;
     var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(['"])([^\3]*?)\3)?\s*/ig;
 
     var tagMatch;
