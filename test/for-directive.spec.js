@@ -2328,7 +2328,7 @@ describe("ForDirective", function () {
     });
 
 
-    it("component can track owner splice change ", function (done) {
+    it("component can track owner splice change", function (done) {
 
         var List = san.defineComponent({
             template: '<ul><li s-for="item in list trackBy item">{{item}}</li></ul>'
@@ -2362,6 +2362,43 @@ describe("ForDirective", function () {
 
             myComponent.dispose();
             document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("trackBy and list index", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name</li><li san-for="p,i in persons trackBy p.name">{{i}}-{{p.name}}</li><li>name</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        var list = [
+            { name: 'one' },
+            { name: 'two' }
+        ]
+        myComponent.data.set('persons', list);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toContain('0-one');
+
+        myComponent.data.set('persons',
+            [{ name: 'three' }, list[0], list[1], { name: 'four' }]
+        );
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toContain('0-three');
+            expect(lis[2].innerHTML).toContain('1-one');
+            expect(lis[3].innerHTML).toContain('2-two');
+            expect(lis[3].innerHTML).toContain('3-four');
+
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
             done();
         });
     });
