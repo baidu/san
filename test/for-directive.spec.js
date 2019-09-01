@@ -2410,8 +2410,8 @@ describe("ForDirective", function () {
                 expect(lis[4].innerHTML).toContain('3-two');
                 expect(lis[5].innerHTML).toContain('4-five');
 
-                // myComponent.dispose();
-                // document.body.removeChild(wrap);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
                 done();
             })
 
