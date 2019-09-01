@@ -571,6 +571,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     var oldIndexStart = 0;
                     var oldIndexEnd = oldChildrenLen;
 
+                    // 优化：从头开始比对新旧 list 项是否相同
                     while (newIndexStart < newLen
                         && oldIndexStart < oldChildrenLen
                         && newListKeys[newIndexStart] === oldListKeys[oldIndexStart]
@@ -594,6 +595,15 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         oldIndexStart++;
                     }
 
+                    var indexChange = this.param.index
+                        ? {
+                            type: DataChangeType.SET,
+                            option: change.option,
+                            expr: this.indexExpr
+                        }
+                        : null;
+
+                    // 优化：从尾开始比对新旧 list 项是否相同
                     while (newIndexEnd > newIndexStart && oldIndexEnd > oldIndexStart
                         && newListKeys[newIndexEnd - 1] === oldListKeys[oldIndexEnd - 1]
                     ) {
@@ -601,6 +611,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         oldIndexEnd--;
 
                         if (this.listData[oldIndexEnd] !== newList[newIndexEnd]) {
+                            // refresh item
                             this.children[oldIndexEnd].scope.raw[this.param.item] = newList[newIndexEnd];
                             (childrenChanges[oldIndexEnd] = childrenChanges[oldIndexEnd] || []).push({
                                 type: DataChangeType.SET,
@@ -608,6 +619,17 @@ ForNode.prototype._updateArray = function (changes, newList) {
                                 expr: this.itemExpr,
                                 value: newList[newIndexEnd]
                             });
+
+
+                        }
+
+                        // refresh index
+                        if (newIndexEnd !== oldIndexEnd) {
+                            this.children[oldIndexEnd].scope.raw[this.children[oldIndexEnd].scope.indexName] = newIndexEnd;
+
+                            if (indexChange) {
+                                (childrenChanges[oldIndexEnd] = childrenChanges[oldIndexEnd] || []).push(indexChange);
+                            }
                         }
 
                         // 对list更上级数据的直接设置
@@ -683,15 +705,26 @@ ForNode.prototype._updateArray = function (changes, newList) {
                             var oldListIndex = oldListKeyIndex[newListKeys[i]];
 
                             if (i === staticPos) {
+                                var oldScope = this.children[oldListIndex].scope;
+
                                 // 如果数据本身引用发生变化，设置变更
                                 if (this.listData[oldListIndex] !== newList[i]) {
-                                    this.children[oldListIndex].scope.raw[this.param.item] = newList[i];
+                                    oldScope.raw[this.param.item] = newList[i];
                                     (childrenChanges[oldListIndex] = childrenChanges[oldListIndex] || []).push({
                                         type: DataChangeType.SET,
                                         option: change.option,
                                         expr: this.itemExpr,
                                         value: newList[i]
                                     });
+                                }
+
+                                // refresh index
+                                if (indexChange && i !== oldListIndex) {
+                                    oldScope.raw[oldScope.indexName] = i;
+
+                                    if (indexChange) {
+                                        (childrenChanges[oldListIndex] = childrenChanges[oldListIndex] || []).push(indexChange);
+                                    }
                                 }
 
                                 // 对list更上级数据的直接设置
