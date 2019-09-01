@@ -2386,20 +2386,35 @@ describe("ForDirective", function () {
         expect(lis[1].innerHTML).toContain('0-one');
 
         myComponent.data.set('persons',
-            [{ name: 'three' }, list[0], list[1], { name: 'four' }]
+            [{ name: 'three' }, list[0], { name: 'four' }, list[1]]
         );
 
-        san.nextTick(function () {
+        myComponent.nextTick(function () {
             var lis = wrap.getElementsByTagName('li');
             expect(lis.length).toBe(6);
             expect(lis[1].innerHTML).toContain('0-three');
             expect(lis[2].innerHTML).toContain('1-one');
-            expect(lis[3].innerHTML).toContain('2-two');
-            expect(lis[3].innerHTML).toContain('3-four');
+            expect(lis[3].innerHTML).toContain('2-four');
+            expect(lis[4].innerHTML).toContain('3-two');
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
-            done();
+            myComponent.data.set('persons',
+                [{ name: 'three' }, list[0], { name: 'four' }, list[1], { name: 'five' }]
+            );
+
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(7);
+                expect(lis[1].innerHTML).toContain('0-three');
+                expect(lis[2].innerHTML).toContain('1-one');
+                expect(lis[3].innerHTML).toContain('2-four');
+                expect(lis[4].innerHTML).toContain('3-two');
+                expect(lis[5].innerHTML).toContain('4-five');
+
+                // myComponent.dispose();
+                // document.body.removeChild(wrap);
+                done();
+            })
+
         });
     });
 
