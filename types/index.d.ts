@@ -8,7 +8,7 @@ declare namespace San {
 
     type SanEventListener<T, N> = (e: SanEvent<T, N>) => any;
     interface SanData<T> {
-        new(data?: {}, parent?: SanData<{}>);
+        new(data?: {}, parent?: SanData<{}>): SanData<T>;
         parent: SanData<{}>;
         raw: T;
 
@@ -20,7 +20,7 @@ declare namespace San {
         setTypeChecker(checker: () => void): void;
 
         fire(change: SanDataChangeInfo): void;
-        get(expr: string | ExprAccessorNode): any;
+        get(expr?: string | ExprAccessorNode): any;
         set(expr: string | ExprAccessorNode, value: any, option?: SanDataChangeOption): void;
         merge(expr: string | ExprAccessorNode, source: {}, option?: SanDataChangeOption): void;
         apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: SanDataChangeOption): void;
