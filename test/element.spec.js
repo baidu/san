@@ -946,6 +946,29 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("content attr interp valued null and undefined and false", function () {
+        var MyComponent = san.defineComponent({
+            template: '<div undef="a{{undef}}b" nul="a{{nul}}b" falsy="a{{falsy}}b">test</div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                nul: null,
+                falsy: false
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.getAttribute('undef')).toBe('ab');
+        expect(myComponent.el.getAttribute('nul')).toBe('ab');
+        expect(myComponent.el.getAttribute('falsy')).toBe('afalseb');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("content attr with only one expr interp", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div undef="{{undef}}" nul="{{nul}}" falsy="{{falsy}}" truth="{{truth}}" estr="{{estr}}" zero="{{0}}">test</div>'
@@ -982,6 +1005,58 @@ describe("Element", function () {
             var undef;
             myComponent.data.set('nul', null);
             myComponent.data.set('undef', undef);
+
+            myComponent.nextTick(function () {
+                expect(myComponent.el.hasAttribute('undef')).toBeFalsy();
+                expect(myComponent.el.hasAttribute('nul')).toBeFalsy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("s-bind includes null and undefined", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div s-bind="sb">test</div>'
+        });
+        var undef;
+        var myComponent = new MyComponent({
+            data: {
+                sb: {
+                    nul: null,
+                    falsy: false,
+                    truth: true,
+                    estr: '',
+                    undef: undef,
+                    zero: 0
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.hasAttribute('undef')).toBeFalsy();
+        expect(myComponent.el.hasAttribute('nul')).toBeFalsy();
+        expect(myComponent.el.hasAttribute('falsy')).toBeTruthy();
+        expect(myComponent.el.hasAttribute('estr')).toBeTruthy();
+        expect(myComponent.el.getAttribute('falsy')).toBe('false');
+        expect(myComponent.el.getAttribute('estr')).toBe('');
+        expect(myComponent.el.getAttribute('zero')).toBe('0');
+
+        myComponent.data.set('sb.nul', '');
+        myComponent.data.set('sb.undef', '');
+        myComponent.nextTick(function () {
+            expect(myComponent.el.hasAttribute('undef')).toBeTruthy();
+            expect(myComponent.el.hasAttribute('nul')).toBeTruthy();
+            expect(myComponent.el.getAttribute('undef')).toBe('');
+            expect(myComponent.el.getAttribute('nul')).toBe('');
+
+            myComponent.data.set('sb.nul', null);
+            myComponent.data.set('sb.undef', undef);
 
             myComponent.nextTick(function () {
                 expect(myComponent.el.hasAttribute('undef')).toBeFalsy();
