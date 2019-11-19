@@ -4,14 +4,16 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file 将 binds 的 name 从 kebabcase 转换成 camelcase
+ * @file 将组件外部声明的 props 处理转换成 binds
  */
 
 var kebab2camel = require('../util/kebab2camel');
 var ExprType = require('../parser/expr-type');
 
 /**
- * 将 binds 的 name 从 kebabcase 转换成 camelcase
+ * 将组件外部声明的 props 处理转换成 binds
+ * 1. name kebabcase 转换成 camelcase
+ * 2. 只包含 name 不包含 value 的声明，默认为 true
  *
  * @param {Array} binds binds集合
  * @return {Array}
