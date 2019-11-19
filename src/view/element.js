@@ -139,12 +139,9 @@ Element.prototype.attach = function (parentEl, beforeEl) {
 
             for (var i = 0, l = props.length; i < l; i++) {
                 var prop = props[i];
-                var propName = prop.name;
                 var value = evalExpr(prop.expr, this.scope, this.owner);
 
-                if (value || !baseProps[propName]) {
-                    prop.handler(this.el, value, propName, this, prop);
-                }
+                prop.handler(this.el, value, prop.name, this, prop);
             }
 
             this.lifeCycle = LifeCycle.created;

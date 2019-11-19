@@ -145,14 +145,9 @@ function integrateProp(aNode, name, rawValue, options) {
                 }
             });
             break;
-
-        case 'checked':
-            if (aNode.tagName === 'input') {
-                postProp(prop);
-            }
-            break;
     }
 
+    postProp(prop);
     aNode.props.push(prop);
 }
 

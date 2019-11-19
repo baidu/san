@@ -45,32 +45,28 @@ var HTML_ATTR_PROP_MAP = {
 
 function defaultElementPropHandler(el, value, name) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
-    value = value == null ? '' : value;
+
     // input 的 type 是个特殊属性，其实也应该用 setAttribute
     // 但是 type 不应该运行时动态改变，否则会有兼容性问题
     // 所以这里直接就不管了
     if (propName in el) {
-        el[propName] = value;
+        el[propName] = value != null ? value : '';
     }
-    else {
+    else if (value != null) {
         el.setAttribute(name, value);
     }
-
-    // attribute 绑定的是 text，所以不会出现 null 的情况，这里无需处理
-    // 换句话来说，san 是做不到 attribute 时有时无的
-    // if (value == null) {
-    //     el.removeAttribute(name);
-    // }
+    else {
+        el.removeAttribute(name);
+    }
 }
 
 function svgPropHandler(el, value, name) {
     el.setAttribute(name, value);
 }
 
-function boolPropHandler(el, value, name, element, prop) {
+function boolPropHandler(el, value, name) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
-    el[propName] = !!(prop && prop.raw == null
-        || value && value !== 'false' && value !== '0');
+    el[propName] = !!value;
 }
 
 /* eslint-disable fecs-properties-quote */
@@ -177,9 +173,6 @@ var elementPropHandlers = {
     },
 
     select: {
-        value: function (el, value) {
-            el.value = value || '';
-        },
         readonly: boolPropHandler,
         disabled: boolPropHandler,
         autofocus: boolPropHandler,

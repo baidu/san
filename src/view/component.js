@@ -17,7 +17,6 @@ var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
 var createAccessor = require('../parser/create-accessor');
-var postProp = require('../parser/post-prop');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
@@ -33,9 +32,8 @@ var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
-var camelComponentBinds = require('./camel-component-binds');
+var propsToBinds = require('./props-to-binds');
 var NodeType = require('./node-type');
-var baseProps = require('./base-props');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementOwnAttached = require('./element-own-attached');
@@ -189,7 +187,7 @@ function Component(options) { // eslint-disable-line
         }
 
         this.tagName = this.tagName || this.source.tagName;
-        this.binds = camelComponentBinds(this.source.props);
+        this.binds = propsToBinds(this.source.props);
 
         // init s-bind data
         nodeSBindInit(this, this.source.directives.bind);
@@ -218,7 +216,6 @@ function Component(options) { // eslint-disable-line
     if (this.binds) {
         for (var i = 0, l = this.binds.length; i < l; i++) {
             var bindInfo = this.binds[i];
-            postProp(bindInfo);
 
             if (this.scope) {
                 var value = evalExpr(bindInfo.expr, this.scope, this.owner);
@@ -859,9 +856,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
                 var prop = props[i];
                 var value = evalExpr(prop.expr, this.data, this);
 
-                if (value || !baseProps[prop.name]) {
-                    prop.handler(this.el, value, prop.name, this, prop);
-                }
+                prop.handler(this.el, value, prop.name, this, prop);
             }
 
             this._toPhase('created');

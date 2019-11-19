@@ -8,10 +8,10 @@
  */
 
 var ExprType = require('../parser/expr-type');
+var boolAttrs = require('../browser/bool-attrs');
 
 /**
  * 对属性信息进行处理
- * 对组件的 binds 或者特殊的属性（比如 input 的 checked）需要处理
  *
  * 扁平化：
  * 当 text 解析只有一项时，要么就是 string，要么就是 interp
@@ -29,7 +29,7 @@ function postProp(prop) {
     if (expr.type === ExprType.TEXT) {
         switch (expr.segs.length) {
             case 0:
-                if (prop.raw == null) {
+                if (boolAttrs[prop.name]) {
                     prop.expr = {
                         type: ExprType.BOOL,
                         value: true
