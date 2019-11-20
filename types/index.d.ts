@@ -149,6 +149,8 @@ declare namespace San {
         BINARY = 8,
         UNARY = 9,
         TERTIARY = 10,
+        OBJECT = 11,
+        ARRAY = 12
     }
 
     type ExprNode = ExprStringNode | ExprNumberNode | ExprBoolNode | ExprAccessorNode | ExprInterpNode | ExprCallNode | ExprTextNode | ExprBinaryNode | ExprUnaryNode | ExprTertiaryNode;
