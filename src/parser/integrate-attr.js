@@ -9,13 +9,13 @@
 
 var each = require('../util/each');
 var kebab2camel = require('../util/kebab2camel');
+var boolAttrs = require('../browser/bool-attrs');
 var ExprType = require('./expr-type');
 var createAccessor = require('./create-accessor');
 var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
 var parseDirective = require('./parse-directive');
-var postProp = require('./post-prop');
 
 
 /**
@@ -117,12 +117,7 @@ function integrateProp(aNode, name, rawValue, options) {
         return;
     }
 
-    // parse normal prop
-    var prop = {
-        name: name,
-        expr: parseText(value, options.delimiters),
-        raw: rawValue
-    };
+    var expr = parseText(value, options.delimiters);
 
     // 这里不能把只有一个插值的属性抽取
     // 因为插值里的值可能是html片段，容易被注入
@@ -130,14 +125,14 @@ function integrateProp(aNode, name, rawValue, options) {
     switch (name) {
         case 'class':
         case 'style':
-            each(prop.expr.segs, function (seg) {
+            each(expr.segs, function (seg) {
                 if (seg.type === ExprType.INTERP) {
                     seg.filters.push({
                         type: ExprType.CALL,
                         name: createAccessor([
                             {
                                 type: ExprType.STRING,
-                                value: '_' + prop.name
+                                value: '_' + name
                             }
                         ]),
                         args: []
@@ -147,8 +142,30 @@ function integrateProp(aNode, name, rawValue, options) {
             break;
     }
 
-    postProp(prop);
-    aNode.props.push(prop);
+    if (expr.type === ExprType.TEXT) {
+        switch (expr.segs.length) {
+            case 0:
+                if (boolAttrs[name]) {
+                    expr = {
+                        type: ExprType.BOOL,
+                        value: true
+                    };
+                }
+                break;
+
+            case 1:
+                expr = expr.segs[0];
+                if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
+                    expr = expr.expr;
+                }
+        }
+    }
+
+    aNode.props.push({
+        name: name,
+        expr: expr,
+        raw: rawValue
+    });
 }
 
 
