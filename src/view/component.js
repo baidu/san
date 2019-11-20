@@ -17,6 +17,7 @@ var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
 var createAccessor = require('../parser/create-accessor');
+
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
@@ -190,7 +191,7 @@ function Component(options) { // eslint-disable-line
         this.binds = propsToBinds(this.source.props);
 
         // init s-bind data
-        nodeSBindInit(this, this.source.directives.bind);
+        this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
     }
 
     this._toPhase('compiled');
@@ -199,7 +200,7 @@ function Component(options) { // eslint-disable-line
     this.data = new Data(
         extend(
             typeof this.initData === 'function' && this.initData() || {},
-            options.data || this._sbindData
+            options.data || this._srcSbindData
         )
     );
 
@@ -251,6 +252,7 @@ function Component(options) { // eslint-disable-line
     this.dataChanger = bind(this._dataChanger, this);
     this.data.listen(this.dataChanger);
 
+    this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
     this._toPhase('inited');
 
     // #[begin] reverse
@@ -575,23 +577,26 @@ Component.prototype._update = function (changes) {
     };
 
     if (changes) {
-        this.source && nodeSBindUpdate(
-            this,
-            this.source.directives.bind,
-            changes,
-            function (name, value) {
-                if (name in me.source.hotspot.props) {
-                    return;
-                }
-
-                me.data.set(name, value, {
-                    target: {
-                        node: me.owner
+        if (this.source) {
+            this._srcSbindData = nodeSBindUpdate(
+                this.source.directives.bind,
+                this._srcSbindData,
+                this.scope,
+                this.owner,
+                changes,
+                function (name, value) {
+                    if (name in me.source.hotspot.props) {
+                        return;
                     }
-                });
-            }
-        );
 
+                    me.data.set(name, value, {
+                        target: {
+                            node: me.owner
+                        }
+                    });
+                }
+            );
+        }
 
         each(changes, function (change) {
             var changeExpr = change.expr;
@@ -664,6 +669,21 @@ Component.prototype._update = function (changes) {
 
         var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
         var expectNodeType = (!ifDirective || evalExpr(ifDirective.value, this.data, this)) ? 1 : 8;
+
+        this._sbindData = nodeSBindUpdate(
+            this.aNode.directives.bind,
+            this._sbindData,
+            this.data,
+            this,
+            dataChanges,
+            function (name, value) {
+                if (me.el.nodeType !== 1 || (name in me.aNode.hotspot.props)) {
+                    return;
+                }
+
+                getPropHandler(me.tagName, name)(me.el, value, name, me);
+            }
+        );
 
         if (this.el.nodeType === expectNodeType) {
             if (expectNodeType === 1) {

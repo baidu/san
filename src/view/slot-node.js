@@ -77,9 +77,11 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
         vars: aNode.vars
     };
 
+    this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
+
     // calc scoped slot vars
     var initData;
-    if (nodeSBindInit(this, aNode.directives.bind)) {
+    if (this._sbindData) {
         initData = extend({}, this._sbindData);
     }
 
@@ -195,9 +197,11 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
 
             var scopedChanges = [];
 
-            nodeSBindUpdate(
-                this,
+            this._sbindData = nodeSBindUpdate(
                 this.aNode.directives.bind,
+                this._sbindData,
+                this.scope,
+                this.owner,
                 changes,
                 function (name, value) {
                     if (varKeys[name]) {

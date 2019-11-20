@@ -61,7 +61,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
     }
     // #[end]
 
-    nodeSBindInit(this, aNode.directives.bind);
+    this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
     this.lifeCycle = LifeCycle.inited;
 
     // #[begin] reverse
@@ -235,9 +235,11 @@ Element.prototype._update = function (changes) {
 
         // update s-bind
         var me = this;
-        nodeSBindUpdate(
-            this,
+        this._sbindData = nodeSBindUpdate(
             this.aNode.directives.bind,
+            this._sbindData,
+            this.scope,
+            this.owner,
             changes,
             function (name, value) {
                 if (name in me.aNode.hotspot.props) {

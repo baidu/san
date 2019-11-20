@@ -1064,8 +1064,61 @@ describe("Element", function () {
                 expect(aEl.hasAttribute('undef')).toBeFalsy();
                 expect(aEl.hasAttribute('nul')).toBeFalsy();
 
-                // myComponent.dispose();
-                // document.body.removeChild(wrap);
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("s-bind apply to component root element", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div s-bind="sb">test</div>'
+        });
+        var undef;
+        var myComponent = new MyComponent({
+            data: {
+                sb: {
+                    nul: null,
+                    falsy: false,
+                    truth: true,
+                    estr: '',
+                    undef: undef,
+                    zero: 0
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(myComponent.el.hasAttribute('undef')).toBeFalsy();
+        expect(myComponent.el.hasAttribute('nul')).toBeFalsy();
+        expect(myComponent.el.hasAttribute('falsy')).toBeTruthy();
+        expect(myComponent.el.hasAttribute('estr')).toBeTruthy();
+        expect(myComponent.el.getAttribute('falsy')).toBe('false');
+        expect(myComponent.el.getAttribute('estr')).toBe('');
+        expect(myComponent.el.getAttribute('zero')).toBe('0');
+
+        myComponent.data.set('sb.nul', '');
+        myComponent.data.set('sb.undef', '');
+        myComponent.nextTick(function () {
+            expect(myComponent.el.hasAttribute('undef')).toBeTruthy();
+            expect(myComponent.el.hasAttribute('nul')).toBeTruthy();
+            expect(myComponent.el.getAttribute('undef')).toBe('');
+            expect(myComponent.el.getAttribute('nul')).toBe('');
+
+            myComponent.data.set('sb.nul', null);
+            myComponent.data.set('sb.undef', undef);
+
+            myComponent.nextTick(function () {
+                expect(myComponent.el.hasAttribute('undef')).toBeFalsy();
+                expect(myComponent.el.hasAttribute('nul')).toBeFalsy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
                 done();
             });
         });
