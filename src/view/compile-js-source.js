@@ -13,9 +13,8 @@ var extend = require('../util/extend');
 var splitStr2Obj = require('../util/split-str-2-obj');
 var parseExpr = require('../parser/parse-expr');
 var ExprType = require('../parser/expr-type');
-var postProp = require('../parser/post-prop');
 var autoCloseTags = require('../browser/auto-close-tags');
-var camelComponentBinds = require('./camel-component-binds');
+var propsToBinds = require('./props-to-binds');
 var CompileSourceBuffer = require('./compile-source-buffer');
 var compileExprSource = require('./compile-expr-source');
 var getANodeProp = require('./get-a-node-prop');
@@ -166,9 +165,28 @@ var elementSourceCompiler = {
         each(props, function (prop) {
             propsIndex[prop.name] = prop;
 
-            if (prop.name !== 'slot' && prop.expr.value != null) {
-                sourceBuffer.joinString(' ' + prop.name + '="' + prop.expr.segs[0].literal + '"');
+            if (prop.name !== 'slot') {
+                switch (prop.expr.type) {
+                    case ExprType.BOOL:
+                        sourceBuffer.joinString(' ' + prop.name);
+                        break;
+
+                    case ExprType.STRING:
+                        sourceBuffer.joinString(' ' + prop.name + '="'
+                            +  prop.expr.literal
+                            + '"');
+                        break;
+
+                    default:
+                        if (prop.expr.value != null) {
+                            sourceBuffer.joinString(' ' + prop.name + '="'
+                                + compileExprSource.expr(prop.expr)
+                                + '"');
+                        }
+                        break;
+                }
             }
+
         });
 
         each(props, function (prop) {
@@ -262,32 +280,31 @@ var elementSourceCompiler = {
                         onlyOneAccessor = true;
                         preCondExpr = prop.expr;
                     }
-                    else if (prop.expr.type === ExprType.TEXT && prop.expr.segs.length === 1) {
-                        var interpExpr = prop.expr.segs[0];
-                        var interpFilters = interpExpr.filters;
+                    // else if (prop.expr.type === ExprType.TEXT && prop.expr.segs.length === 1) {
+                    //     var interpExpr = prop.expr.segs[0];
+                    //     var interpFilters = interpExpr.filters;
 
-                        if (!interpFilters.length
-                            || interpFilters.length === 1 && interpFilters[0].args.length === 0
-                        ) {
-                            onlyOneAccessor = true;
-                            preCondExpr = prop.expr.segs[0].expr;
-                        }
-                    }
+                    //     if (!interpFilters.length
+                    //         || interpFilters.length === 1 && interpFilters[0].args.length === 0
+                    //     ) {
+                    //         onlyOneAccessor = true;
+                    //         preCondExpr = prop.expr.segs[0].expr;
+                    //     }
+                    // }
 
-                    if (onlyOneAccessor) {
-                        sourceBuffer.addRaw('if (' + compileExprSource.expr(preCondExpr) + ') {');
-                    }
+                    // if (onlyOneAccessor) {
+                    //     sourceBuffer.addRaw('if (' + compileExprSource.expr(preCondExpr) + ') {');
+                    // }
 
                     sourceBuffer.joinRaw('attrFilter("' + prop.name + '", '
-                        + (prop.x ? 'escapeHTML(' : '')
                         + compileExprSource.expr(prop.expr)
-                        + (prop.x ? ')' : '')
+                        + (prop.x || onlyOneAccessor ? ', true' : '')
                         + ')'
                     );
 
-                    if (onlyOneAccessor) {
-                        sourceBuffer.addRaw('}');
-                    }
+                    // if (onlyOneAccessor) {
+                    //     sourceBuffer.addRaw('}');
+                    // }
 
                     break;
             }
@@ -311,11 +328,11 @@ var elementSourceCompiler = {
                 + 'case "readonly":\n'
                 + 'case "disabled":\n'
                 + 'case "multiple":\n'
-                + 'case "multiple":\n'
-                + 'html += boolAttrFilter($key, escapeHTML($value));\n'
+                + 'case "checked":\n'
+                + 'html += boolAttrFilter($key, $value);\n'
                 + 'break;\n'
                 + 'default:\n'
-                + 'html += attrFilter($key, escapeHTML($value));'
+                + 'html += attrFilter($key, $value, true);'
                 + '}'
             );
 
@@ -729,8 +746,7 @@ var aNodeCompiler = {
 
 
         var givenData = [];
-        each(camelComponentBinds(aNode.props), function (prop) {
-            postProp(prop);
+        each(propsToBinds(aNode.props), function (prop) {
             givenData.push(
                 compileExprSource.stringLiteralize(prop.name)
                 + ':'

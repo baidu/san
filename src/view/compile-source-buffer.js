@@ -278,16 +278,16 @@ function compileSourcePreCode() {
     }
 
 
-    function attrFilter(name, value) {
-        if (value) {
-            return ' ' + name + '="' + value + '"';
+    function attrFilter(name, value, needHTMLEscape) {
+        if (value != null) {
+            return ' ' + name + '="' + (needHTMLEscape ? escapeHTML(value) : value) + '"';
         }
 
         return '';
     }
 
     function boolAttrFilter(name, value) {
-        if (value && value !== 'false' && value !== '0') {
+        if (value) {
             return ' ' + name;
         }
 
