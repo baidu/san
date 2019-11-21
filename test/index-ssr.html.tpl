@@ -16,7 +16,7 @@
     <script src="lib/triggerEvent.js"></script>
 
     <!-- include source files here... -->
-    <script src="../dist/san.js"></script>
+    <script src="../dist/san.ssr.js"></script>
 
     <!-- include spec files here... -->
     <script src="ssr/ssr.spec.js"></script>
