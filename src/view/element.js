@@ -141,7 +141,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 var prop = props[i];
                 var value = evalExpr(prop.expr, this.scope, this.owner);
 
-                prop.handler(this.el, value, prop.name, this, prop);
+                prop.handler(this.el, value, prop.name, this);
             }
 
             this.lifeCycle = LifeCycle.created;
@@ -265,7 +265,7 @@ Element.prototype._update = function (changes) {
                         || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.scope)
                     )
                 ) {
-                    prop.handler(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this, prop);
+                    prop.handler(this.el, evalExpr(prop.expr, this.scope, this.owner), propName, this);
                     break;
                 }
             }

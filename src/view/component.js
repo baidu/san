@@ -696,7 +696,7 @@ Component.prototype._update = function (changes) {
                         if (changeExprCompare(change.expr, prop.expr, this.data)
                             || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
                         ) {
-                            prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this, prop);
+                            prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
                             break;
                         }
                     }
@@ -876,7 +876,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
                 var prop = props[i];
                 var value = evalExpr(prop.expr, this.data, this);
 
-                prop.handler(this.el, value, prop.name, this, prop);
+                prop.handler(this.el, value, prop.name, this);
             }
 
             this._toPhase('created');
