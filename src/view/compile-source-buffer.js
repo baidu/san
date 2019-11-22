@@ -277,10 +277,18 @@ function compileSourcePreCode() {
         return inner;
     }
 
+    var _baseProps = {
+        'class': 1,
+        'style': 1,
+        'id': 1
+    };
 
     function attrFilter(name, value, needHTMLEscape) {
-        if (value != null) {
+        if (value) {
             return ' ' + name + '="' + (needHTMLEscape ? escapeHTML(value) : value) + '"';
+        }
+        else if (value != null && !_baseProps[name]) {
+            return ' ' + name + '="' + value + '"';
         }
 
         return '';
