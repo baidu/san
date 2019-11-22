@@ -87,7 +87,7 @@ function compileComponent(ComponentClass) {
                 }
             }
 
-            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseText('{{id}}') };
+            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseExpr('id') };
 
             if (toExtraProp['class']) {
                 var classExpr = parseText('{{class | _xclass}}').segs[0];

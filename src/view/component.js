@@ -876,7 +876,9 @@ Component.prototype._attach = function (parentEl, beforeEl) {
                 var prop = props[i];
                 var value = evalExpr(prop.expr, this.data, this);
 
-                prop.handler(this.el, value, prop.name, this);
+                if (value || !baseProps[prop.name]) {
+                    prop.handler(this.el, value, prop.name, this);
+                }
             }
 
             this._toPhase('created');
