@@ -94,7 +94,8 @@ CDN:
 - [san-store](https://github.com/baidu/san-store) - Application States Management
 - [san-update](https://github.com/baidu/san-update) - Immutable Data Update
 - [san-factory](https://github.com/baidu/san-factory) - Component register and instantiation
-- [san-mui](https://ecomfe.github.io/san-mui/) - Material Design Components Library
+- [santd](https://ecomfe.github.io/santd/) - Components Library following the [Ant Design](https://ant.design/) specification
+- [san-mui](https://ecomfe.github.io/san-mui/) - [Material Design](https://www.material.io/) Components Library
 - [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
 - [drei](https://github.com/ssddi456/drei/) - VSCode extension for SAN
 
