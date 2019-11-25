@@ -45,17 +45,19 @@ var HTML_ATTR_PROP_MAP = {
 
 function defaultElementPropHandler(el, value, name) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
+    var valueNotNull = value != null;
 
     // input 的 type 是个特殊属性，其实也应该用 setAttribute
     // 但是 type 不应该运行时动态改变，否则会有兼容性问题
     // 所以这里直接就不管了
     if (propName in el) {
-        el[propName] = value != null ? value : '';
+        el[propName] = valueNotNull ? value : '';
     }
-    else if (value != null) {
+    else if (valueNotNull) {
         el.setAttribute(name, value);
     }
-    else {
+
+    if (!valueNotNull) {
         el.removeAttribute(name);
     }
 }
