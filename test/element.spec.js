@@ -877,14 +877,14 @@ describe("Element", function () {
 
         var a = wrap.getElementsByTagName('a')[0];
 
-        // ie 是个 bt，什么元素都能 disabled
-        if (!/msie/i.test(navigator.userAgent)) {
-            expect(a.hasAttribute('disabled')).toBeTruthy();
-        }
+        expect(a.hasAttribute('disabled')).toBeTruthy();
         expect(a.hasAttribute('checked')).toBeTruthy();
 
-        expect(a.disabled).toBeFalsy();
-        expect(a.checked).toBeFalsy();
+        // ie 是个 bt，什么元素都能 disabled
+        if (!/msie/i.test(navigator.userAgent)) {
+            expect(a.disabled).toBeFalsy();
+            expect(a.checked).toBeFalsy();
+        }
 
         myComponent.dispose();
         document.body.removeChild(wrap);
