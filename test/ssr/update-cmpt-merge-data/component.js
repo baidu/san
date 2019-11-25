@@ -22,7 +22,7 @@ var MyComponent = san.defineComponent({
     initData: function () {
         return {
             jokeName: 'airike',
-            school: 'none',
+            school: 'none'
         };
     }
 });
