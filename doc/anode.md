@@ -5,35 +5,35 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
-[template 简述](#user-content-template-简述)  
-　　[插值语法](#user-content-插值语法)  
-　　[普通属性语法](#user-content-普通属性)  
-　　[双向绑定语法](#user-content-双向绑定)  
-　　[指令语法](#user-content-指令)  
-[表达式](#user-content-表达式)  
-　　[表达式类型](#user-content-表达式类型)  
-　　[STRING](#user-content-string)  
-　　[NUMBER](#user-content-number)  
-　　[BOOL](#user-content-bool)  
-　　[ACCESSOR](#user-content-accessor)  
-　　[INTERP](#user-content-interp)  
-　　[CALL](#user-content-call)  
-　　[TEXT](#user-content-text)  
-　　[BINARY](#user-content-binary)  
-　　[UNARY](#user-content-unary)  
-　　[TERTIARY](#user-content-tertiary)  
-　　[ARRAY LITERAL](#user-content-array-literal)  
-　　[OBJECT LITERAL](#user-content-object-literal)  
-　　[PARENTHESIZED](#user-content-parenthesized)  
-[ANode 的结构](#user-content-anode-的结构)  
-[模板解析结果](#user-content-模板解析结果)  
-　　[文本](#user-content-文本)  
-　　[属性](#user-content-属性)  
-　　[双向绑定](#user-content-双向绑定)  
-　　[复杂的插值](#user-content-复杂的插值)  
-　　[事件绑定](#user-content-事件绑定)  
-　　[条件指令](#user-content-条件指令)  
-　　[循环指令](#user-content-循环指令)  
+[template 简述](#user-content-template-简述)
+　　[插值语法](#user-content-插值语法)
+　　[普通属性语法](#user-content-普通属性)
+　　[双向绑定语法](#user-content-双向绑定)
+　　[指令语法](#user-content-指令)
+[表达式](#user-content-表达式)
+　　[表达式类型](#user-content-表达式类型)
+　　[STRING](#user-content-string)
+　　[NUMBER](#user-content-number)
+　　[BOOL](#user-content-bool)
+　　[ACCESSOR](#user-content-accessor)
+　　[INTERP](#user-content-interp)
+　　[CALL](#user-content-call)
+　　[TEXT](#user-content-text)
+　　[BINARY](#user-content-binary)
+　　[UNARY](#user-content-unary)
+　　[TERTIARY](#user-content-tertiary)
+　　[ARRAY LITERAL](#user-content-array-literal)
+　　[OBJECT LITERAL](#user-content-object-literal)
+　　[PARENTHESIZED](#user-content-parenthesized)
+[ANode 的结构](#user-content-anode-的结构)
+[模板解析结果](#user-content-模板解析结果)
+　　[文本](#user-content-文本)
+　　[属性](#user-content-属性)
+　　[双向绑定](#user-content-双向绑定)
+　　[复杂的插值](#user-content-复杂的插值)
+　　[事件绑定](#user-content-事件绑定)
+　　[条件指令](#user-content-条件指令)
+　　[循环指令](#user-content-循环指令)
 
 
 
@@ -68,10 +68,10 @@ template 简述
 <span title="This is {{name}}">{{name}}</span>
 ```
 
-template 解析阶段无法预知当前节点将会渲染成一个普通元素还是一个复杂组件，所以，将属性全部处理为是绑定表达式：
+属性声明根据不同形式，处理成不同的绑定表达式：
 
-- 复杂形式的值，处理成字符串表达式。如 `title="This is {{name}}"`
-- 只包含单一插值，处理成插值表达式。如 `title="{{name}}"`
+- 复杂形式的值，处理成[TEXT表达式](#user-content-text)。如 `title="This is {{name}}"`
+- 只包含单一插值，并且无 filter 时，插值内部的表达式会被抽取出来。如 `title="{{name}}"`
 
 
 ### 双向绑定语法
@@ -650,6 +650,57 @@ aNode = {
                 ]
             },
             "raw": "This is {{name}}"
+        }
+    ],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": ExprType.TEXT,
+                "segs": [
+                    {
+                        "type": ExprType.INTERP,
+                        "expr": {
+                            "type": ExprType.ACCESSOR,
+                            "paths": [
+                                {
+                                    "type": ExprType.STRING,
+                                    "value": "name"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "span"
+}
+```
+
+属性为单一插值并且无 filter 时，插值内部表达式被抽取。
+
+```html
+<span title="{{name}}">{{name}}</span>
+```
+
+```javascript
+aNode = {
+    "directives": {},
+    "props": [
+        {
+            "name": "title",
+            "expr": {
+                "type": ExprType.ACCESSOR,
+                "paths": [
+                    {
+                        "type": ExprType.STRING,
+                        "value": "name"
+                    }
+                ]
+            },
+            "raw": "{{name}}"
         }
     ],
     "events": [],
