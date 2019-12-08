@@ -70,6 +70,28 @@ describe("Main Module", function () {
         expect(typeof data.get().a).toBe('object');
     });
 
+    it("Data set with dynamic accessor, path item should not be changed", function () {
+        var data = new san.Data({
+            obj: {
+                idx: 0,
+                children: [
+                    { name: 'errorrik'},
+                    { name: 'erik'},
+                    { name: 'er'}
+                ]
+            }
+        })
+
+        var expr = san.parseExpr('obj.children[obj.idx].name')
+        expect(expr.paths[2].type).toBe(san.ExprType.ACCESSOR);
+
+        data.set(expr, '2berr');
+        expect(expr.paths[2].type).toBe(san.ExprType.ACCESSOR);
+        expect(expr.paths[2].value == null).toBeTruthy();
+        expect(data.get('obj.children[0].name')).toBe('2berr');
+
+    });
+
     san.debug && it("Data set should throw error when arg is not accessor expr", function () {
         var data = new san.Data();
 
