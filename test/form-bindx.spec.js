@@ -1393,10 +1393,71 @@ describe("Form TwoWay Binding", function () {
             expect(myComponent.data.get('items[0].values')).toContain('foo');
             expect(myComponent.data.get('items[0].values')).toContain('bar');
 
-            done();
             myComponent.dispose();
             document.body.removeChild(wrap);
+
+            done();
         }
+
+    });
+
+    it("complex accessor which path item value change in runtime", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<ul><li san-for="item in list"><input type="text" value="{=item.name=}"><b>{{item.name}}</b></li></ul>'
+                + '<input type="text" value="{=list[o.idx].name=}"><a>{{list[o.idx].name}}</a></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [
+                    { name: 'errorrik' },
+                    { name: 'justice' },
+                    { name: 'otakustay' }
+                ],
+                o: {idx: 1}
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].value).toBe('errorrik');
+        expect(inputs[1].value).toBe('justice');
+        expect(inputs[2].value).toBe('otakustay');
+        expect(inputs[3].value).toBe('justice');
+
+        triggerEvent(inputs[3], 'input', 'e0');
+        setTimeout(function () {
+            expect(inputs[3].value).toBe('justicee0');
+            expect(inputs[1].value).toBe('justicee0');
+
+            myComponent.data.set('o.idx', 0);
+            myComponent.nextTick(function () {
+                expect(inputs[3].value).toBe('errorrik');
+                expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrik');
+
+                triggerEvent(inputs[3], 'input', 'erik');
+                setTimeout(function () {
+                    expect(inputs[0].value).toBe('errorrikerik');
+                    expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrikerik');
+                    expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrikerik');
+
+                    triggerEvent(inputs[0], 'input', 'err');
+                    setTimeout(function () {
+                        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('errorrikerikerr');
+                        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('errorrikerikerr');
+                        expect(inputs[3].value).toBe('errorrikerikerr');
+
+                        myComponent.dispose();
+                        document.body.removeChild(wrap);
+
+                        done();
+                    }, 600)
+                }, 600)
+            });
+        }, 600);
 
     });
 });
