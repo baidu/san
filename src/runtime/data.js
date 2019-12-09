@@ -205,6 +205,12 @@ Data.prototype.set = function (expr, value, option) {
         return;
     }
 
+    expr = {
+        type: ExprType.ACCESSOR,
+        paths: expr.paths.slice(0),
+        raw: expr.raw
+    };
+
     var prop = expr.paths[0].value;
     this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, value, this);
 
@@ -327,6 +333,12 @@ Data.prototype.splice = function (expr, args, option) {
         throw new Error('[SAN ERROR] Invalid Expression in Data splice: ' + exprRaw);
     }
     // #[end]
+
+    expr = {
+        type: ExprType.ACCESSOR,
+        paths: expr.paths.slice(0),
+        raw: expr.raw
+    };
 
     var target = this.get(expr);
     var returnValue = [];
