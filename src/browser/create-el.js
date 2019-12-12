@@ -16,7 +16,7 @@ var svgTags = require('./svg-tags');
  * @return {HTMLElement}
  */
 function createEl(tagName) {
-    if (svgTags[tagName]) {
+    if (svgTags[tagName] && document.createElementNS) {
         return document.createElementNS('http://www.w3.org/2000/svg', tagName);
     }
 
