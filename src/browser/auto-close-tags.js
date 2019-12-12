@@ -14,6 +14,6 @@ var splitStr2Obj = require('../util/split-str-2-obj');
  *
  * @type {Object}
  */
-var autoCloseTags = splitStr2Obj('area,base,br,col,embed,hr,img,input,keygen,param,source,track,wbr');
+var autoCloseTags = splitStr2Obj('area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr');
 
 exports = module.exports = autoCloseTags;
