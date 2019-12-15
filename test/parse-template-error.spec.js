@@ -33,7 +33,7 @@ describe('parseTemplate', function () {
 
     var AUTO_CLOSE_TAGS = [
         'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-        'keygen', 'param', 'source', 'track', 'wbr'
+        'link', 'meta', 'param', 'source', 'track', 'wbr'
     ];
 
     var AUTO_CLOSE_TAGS_MAP = {};
