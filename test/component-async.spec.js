@@ -609,4 +609,73 @@ describe("Component Async", function () {
         });
 
     });
+
+    it("placeholder update", function (done) {
+        var Label = san.defineComponent({
+            template: '<u>{{text}}</u>'
+        });
+
+        var LoadingLabel = san.defineComponent({
+            template: '<b>{{text}}</b>'
+        });
+
+        var loadSuccess;
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': san.createComponentLoader({
+                    load: function () {
+                        return {
+                            then: function (success) {
+                                loadSuccess = success;
+                            }
+                        };
+                    },
+                    placeholder: LoadingLabel
+                })
+            },
+
+            template: '<div><x-label text="{{text}}"/><a>{{text}}</a></div>',
+
+            attached: function () {
+                setTimeout(function () {
+                    loadSuccess(Label);
+                }, 300);
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hello San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('Hello San');
+        expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('Hello San');
+
+        myComponent.data.set('text', 'Hello Async');
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+            expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('Hello Async');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('Hello Async');
+
+            setTimeout(function () {
+                expect(wrap.getElementsByTagName('u').length).toBe(1);
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toBe('Hello Async');
+
+                expect(wrap.getElementsByTagName('b').length).toBe(0);
+                expect(wrap.getElementsByTagName('a')[0].innerHTML).toBe('Hello Async');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }, 500);
+        });
+    });
 });

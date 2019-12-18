@@ -99,4 +99,13 @@ AsyncComponent.prototype.onload = function (ComponentClass) {
     this.dispose();
 };
 
+/**
+ * 视图更新函数
+ *
+ * @param {Array} changes 数据变化信息
+ */
+AsyncComponent.prototype._update = function (changes) {
+    this.children[0] && this.children[0]._update(changes);
+};
+
 exports = module.exports = AsyncComponent;
