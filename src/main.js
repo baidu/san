@@ -55,7 +55,6 @@
     var defineComponent = require('./view/define-component');
     var createComponentLoader = require('./view/create-component-loader');
     var emitDevtool = require('./util/emit-devtool');
-    var compileJSSource = require('./view/compile-js-source');
     var Data = require('./runtime/data');
     var evalExpr = require('./runtime/eval-expr');
     var DataTypes = require('./util/data-types');
@@ -76,34 +75,6 @@
          * @type {boolean}
          */
         debug: true,
-        // #[end]
-
-        // #[begin] ssr
-        /**
-         * 将组件类编译成 renderer 方法
-         *
-         * @param {Function} ComponentClass 组件类
-         * @return {function(Object):string}
-         */
-        compileToRenderer: function (ComponentClass) {
-            var renderer = ComponentClass.__ssrRenderer;
-
-            if (!renderer) {
-                var code = compileJSSource(ComponentClass);
-                renderer = (new Function('return ' + code))();
-                ComponentClass.__ssrRenderer = renderer;
-            }
-
-            return renderer;
-        },
-
-        /**
-         * 将组件类编译成 renderer 方法的源文件
-         *
-         * @param {Function} ComponentClass 组件类
-         * @return {string}
-         */
-        compileToSource: compileJSSource,
         // #[end]
 
         /**

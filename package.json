@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "npx karma start ./test/karma.conf.js start",
-    "pretest": "npm run build && node ./test/ssr/build-test.js && node ./test/perf/index.js",
+    "pretest": "npm run build && node ./test/ssr/build-test.js",
     "size": "npm run build && gzip -k dist/san.spa.modern.min.js && stat dist/san.spa.modern.min.js.gz && rm -f dist/*.gz",
     "test": "npm run test:unit",
     "test:unit": "npx karma start ./test/karma.conf.js --single-run",
