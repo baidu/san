@@ -1,5 +1,5 @@
 // update for, init with empty data
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<ul>'
         + '<li>name - email</li>'

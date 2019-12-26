@@ -7,8 +7,6 @@ const uglifyJS = require('uglify-js');
 const MOZ_SourceMap = require('source-map');
 
 let editions = {
-    ssr: {},
-
     '__': {
         ignoreFeatures: ['ssr', 'devtool', 'error']
     },

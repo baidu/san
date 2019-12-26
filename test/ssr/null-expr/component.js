@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<a><b s-if="nullValue === null">b</b></a>'
 });

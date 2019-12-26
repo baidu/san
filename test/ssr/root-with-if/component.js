@@ -1,5 +1,5 @@
 // component root with if
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var Child = san.defineComponent({
     template: '<b s-if="person">{{person.name}}</b>'
 });

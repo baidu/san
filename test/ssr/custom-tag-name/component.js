@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var Panel = san.defineComponent({
     template: '<template><slot/></template>'
 });

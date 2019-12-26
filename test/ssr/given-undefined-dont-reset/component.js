@@ -1,5 +1,5 @@
 
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 var U = san.defineComponent({
     template: '<u>{{foo}}</u>',

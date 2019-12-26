@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<u>result {{10 + (base !== 0 ? enhance(num, abs(base)) : enhance(num, 1))}}</u>',
 

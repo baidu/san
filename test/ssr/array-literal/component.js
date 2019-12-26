@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var List = san.defineComponent({
     template: '<ul><li s-for="item in list">{{item}}</li></ul>'
 });

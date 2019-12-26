@@ -1,5 +1,5 @@
 // component with san-if, init with true, change much times
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var Label = san.defineComponent({
     template: '<a><span title="{{title}}">{{text}}</span></a>'
 });

@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<div><u s-if="isWorking(time)">work</u><b s-else>rest</b></div>',
 

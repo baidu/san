@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<u>result {{op[isUp ? "plus" : "minus"](num1, num2)}}</u>',
 

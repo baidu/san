@@ -1,4 +1,4 @@
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 var Label = san.defineComponent({
     template: '<u>{{text}}</u>'

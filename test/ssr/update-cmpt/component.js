@@ -1,5 +1,5 @@
 // update component
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var Label = san.defineComponent({
     template: '<a><span title="{{title}}">{{text}}</span></a>'
 });

@@ -1,5 +1,5 @@
 
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 
 var Folder = san.defineComponent({
