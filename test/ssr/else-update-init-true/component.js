@@ -1,5 +1,5 @@
 // update else, init with true
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<u>'
         + '<span san-if="cond" title="{{name}}">{{name}}</span>'

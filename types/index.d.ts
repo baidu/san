@@ -242,8 +242,6 @@ declare namespace San {
     function defineComponent<T, D>(config: SanComponentConfig<T, D> & D): ComponentConstructor<T, D>;
     function createComponentLoader<T, D>(options: SanComponentLoaderOption<T, D> | SanComponentLoaderOption<T, D>['load']): SanComponentLoader<T, D>;
     function compileComponent<T extends SanComponent<{}>>(component: T): void;
-    function compileToRenderer<T extends SanComponent<{}>>(component: T): SanRenderer<T>;
-    function compileToSource<T extends SanComponent<{}>>(component: T): string;
 
     function parseExpr(template: string): ExprNode;
     function evalExpr<T, D extends SanComponent<{}>>(expr: ExprNode, data: SanData<T>, owner?: D): any;
@@ -354,8 +352,6 @@ interface SanStaticGlobal {
     defineComponent<T, D>(config: San.SanComponentConfig<T, D> & D): San.ComponentConstructor<T, D>;
     createComponentLoader<T, D>(options: San.SanComponentLoaderOption<T, D> | San.SanComponentLoaderOption<T, D>['load']): San.SanComponentLoader<T, D>;
     compileComponent<T extends San.SanComponent<{}>>(component: T): void;
-    compileToRenderer<T extends San.SanComponent<{}>>(component: T): San.SanRenderer<T>;
-    compileToSource<T extends San.SanComponent<{}>>(component: T): string;
 
     parseExpr(template: string): San.ExprNode;
     evalExpr<T, D extends San.SanComponent<{}>>(expr: San.ExprNode, data: San.SanData<T>, owner?: D): any;

@@ -1,5 +1,5 @@
 // class and style auto expand
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 var Label = san.defineComponent({
     template: '<a><u s-if="hasu"></u></a>'

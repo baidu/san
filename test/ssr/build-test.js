@@ -4,7 +4,7 @@
  */
 
 
-const san = require('../../dist/san.ssr');
+const san = require('../../dist/san');
 const fs = require('fs');
 const path = require('path');
 
@@ -14,7 +14,6 @@ let specTpls = '';
 
 // generate html
 function genContent({ componentClass, componentSource, compontentData, componentDataLiteral, specTpl, dirName, result}) {
-    let renderer = san.compileToRenderer(componentClass);
     let id = dirName;
     let noDataOutput = /-ndo$/.test(dirName);
 
@@ -25,9 +24,7 @@ function genContent({ componentClass, componentSource, compontentData, component
         });
     }
 
-    let injectHtml = result ? result : renderer(compontentData, noDataOutput);
-
-    html += `<div id="${id}">${injectHtml}</div>\n\n`;
+    html += `<div id="${id}">${result}</div>\n\n`;
 
     let preCode = `
         ${componentSource}
@@ -107,7 +104,7 @@ function buildFile(filePath) {
 
         // iterate
         if (isDir) {
-            console.log(`[Build SSR spec] ${filename}`);
+            console.log(`[Build spec] ${filename}`);
             buildFile(abFilePath);
         }
     });
@@ -151,7 +148,7 @@ function writeIn({htmlTpl, html, specTpls}) {
 };
 
 console.log();
-console.log('----- Build SSR Specs -----');
+console.log('----- Build Specs -----');
 
 
 buildFile(path.resolve(__dirname, './'));

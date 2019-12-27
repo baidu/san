@@ -1,5 +1,5 @@
 // date data
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     filters: {
         year: function (date) {

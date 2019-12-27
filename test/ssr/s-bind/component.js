@@ -1,5 +1,5 @@
 
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 var Article = san.defineComponent({
     template: '<div><h3>{{title}}</h3><h4 s-if="subtitle">{{subtitle}}</h4><p>{{content}}</p></div>'

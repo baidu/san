@@ -1,5 +1,5 @@
 // bool attr
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 var MyComponent = san.defineComponent({
     template: '<div>'
         + '<button disabled="{{distate}}">button</button>'

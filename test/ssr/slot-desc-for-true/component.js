@@ -1,5 +1,5 @@
 
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 var Folder = san.defineComponent({
     template: '<div><h3 on-click="toggle"><slot name="title"/></h3><slot s-if="!hidden" s-for="i in repeat"/></div>',

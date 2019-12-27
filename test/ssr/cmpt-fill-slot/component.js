@@ -1,5 +1,5 @@
 // update elif init with all true
-var san = require('../../../dist/san.ssr');
+var san = require('../../..');
 
 
 
