@@ -14,8 +14,8 @@
         "font-awesome": "^4.6.3",
         "jquery": "^3.1.1",
         "moment": "^2.15.1",
-        "san": "^3.7.5",
-        "san-router": "^1.1.2",
+        "san": "^3.8.0",
+        "san-router": "^1.2.2",
         "esljs": "2.2.0"
     }
 }
