@@ -14,7 +14,7 @@ bug.html
 test.html
 coverage/
 errorShots/
-/test/index-ssr.html
-/test/ssr/ssr.spec.js
+/test/index-reverse.html
+/test/reverse/reverse.spec.js
 /test/pref/tti.html
 *.vscode

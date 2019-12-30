@@ -3,21 +3,20 @@
 以下版本的发布文件包含在 `npm` 和 `CDN` 中。`github` 做为源码管理仓库，不包含发布文件。
 
 
-版本 | 兼容性 | 错误提示 | DevTool | 组件反解 | 服务端渲染 | 语法压缩
------- | ------- | ------- | ------- | ------- | ------- | -------
-san.js                  | ✔ | ✖ | ✖ | ✔ | ✖ | ✖
-san.min.js              | ✔ | ✖ | ✖ | ✔ | ✖ | ✔
-san.dev.js              | ✔ | ✔ | ✔ | ✔ | ✖ | ✖
-san.modern.js           | ✖ | ✖ | ✖ | ✔ | ✖ | ✖
-san.modern.min.js       | ✖ | ✖ | ✖ | ✔ | ✖ | ✔
-san.modern.dev.js       | ✖ | ✔ | ✔ | ✔ | ✖ | ✖
-san.spa.js              | ✔ | ✖ | ✖ | ✖ | ✖ | ✖
-san.spa.min.js          | ✔ | ✖ | ✖ | ✖ | ✖ | ✔
-san.spa.dev.js          | ✔ | ✔ | ✔ | ✖ | ✖ | ✖
-san.spa.modern.js       | ✖ | ✖ | ✖ | ✖ | ✖ | ✖
-san.spa.modern.min.js   | ✖ | ✖ | ✖ | ✖ | ✖ | ✔
-san.spa.modern.dev.js   | ✖ | ✔ | ✔ | ✖ | ✖ | ✖
-san.ssr.js              | ✔ | ✔ | ✔ | ✔ | ✔ | ✖
+版本 | 兼容性 | 错误提示 | DevTool | 组件反解 | 语法压缩
+------ | ------- | ------- | ------- | ------- | -------
+san.js                  | ✔ | ✖ | ✖ | ✔ | ✖
+san.min.js              | ✔ | ✖ | ✖ | ✔ | ✔
+san.dev.js              | ✔ | ✔ | ✔ | ✔ | ✖
+san.modern.js           | ✖ | ✖ | ✖ | ✔ | ✖
+san.modern.min.js       | ✖ | ✖ | ✖ | ✔ | ✔
+san.modern.dev.js       | ✖ | ✔ | ✔ | ✔ | ✖
+san.spa.js              | ✔ | ✖ | ✖ | ✖ | ✖
+san.spa.min.js          | ✔ | ✖ | ✖ | ✖ | ✔
+san.spa.dev.js          | ✔ | ✔ | ✔ | ✖ | ✖
+san.spa.modern.js       | ✖ | ✖ | ✖ | ✖ | ✖
+san.spa.modern.min.js   | ✖ | ✖ | ✖ | ✖ | ✔
+san.spa.modern.dev.js   | ✖ | ✔ | ✔ | ✖ | ✖
 
 
 
@@ -25,5 +24,4 @@ san.ssr.js              | ✔ | ✔ | ✔ | ✔ | ✔ | ✖
 - `错误提示`： 一些编译或运行时的错误信息将抛出异常。比如模板只允许一个根元素、数据类型校验、数据设值时表达式错误等
 - `DevTool`： 组件初始化和销毁将通知开发者工具，使工具能够进行组件状态的追踪和查看
 - `组件反解`： 从现有的 HTML 结构中解析出组件实例的能力
-- `服务端渲染`： 将组件编译成 render 方法或 render 源码的能力
 - `语法压缩`： 使用 uglify-js 对源码进行压缩处理

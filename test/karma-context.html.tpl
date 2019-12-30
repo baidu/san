@@ -11,8 +11,8 @@ Reloaded before every execution run.
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </head>
 <body>
-  <!-- for ssr test -->
-  ##ssr-elements##
+  <!-- for reverse test -->
+  ##rendered-elements##
 
   <!-- The scripts need to be in the body DOM element, as some test running frameworks need the body
        to have already been created so they can insert their magic into it. For example, if loaded

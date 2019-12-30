@@ -7,58 +7,56 @@ const uglifyJS = require('uglify-js');
 const MOZ_SourceMap = require('source-map');
 
 let editions = {
-    ssr: {},
-
     '__': {
-        ignoreFeatures: ['ssr', 'devtool', 'error']
+        ignoreFeatures: ['devtool', 'error']
     },
 
     min: {
-        ignoreFeatures: ['ssr', 'devtool', 'error'],
+        ignoreFeatures: ['devtool', 'error'],
         compress: 1
     },
 
     dev: {
-        ignoreFeatures: ['ssr']
+        ignoreFeatures: []
     },
 
     'modern': {
-        ignoreFeatures: ['ssr', 'devtool', 'error', 'allua']
+        ignoreFeatures: ['devtool', 'error', 'allua']
     },
 
     'modern.min': {
-        ignoreFeatures: ['ssr', 'devtool', 'error', 'allua'],
+        ignoreFeatures: ['devtool', 'error', 'allua'],
         compress: 1
     },
 
     'modern.dev': {
-        ignoreFeatures: ['ssr', 'allua']
+        ignoreFeatures: ['allua']
     },
 
     spa: {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error']
+        ignoreFeatures: ['devtool', 'reverse', 'error']
     },
 
     'spa.min': {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error'],
+        ignoreFeatures: ['devtool', 'reverse', 'error'],
         compress: 1
     },
 
     'spa.dev': {
-        ignoreFeatures: ['ssr', 'reverse']
+        ignoreFeatures: ['reverse']
     },
 
     'spa.modern': {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error', 'allua']
+        ignoreFeatures: ['devtool', 'reverse', 'error', 'allua']
     },
 
     'spa.modern.min': {
-        ignoreFeatures: ['ssr', 'devtool', 'reverse', 'error', 'allua'],
+        ignoreFeatures: ['devtool', 'reverse', 'error', 'allua'],
         compress: 1
     },
 
     'spa.modern.dev': {
-        ignoreFeatures: ['ssr', 'reverse', 'allua']
+        ignoreFeatures: ['reverse', 'allua']
     }
 };
 
@@ -136,7 +134,7 @@ function build() {
 }
 
 function clearFeatureCode(source, ignoreFeatures) {
-    if (!ignoreFeatures) {
+    if (!ignoreFeatures || !ignoreFeatures.length) {
         return source;
     }
 
