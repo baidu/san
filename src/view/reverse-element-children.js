@@ -24,12 +24,13 @@ function reverseElementChildren(element, scope, owner) {
 
     if (!htmlDirective) {
         var reverseWalker = new DOMChildrenWalker(element.el);
-
-        each(element.aNode.children, function (aNodeChild) {
+        var aNodeChildren = element.aNode.children;
+        
+        for (var i = 0, l = aNodeChildren.length; i < l; i++) {
             element.children.push(
-                createReverseNode(aNodeChild, element, scope, owner, reverseWalker)
+                createReverseNode(aNodeChildren[i], element, scope, owner, reverseWalker)
             );
-        });
+        }
     }
 }
 // #[end]
