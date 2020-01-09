@@ -197,15 +197,27 @@ function Component(options) { // eslint-disable-line
     this._toPhase('compiled');
 
     // init data
-    this.data = new Data(
-        extend(
-            typeof this.initData === 'function' && this.initData() || {},
-            options.data || this._srcSbindData
-        )
+    var initData = extend(
+        typeof this.initData === 'function' && this.initData() || {},
+        options.data || this._srcSbindData
     );
 
-    this.tagName = this.tagName || 'div';
+    if (this.binds && this.scope) {
+        for (var i = 0, l = this.binds.length; i < l; i++) {
+            var bindInfo = this.binds[i];
 
+            var value = evalExpr(bindInfo.expr, this.scope, this.owner);
+            if (typeof value !== 'undefined') {
+                // See: https://github.com/ecomfe/san/issues/191
+                initData[bindInfo.name] = value;
+            }
+        }
+    }
+
+    this.data = new Data(initData);
+
+    
+    this.tagName = this.tagName || 'div';
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
     /* istanbul ignore if */
@@ -214,19 +226,6 @@ function Component(options) { // eslint-disable-line
     }
     // #[end]
 
-    if (this.binds) {
-        for (var i = 0, l = this.binds.length; i < l; i++) {
-            var bindInfo = this.binds[i];
-
-            if (this.scope) {
-                var value = evalExpr(bindInfo.expr, this.scope, this.owner);
-                if (typeof value !== 'undefined') {
-                    // See: https://github.com/ecomfe/san/issues/191
-                    this.data.set(bindInfo.name, value);
-                }
-            }
-        }
-    }
 
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
