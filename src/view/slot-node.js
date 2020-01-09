@@ -112,16 +112,16 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
         this.sel = document.createComment(this.id);
         insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
 
-        var me = this;
-        each(this.aNode.children, function (aNodeChild) {
-            me.children.push(createReverseNode(
-                aNodeChild,
-                me,
-                me.childScope || me.scope,
-                me.childOwner || me.owner,
+        var aNodeChildren = this.aNode.children;
+        for (var i = 0, l = aNodeChildren.length; i < l; i++) {
+            this.children.push(createReverseNode(
+                aNodeChildren[i],
+                this,
+                this.childScope || this.scope,
+                this.childOwner || this.owner,
                 reverseWalker
             ));
-        });
+        }
 
         this.el = document.createComment(this.id);
         insertBefore(this.el, reverseWalker.target, reverseWalker.current);
