@@ -249,9 +249,7 @@ function Component(options) { // eslint-disable-line
         }
     }
 
-    this.dataChanger = bind(this._dataChanger, this);
-    this.data.listen(this.dataChanger);
-
+    this._initDataChanger();
     this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
     this._toPhase('inited');
 
@@ -789,23 +787,29 @@ Component.prototype._repaintChildren = function () {
 
 
 /**
- * 组件内部监听数据变化的函数
+ * 初始化组件内部监听数据变化
  *
  * @private
  * @param {Object} change 数据变化信息
  */
-Component.prototype._dataChanger = function (change) {
-    if (this.lifeCycle.created && this._aftercreated) {
-        if (!this._dataChanges) {
-            nextTick(this._update, this);
-            this._dataChanges = [];
-        }
+Component.prototype._initDataChanger = function (change) {
+    var me = this;
 
-        this._dataChanges.push(change);
-    }
-    else if (this.lifeCycle.inited && this.owner) {
-        this._updateBindxOwner([change]);
-    }
+    this._dataChanger = function (change) {
+        if (me.lifeCycle.created && me._aftercreated) {
+            if (!me._dataChanges) {
+                nextTick(me._update, me);
+                me._dataChanges = [];
+            }
+
+            me._dataChanges.push(change);
+        }
+        else if (me.lifeCycle.inited && me.owner) {
+            me._updateBindxOwner([change]);
+        }
+    };
+
+    this.data.listen(this._dataChanger);
 };
 
 
