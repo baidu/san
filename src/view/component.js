@@ -294,32 +294,36 @@ function Component(options) { // eslint-disable-line
  * @param {boolean} isFirstTime 是否初次对sourceSlots进行计算
  */
 Component.prototype._initSourceSlots = function (isFirstTime) {
-    var me = this;
     this.sourceSlots.named = {};
 
     // 组件运行时传入的结构，做slot解析
-    this.source && this.scope && each(this.source.children, function (child) {
-        var target;
+    if (this.source && this.scope) {
+        var sourceChildren = this.source.children;
 
-        var slotBind = !child.textExpr && getANodeProp(child, 'slot');
-        if (slotBind) {
-            isFirstTime && me.sourceSlotNameProps.push(slotBind);
+        for (var i = 0, l = sourceChildren.length; i < l; i++) {
+            var child = sourceChildren[i];
+            var target;
 
-            var slotName = evalExpr(slotBind.expr, me.scope, me.owner);
-            target = me.sourceSlots.named[slotName];
-            if (!target) {
-                target = me.sourceSlots.named[slotName] = [];
+            var slotBind = !child.textExpr && getANodeProp(child, 'slot');
+            if (slotBind) {
+                isFirstTime && this.sourceSlotNameProps.push(slotBind);
+
+                var slotName = evalExpr(slotBind.expr, this.scope, this.owner);
+                target = this.sourceSlots.named[slotName];
+                if (!target) {
+                    target = this.sourceSlots.named[slotName] = [];
+                }
+                target.push(child);
+            }
+            else if (isFirstTime) {
+                target = this.sourceSlots.noname;
+                if (!target) {
+                    target = this.sourceSlots.noname = [];
+                }
+                target.push(child);
             }
         }
-        else if (isFirstTime) {
-            target = me.sourceSlots.noname;
-            if (!target) {
-                target = me.sourceSlots.noname = [];
-            }
-        }
-
-        target && target.push(child);
-    });
+    }
 };
 
 /**
