@@ -110,7 +110,9 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
     if (reverseWalker) {
 
         this.sel = document.createComment(this.id);
-        insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
+        reverseWalker.current
+            ? reverseWalker.target.insertBefore(this.sel, reverseWalker.current)
+            : reverseWalker.target.appendChild(this.sel);
 
         var aNodeChildren = this.aNode.children;
         for (var i = 0, l = aNodeChildren.length; i < l; i++) {
@@ -124,7 +126,9 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
         }
 
         this.el = document.createComment(this.id);
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        reverseWalker.current
+            ? reverseWalker.target.insertBefore(this.el, reverseWalker.current)
+            : reverseWalker.target.appendChild(this.el);
 
         this.lifeCycle = LifeCycle.attached;
     }
