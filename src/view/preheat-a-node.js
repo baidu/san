@@ -10,6 +10,7 @@
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
 var extend = require('../util/extend');
+var kebab2camel = require('../util/kebab2camel');
 var createEl = require('../browser/create-el');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
@@ -71,6 +72,7 @@ function preheatANode(aNode) {
                     dynamicProps: [],
                     xProps: [],
                     props: {},
+                    binds: [],
                     sourceNode: sourceNode
                 };
 
@@ -81,6 +83,15 @@ function preheatANode(aNode) {
                 });
 
                 each(aNode.props, function (prop) {
+                    aNode.hotspot.binds.push({
+                        name: kebab2camel(prop.name),
+                        expr: prop.raw != null ? prop.expr : {
+                            type: ExprType.BOOL,
+                            value: true
+                        },
+                        x: prop.x,
+                        raw: prop.raw
+                    });
                     recordHotspotData(prop.expr);
                 });
 

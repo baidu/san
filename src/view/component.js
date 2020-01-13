@@ -33,7 +33,6 @@ var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
-var propsToBinds = require('./props-to-binds');
 var NodeType = require('./node-type');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
@@ -188,7 +187,7 @@ function Component(options) { // eslint-disable-line
         }
 
         this.tagName = this.tagName || this.source.tagName;
-        this.binds = propsToBinds(this.source.props);
+        this.binds = this.source.hotspot.binds;
 
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
