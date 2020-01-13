@@ -355,7 +355,8 @@ Component.prototype._toPhase = function (name) {
         if (typeof this[name] === 'function') {
             this[name]();
         }
-        this['_after' + name] = 1;
+        
+        this._afterLife = this.lifeCycle;
 
         // 通知devtool
         // #[begin] devtool
@@ -798,7 +799,7 @@ Component.prototype._initDataChanger = function (change) {
     var me = this;
 
     this._dataChanger = function (change) {
-        if (me.lifeCycle.created && me._aftercreated) {
+        if (me._afterLife.created) {
             if (!me._dataChanges) {
                 nextTick(me._update, me);
                 me._dataChanges = [];
