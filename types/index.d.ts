@@ -150,53 +150,67 @@ declare namespace San {
         UNARY = 9,
         TERTIARY = 10,
         OBJECT = 11,
-        ARRAY = 12
+        ARRAY = 12,
+        NULL = 13
     }
 
-    type ExprNode = ExprStringNode | ExprNumberNode | ExprBoolNode | ExprAccessorNode | ExprInterpNode | ExprCallNode | ExprTextNode | ExprBinaryNode | ExprUnaryNode | ExprTertiaryNode;
-    interface ExprStringNode {
-        type: ExprType.STRING;
-        value: string;
+    interface ExprNodeTpl<T extends ExprType> {
+        type: T;        // 如果只有这一个属性，去掉泛型更可读
+        value?: any;    // 在 eval 会统一处理，事实上作用于 null, string, number
+        parenthesized?: boolean; // 在 read parenthesized expr 会统一设置
     }
-    interface ExprNumberNode {
-        type: ExprType.NUMBER;
+    type ExprNode = ExprNodeTpl<any>;
+    interface ExprStringNode extends ExprNodeTpl<ExprType.STRING> {
+        value: string;
+        literal?: string;
+    }
+    interface ExprNumberNode extends ExprNodeTpl<ExprType.NUMBER> {
         value: number;
     }
-    interface ExprBoolNode {
-        type: ExprType.BOOL;
+    interface ExprBoolNode extends ExprNodeTpl<ExprType.BOOL> {
         value: boolean;
     }
-    interface ExprAccessorNode {
-        type: ExprType.ACCESSOR;
+    interface ExprAccessorNode extends ExprNodeTpl<ExprType.ACCESSOR> {
         paths: ExprNode[];
     }
-    interface ExprInterpNode {
-        type: ExprType.INTERP;
+    interface ExprInterpNode extends ExprNodeTpl<ExprType.INTERP> {
         expr: ExprAccessorNode;
         filters: ExprCallNode[];
     }
-    interface ExprCallNode {
-        type: ExprType.CALL;
+    interface ExprCallNode extends ExprNodeTpl<ExprType.CALL> {
         name: ExprAccessorNode;
         args: ExprNode[];
     }
-    interface ExprTextNode {
-        type: ExprType.TEXT;
+    interface ExprTextNode extends ExprNodeTpl<ExprType.TEXT> {
         segs: ExprNode[];
+        original?: number;
+        value?: string; // segs 由一个 STRING 构成时存在
     }
-    interface ExprBinaryNode {
-        type: ExprType.BINARY;
+    interface ExprBinaryNode extends ExprNodeTpl<ExprType.BINARY> {
         segs: [ExprNode, ExprNode];
         operator: number;
     }
-    interface ExprUnaryNode {
-        type: ExprType.UNARY;
+    interface ExprUnaryNode extends ExprNodeTpl<ExprType.UNARY> {
+        operator: number;
         expr: ExprAccessorNode;
     }
-    interface ExprTertiaryNode {
-        type: ExprType.TERTIARY;
+    interface ExprTertiaryNode extends ExprNodeTpl<ExprType.TERTIARY> {
         segs: ExprNode[];
     }
+    interface ExprObjectNode extends ExprNodeTpl<ExprType.OBJECT> {
+        items: [{
+            spread: boolean;
+            expr: ExprNode;
+            name: ExprNode;
+        }];
+    }
+    interface ExprArrayNode extends ExprNodeTpl<ExprType.ARRAY> {
+        items: [{
+            spread: boolean;
+            expr: ExprNode;
+        }];
+    }
+    interface ExprNullNode extends ExprNodeTpl<ExprType.NULL> {}
 
     interface SanIndexedList<T> {
         raw: T[];
@@ -219,15 +233,59 @@ declare namespace San {
         TPL = 7
     }
 
+    interface Directive<T extends ExprNode> {
+        item?: string;
+        index?: number;
+        trackBy?: ExprAccessorNode;
+        value: T;
+    }
+
+    interface ANodeProperty {
+        name: string;
+        expr: ExprNode;
+        raw: string;
+        x?: number;
+    }
+
     interface ANode {
         isText?: boolean;
         text?: string;
         textExpr?: ExprTextNode;
         children?: ANode[];
-        props: ExprNode[];
+        props: ANodeProperty[];
         events: SanIndexedList<ExprNode>;
-        directives: { [k: string]: ExprNode };
+        directives: { [k: string]: Directive<any> };
         tagName: string;
+        vars?: [{
+            name: string;
+            expr: ExprNode
+        }];
+    }
+
+    interface ATextNode extends ANode {
+        textExpr: ExprTextNode;
+    }
+
+    interface ATemplateNode extends ANode {
+        tagName: 'template';
+    }
+
+    interface AForNode extends ANode {
+        directives: {
+            for: Directive<any>;
+        };
+    }
+
+    interface AIfNode extends ANode {
+        ifRinsed: ANode;
+        elses?: ANode[];
+        directives: {
+            if: Directive<any>;
+        };
+    }
+
+    interface ASlotNode extends ANode {
+        tagName: 'slot';
     }
 
     interface ParseTemplateOption {
