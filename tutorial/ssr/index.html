@@ -10,17 +10,17 @@
   
   <title>服务端渲染 | San</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
+  <meta name="description" content="从 3.8.0 开始，san 的服务器端渲染由 san-ssr 实现。如果你在使用 3.8.0 之前的 san，请参考 服务器端渲染（3.8.0 之前）。  San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运">
 <meta property="og:type" content="article">
 <meta property="og:title" content="服务端渲染">
 <meta property="og:url" content="http://baidu.github.io/tutorial/ssr/index.html">
 <meta property="og:site_name" content="San">
-<meta property="og:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
+<meta property="og:description" content="从 3.8.0 开始，san 的服务器端渲染由 san-ssr 实现。如果你在使用 3.8.0 之前的 san，请参考 服务器端渲染（3.8.0 之前）。  San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-03-22T06:33:28.000Z">
+<meta property="og:updated_time" content="2020-01-22T11:07:25.834Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="服务端渲染">
-<meta name="twitter:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
+<meta name="twitter:description" content="从 3.8.0 开始，san 的服务器端渲染由 san-ssr 实现。如果你在使用 3.8.0 之前的 san，请参考 服务器端渲染（3.8.0 之前）。  San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -158,13 +158,16 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>San 的服务端渲染支持是基于 <a href="../reverse/">组件反解</a> 的：</p>
+        <blockquote>
+<p>从 3.8.0 开始，san 的服务器端渲染由 <a href="https://github.com/baidu/san-ssr" target="_blank" rel="noopener">san-ssr</a> 实现。如果你在使用 3.8.0 之前的 san，请参考 <a href="../ssr-before-3.8/">服务器端渲染（3.8.0 之前）</a>。</p>
+</blockquote>
+<p>San 的服务端渲染支持是基于 <a href="../reverse/">组件反解</a> 的：</p>
 <ul>
 <li>服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段</li>
 <li>浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用</li>
 </ul>
-<p><code>提示</code>：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。</p>
-<h2 id="是否需要SSR"><a href="#是否需要SSR" class="headerlink" title="是否需要SSR"></a>是否需要SSR</h2><p>服务端渲染，视图 HTML 直出有一些显而易见的好处：</p>
+<p><code>提示</code>：由于组件运行环境需要考虑浏览器各版本和 NodeJS，示例代码为保证简单无需 transform，全部采用 ES5 编写。</p>
+<h2 id="是否需要-SSR"><a href="#是否需要-SSR" class="headerlink" title="是否需要 SSR"></a>是否需要 SSR</h2><p>服务端渲染，视图 HTML 直出有一些显而易见的好处：</p>
 <ul>
 <li>SEO 友好，HTML 直接输出对搜索引擎的抓取和理解更有利</li>
 <li>用户能够第一时间看到内容。从开发者角度来说，首屏时间更快到来</li>
@@ -181,11 +184,27 @@ var _hmt = _hmt || [];
 <li>仅在 App 的 WebView 中展现，不作为开放 Web 存在的页面，不需要使用 SSR</li>
 <li>偏重内容型页面，可以使用 SSR。但是组件是管理行为交互的，对内容部分无需进行组件渲染，只需要在有交互的部分进行组件反解渲染</li>
 </ul>
-<h2 id="输出HTML"><a href="#输出HTML" class="headerlink" title="输出HTML"></a>输出HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.compileToRenderer(MyComponent);</span><br><span class="line">render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
-<p>San 在主包下提供了 <strong>compileToRenderer</strong> 方法。该方法接收组件的类作为参数，编译返回一个 <strong>{string}render({Object} data)</strong> 方法。 <strong>render</strong> 方法接收数据，返回组件渲染后的 HTML 字符串。</p>
-<h2 id="编译NodeJS模块"><a href="#编译NodeJS模块" class="headerlink" title="编译NodeJS模块"></a>编译NodeJS模块</h2><p>有时候，我们希望组件编译的 render 方法是一个单独的 NodeJS Module，以便于其他模块引用它。通过 San 主包下提供的 <strong>compileToSource</strong> 方法我们可以编译 NodeJS Module。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.compileToSource(MyComponent);</span><br><span class="line">fs.writeFileSync(<span class="string">'your-module.js'</span>, <span class="string">'exports = module.exports = '</span> + renderSource, <span class="string">'UTF-8'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="输出-HTML"><a href="#输出-HTML" class="headerlink" title="输出 HTML"></a>输出 HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; defineComponent &#125; = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; compileToRenderer &#125; = <span class="built_in">require</span>(<span class="string">'san-ssr'</span>);</span><br><span class="line"><span class="keyword">const</span> MyComponent = defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> render = compileToRenderer(MyComponent);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;));</span><br><span class="line"><span class="comment">// Outputs:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;&lt;!--s-data:&#123;"email":"errorrik@gmail.com","name":"errorrik"&#125;--&gt;&lt;span title="errorrik@gmail.com"&gt;errorrik&lt;/span&gt;&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<p>san-ssr 提供了 <strong>compileToRenderer</strong> 方法。该方法接收组件的类作为参数，编译返回一个 <strong>{string}render({Object} data)</strong> 方法。 <strong>render</strong> 方法接收数据，返回组件渲染后的 HTML 字符串。</p>
+<h2 id="输出-CommonJS-模块"><a href="#输出-CommonJS-模块" class="headerlink" title="输出 CommonJS 模块"></a>输出 CommonJS 模块</h2><p>有时候，我们希望组件编译的 render 方法是一个单独的 NodeJS Module，以便于其他模块引用它。通过 san-ssr 提供的 <strong>compileToSource</strong> 方法我们可以编译 NodeJS Module。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; defineComponent &#125; = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; compileToSource &#125; = <span class="built_in">require</span>(<span class="string">'san-ssr'</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; writeFileSync &#125; = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> MyComponent = defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> fnBody = compileToSource(MyComponent);</span><br><span class="line">writeFileSync(<span class="string">'ssr.js'</span>, <span class="string">'exports = module.exports = '</span> + fnBody);</span><br></pre></td></tr></table></figure>
 <p><strong>compileToSource</strong> 方法接收组件的类作为参数，编译返回组件 render 的 source code，具体为 <code>function (data) {...}</code> 形式的字符串。我们只需要在前面增加 <code>exports = module.exports =</code>，并写入 <strong>.js</strong> 文件中，就能得到一个符合 CommonJS 标准的 NodeJS Module。</p>
+<h2 id="从文件编译到文件"><a href="#从文件编译到文件" class="headerlink" title="从文件编译到文件"></a>从文件编译到文件</h2><p>在编写编译工具时我们对 san-ssr 有更多需求，比如以文件作为输入，文件作为输出；支持 TypeScript 等。以下是以 TypeScript 文件作为输入，CommonJS 作为输出的示例。</p>
+<p>组件代码（一个 <code>NameComponent</code> 组件）：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">'san'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> NameComponent <span class="keyword">extends</span> Component &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> template = <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译代码（产出 CommonJS 的渲染函数）：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; SanProject &#125; <span class="keyword">from</span> <span class="string">'san-ssr'</span></span><br><span class="line"><span class="keyword">import</span> &#123; writeFileSync &#125; <span class="keyword">from</span> <span class="string">'fs'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> project = <span class="keyword">new</span> SanProject()</span><br><span class="line"><span class="keyword">const</span> targetCode = project.compile(<span class="string">'./name.comp.ts'</span>)</span><br><span class="line"></span><br><span class="line">writeFileSync(<span class="string">'name.ssr.js'</span>, targetCode)</span><br></pre></td></tr></table></figure>
+<p>使用渲染函数：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> nameRenderer = <span class="built_in">require</span>(<span class="string">'./name.ssr'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(nameRenderer(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;))</span><br><span class="line"><span class="comment">// Outputs:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;&lt;!--s-data:&#123;"email":"errorrik@gmail.com","name":"errorrik"&#125;--&gt;&lt;span title="errorrik@gmail.com"&gt;errorrik&lt;/span&gt;&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="命令行工具"><a href="#命令行工具" class="headerlink" title="命令行工具"></a>命令行工具</h2><p>san-ssr 提供了命令行接口，可以局部安装在 node_modules 下供 npm scripts 使用，也可以把它安装到全局：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g san-ssr</span><br></pre></td></tr></table></figure>
+<p>编译上述 <code>NameComponent</code> 组件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">san-ssr ./name.comp.ts &gt; name.ssr.js</span><br></pre></td></tr></table></figure>
+<p>更多 SSR 的指南和 API 请参考：</p>
+<ul>
+<li>README：<a href="https://github.com/baidu/san-ssr" target="_blank" rel="noopener">https://github.com/baidu/san-ssr</a></li>
+<li>TypeDoc: <a href="https://baidu.github.com/san-ssr" target="_blank" rel="noopener">https://baidu.github.com/san-ssr</a></li>
+</ul>
 
       
     </div>
@@ -193,13 +212,13 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#是否需要SSR"><span class="toc-text">是否需要SSR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#输出HTML"><span class="toc-text">输出HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译NodeJS模块"><span class="toc-text">编译NodeJS模块</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#是否需要-SSR"><span class="toc-text">是否需要 SSR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#输出-HTML"><span class="toc-text">输出 HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#输出-CommonJS-模块"><span class="toc-text">输出 CommonJS 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#从文件编译到文件"><span class="toc-text">从文件编译到文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#命令行工具"><span class="toc-text">命令行工具</span></a></li></ol>
   <a href="#" class="toc-top">回到顶部</a>
 </aside>
 
 </main>
       <div class="footer-copyright">
-        &copy; 2019 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+        &copy; 2020 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
     </div>
 </div>
 

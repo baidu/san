@@ -8,19 +8,19 @@
   <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
   
-  <title>Messaging from Dynamic Child Components | San</title>
+  <title>Server Side Rendering (before 3.8.0) | San</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Child components can be created dynamically using the runtime data. dispatch/message won’t work cause there’s no parent-child relationship between the current component and the newly created one. For">
+  <meta name="description" content="San’s server-side rendering is based on component reversion.  The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Messaging from Dynamic Child Components">
-<meta property="og:url" content="http://baidu.github.io/en/practice/dynamic-parent-child/index.html">
+<meta property="og:title" content="Server Side Rendering (before 3.8.0)">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/ssr-before-3.8/index.html">
 <meta property="og:site_name" content="San">
-<meta property="og:description" content="Child components can be created dynamically using the runtime data. dispatch/message won’t work cause there’s no parent-child relationship between the current component and the newly created one. For">
+<meta property="og:description" content="San’s server-side rendering is based on component reversion.  The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-12-01T04:46:24.684Z">
+<meta property="og:updated_time" content="2020-01-22T11:07:25.832Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Messaging from Dynamic Child Components">
-<meta name="twitter:description" content="Child components can be created dynamically using the runtime data. dispatch/message won’t work cause there’s no parent-child relationship between the current component and the newly created one. For">
+<meta name="twitter:title" content="Server Side Rendering (before 3.8.0)">
+<meta name="twitter:description" content="San’s server-side rendering is based on component reversion.  The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -82,7 +82,7 @@ var _hmt = _hmt || [];
                 <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
             </div>
 
-            <a class="header-lang" href="/san/practice/dynamic-parent-child/">中文</a>
+            <a class="header-lang" href="/san/tutorial/ssr-before-3.8/">中文</a>
         </nav>
     </div>
 </header>
@@ -141,7 +141,7 @@ var _hmt = _hmt || [];
         <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
     </dl>
 </aside>
-<article id="post-en/practice/dynamic-parent-child" class="article article-type-post" itemscope itemprop="blogPost">
+<article id="post-en/tutorial/ssr-before-3.8" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-inner">
     
     
@@ -149,20 +149,43 @@ var _hmt = _hmt || [];
 
   
     <h1 class="article-title" itemprop="name">
-      Messaging from Dynamic Child Components
+      Server Side Rendering (before 3.8.0)
     </h1>
   
 
-  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/dynamic-parent-child.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/ssr-before-3.8.md" class="article-edit-link" title="Edit" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
 </div>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Child components can be created dynamically using the runtime data. <strong>dispatch/message</strong> won’t work cause there’s no parent-child relationship between the current component and the newly created one. For a fix, all we need to do is building the relationship.</p>
-<h4 id="example"><a href="#example" class="headerlink" title="example"></a>example</h4><p>Here’s a example in which we need to create a tree of components from the tree structure in the data, and pass messages between the parent and children:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Child = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class="child"&gt;</span></span><br><span class="line"><span class="string">            &#123;&#123;name&#125;&#125;&lt;button on-click="sendMsg"&gt;send msg&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    sendMsg() &#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'child-msg'</span>, <span class="keyword">this</span>.data.get(<span class="string">'msg'</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Parent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class="parent" style="border: 1px solid red"&gt;</span></span><br><span class="line"><span class="string">            I am parent</span></span><br><span class="line"><span class="string">            &lt;button on-click="addChild"&gt;</span></span><br><span class="line"><span class="string">                add child</span></span><br><span class="line"><span class="string">            &lt;/button&gt;</span></span><br><span class="line"><span class="string">            &#123;&#123;childMsg&#125;&#125;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;`</span>,</span><br><span class="line"></span><br><span class="line">    addChild() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> childs = <span class="keyword">this</span>.data.get(<span class="string">'childs'</span>);</span><br><span class="line">        <span class="keyword">const</span> parentEl = <span class="keyword">this</span>.el;</span><br><span class="line"></span><br><span class="line">        childs.forEach(<span class="function"><span class="params">child</span> =&gt;</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">let</span> childIns = <span class="keyword">new</span> Child(&#123;</span><br><span class="line">                parent: <span class="keyword">this</span>,</span><br><span class="line">                data: child</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            childIns.attach(parentEl);</span><br><span class="line">            <span class="keyword">this</span>.children.push(childIns);</span><br><span class="line"></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    messages: &#123;</span><br><span class="line">        <span class="string">'child-msg'</span>: <span class="function"><span class="keyword">function</span>(<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.data.set(<span class="string">'childMsg'</span>, arg.value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> parent = <span class="keyword">new</span> Parent(&#123;</span><br><span class="line">    data: &#123;</span><br><span class="line">        childs: [&#123;</span><br><span class="line">            name: <span class="string">'I am child1'</span>,</span><br><span class="line">            msg: <span class="string">'child1 send msg'</span></span><br><span class="line">        &#125;, &#123;</span><br><span class="line">            name: <span class="string">'I am child2'</span>,</span><br><span class="line">            msg: <span class="string">'child2 send msg'</span></span><br><span class="line">        &#125;]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">parent.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
-<h4 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h4><p></p><p data-height="365" data-theme-id="0" data-slug-hash="QMMZPV" data-default-tab="js,result" data-user="zhanfang" data-embed-version="2" data-pen-title="QMMZPV" class="codepen">See the Pen <a href="https://codepen.io/zhanfang/pen/QMMZPV/" target="_blank" rel="noopener">QMMZPV</a> by zhanfang (<a href="https://codepen.io/zhanfang" target="_blank" rel="noopener">@zhanfang</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
-<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+        <p>San’s server-side rendering is based on <a href="../reverse/">component reversion</a>.</p>
+<ul>
+<li>The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure of the data and view.</li>
+<li>On the browser side, the component structure is understood from the markup fragments when a component is initialized, and the component can respond correctly when the user interacts with it.</li>
+</ul>
+<p><strong>tips</strong>: Since component runtime environment is required to take care of various browser versions as well as NodeJS, the sample code is guaranteed to be simple and no transform is required, all written in ES5.</p>
+<h2 id="Do-you-need-SSR"><a href="#Do-you-need-SSR" class="headerlink" title="Do you need SSR?"></a>Do you need SSR?</h2><p>We can gain some obvious benefits from server-side rendering by responding HTML directly:</p>
+<ul>
+<li>SEO friendly, HTML direct output is more beneficial to search engine understanding and understanding</li>
+<li>Users can see the content the first time. In the developer’s opinion, the first screen time is coming sooner.</li>
+</ul>
+<p>When utilizing server-side rendering, however, we will also encounter some shortcomes:</p>
+<ul>
+<li>Higher mental overhead. Although we only need to write once for components, we have to keep both NodeJS and browser environment in mind; we need to consider rendering on the server side to compile in advance; we need to consider how the component’s source code is output to the browser; we need to consider the browser compatibility, whether to write old browser compatible code or to implement via ESNext and use tools like babel to transform it. All these staffs bring cost - even trivial - to developers.</li>
+<li>The first interactive time does not necessarily arrive earlier. The interaction behavior is managed by the component.  Components need to traverse the DOM tree to reversing the data and structure from the current view. The performance of component-reversion is not necessarily faster than the direct rendering in front end.</li>
+</ul>
+<p>Therefore, we recommend a comprehensive evaluation when using server-side rendering. Use SSR only in scenarios that benefits. Some suggestions are:</p>
+<ul>
+<li>Most of the backend systems (such as CMS、MIS、DashBoard) use a Single-Page-Application mode. Obviously, these systems do not need to use SSR.</li>
+<li>Functional pages, such as personal center, my collection, etc, do not require SSR.</li>
+<li>Appear only in the App’s WebView, not as an open web page, no need to use SSR.</li>
+<li>Focus on content pages, you can use SSR. But the component manages the behavioral interaction, and no component rendering is required for the content part. Only need to perform component de-rendering in the part with interaction.</li>
+</ul>
+<h2 id="Output-HTML"><a href="#Output-HTML" class="headerlink" title="Output HTML"></a>Output HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.compileToRenderer(MyComponent);</span><br><span class="line">render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<p>San provides a <code>compileToRenderer</code> function in its main package. This function takes the component’s class as a parameter, compiles it and returns a <code>{string} render({Object} data)</code> method. <code>render</code> method receives the data and returns rendered HTML string of the component.</p>
+<h2 id="Compile-the-NodeJS-module"><a href="#Compile-the-NodeJS-module" class="headerlink" title="Compile the NodeJS module"></a>Compile the NodeJS module</h2><p>Sometimes, we want the render function compiled by a component to be a separate NodeJS Module so that other modules can reference it. We can compile the NodeJS module via the <code>compileToSource</code> function provided by San main package.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.compileToSource(MyComponent);</span><br><span class="line">fs.writeFileSync(<span class="string">'your-module.js'</span>, <span class="string">'exports = module.exports = '</span> + renderSource, <span class="string">'UTF-8'</span>);</span><br></pre></td></tr></table></figure>
+<p>The <code>compileToSource</code> function takes the component’s class as a parameter, then compiles, and returns the source code of the component rendered. Specifically it is <code>function (data) {...}</code> string. We only need to add <code>exports = module.exports =</code> to the front and write it to the <code>.js</code> file to get a NodeJS Module that conforms to the CommonJS standard.</p>
 
       
     </div>
@@ -170,7 +193,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#example"><span class="toc-text">example</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Demo"><span class="toc-text">Demo</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Do-you-need-SSR"><span class="toc-text">Do you need SSR?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Output-HTML"><span class="toc-text">Output HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compile-the-NodeJS-module"><span class="toc-text">Compile the NodeJS module</span></a></li></ol>
   <a href="#" class="toc-top">Top</a>
 </aside>
 
@@ -189,7 +212,7 @@ var _hmt = _hmt || [];
         <li><a href="/san/en/example/">Example</a>
         <li><a href="/san/en/doc/api/">API</a>
         <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
-        <li><a href="/san/practice/dynamic-parent-child/">中文</a></li>
+        <li><a href="/san/tutorial/ssr-before-3.8/">中文</a></li>
     </ul>
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>

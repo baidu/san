@@ -8,19 +8,19 @@
   <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
   
-  <title>数组深层更新如何触发视图更新？ | San</title>
+  <title>服务器端渲染（3.8.0 之前） | San</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在 San 组件中，对数据的变更需要通过set 或 splice 等方法，实现用最简单的方式，解决兼容性的问题，同时为了保证数据操作的过程可控，San 的数据变更在内部是 Immutable 的，因此遇到数组深层做数据交换时直接 set 数据会发现没有触发视图的更新 场景描述12345678910111213141516171819202122232425262728293031323334353">
+  <meta name="description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
 <meta property="og:type" content="article">
-<meta property="og:title" content="数组深层更新如何触发视图更新？">
-<meta property="og:url" content="http://baidu.github.io/practice/array-deep-updates-trigger-view/index.html">
+<meta property="og:title" content="服务器端渲染（3.8.0 之前）">
+<meta property="og:url" content="http://baidu.github.io/tutorial/ssr-before-3.8/index.html">
 <meta property="og:site_name" content="San">
-<meta property="og:description" content="在 San 组件中，对数据的变更需要通过set 或 splice 等方法，实现用最简单的方式，解决兼容性的问题，同时为了保证数据操作的过程可控，San 的数据变更在内部是 Immutable 的，因此遇到数组深层做数据交换时直接 set 数据会发现没有触发视图的更新 场景描述12345678910111213141516171819202122232425262728293031323334353">
+<meta property="og:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-12T06:39:16.134Z">
+<meta property="og:updated_time" content="2020-01-22T11:07:25.833Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="数组深层更新如何触发视图更新？">
-<meta name="twitter:description" content="在 San 组件中，对数据的变更需要通过set 或 splice 等方法，实现用最简单的方式，解决兼容性的问题，同时为了保证数据操作的过程可控，San 的数据变更在内部是 Immutable 的，因此遇到数组深层做数据交换时直接 set 数据会发现没有触发视图的更新 场景描述12345678910111213141516171819202122232425262728293031323334353">
+<meta name="twitter:title" content="服务器端渲染（3.8.0 之前）">
+<meta name="twitter:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -82,7 +82,7 @@ var _hmt = _hmt || [];
                 <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
             </div>
 
-            <a class="header-lang" href="/san/en/practice/array-deep-updates-trigger-view/">EN</a>
+            <a class="header-lang" href="/san/en/tutorial/ssr-before-3.8/">EN</a>
         </nav>
     </div>
 </header>
@@ -141,7 +141,7 @@ var _hmt = _hmt || [];
         <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
     </dl>
 </aside>
-<article id="post-practice/array-deep-updates-trigger-view" class="article article-type-post" itemscope itemprop="blogPost">
+<article id="post-tutorial/ssr-before-3.8" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-inner">
     
     
@@ -149,21 +149,43 @@ var _hmt = _hmt || [];
 
   
     <h1 class="article-title" itemprop="name">
-      数组深层更新如何触发视图更新？
+      服务器端渲染（3.8.0 之前）
     </h1>
   
 
-  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/array-deep-updates-trigger-view.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/ssr-before-3.8.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="/san/img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
 </div>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在 San 组件中，对数据的变更需要通过<code>set</code> 或 <code>splice</code> 等方法，实现用最简单的方式，解决兼容性的问题，同时为了保证数据操作的过程可控，San 的数据变更在内部是 Immutable 的，因此遇到数组深层做数据交换时直接 set 数据会发现没有触发视图的更新</p>
-<h4 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyApp</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;div </span></span><br><span class="line"><span class="string">                style="cursor: pointer"</span></span><br><span class="line"><span class="string">                on-click="handlerClick($event)"&gt;点我交换数据&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul&gt;</span></span><br><span class="line"><span class="string">                &lt;li s-for="item in list"&gt;&#123;&#123;item.title&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">            &lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            list: [</span><br><span class="line">                &#123;</span><br><span class="line">                    title: <span class="string">'test1'</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    title: <span class="string">'test2'</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    handlerClick() &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 想交换两个值</span></span><br><span class="line">        <span class="keyword">let</span> firstNews = <span class="keyword">this</span>.data.get(<span class="string">'list'</span>);</span><br><span class="line">        <span class="keyword">let</span> firstData = firstNews[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">let</span> secondData = firstNews[<span class="number">1</span>];</span><br><span class="line">        firstNews[<span class="number">1</span>] = firstData;</span><br><span class="line">        firstNews[<span class="number">0</span>] = secondData;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 在这里直接set数据发现并没有触发视图的更新</span></span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'list'</span>, firstNews);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myApp = <span class="keyword">new</span> MyApp();</span><br><span class="line">myApp.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
-<h4 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h4><p>San 的数据是 Immutable 的，因此 set firstNews 时变量的引用没变， diff 的时候还是相等的，不会触发更新。</p>
-<h4 id="解决方式如下"><a href="#解决方式如下" class="headerlink" title="解决方式如下"></a>解决方式如下</h4><p></p><p data-height="365" data-theme-id="0" data-slug-hash="eEyeYj" data-default-tab="js,result" data-user="sw811" data-embed-version="2" data-pen-title="数组深层更新触发视图更新" class="codepen">See the Pen<br>        <a href="https://codepen.io/sw811/pen/eEyeYj/" target="_blank" rel="noopener">数组深层更新触发视图更新</a><br>        by solvan(<a href="https://codepen.io/sw811" target="_blank" rel="noopener">@sw811</a>) on<br>        <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
-<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
-
+        <p>San 的服务端渲染支持是基于 <a href="../reverse/">组件反解</a> 的：</p>
+<ul>
+<li>服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段</li>
+<li>浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用</li>
+</ul>
+<p><code>提示</code>：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。</p>
+<h2 id="是否需要SSR"><a href="#是否需要SSR" class="headerlink" title="是否需要SSR"></a>是否需要SSR</h2><p>服务端渲染，视图 HTML 直出有一些显而易见的好处：</p>
+<ul>
+<li>SEO 友好，HTML 直接输出对搜索引擎的抓取和理解更有利</li>
+<li>用户能够第一时间看到内容。从开发者角度来说，首屏时间更快到来</li>
+</ul>
+<p>但是，如果使用服务端渲染，我们将面对：</p>
+<ul>
+<li>更高的成本。虽然我们开发的是一份组件，但我们需要考虑其运行时是 NodeJS 和 浏览器 双端的，我们需要考虑在服务端渲染要提前编译，我们需要考虑组件的源码如何输出到浏览器端，我们需要考虑开发组件的浏览器兼容性，到底要写老旧的浏览器兼容性好的代码还是按ESNext写然后通过打包编译时 transform。这依然带来了维护成本的增加，即使不多</li>
+<li>用户可交互时间不一定更早到来。交互行为是由组件管理的，组件从当前视图反解出数据和结构需要遍历 DOM 树，反解的时间不一定比在前端直接渲染要快</li>
+</ul>
+<p>所以，我们建议，使用服务端渲染时全面评估，只在必须使用的场景下使用。下面是一些场景建议：</p>
+<ul>
+<li>后台系统（CMS、MIS、DashBoard之类）大多使用 Single Page Application 的模式。显而易见，这类系统不需要使用 SSR</li>
+<li>功能型页面，不需要使用 SSR。比如个人中心、我的收藏之类</li>
+<li>仅在 App 的 WebView 中展现，不作为开放 Web 存在的页面，不需要使用 SSR</li>
+<li>偏重内容型页面，可以使用 SSR。但是组件是管理行为交互的，对内容部分无需进行组件渲染，只需要在有交互的部分进行组件反解渲染</li>
+</ul>
+<h2 id="输出HTML"><a href="#输出HTML" class="headerlink" title="输出HTML"></a>输出HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.compileToRenderer(MyComponent);</span><br><span class="line">render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<p>San 在主包下提供了 <strong>compileToRenderer</strong> 方法。该方法接收组件的类作为参数，编译返回一个 <strong>{string}render({Object} data)</strong> 方法。 <strong>render</strong> 方法接收数据，返回组件渲染后的 HTML 字符串。</p>
+<h2 id="编译NodeJS模块"><a href="#编译NodeJS模块" class="headerlink" title="编译NodeJS模块"></a>编译NodeJS模块</h2><p>有时候，我们希望组件编译的 render 方法是一个单独的 NodeJS Module，以便于其他模块引用它。通过 San 主包下提供的 <strong>compileToSource</strong> 方法我们可以编译 NodeJS Module。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.compileToSource(MyComponent);</span><br><span class="line">fs.writeFileSync(<span class="string">'your-module.js'</span>, <span class="string">'exports = module.exports = '</span> + renderSource, <span class="string">'UTF-8'</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>compileToSource</strong> 方法接收组件的类作为参数，编译返回组件 render 的 source code，具体为 <code>function (data) {...}</code> 形式的字符串。我们只需要在前面增加 <code>exports = module.exports =</code>，并写入 <strong>.js</strong> 文件中，就能得到一个符合 CommonJS 标准的 NodeJS Module。</p>
 
       
     </div>
@@ -171,7 +193,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#场景描述"><span class="toc-text">场景描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#原因分析"><span class="toc-text">原因分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方式如下"><span class="toc-text">解决方式如下</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#是否需要SSR"><span class="toc-text">是否需要SSR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#输出HTML"><span class="toc-text">输出HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译NodeJS模块"><span class="toc-text">编译NodeJS模块</span></a></li></ol>
   <a href="#" class="toc-top">回到顶部</a>
 </aside>
 
@@ -190,7 +212,7 @@ var _hmt = _hmt || [];
         <li><a href="/san/example/">示例</a>
         <li><a href="/san/doc/api/">API</a>
         <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
-        <li><a href="/san/practice/array-deep-updates-trigger-view/">中文</a></li>
+        <li><a href="/san/tutorial/ssr-before-3.8/">中文</a></li>
     </ul>
     <aside class="mobile-nav-recommend">    <dl>
         <dt>教程</dt>
