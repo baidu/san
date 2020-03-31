@@ -156,6 +156,7 @@ declare namespace San {
 
     interface ExprNodeTpl<T extends ExprType> {
         type: T;        // 如果只有这一个属性，去掉泛型更可读
+        raw: string;
         value?: any;    // 在 eval 会统一处理，事实上作用于 null, string, number
         parenthesized?: boolean; // 在 read parenthesized expr 会统一设置
     }
@@ -287,6 +288,7 @@ declare namespace San {
     }
 
     interface ASlotNode extends ANode {
+        children: ANode[];
         tagName: 'slot';
     }
 
