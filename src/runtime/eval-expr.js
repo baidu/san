@@ -38,6 +38,10 @@ function evalExpr(expr, data, owner) {
                     value = !value;
                     break;
 
+                case 43:
+                    value = +value;
+                    break;
+
                 case 45:
                     value = 0 - value;
                     break;

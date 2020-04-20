@@ -19,7 +19,7 @@ var readUnaryExpr = require('./read-unary-expr');
  * @return {Object}
  */
 function readNumber(walker) {
-    var match = walker.match(/\s*(-?[0-9]+(\.[0-9]+)?)/g, 1);
+    var match = walker.match(/\s*([+-]?[0-9]+(\.[0-9]+)?)/g, 1);
 
     if (match) {
         return {
@@ -27,12 +27,15 @@ function readNumber(walker) {
             value: +match[1]
         };
     }
-    else if (walker.currentCode() === 45) {
+
+    var currentCode = walker.currentCode();
+
+    if (currentCode === 43 || currentCode === 45) {
         walker.go(1);
         return {
             type: ExprType.UNARY,
             expr: readUnaryExpr(walker),
-            operator: 45
+            operator: currentCode
         };
     }
 }
