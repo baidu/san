@@ -37,6 +37,7 @@ function readUnaryExpr(walker) {
         case 39: // '
             return readString(walker);
 
+        case 43: // +
         case 45: // -
         case 48: // number
         case 49:
