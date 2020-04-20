@@ -6,6 +6,7 @@
     "type": "git",
     "url": "https://github.com/baidu/san.git"
   },
+  "homepage": "https://baidu.github.io/san/",
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "npx karma start ./test/karma.conf.js start",
