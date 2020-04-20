@@ -315,6 +315,7 @@ exprInfo = {
 
 - `!` 逻辑否定
 - `-` 取负
+- `+` 转换成 `Number`
 
 ```javascript
 // operator - 操作符。数值，值为操作符 char 的 ascii。
