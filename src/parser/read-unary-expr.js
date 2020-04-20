@@ -14,6 +14,64 @@ var readCall = require('./read-call');
 var readParenthesizedExpr = require('./read-parenthesized-expr');
 var readTertiaryExpr = require('./read-tertiary-expr');
 
+function postUnaryExpr(expr, operator) {
+    switch (operator) {
+        case 33:
+            var value;
+            switch (expr.type) {
+                case ExprType.NUMBER:
+                case ExprType.STRING:
+                case ExprType.BOOL:
+                    value = !expr.value;
+                    break;
+                case ExprType.ARRAY:
+                case ExprType.OBJECT:
+                    value = false;
+                    break;
+                case ExprType.NULL:
+                    value = true;
+                    break;
+            }
+
+            if (value != null) {
+                return {
+                    type: ExprType.BOOL,
+                    value: value
+                };
+            }
+            break;
+
+        case 43:
+            switch (expr.type) {
+                case ExprType.NUMBER:
+                case ExprType.STRING:
+                case ExprType.BOOL:
+                    return {
+                        type: ExprType.NUMBER,
+                        value: +expr.value
+                    };
+            }
+            break;
+
+        case 45:
+            switch (expr.type) {
+                case ExprType.NUMBER:
+                case ExprType.STRING:
+                case ExprType.BOOL:
+                    return {
+                        type: ExprType.NUMBER,
+                        value: -expr.value
+                    };
+            }
+            break;
+    }
+
+    return {
+        type: ExprType.UNARY,
+        expr: expr,
+        operator: operator
+    };
+}
 
 /**
  * 读取一元表达式
@@ -24,21 +82,18 @@ var readTertiaryExpr = require('./read-tertiary-expr');
 function readUnaryExpr(walker) {
     walker.goUntil();
 
-    switch (walker.currentCode()) {
+    var currentCode = walker.currentCode();
+    switch (currentCode) {
         case 33: // !
+        case 43: // +
+        case 45: // -
             walker.go(1);
-            return {
-                type: ExprType.UNARY,
-                expr: readUnaryExpr(walker),
-                operator: 33
-            };
+            return postUnaryExpr(readUnaryExpr(walker), currentCode);
 
         case 34: // "
         case 39: // '
             return readString(walker);
 
-        case 43: // +
-        case 45: // -
         case 48: // number
         case 49:
         case 50:
