@@ -116,99 +116,99 @@ function xPropOutput(element, bindInfo, data) {
  * @param {Object} element 元素节点
  */
 function elementOwnAttached() {
-    if (this.el.nodeType === 1) {
-        var isComponent = this.nodeType === NodeType.CMPT;
-        var data = isComponent ? this.data : this.scope;
+    if (this._rootNode) {
+        return;
+    }
 
-        /* eslint-disable no-redeclare */
+    var isComponent = this.nodeType === NodeType.CMPT;
+    var data = isComponent ? this.data : this.scope;
 
-        // 处理自身变化时双向绑定的逻辑
-        var xProps = this.aNode.hotspot.xProps;
-        for (var i = 0, l = xProps.length; i < l; i++) {
-            var xProp = xProps[i];
+    /* eslint-disable no-redeclare */
 
-            switch (xProp.name) {
-                case 'value':
-                    switch (this.tagName) {
-                        case 'input':
-                        case 'textarea':
-                            if (isBrowser && window.CompositionEvent) {
-                                this._onEl('change', inputOnCompositionEnd);
-                                this._onEl('compositionstart', inputOnCompositionStart);
-                                this._onEl('compositionend', inputOnCompositionEnd);
-                            }
+    // 处理自身变化时双向绑定的逻辑
+    var xProps = this.aNode.hotspot.xProps;
+    for (var i = 0, l = xProps.length; i < l; i++) {
+        var xProp = xProps[i];
 
-                            // #[begin] allua
-                            /* istanbul ignore else */
-                            if ('oninput' in this.el) {
-                            // #[end]
-                                this._onEl('input', getInputXPropOutputer(this, xProp, data));
-                            // #[begin] allua
-                            }
-                            else {
-                                this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
-                                this._onEl('focusout', getInputBlurXPropHandler(this));
-                            }
-                            // #[end]
+        switch (xProp.name) {
+            case 'value':
+                switch (this.tagName) {
+                    case 'input':
+                    case 'textarea':
+                        if (isBrowser && window.CompositionEvent) {
+                            this._onEl('change', inputOnCompositionEnd);
+                            this._onEl('compositionstart', inputOnCompositionStart);
+                            this._onEl('compositionend', inputOnCompositionEnd);
+                        }
 
-                            break;
+                        // #[begin] allua
+                        /* istanbul ignore else */
+                        if ('oninput' in this.el) {
+                        // #[end]
+                            this._onEl('input', getInputXPropOutputer(this, xProp, data));
+                        // #[begin] allua
+                        }
+                        else {
+                            this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
+                            this._onEl('focusout', getInputBlurXPropHandler(this));
+                        }
+                        // #[end]
 
-                        case 'select':
-                            this._onEl('change', getXPropOutputer(this, xProp, data));
-                            break;
-                    }
-                    break;
+                        break;
 
-                case 'checked':
-                    switch (this.tagName) {
-                        case 'input':
-                            switch (this.el.type) {
-                                case 'checkbox':
-                                case 'radio':
-                                    this._onEl('click', getXPropOutputer(this, xProp, data));
-                            }
-                    }
-                    break;
-            }
+                    case 'select':
+                        this._onEl('change', getXPropOutputer(this, xProp, data));
+                        break;
+                }
+                break;
+
+            case 'checked':
+                switch (this.tagName) {
+                    case 'input':
+                        switch (this.el.type) {
+                            case 'checkbox':
+                            case 'radio':
+                                this._onEl('click', getXPropOutputer(this, xProp, data));
+                        }
+                }
+                break;
         }
+    }
 
-        var owner = isComponent ? this : this.owner;
-        for (var i = 0, l = this.aNode.events.length; i < l; i++) {
-            var eventBind = this.aNode.events[i];
+    var owner = isComponent ? this : this.owner;
+    for (var i = 0, l = this.aNode.events.length; i < l; i++) {
+        var eventBind = this.aNode.events[i];
+
+        // #[begin] error
+        warnEventListenMethod(eventBind, owner);
+        // #[end]
+
+        this._onEl(
+            eventBind.name,
+            getEventListener(eventBind, owner, data, eventBind.modifier),
+            eventBind.modifier.capture
+        );
+    }
+
+    if (isComponent) {
+        for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
+            var eventBind = this.nativeEvents[i];
 
             // #[begin] error
-            warnEventListenMethod(eventBind, owner);
+            warnEventListenMethod(eventBind, this.owner);
             // #[end]
 
             this._onEl(
                 eventBind.name,
-                getEventListener(eventBind, owner, data, eventBind.modifier),
+                getEventListener(eventBind, this.owner, this.scope),
                 eventBind.modifier.capture
             );
         }
-
-        if (isComponent) {
-            for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
-                var eventBind = this.nativeEvents[i];
-
-                // #[begin] error
-                warnEventListenMethod(eventBind, this.owner);
-                // #[end]
-
-                this._onEl(
-                    eventBind.name,
-                    getEventListener(eventBind, this.owner, this.scope),
-                    eventBind.modifier.capture
-                );
-            }
-        }
     }
 
-    if (this.el.nodeType === 1) {
-        var transition = elementGetTransition(this);
-        if (transition && transition.enter) {
-            transition.enter(this.el, empty);
-        }
+    var transition = elementGetTransition(this);
+    if (transition && transition.enter) {
+        transition.enter(this.el, empty);
     }
 }
 
