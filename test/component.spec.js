@@ -4893,5 +4893,83 @@ describe("Component", function () {
             done();
         });
     });
+
+    it("fragment root el in for", function (done) {
+        var Child = san.defineComponent({
+            template: '<fragment>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</fragment>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child s-for="f in frameworks" link="{{f.link}}" name="{{f.name}}" link-text="{{f.linkText}}"/></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                frameworks: [
+                    {
+                        link: 'https://baidu.github.io/san/',
+                        name: 'San',
+                        linkText: 'HomePage'
+                    },
+                    {
+                        link: 'https://reactjs.org/',
+                        name: 'react',
+                        linkText: 'HomePage'
+                    },
+                    {
+                        link: 'https://vuejs.org/',
+                        name: 'Vue',
+                        linkText: 'HomePage'
+                    }
+                ]
+                
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(as.length).toBe(3);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+        expect(as[2].innerHTML).toBe('HomePage');
+        expect(bs[2].innerHTML).toBe('Vue');
+
+        myComponent.data.removeAt('frameworks', 1);
+        myComponent.data.set('frameworks[1].name', 'vue');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(2);
+            expect(as[1].innerHTML).toBe('HomePage');
+            expect(bs[1].innerHTML).toBe('vue');
+
+            myComponent.data.push('frameworks', {
+                link: 'https://reactjs.org/',
+                name: 'react',
+                linkText: 'Home'
+            });
+
+            myComponent.nextTick(function () {
+                var as = wrap.getElementsByTagName('a');
+                var bs = wrap.getElementsByTagName('b');
+                expect(as.length).toBe(3);
+                expect(as[1].innerHTML).toBe('HomePage');
+                expect(bs[1].innerHTML).toBe('vue');
+                expect(as[2].innerHTML).toBe('Home');
+                expect(bs[2].innerHTML).toBe('react');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
 });
 
