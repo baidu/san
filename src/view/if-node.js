@@ -117,6 +117,10 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
 
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
+
+    if (this.parent._rootNodeAttached) {
+        this.parent._rootNodeAttached(this);
+    }
 };
 
 
@@ -166,6 +170,10 @@ IfNode.prototype._update = function (changes) {
         if (typeof elseIndex !== 'undefined') {
             (me.children[0] = createNode(childANode, me, me.scope, me.owner))
                 .attach(me.el.parentNode, me.el);
+        }
+
+        if (this.parent._rootNodeUpdated) {
+            this.parent._rootNodeUpdated(this);
         }
     }
 };

@@ -205,6 +205,7 @@ function preheatANode(aNode) {
                         break;
 
                     case 'template':
+                    case 'fragment':
                         aNode.Clazz = TemplateNode;
                 }
                 // === analyse hotspot props: end

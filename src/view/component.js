@@ -668,9 +668,6 @@ Component.prototype._update = function (changes) {
     if (dataChanges) {
         this._dataChanges = null;
 
-        var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
-        var expectNodeType = (!ifDirective || evalExpr(ifDirective.value, this.data, this)) ? 1 : 8;
-
         this._sbindData = nodeSBindUpdate(
             this.aNode.directives.bind,
             this._sbindData,
@@ -678,7 +675,7 @@ Component.prototype._update = function (changes) {
             this,
             dataChanges,
             function (name, value) {
-                if (me.el.nodeType !== 1 || (name in me.aNode.hotspot.props)) {
+                if (me._rootNode || (name in me.aNode.hotspot.props)) {
                     return;
                 }
 
@@ -686,9 +683,12 @@ Component.prototype._update = function (changes) {
             }
         );
 
-        if (this.el.nodeType === expectNodeType) {
-            if (expectNodeType === 1) {
-                var dynamicProps = this.aNode.hotspot.dynamicProps;
+        
+        if (this._rootNode) {
+            this._rootNode._update(dataChanges);
+        }
+        else {
+            var dynamicProps = this.aNode.hotspot.dynamicProps;
                 for (var i = 0; i < dynamicProps.length; i++) {
                     var prop = dynamicProps[i];
 
@@ -706,16 +706,11 @@ Component.prototype._update = function (changes) {
                 for (var i = 0; i < this.children.length; i++) {
                     this.children[i]._update(dataChanges);
                 }
-
-
-                if (needReloadForSlot) {
-                    this._initSourceSlots();
-                    this._repaintChildren();
-                }
-            }
         }
-        else {
-            this._repaint(expectNodeType);
+
+        if (needReloadForSlot) {
+            this._initSourceSlots();
+            this._repaintChildren();
         }
 
         for (var i = 0; i < this.implicitChildren.length; i++) {
@@ -774,10 +769,20 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
  * 在组件级别重绘有点粗暴，但是能保证视图结果正确性
  */
 Component.prototype._repaintChildren = function () {
-    if (this.el.nodeType === 1) {
+    // TODO: repaint once?
+
+    if (this._rootNode) {
+        var parentEl = this._rootNode.el.parentNode;
+        var beforeEl = this._rootNode.el.nextSibling;
+        this._rootNode.dispose(0, 1);
+        this.slotChildren = [];
+
+        this._rootNode = createNode(this.aNode, this, this.data, this);
+        this._rootNode.attach(parentEl, beforeEl);
+    }
+    else {
         elementDisposeChildren(this.children, 0, 1);
         this.children = [];
-
         this.slotChildren = [];
 
         for (var i = 0, l = this.aNode.children.length; i < l; i++) {
@@ -832,6 +837,14 @@ Component.prototype.watch = function (dataName, listener) {
     }, this));
 };
 
+Component.prototype._rootNodeAttached = Component.prototype._rootNodeUpdated = function (node) {
+    switch (node.type) {
+        case NodeType.IF:
+            var child = node.children[0];
+            this.el = child && child.el || node.el;
+            break;
+    }
+};
 
 /**
  * 将组件attach到页面
@@ -851,9 +864,13 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 };
 
 Component.prototype._attach = function (parentEl, beforeEl) {
-    var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
-
-    if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
+    // TODO: hotspot
+    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'];
+    if (hasRootNode) {
+        this._rootNode = createNode(this.aNode, this, this.data, this);
+        this._rootNode.attach(parentEl, beforeEl);
+    }
+    else {
         if (!this.el) {
             var sourceNode = this.aNode.hotspot.sourceNode;
             var props = this.aNode.props;
@@ -908,11 +925,6 @@ Component.prototype._attach = function (parentEl, beforeEl) {
 
         this._attached();
     }
-    else {
-        this.el = document.createComment(this.id);
-        this._toPhase('created');
-        insertBefore(this.el, parentEl, beforeEl);
-    }
 
     this._toPhase('attached');
 };
@@ -966,33 +978,41 @@ Component.prototype._leave = function () {
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
             this.slotChildren = null;
 
-            var len = this.children.length;
-            while (len--) {
-                this.children[len].dispose(1, 1);
+            
+            if (this._rootNode) {
+                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+                this._rootNode.dispose(this.disposeNoDetach && this.parent);
             }
+            else {
+                var len = this.children.length;
+                while (len--) {
+                    this.children[len].dispose(1, 1);
+                }
 
-            len = this._elFns.length;
-            while (len--) {
-                var fn = this._elFns[len];
-                un(this.el, fn[0], fn[1], fn[2]);
-            }
-            this._elFns = null;
+                len = this._elFns.length;
+                while (len--) {
+                    var fn = this._elFns[len];
+                    un(this.el, fn[0], fn[1], fn[2]);
+                }
+                this._elFns = null;
 
-            // #[begin] allua
-            /* istanbul ignore if */
-            if (this._inputTimer) {
-                clearInterval(this._inputTimer);
-                this._inputTimer = null;
-            }
-            // #[end]
+                // #[begin] allua
+                /* istanbul ignore if */
+                if (this._inputTimer) {
+                    clearInterval(this._inputTimer);
+                    this._inputTimer = null;
+                }
+                // #[end]
 
-            // 如果没有parent，说明是一个root component，一定要从dom树中remove
-            if (!this.disposeNoDetach || !this.parent) {
-                removeEl(this.el);
+                // 如果没有parent，说明是一个root component，一定要从dom树中remove
+                if (!this.disposeNoDetach || !this.parent) {
+                    removeEl(this.el);
+                }
             }
 
             this._toPhase('detached');
 
+            this._rootNode = null;
             this.el = null;
             this.owner = null;
             this.scope = null;
