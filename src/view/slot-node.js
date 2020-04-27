@@ -108,11 +108,20 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
+        var hasFlagComment;
 
-        this.sel = document.createComment(this.id);
-        reverseWalker.current
-            ? reverseWalker.target.insertBefore(this.sel, reverseWalker.current)
-            : reverseWalker.target.appendChild(this.sel);
+        // start flag
+        if (reverseWalker.current && reverseWalker.current.nodeType === 8) {
+            this.sel = reverseWalker.current;
+            hasFlagComment = 1;
+            reverseWalker.goNext();
+        }
+        else {
+            this.sel = document.createComment(this.id);
+            reverseWalker.current
+                ? reverseWalker.target.insertBefore(this.sel, reverseWalker.current)
+                : reverseWalker.target.appendChild(this.sel);
+        }
 
         var aNodeChildren = this.aNode.children;
         for (var i = 0, l = aNodeChildren.length; i < l; i++) {
@@ -125,10 +134,17 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
             ));
         }
 
-        this.el = document.createComment(this.id);
-        reverseWalker.current
-            ? reverseWalker.target.insertBefore(this.el, reverseWalker.current)
-            : reverseWalker.target.appendChild(this.el);
+        // end flag
+        if (hasFlagComment) {
+            this.el = reverseWalker.current;
+            reverseWalker.goNext();
+        }
+        else {
+            this.el = document.createComment(this.id);
+            reverseWalker.current
+                ? reverseWalker.target.insertBefore(this.el, reverseWalker.current)
+                : reverseWalker.target.appendChild(this.el);
+        }
 
         this.lifeCycle = LifeCycle.attached;
     }

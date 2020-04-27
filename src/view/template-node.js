@@ -42,16 +42,36 @@ function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
-        this.sel = document.createComment(this.id);
-        insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
+        var hasFlagComment;
 
-        var me = this;
-        each(this.aNode.children, function (aNodeChild) {
-            me.children.push(createReverseNode(aNodeChild, me, me.scope, me.owner, reverseWalker));
-        });
+        // start flag
+        if (reverseWalker.current && reverseWalker.current.nodeType === 8) {
+            this.sel = reverseWalker.current;
+            hasFlagComment = 1;
+            reverseWalker.goNext();
+        }
+        else {
+            this.sel = document.createComment(this.id);
+            insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
+        }
 
-        this.el = document.createComment(this.id);
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        // content
+        var aNodeChildren = this.aNode.children;
+        for (var i = 0, l = aNodeChildren.length; i < l; i++) {
+            this.children.push(
+                createReverseNode(aNodeChildren[i], this, this.scope, this.owner, reverseWalker)
+            );
+        }
+
+        // end flag
+        if (hasFlagComment) {
+            this.el = reverseWalker.current;
+            reverseWalker.goNext();
+        }
+        else {
+            this.el = document.createComment(this.id);
+            insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        }
 
         this.lifeCycle = LifeCycle.attached;
     }
