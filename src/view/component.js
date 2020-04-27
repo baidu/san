@@ -127,6 +127,7 @@ function Component(options) { // eslint-disable-line
     this.id = guid++;
 
     // #[begin] reverse
+    // 组件反解，读取注入的组件数据
     if (this.el) {
         var firstCommentNode = this.el.firstChild;
         if (firstCommentNode && firstCommentNode.nodeType === 3) {
@@ -252,35 +253,29 @@ function Component(options) { // eslint-disable-line
     this._toPhase('inited');
 
     // #[begin] reverse
-    if (this.el) {
-        reverseElementChildren(this, this.data, this);
+    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'];
+    var reverseWalker = options.reverseWalker;
+
+    if (this.el || reverseWalker) {
+        if (hasRootNode) {
+            reverseWalker = reverseWalker || new DOMChildrenWalker(this.el);
+            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+        }
+        else {
+            if (reverseWalker) {
+                var currentNode = reverseWalker.current;
+                if (currentNode && currentNode.nodeType === 1) {
+                    this.el = currentNode;
+                    reverseWalker.goNext();
+                }
+            }
+
+            reverseElementChildren(this, this.data, this);
+        }
+        
         this._toPhase('created');
         this._attached();
         this._toPhase('attached');
-    }
-    else {
-        var walker = options.reverseWalker;
-        if (walker) {
-            var ifDirective = this.aNode.directives['if']; // eslint-disable-line dot-notation
-
-            if (!ifDirective || evalExpr(ifDirective.value, this.data, this)) {
-                var currentNode = walker.current;
-                if (currentNode && currentNode.nodeType === 1) {
-                    this.el = currentNode;
-                    walker.goNext();
-                }
-
-                reverseElementChildren(this, this.data, this);
-            }
-            else {
-                this.el = document.createComment(this.id);
-                insertBefore(this.el, walker.target, walker.current);
-            }
-
-            this._toPhase('created');
-            this._attached();
-            this._toPhase('attached');
-        }
     }
     // #[end]
 }
