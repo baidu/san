@@ -924,30 +924,6 @@ Component.prototype._attach = function (parentEl, beforeEl) {
     this._toPhase('attached');
 };
 
-/**
- * 重新刷新组件视图
- */
-Component.prototype._repaint = function () {
-    elementDisposeChildren(this.children, 1, 1);
-    this.children = [];
-    this.slotChildren = [];
-
-    this._contentReady = 0;
-
-    var len = this._elFns.length;
-    while (len--) {
-        var fn = this._elFns[len];
-        un(this.el, fn[0], fn[1], fn[2]);
-    }
-    this._elFns = [];
-
-    var beforeEl = this.el;
-    this.el = null;
-    this._attach(beforeEl.parentNode, beforeEl);
-
-    removeEl(beforeEl);
-};
-
 Component.prototype.detach = elementOwnDetach;
 Component.prototype.dispose = elementOwnDispose;
 Component.prototype._onEl = elementOwnOnEl;
