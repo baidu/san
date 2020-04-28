@@ -738,8 +738,10 @@ describe("Component", function () {
             template: '<span title="{{text}}">{{text}}</span>'
         });
         var MyComponent = san.defineComponent({
-            getComponentType: function () {
-                return Label;
+            getComponentType: function (aNode) {
+                if (aNode.tagName === 'ui-label') {
+                    return Label;
+                }
             }
         });
 
