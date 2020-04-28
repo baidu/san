@@ -260,6 +260,7 @@ function Component(options) { // eslint-disable-line
         if (hasRootNode) {
             reverseWalker = reverseWalker || new DOMChildrenWalker(this.el);
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
             if (reverseWalker) {
@@ -681,6 +682,7 @@ Component.prototype._update = function (changes) {
         
         if (this._rootNode) {
             this._rootNode._update(dataChanges);
+            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
             var dynamicProps = this.aNode.hotspot.dynamicProps;
@@ -774,6 +776,7 @@ Component.prototype._repaintChildren = function () {
 
         this._rootNode = createNode(this.aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
+        this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
     }
     else {
         elementDisposeChildren(this.children, 0, 1);
@@ -832,13 +835,8 @@ Component.prototype.watch = function (dataName, listener) {
     }, this));
 };
 
-Component.prototype._rootNodeAttached = Component.prototype._rootNodeUpdated = function (node) {
-    switch (node.type) {
-        case NodeType.IF:
-            var child = node.children[0];
-            this.el = child && child.el || node.el;
-            break;
-    }
+Component.prototype._getElAsRootNode = function () {
+    return this.el;
 };
 
 /**
@@ -860,10 +858,12 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
 Component.prototype._attach = function (parentEl, beforeEl) {
     // TODO: hotspot
-    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'];
+    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'] 
+        || this.components[this.aNode.tagName];
     if (hasRootNode) {
         this._rootNode = createNode(this.aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
+        this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
     }
     else {
         if (!this.el) {

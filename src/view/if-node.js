@@ -117,10 +117,6 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
 
     this._create();
     insertBefore(this.el, parentEl, beforeEl);
-
-    if (this.parent._rootNodeAttached) {
-        this.parent._rootNodeAttached(this);
-    }
 };
 
 
@@ -171,11 +167,12 @@ IfNode.prototype._update = function (changes) {
             (me.children[0] = createNode(childANode, me, me.scope, me.owner))
                 .attach(me.el.parentNode, me.el);
         }
-
-        if (this.parent._rootNodeUpdated) {
-            this.parent._rootNodeUpdated(this);
-        }
     }
+};
+
+IfNode.prototype._getElAsRootNode = function () {
+    var child = this.children[0];
+    return child && child.el || this.el;
 };
 
 exports = module.exports = IfNode;
