@@ -179,6 +179,7 @@ function preheatANode(aNode) {
                         hotspot: aNode.hotspot,
                         directives: extend({}, aNode.directives)
                     };
+                    aNode.hotspot.hasRootNode = true;
                     aNode.Clazz = IfNode;
                     aNode = aNode.ifRinsed;
                     aNode.directives['if'] = null; // eslint-disable-line dot-notation
@@ -194,6 +195,7 @@ function preheatANode(aNode) {
                         hotspot: aNode.hotspot,
                         directives: extend({}, aNode.directives)
                     };
+                    aNode.hotspot.hasRootNode = true;
                     aNode.Clazz = ForNode;
                     aNode.forRinsed.directives['for'] = null; // eslint-disable-line dot-notation
                     aNode = aNode.forRinsed;
@@ -206,6 +208,7 @@ function preheatANode(aNode) {
 
                     case 'template':
                     case 'fragment':
+                        aNode.hotspot.hasRootNode = true;
                         aNode.Clazz = TemplateNode;
                 }
                 // === analyse hotspot props: end

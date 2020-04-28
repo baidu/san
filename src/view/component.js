@@ -253,7 +253,11 @@ function Component(options) { // eslint-disable-line
     this._toPhase('inited');
 
     // #[begin] reverse
-    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if']|| this.components[this.aNode.tagName];;
+    var hasRootNode = this.aNode.hotspot.hasRootNode 
+        || (this.getComponentType 
+            ? this.getComponentType(this.aNode, this.data) 
+            : this.components[this.aNode.tagName]
+        );
     var reverseWalker = options.reverseWalker;
 
     if (this.el || reverseWalker) {
@@ -857,9 +861,11 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 };
 
 Component.prototype._attach = function (parentEl, beforeEl) {
-    // TODO: hotspot
-    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'] 
-        || this.components[this.aNode.tagName];
+    var hasRootNode = this.aNode.hotspot.hasRootNode 
+        || (this.getComponentType 
+            ? this.getComponentType(this.aNode, this.data) 
+            : this.components[this.aNode.tagName]
+        );
     if (hasRootNode) {
         this._rootNode = createNode(this.aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
