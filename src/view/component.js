@@ -253,7 +253,7 @@ function Component(options) { // eslint-disable-line
     this._toPhase('inited');
 
     // #[begin] reverse
-    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if'];
+    var hasRootNode = this.aNode.tagName === 'fragment' || this.aNode.directives['if']|| this.components[this.aNode.tagName];;
     var reverseWalker = options.reverseWalker;
 
     if (this.el || reverseWalker) {
