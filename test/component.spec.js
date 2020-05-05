@@ -5020,5 +5020,41 @@ describe("Component", function () {
             done();
         });
     });
+
+    it("for directive as root", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a s-for="item in list">{{item}}</a>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: ['err', 'lee', 'gray']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var as = wrap.getElementsByTagName('a');
+        expect(as.length).toBe(3);
+        expect(as[0].parentNode).toBe(wrap);
+        expect(as[0].innerHTML).toBe('err');
+        expect(as[1].innerHTML).toBe('lee');
+
+        myComponent.data.removeAt('list', 1);
+        myComponent.data.set('list[0]', 'errorrik');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(2);
+            expect(as[1].parentNode).toBe(wrap);
+            expect(as[0].innerHTML).toBe('errorrik');
+            expect(as[1].innerHTML).toBe('gray');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
 
