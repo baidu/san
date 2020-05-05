@@ -216,7 +216,11 @@ ForNode.prototype._createChildren = function () {
 
     if (listData instanceof Array) {
         for (var i = 0; i < listData.length; i++) {
-            var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i), this.owner);
+            var childANode = this.aNode.forRinsed;
+            var child = childANode.Clazz
+                        ? new childANode.Clazz(childANode, this, new ForItemData(this, listData[i], i), this.owner)
+                        : createNode(childANode, this, new ForItemData(this, listData[i], i), this.owner);
+
             this.children.push(child);
             child.attach(parentEl, this.el);
         }
@@ -224,7 +228,10 @@ ForNode.prototype._createChildren = function () {
     else if (listData && typeof listData === 'object') {
         for (var i in listData) {
             if (listData.hasOwnProperty(i) && listData[i] != null) {
-                var child = createNode(this.aNode.forRinsed, this, new ForItemData(this, listData[i], i), this.owner);
+                var childANode = this.aNode.forRinsed;
+                var child = childANode.Clazz
+                        ? new childANode.Clazz(childANode, this, new ForItemData(this, listData[i], i), this.owner)
+                        : createNode(childANode, this, new ForItemData(this, listData[i], i), this.owner);
                 this.children.push(child);
                 child.attach(parentEl, this.el);
             }

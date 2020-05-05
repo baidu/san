@@ -11,6 +11,7 @@ var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
 var extend = require('../util/extend');
 var kebab2camel = require('../util/kebab2camel');
+var hotTags = require('../browser/hot-tags');
 var createEl = require('../browser/create-el');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
@@ -20,6 +21,7 @@ var SlotNode = require('./slot-node');
 var ForNode = require('./for-node');
 var IfNode = require('./if-node');
 var TemplateNode = require('./template-node');
+var Element = require('./element');
 
 /**
  * ANode预热，分析的数据引用等信息
@@ -201,15 +203,20 @@ function preheatANode(aNode) {
                     aNode = aNode.forRinsed;
                 }
 
-                switch (aNode.tagName) {
-                    case 'slot':
-                        aNode.Clazz = SlotNode;
-                        break;
+                if (hotTags[aNode.tagName]) {
+                    aNode.Clazz = Element;
+                }
+                else {
+                    switch (aNode.tagName) {
+                        case 'slot':
+                            aNode.Clazz = SlotNode;
+                            break;
 
-                    case 'template':
-                    case 'fragment':
-                        aNode.hotspot.hasRootNode = true;
-                        aNode.Clazz = TemplateNode;
+                        case 'template':
+                        case 'fragment':
+                            aNode.hotspot.hasRootNode = true;
+                            aNode.Clazz = TemplateNode;
+                    }
                 }
                 // === analyse hotspot props: end
             }
