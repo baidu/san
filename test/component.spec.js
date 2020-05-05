@@ -4891,6 +4891,63 @@ describe("Component", function () {
         });
     });
 
+    it("fragment with if as component root", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<fragment s-if="!hidd">see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</fragment>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                link: 'https://baidu.github.io/san/',
+                name: 'San',
+                linkText: 'HomePage'
+            }
+        });
+
+        expect(myComponent.el == null).toBeTruthy();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.innerHTML).toContain('see');
+        expect(wrap.innerHTML).toContain('framework');
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+
+        myComponent.data.set('linkText', 'github');
+        myComponent.data.set('link', 'https://github.com/baidu/san/');
+        myComponent.data.set('name', 'san');
+        myComponent.nextTick(function () {
+
+            expect(wrap.innerHTML).toContain('see');
+            expect(wrap.innerHTML).toContain('start');
+
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+            
+            myComponent.data.set('hidd', true);
+            myComponent.nextTick(function () {
+                var as = wrap.getElementsByTagName('a');
+                expect(as.length).toBe(0);
+                expect(wrap.innerHTML).not.toContain('see');
+                expect(wrap.innerHTML).not.toContain('framework');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
     it("fragment root el", function (done) {
         var Child = san.defineComponent({
             template: '<fragment>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</fragment>'
