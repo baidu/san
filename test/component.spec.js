@@ -4948,7 +4948,7 @@ describe("Component", function () {
         });
     });
 
-    it("fragment root el", function (done) {
+    it("fragment as component root", function (done) {
         var Child = san.defineComponent({
             template: '<fragment>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</fragment>'
         });
@@ -5072,7 +5072,7 @@ describe("Component", function () {
         });
     });
 
-    it("component root el", function (done) {
+    it("component as component root", function (done) {
         var Child = san.defineComponent({
             template: '<h3>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</h3>'
         });
@@ -5251,6 +5251,206 @@ describe("Component", function () {
 
             document.body.removeChild(wrap);
             done();
+        });
+    });
+
+    it("component as component root, detach and re-attach", function (done) {
+        var Child = san.defineComponent({
+            template: '<h3>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</h3>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<x-child link="{{link}}" name="{{framework}}" link-text="{{linkText}}" />',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                link: 'https://baidu.github.io/san/',
+                framework: 'San',
+                linkText: 'HomePage'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(myComponent.el.tagName).toBe('H3');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+
+        myComponent.data.set('linkText', 'github');
+        myComponent.data.set('link', 'https://github.com/baidu/san/');
+        myComponent.data.set('framework', 'san');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.detach();
+            expect(wrap.innerHTML).toBe('');
+            expect(myComponent.lifeCycle.detached).toBeTruthy();
+
+            myComponent.attach(wrap);
+            expect(myComponent.lifeCycle.detached).toBeFalsy();
+            as = wrap.getElementsByTagName('a');
+            bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("for directive as root, detach and re-attach", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a s-for="item in list">{{item}}</a>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: ['err', 'lee', 'gray']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el == null).toBeTruthy();
+
+        var as = wrap.getElementsByTagName('a');
+        expect(as.length).toBe(3);
+        expect(as[0].parentNode).toBe(wrap);
+        expect(as[0].innerHTML).toBe('err');
+        expect(as[1].innerHTML).toBe('lee');
+
+        myComponent.data.removeAt('list', 1);
+        myComponent.data.set('list[0]', 'errorrik');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(2);
+            expect(as[1].parentNode).toBe(wrap);
+            expect(as[0].innerHTML).toBe('errorrik');
+            expect(as[1].innerHTML).toBe('gray');
+
+            myComponent.detach();
+            expect(wrap.innerHTML).toBe('');
+            expect(myComponent.lifeCycle.detached).toBeTruthy();
+
+
+            myComponent.attach(wrap);
+            expect(myComponent.lifeCycle.detached).toBeFalsy();
+            as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(2);
+            expect(as[1].parentNode).toBe(wrap);
+            expect(as[0].innerHTML).toBe('errorrik');
+            expect(as[1].innerHTML).toBe('gray');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("if as component root, detach and re-attach", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div s-if="!hidd">see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                link: 'https://baidu.github.io/san/',
+                name: 'San',
+                linkText: 'HomePage'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(wrap.innerHTML).toContain('see');
+        expect(wrap.innerHTML).toContain('framework');
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+
+        myComponent.data.set('linkText', 'github');
+        myComponent.data.set('link', 'https://github.com/baidu/san/');
+        myComponent.data.set('name', 'san');
+        myComponent.nextTick(function () {
+
+            expect(wrap.innerHTML).toContain('see');
+            expect(wrap.innerHTML).toContain('start');
+
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.detach();
+            expect(wrap.innerHTML).toBe('');
+            expect(myComponent.lifeCycle.detached).toBeTruthy();
+
+
+            myComponent.attach(wrap);
+            expect(myComponent.lifeCycle.detached).toBeFalsy();
+            as = wrap.getElementsByTagName('a');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            
+            
+            myComponent.data.set('hidd', true);
+            myComponent.nextTick(function () {
+                var as = wrap.getElementsByTagName('a');
+                expect(as.length).toBe(0);
+                expect(wrap.innerHTML).not.toContain('see');
+                expect(wrap.innerHTML).not.toContain('framework');
+
+                myComponent.detach();
+                expect(wrap.innerHTML).toBe('');
+                expect(myComponent.lifeCycle.detached).toBeTruthy();
+
+
+                myComponent.attach(wrap);
+                expect(wrap.innerHTML).not.toBe('');
+                expect(myComponent.lifeCycle.detached).toBeFalsy();
+
+                myComponent.data.set('hidd', false);
+                myComponent.nextTick(function () {
+                    expect(wrap.innerHTML).toContain('see');
+                    expect(wrap.innerHTML).toContain('start');
+
+                    var as = wrap.getElementsByTagName('a');
+                    var bs = wrap.getElementsByTagName('b');
+                    expect(as.length).toBe(1);
+                    expect(as[0].innerHTML).toBe('github');
+                    expect(bs[0].innerHTML).toBe('san');
+                    
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+                
+            });
         });
     });
 });
