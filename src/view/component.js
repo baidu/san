@@ -866,8 +866,9 @@ Component.prototype._attach = function (parentEl, beforeEl) {
             ? this.getComponentType(this.aNode, this.data) 
             : this.components[this.aNode.tagName]
         );
+
     if (hasRootNode) {
-        this._rootNode = createNode(this.aNode, this, this.data, this);
+        this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
         this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
     }
@@ -1003,7 +1004,19 @@ Component.prototype._leave = function () {
         }
     }
     else if (this.lifeCycle.attached) {
-        removeEl(this.el);
+        if (this._rootNode) {
+            if (this._rootNode.detach) {
+                this._rootNode.detach();
+            }
+            else {
+                this._rootNode.dispose();
+                this._rootNode = null;
+            }
+        }
+        else {
+            removeEl(this.el);
+        }
+
         this._toPhase('detached');
     }
 };
