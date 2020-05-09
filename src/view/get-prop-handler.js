@@ -190,10 +190,7 @@ var elementPropHandlers = {
 
     button: {
         disabled: boolPropHandler,
-        autofocus: boolPropHandler,
-        type: function (el, value) {
-            el.setAttribute('type', value);
-        }
+        autofocus: boolPropHandler
     }
 };
 
