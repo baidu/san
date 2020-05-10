@@ -32,7 +32,7 @@ function getNodePath(node) {
                 break;
 
             case NodeType.FOR:
-                nodePaths.unshift('for[' + nodeParent.anode.directives['for'].raw + ']'); // eslint-disable-line dot-notation
+                nodePaths.unshift('for[' + nodeParent.aNode.directives['for'].raw + ']'); // eslint-disable-line dot-notation
                 break;
 
             case NodeType.SLOT:
