@@ -2,6 +2,13 @@
 ChangeLog
 ========
 
+3.8.4
+-------
+
++ 【bug修复】- 组件根元素不是 HTMLElement 时，无法 detach 和 re-attach
++ 【bug修复】- button 的 type 属性，当为单插值声明并值为 null 或 undefined 时，无法被移除
+
+
 3.8.3
 -------
 
