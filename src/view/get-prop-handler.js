@@ -196,7 +196,7 @@ var elementPropHandlers = {
                 el.setAttribute('type', value);
             }
             else {
-                el.removeAttribute(name);
+                el.removeAttribute('type');
             }
         }
     }
