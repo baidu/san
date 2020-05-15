@@ -5099,6 +5099,8 @@ describe("Component", function () {
         var as = wrap.getElementsByTagName('a');
         var bs = wrap.getElementsByTagName('b');
         expect(myComponent.el.tagName).toBe('H3');
+        expect(myComponent.el.className).toBe('');
+        expect(!!myComponent.el.id).toBeFalsy();
         expect(as.length).toBe(1);
         expect(as[0].innerHTML).toBe('HomePage');
         expect(bs[0].innerHTML).toBe('San');
