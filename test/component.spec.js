@@ -5078,7 +5078,7 @@ describe("Component", function () {
         });
 
         var MyComponent = san.defineComponent({
-            template: '<x-child link="{{link}}" name="{{framework}}" link-text="{{linkText}}" />',
+            template: '<x-child link="{{link}}" name="{{framework}}" link-text="{{linkText}}" style="font-size:18px"/>',
             components: {
                 'x-child': Child
             }
@@ -5096,11 +5096,14 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var as = wrap.getElementsByTagName('a');
-        var bs = wrap.getElementsByTagName('b');
+        
         expect(myComponent.el.tagName).toBe('H3');
         expect(myComponent.el.className).toBe('');
         expect(!!myComponent.el.id).toBeFalsy();
+        expect(myComponent.el.style.fontSize).toContain('18');
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
         expect(as.length).toBe(1);
         expect(as[0].innerHTML).toBe('HomePage');
         expect(bs[0].innerHTML).toBe('San');
