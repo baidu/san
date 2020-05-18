@@ -28,6 +28,10 @@ function nodeSBindUpdate(sBind, oldBindData, scope, owner, changes, updater) {
         while (len--) {
             if (changeExprCompare(changes[len].expr, sBind.value, scope)) {
                 var newBindData = evalExpr(sBind.value, scope, owner);
+                if (newBindData === oldBindData) {
+                    return oldBindData;
+                }
+
                 var keys = unionKeys(newBindData, oldBindData);
 
                 for (var i = 0, l = keys.length; i < l; i++) {
@@ -43,6 +47,8 @@ function nodeSBindUpdate(sBind, oldBindData, scope, owner, changes, updater) {
             }
 
         }
+
+        return oldBindData;
     }
 }
 
