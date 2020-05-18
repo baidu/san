@@ -2067,6 +2067,64 @@ describe("Slot", function () {
         })
     });
 
+    it("has s-bind children, and update twice", function (done) {
+        var ChildContainer = san.defineComponent({
+            template :'<a><slot /></a>'
+        });
+        var Child = san.defineComponent( {
+            template: '<b>{{name}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components : {
+                'x-c': Child,
+                'x-container': ChildContainer
+            },
+            template : '<div><x-container>'
+                + '<x-c s-bind="{{a}}" />'
+                + '<x-c s-bind="{{b}}" />'
+                + '</x-container></div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                a: {
+                    name: 'a'
+                },
+                b: {
+                    name: 'b'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs[0].innerHTML).toBe('a');
+        expect(bs[1].innerHTML).toBe('b');
+
+        myComponent.data.set('a.name', 'A');
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs[0].innerHTML).toBe('A');
+            expect(bs[1].innerHTML).toBe('b');
+
+            myComponent.data.set('b.name', 'B');
+
+            myComponent.nextTick(function () {
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs[0].innerHTML).toBe('A');
+                expect(bs[1].innerHTML).toBe('B');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        })
+    });
+
     it("deep", function (done) {
         var Panel = san.defineComponent({
             template: '<div><slot/></div>'
