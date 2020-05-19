@@ -5124,6 +5124,60 @@ describe("Component", function () {
         });
     });
 
+    it("component as component root, use s-bind", function (done) {
+        var Child = san.defineComponent({
+            template: '<h3>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</h3>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<x-child s-bind="{{info}}" style="font-size:18px"/>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                info: {
+                    link: 'https://baidu.github.io/san/',
+                    name: 'San',
+                    linkText: 'HomePage'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        
+        expect(myComponent.el.tagName).toBe('H3');
+        expect(myComponent.el.className).toBe('');
+        expect(!!myComponent.el.id).toBeFalsy();
+        expect(myComponent.el.style.fontSize).toContain('18');
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+
+        myComponent.data.set('info.linkText', 'github');
+        myComponent.data.set('info.link', 'https://github.com/baidu/san/');
+        myComponent.data.set('info.name', 'san');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("for directive as root", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a s-for="item in list">{{item}}</a>'
