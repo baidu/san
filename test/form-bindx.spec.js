@@ -38,6 +38,33 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    // see https://github.com/baidu/san/issues/495
+    it("text value with placeholder", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><input placeholder="中文" value="{=name=}"><b>{{name}}</b></div>',
+            attached: function () {
+                this.data.set('name', 'san');
+            }
+        })
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('input')[0].value).toBe('');
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('');
+
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('input')[0].value).toBe('san');
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     if (typeof window !== 'undefined' && window.CompositionEvent) {
         it("text value input by compositionstart and compositionend", function (done) {
             var defName = 'text value';
