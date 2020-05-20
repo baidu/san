@@ -47,6 +47,13 @@ function getXPropOutputer(element, xProp, data) {
 
 function getInputXPropOutputer(element, xProp, data) {
     return function () {
+        // #[begin] allua
+        if (element.__bkph) {
+            element.__bkph = false;
+            return;
+        }
+        // #[end]
+
         if (!this.composing) {
             xPropOutput(element, xProp, data);
         }

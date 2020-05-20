@@ -9,6 +9,7 @@
 
 var contains = require('../util/contains');
 var empty = require('../util/empty');
+var nextTick = require('../util/next-tick');
 var svgTags = require('../browser/svg-tags');
 var ie = require('../browser/ie');
 var evalExpr = require('../runtime/eval-expr');
@@ -41,8 +42,6 @@ var HTML_ATTR_PROP_MAP = {
  * @inner
  * @type {Object}
  */
-
-
 function defaultElementPropHandler(el, value, name) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
     var valueNotNull = value != null;
@@ -70,6 +69,20 @@ function boolPropHandler(el, value, name) {
     var propName = HTML_ATTR_PROP_MAP[name] || name;
     el[propName] = !!value;
 }
+
+// #[begin] allua
+// see https://github.com/baidu/san/issues/495
+function placeholderHandler(el, value, name, element) {
+    if (ie > 9 && !el.value && value) {
+        element.__bkph = true;
+        nextTick(function () {
+            element.__bkph = false;
+        });
+    }
+
+    defaultElementPropHandler(el, value, name);
+}
+// #[end]
 
 /* eslint-disable fecs-properties-quote */
 /**
@@ -158,6 +171,11 @@ var elementPropHandlers = {
             }
             // #[end]
         },
+
+        // #[begin] allua
+        placeholder: placeholderHandler,
+        // #[end]
+
         readonly: boolPropHandler,
         disabled: boolPropHandler,
         autofocus: boolPropHandler,
@@ -182,6 +200,9 @@ var elementPropHandlers = {
     },
 
     textarea: {
+        // #[begin] allua
+        placeholder: placeholderHandler,
+        // #[end]
         readonly: boolPropHandler,
         disabled: boolPropHandler,
         autofocus: boolPropHandler,
