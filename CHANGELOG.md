@@ -6,6 +6,8 @@ ChangeLog
 -------
 
 + 【bug修复】- ie10 和 ie11 下，placeholder 属性可能触发多余的 input 事件，导致组件数据被重置
++ 【bug修复】- 子组件作为父组件根元素时，子组件渲染可能包含多余的 id / style / class 属性
++ 【bug修复】- 使用了 s-bind 的组件位于 slot 中时，在视图二次更新时可能会发生运行时错误
 
 
 3.8.4
