@@ -161,11 +161,11 @@ function integrateProp(aNode, name, rawValue, options) {
         }
     }
 
-    aNode.props.push({
-        name: name,
-        expr: expr,
-        raw: rawValue
-    });
+    aNode.props.push(
+        rawValue
+            ? {name: name, expr: expr}
+            : {name: name, expr: expr, noValue: 1}
+    );
 }
 
 
