@@ -162,7 +162,7 @@ function integrateProp(aNode, name, rawValue, options) {
     }
 
     aNode.props.push(
-        rawValue
+        rawValue != null
             ? {name: name, expr: expr}
             : {name: name, expr: expr, noValue: 1}
     );
