@@ -25,9 +25,7 @@ function parseExpr(source) {
         return source;
     }
 
-    var expr = readTertiaryExpr(new Walker(source));
-    expr.raw = source;
-    return expr;
+    return readTertiaryExpr(new Walker(source));
 }
 
 exports = module.exports = parseExpr;

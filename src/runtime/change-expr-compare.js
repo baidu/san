@@ -44,16 +44,9 @@ function changeExprCompareExprs(changeExpr, exprs, data) {
  * @return {number}
  */
 function changeExprCompare(changeExpr, expr, data) {
-    var result = 0;
-    if (!expr.changeCache) {
-        expr.changeCache = {};
-    }
-
-    if (changeExpr.raw && !expr.dynamic) {
-        if (expr.changeCache[changeExpr.raw] != null) {
-            return expr.changeCache[changeExpr.raw];
-        }
-    }
+    // if (!expr.dynamic) {
+    //     return 0;
+    // }
 
     switch (expr.type) {
         case ExprType.ACCESSOR:
@@ -62,7 +55,7 @@ function changeExprCompare(changeExpr, expr, data) {
             var changePaths = changeExpr.paths;
             var changeLen = changePaths.length;
 
-            result = 1;
+            var result = 1;
             for (var i = 0; i < pathsLen; i++) {
                 var pathExpr = paths[i];
                 var pathExprValue = pathExpr.value;
@@ -84,24 +77,22 @@ function changeExprCompare(changeExpr, expr, data) {
             if (result) {
                 result = Math.max(1, changeLen - pathsLen + 2);
             }
-            break;
+            return result;
 
         case ExprType.UNARY:
-            result = changeExprCompare(changeExpr, expr.expr, data) ? 1 : 0;
-            break;
+            return changeExprCompare(changeExpr, expr.expr, data) ? 1 : 0;
+
 
         case ExprType.TEXT:
         case ExprType.BINARY:
         case ExprType.TERTIARY:
-            result = changeExprCompareExprs(changeExpr, expr.segs, data);
-            break;
+            return changeExprCompareExprs(changeExpr, expr.segs, data);
 
         case ExprType.ARRAY:
         case ExprType.OBJECT:
             for (var i = 0; i < expr.items.length; i++) {
                 if (changeExprCompare(changeExpr, expr.items[i].expr, data)) {
-                    result = 1;
-                    break;
+                    return 1;
                 }
             }
 
@@ -109,13 +100,12 @@ function changeExprCompare(changeExpr, expr, data) {
 
         case ExprType.INTERP:
             if (changeExprCompare(changeExpr, expr.expr, data)) {
-                result = 1;
+                return 1
             }
             else {
                 for (var i = 0; i < expr.filters.length; i++) {
                     if (changeExprCompareExprs(changeExpr, expr.filters[i].args, data)) {
-                        result = 1;
-                        break;
+                        return 1;
                     }
                 }
             }
@@ -126,16 +116,12 @@ function changeExprCompare(changeExpr, expr, data) {
             if (changeExprCompareExprs(changeExpr, expr.name.paths, data)
                 || changeExprCompareExprs(changeExpr, expr.args, data)
             ) {
-                result = 1;
+                return 1
             }
             break;
     }
 
-    if (changeExpr.raw && !expr.dynamic) {
-        expr.changeCache[changeExpr.raw] = result;
-    }
-
-    return result;
+    return 0;
 }
 
 exports = module.exports = changeExprCompare;

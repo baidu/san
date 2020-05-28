@@ -207,8 +207,7 @@ Data.prototype.set = function (expr, value, option) {
 
     expr = {
         type: ExprType.ACCESSOR,
-        paths: expr.paths.slice(0),
-        raw: expr.raw
+        paths: expr.paths.slice(0)
     };
 
     var prop = expr.paths[0].value;
@@ -336,8 +335,7 @@ Data.prototype.splice = function (expr, args, option) {
 
     expr = {
         type: ExprType.ACCESSOR,
-        paths: expr.paths.slice(0),
-        raw: expr.raw
+        paths: expr.paths.slice(0)
     };
 
     var target = this.get(expr);

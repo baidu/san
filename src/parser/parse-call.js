@@ -29,8 +29,7 @@ function parseCall(source, defaultArgs) {
             args: defaultArgs || []
         };
     }
-
-    expr.raw = source;
+    
     return expr;
 }
 
