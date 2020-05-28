@@ -114,7 +114,7 @@ function preheatANode(aNode) {
                             ) {
                                 aNode.hotspot.getForKey = new Function(
                                     directive.item,
-                                    'return ' + trackBy.raw
+                                    'return ' + directive.trackByRaw
                                 );
                             }
                         }
