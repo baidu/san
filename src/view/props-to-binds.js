@@ -23,14 +23,14 @@ function propsToBinds(props) {
     for (var i = 0, l = props && props.length; i < l; i++) {
         var prop = props[i];
 
+        // TODO: 看看在preheat时候是不是已经做掉了，或者能不能做掉
         result.push({
             name: kebab2camel(prop.name),
-            expr: prop.raw != null ? prop.expr : {
-                type: ExprType.BOOL,
-                value: true
-            },
+            expr: prop.noValue 
+                ? {type: ExprType.BOOL, value: true}
+                : prop.expr,
             x: prop.x,
-            raw: prop.raw
+            noValue: prop.noValue
         });
     }
 

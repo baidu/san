@@ -87,12 +87,11 @@ function preheatANode(aNode) {
                 each(aNode.props, function (prop) {
                     aNode.hotspot.binds.push({
                         name: kebab2camel(prop.name),
-                        expr: prop.raw != null ? prop.expr : {
-                            type: ExprType.BOOL,
-                            value: true
-                        },
+                        expr: prop.noValue != null 
+                            ? {type: ExprType.BOOL, value: true}
+                            : prop.expr,
                         x: prop.x,
-                        raw: prop.raw
+                        noValue: prop.noValue
                     });
                     recordHotspotData(prop.expr);
                 });
