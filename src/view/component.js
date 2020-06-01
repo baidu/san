@@ -253,18 +253,25 @@ function Component(options) { // eslint-disable-line
     this._toPhase('inited');
 
     // #[begin] reverse
-    var hasRootNode = this.aNode.hotspot.hasRootNode 
-        || (this.getComponentType 
-            ? this.getComponentType(this.aNode, this.data) 
-            : this.components[this.aNode.tagName]
-        );
     var reverseWalker = options.reverseWalker;
-
     if (this.el || reverseWalker) {
-        if (hasRootNode) {
-            reverseWalker = reverseWalker || new DOMChildrenWalker(this.el);
+        var RootComponentType = this.getComponentType 
+            ? this.getComponentType(this.aNode, this.data) 
+            : this.components[this.aNode.tagName];
+
+        if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+        }
+        else if (this.el && RootComponentType) {
+            this._rootNode = new RootComponentType({
+                source: this.aNode,
+                owner: this,
+                scope: this.data,
+                parent: this,
+                subTag: this.aNode.tagName,
+                el: this.el
+            });
         }
         else {
             if (reverseWalker) {
