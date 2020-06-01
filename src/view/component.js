@@ -871,6 +871,7 @@ Component.prototype._attach = function (parentEl, beforeEl) {
         this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
         this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+        this._toPhase('created');
     }
     else {
         if (!this.el) {
