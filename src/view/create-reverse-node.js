@@ -37,7 +37,6 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker) {
                 owner: owner,
                 scope: scope,
                 parent: parent,
-                subTag: aNode.tagName,
                 reverseWalker: reverseWalker
             })
             : new AsyncComponent({
@@ -45,7 +44,6 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker) {
                 owner: owner,
                 scope: scope,
                 parent: parent,
-                subTag: aNode.tagName,
                 reverseWalker: reverseWalker
             }, ComponentOrLoader);
     }

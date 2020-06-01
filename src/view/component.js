@@ -86,8 +86,6 @@ function Component(options) { // eslint-disable-line
         this.transition = options.transition;
     }
 
-    this.subTag = options.subTag;
-
     // compile
     compileComponent(clazz);
 
@@ -234,7 +232,7 @@ function Component(options) { // eslint-disable-line
     if (dataTypes) {
         var dataTypeChecker = createDataTypesChecker(
             dataTypes,
-            this.subTag || this.name || clazz.name
+            this.name || clazz.name
         );
         this.data.setTypeChecker(dataTypeChecker);
         this.data.checkDataTypes();
@@ -269,7 +267,6 @@ function Component(options) { // eslint-disable-line
                 owner: this,
                 scope: this.data,
                 parent: this,
-                subTag: this.aNode.tagName,
                 el: this.el
             });
         }

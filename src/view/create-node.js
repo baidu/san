@@ -35,15 +35,13 @@ function createNode(aNode, parent, scope, owner) {
                 source: aNode,
                 owner: owner,
                 scope: scope,
-                parent: parent,
-                subTag: aNode.tagName
+                parent: parent
             })
             : new AsyncComponent({
                 source: aNode,
                 owner: owner,
                 scope: scope,
-                parent: parent,
-                subTag: aNode.tagName
+                parent: parent
             }, ComponentOrLoader);
     }
 
