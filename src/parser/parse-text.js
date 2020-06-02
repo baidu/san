@@ -62,7 +62,6 @@ function parseText(source, delimiters) {
     function pushStringToSeg(text) {
         text && expr.segs.push({
             type: ExprType.STRING,
-            literal: text,
             value: decodeHTMLEntity(text)
         });
     }
