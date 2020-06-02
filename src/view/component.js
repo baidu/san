@@ -25,6 +25,8 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
 var insertBefore = require('../browser/insert-before');
 var un = require('../browser/un');
+var defineComponent = require('./define-component');
+var ComponentLoader = require('./component-loader');
 var createNode = require('./create-node');
 var compileComponent = require('./compile-component');
 var preheatANode = require('./preheat-a-node');
@@ -55,7 +57,6 @@ var warn = require('../util/warn');
  * @param {Object} options 初始化参数
  */
 function Component(options) { // eslint-disable-line
-
     // #[begin] error
     for (var key in Component.prototype) {
         if (this[key] !== Component.prototype[key]) {
@@ -86,14 +87,34 @@ function Component(options) { // eslint-disable-line
         this.transition = options.transition;
     }
 
+    var proto = clazz.prototype;
+
+    // pre define components class
+    /* istanbul ignore else  */
+    if (!proto.hasOwnProperty('_cmptReady')) {
+        proto.components = clazz.components || proto.components || {};
+        var components = proto.components;
+
+        for (var key in components) { // eslint-disable-line
+            var cmptClass = components[key];
+
+            if (typeof cmptClass === 'object' && !(cmptClass instanceof ComponentLoader)) {
+                components[key] = defineComponent(cmptClass);
+            }
+            else if (cmptClass === 'self') {
+                components[key] = clazz;
+            }
+        }
+
+        proto._cmptReady = 1;
+    }
+
     // compile
     compileComponent(clazz);
-
-    var protoANode = clazz.prototype.aNode;
-    preheatANode(protoANode);
+    preheatANode(proto.aNode);
 
 
-    this.tagName = protoANode.tagName;
+    this.tagName = proto.aNode.tagName;
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;

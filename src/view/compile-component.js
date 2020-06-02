@@ -10,8 +10,6 @@
 var warn = require('../util/warn');
 var parseTemplate = require('../parser/parse-template');
 var parseText = require('../parser/parse-text');
-var defineComponent = require('./define-component');
-var ComponentLoader = require('./component-loader');
 
 
 /**
@@ -21,27 +19,6 @@ var ComponentLoader = require('./component-loader');
  */
 function compileComponent(ComponentClass) {
     var proto = ComponentClass.prototype;
-
-    // pre define components class
-    /* istanbul ignore else  */
-    if (!proto.hasOwnProperty('_cmptReady')) {
-        proto.components = ComponentClass.components || proto.components || {};
-        var components = proto.components;
-
-        for (var key in components) { // eslint-disable-line
-            var componentClass = components[key];
-
-            if (typeof componentClass === 'object' && !(componentClass instanceof ComponentLoader)) {
-                components[key] = defineComponent(componentClass);
-            }
-            else if (componentClass === 'self') {
-                components[key] = ComponentClass;
-            }
-        }
-
-        proto._cmptReady = 1;
-    }
-
 
     // pre compile template
     /* istanbul ignore else  */
