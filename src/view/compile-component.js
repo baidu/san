@@ -64,7 +64,7 @@ function compileComponent(ComponentClass) {
                 }
             }
 
-            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseExpr('id'), raw: 'id' };
+            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseExpr('id') };
 
             if (toExtraProp['class']) {
                 var classExpr = parseText('{{class | _xclass}}').segs[0];
@@ -74,8 +74,7 @@ function compileComponent(ComponentClass) {
             else {
                 toExtraProp['class'] = {
                     name: 'class',
-                    expr: parseText('{{class | _class}}'),
-                    raw: '{{class | _class}}'
+                    expr: parseText('{{class | _class}}')
                 };
             }
 
@@ -87,8 +86,7 @@ function compileComponent(ComponentClass) {
             else {
                 toExtraProp.style = {
                     name: 'style',
-                    expr: parseText('{{style | _style}}'),
-                    raw: '{{style | _style}}'
+                    expr: parseText('{{style | _style}}')
                 };
             }
 

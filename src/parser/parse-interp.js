@@ -24,8 +24,7 @@ function parseInterp(source) {
     var interp = {
         type: ExprType.INTERP,
         expr: readTertiaryExpr(walker),
-        filters: [],
-        raw: source
+        filters: []
     };
 
     while (walker.goUntil(124)) { // |

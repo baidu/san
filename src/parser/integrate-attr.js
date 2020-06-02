@@ -110,8 +110,7 @@ function integrateProp(aNode, name, rawValue, options) {
         aNode.props.push({
             name: name,
             expr: parseExpr(xMatch[1]),
-            x: 1,
-            raw: value
+            x: 1
         });
 
         return;
