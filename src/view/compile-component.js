@@ -20,7 +20,6 @@ var parseText = require('../parser/parse-text');
 function compileComponent(ComponentClass) {
     var proto = ComponentClass.prototype;
 
-    // pre compile template
     /* istanbul ignore else  */
     if (!proto.hasOwnProperty('aNode')) {
         var aNode = parseTemplate(ComponentClass.template || proto.template, {
@@ -47,54 +46,47 @@ function compileComponent(ComponentClass) {
         };
 
         if (firstChild.tagName === 'template') {
-            firstChild.tagName = null;
+            delete firstChild.tagName;
         }
 
         if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false) {
-            var toExtraProp = {
-                'class': 0, style: 0, id: 0
-            };
+            var extraPropExists = {};
 
             var len = firstChild.props.length;
             while (len--) {
                 var prop = firstChild.props[len];
-                if (toExtraProp[prop.name] != null) {
-                    toExtraProp[prop.name] = prop;
-                    firstChild.props.splice(len, 1);
+                switch (prop.name) {
+                    case 'class':
+                    case 'style':
+                        extraPropExists[prop.name] = true;
+                        var propExpr = parseText('{{' + prop.name + '|_x' + prop.name + '}}').segs[0];
+                        propExpr.filters[0].args.push(prop.expr);
+                        prop.expr = propExpr;
+                        break;
+
+                    case 'id':
+                        extraPropExists[prop.name] = true;
+                    
                 }
             }
 
-            toExtraProp.id = toExtraProp.id || { name: 'id', expr: parseExpr('id') };
-
-            if (toExtraProp['class']) {
-                var classExpr = parseText('{{class | _xclass}}').segs[0];
-                classExpr.filters[0].args.push(toExtraProp['class'].expr);
-                toExtraProp['class'].expr = classExpr;
-            }
-            else {
-                toExtraProp['class'] = {
+            if (!extraPropExists['class']) {
+                firstChild.props.push({
                     name: 'class',
                     expr: parseText('{{class | _class}}')
-                };
+                });
             }
 
-            if (toExtraProp.style) {
-                var styleExpr = parseText('{{style | _xstyle}}').segs[0];
-                styleExpr.filters[0].args.push(toExtraProp.style.expr);
-                toExtraProp.style.expr = styleExpr;
-            }
-            else {
-                toExtraProp.style = {
+            if (!extraPropExists.style) {
+                firstChild.props.push({
                     name: 'style',
                     expr: parseText('{{style | _style}}')
-                };
+                });
             }
 
-            firstChild.props.push(
-                toExtraProp['class'], // eslint-disable-line dot-notation
-                toExtraProp.style,
-                toExtraProp.id
-            );
+            if (!extraPropExists.id) {
+                firstChild.props.push({ name: 'id', expr: parseExpr('id') });
+            }
         }
     }
 }
