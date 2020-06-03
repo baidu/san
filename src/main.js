@@ -51,7 +51,7 @@
     var LifeCycle = require('./view/life-cycle');
     var NodeType = require('./view/node-type');
     var Component = require('./view/component');
-    var compileComponent = require('./view/compile-component');
+    var parseComponentTemplate = require('./view/parse-component-template');
     var defineComponent = require('./view/define-component');
     var createComponentLoader = require('./view/create-component-loader');
     var emitDevtool = require('./util/emit-devtool');
@@ -104,11 +104,12 @@
         createComponentLoader: createComponentLoader,
 
         /**
-         * 编译组件类。预解析template和components
+         * 解析组件 template
          *
          * @param {Function} ComponentClass 组件类
+         * @return {ANode}
          */
-        compileComponent: compileComponent,
+        parseComponentTemplate: parseComponentTemplate,
 
         /**
          * 解析 template

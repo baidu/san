@@ -28,7 +28,7 @@ var un = require('../browser/un');
 var defineComponent = require('./define-component');
 var ComponentLoader = require('./component-loader');
 var createNode = require('./create-node');
-var compileComponent = require('./compile-component');
+var parseComponentTemplate = require('./parse-component-template');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
@@ -110,7 +110,9 @@ function Component(options) { // eslint-disable-line
     }
 
     // compile
-    compileComponent(clazz);
+    if (!proto.hasOwnProperty('aNode')) {
+        proto.aNode = parseComponentTemplate(clazz);
+    }
     preheatANode(proto.aNode);
 
 
