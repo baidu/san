@@ -136,12 +136,7 @@ function preheatANode(aNode) {
                     aNode.hotspot.props[prop.name] = index;
                     prop.handler = getPropHandler(aNode.tagName, prop.name);
 
-                    if (prop.name === 'id') {
-                        prop.id = true;
-                        aNode.hotspot.idProp = prop;
-                        aNode.hotspot.dynamicProps.push(prop);
-                    }
-                    else if (prop.expr.value != null) {
+                    if (prop.expr.value != null) {
                         if (sourceNode) {
                             prop.handler(sourceNode, prop.expr.value, prop.name, aNode);
                         }
