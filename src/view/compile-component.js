@@ -9,7 +9,9 @@
 
 var warn = require('../util/warn');
 var parseTemplate = require('../parser/parse-template');
-var parseText = require('../parser/parse-text');
+var ExprType = require('../parser/expr-type');
+var createAccessor = require('../parser/create-accessor');
+
 
 
 /**
@@ -59,9 +61,21 @@ function compileComponent(ComponentClass) {
                     case 'class':
                     case 'style':
                         extraPropExists[prop.name] = true;
-                        var propExpr = parseText('{{' + prop.name + '|_x' + prop.name + '}}').segs[0];
-                        propExpr.filters[0].args.push(prop.expr);
-                        prop.expr = propExpr;
+                        prop.expr = {
+                            type: ExprType.INTERP,
+                            expr: createAccessor([{
+                                type: ExprType.STRING,
+                                value: prop.name
+                            }]),
+                            filters: [{
+                                type: ExprType.CALL,
+                                args: [prop.expr],
+                                name: createAccessor([{
+                                    type: ExprType.STRING,
+                                    value: '_x' + prop.name
+                                }])
+                            }]
+                        }
                         break;
 
                     case 'id':
@@ -73,19 +87,53 @@ function compileComponent(ComponentClass) {
             if (!extraPropExists['class']) {
                 firstChild.props.push({
                     name: 'class',
-                    expr: parseText('{{class | _class}}')
+                    expr: {
+                        type: ExprType.INTERP,
+                        expr: createAccessor([{
+                            type: ExprType.STRING,
+                            value: 'class'
+                        }]),
+                        filters: [{
+                            type: ExprType.CALL,
+                            args: [],
+                            name: createAccessor([{
+                                type: ExprType.STRING,
+                                value: '_class'
+                            }])
+                        }]
+                    }
                 });
             }
 
             if (!extraPropExists.style) {
                 firstChild.props.push({
                     name: 'style',
-                    expr: parseText('{{style | _style}}')
+                    expr: {
+                        type: ExprType.INTERP,
+                        expr: createAccessor([{
+                            type: ExprType.STRING,
+                            value: 'style'
+                        }]),
+                        filters: [{
+                            type: ExprType.CALL,
+                            args: [],
+                            name: createAccessor([{
+                                type: ExprType.STRING,
+                                value: '_style'
+                            }])
+                        }]
+                    }
                 });
             }
 
             if (!extraPropExists.id) {
-                firstChild.props.push({ name: 'id', expr: parseExpr('id') });
+                firstChild.props.push({ 
+                    name: 'id', 
+                    expr: createAccessor([{
+                        type: ExprType.STRING,
+                        value: 'id'
+                    }])
+                });
             }
         }
     }
