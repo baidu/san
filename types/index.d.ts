@@ -1,4 +1,3 @@
-
 declare namespace San {
     interface SanEvent<T, N> {
         target: SanComponent<T>;
@@ -271,6 +270,12 @@ declare namespace San {
 
     interface ATemplateNode extends ANode {
         tagName: 'template';
+        children: ANode[];
+    }
+
+    interface AFragmentNode extends ANode {
+        tagName: 'fragment';
+        children: ANode[];
     }
 
     interface AForNode extends ANode {
