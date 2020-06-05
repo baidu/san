@@ -67,7 +67,7 @@ ANode 压缩结构设计
 ### INTERP
 
 - head: 7
-- 编码序: {Node}expr, {bool}original, {Array<Node>}filters
+- 编码序: {bool}original, {Node}expr, {Array<Node>}filters
 
 ### CALL
 
@@ -162,7 +162,7 @@ ANode 压缩结构设计
 ### 指令 for
 
 - head: 37
-- 编码序: {Node}value, {string}item, {string?}index, {string?}trackByRaw
+- 编码序: {string}item, {string?}index, {string?}trackByRaw, {Node}value
 - 注: trackBy 通过 trackByRaw 二次解析
 
 
