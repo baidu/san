@@ -31,13 +31,13 @@ ANode 压缩结构设计
 
 ### 文本节点
 
-- head: 0 
+- head: 0
 - 编码序: {Node}textExpr
 
 ### 元素节点
 
 - head: 1
-- 编码序: {string?}tagName, {Array<Node>}children, {...}props
+- 编码序: {string?}tagName, {Array&lt;Node&gt;}propsAndChildren
 
 
 
@@ -67,22 +67,22 @@ ANode 压缩结构设计
 ### INTERP
 
 - head: 7
-- 编码序: {bool}original, {Node}expr, {Array<Node>}filters
+- 编码序: {bool}original, {Node}expr, {Array&lt;Node&gt;}filters
 
 ### CALL
 
 - head: 8
-- 编码序: {Node}name, {Array<Node>}args
+- 编码序: {Node}name, {Array&lt;Node&gt;}args
 
 ### TEXT
 
 - head: 9
-- 编码序: {bool}original, {Array<Node>}segs
+- 编码序: {bool}original, {Array&lt;Node&gt;}segs
 
 ### BINARY
 
 - head: 10
-- 编码序: {number}operator, {Array<Node>}segs
+- 编码序: {number}operator, {Array&lt;Node&gt;}segs
 
 ### UNARY
 
@@ -92,12 +92,12 @@ ANode 压缩结构设计
 ### TERTIARY
 
 - head: 12
-- 编码序: {Array<Node>}segs
+- 编码序: {Array&lt;Node&gt;}segs
 
 ### OBJECT
 
 - head: 13
-- 编码序: {Array<Node>}items
+- 编码序: {Array&lt;Node&gt;}items
 
 ### OBJECT ITEM UNSPREAD
 
@@ -112,7 +112,7 @@ ANode 压缩结构设计
 ### ARRAY
 
 - head: 16
-- 编码序: {Array<Node>}items
+- 编码序: {Array&lt;Node&gt;}items
 
 ### ARRAY ITEM UNSPREAD
 
@@ -169,7 +169,7 @@ ANode 压缩结构设计
 ### 指令 if
 
 - head: 38
-- 编码序: {Node}value, {Array<Node>?}elses
+- 编码序: {Node}value, {Array&lt;Node&gt;?}elses
 
 
 ### 指令 elif
