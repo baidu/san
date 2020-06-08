@@ -32,12 +32,12 @@ ANode 压缩结构设计
 ### 文本节点
 
 - head: 0
-- 编码序: {Node}textExpr
+- 编码序: `{Node}textExpr`
 
 ### 元素节点
 
 - head: 1
-- 编码序: {string?}tagName, {Array&lt;Node&gt;}propsAndChildren
+- 编码序: `{string?}tagName, {Array<Node>}propsAndChildren`
 
 
 
@@ -47,82 +47,82 @@ ANode 压缩结构设计
 ### STRING
 
 - head: 3
-- 编码序: {string}value
+- 编码序: `{string}value`
 
 ### NUMBER
 
 - head: 4
-- 编码序: {number}value
+- 编码序: `{number}value`
 
 ### BOOL
 
 - head: 5
-- 编码序: {bool}value
+- 编码序: `{bool}value`
 
 ### ACCESSOR
 
 - head: 6
-- 编码序: {Array}paths
+- 编码序: `{Array}paths`
 
 ### INTERP
 
 - head: 7
-- 编码序: {bool}original, {Node}expr, {Array&lt;Node&gt;}filters
+- 编码序: `{bool}original, {Node}expr, {Array<Node>}filters`
 
 ### CALL
 
 - head: 8
-- 编码序: {Node}name, {Array&lt;Node&gt;}args
+- 编码序: `{Node}name, {Array<Node>}args`
 
 ### TEXT
 
 - head: 9
-- 编码序: {bool}original, {Array&lt;Node&gt;}segs
+- 编码序: `{bool}original, {Array<Node>}segs`
 
 ### BINARY
 
 - head: 10
-- 编码序: {number}operator, {Array&lt;Node&gt;}segs
+- 编码序: `{number}operator, {Array<Node>}segs`
 
 ### UNARY
 
 - head: 11
-- 编码序: {number}operator, {Node}expr
+- 编码序: `{number}operator, {Node}expr`
 
 ### TERTIARY
 
 - head: 12
-- 编码序: {Array&lt;Node&gt;}segs
+- 编码序: `{Array<Node>}segs`
 
 ### OBJECT
 
 - head: 13
-- 编码序: {Array&lt;Node&gt;}items
+- 编码序: `{Array<Node>}items`
 
 ### OBJECT ITEM UNSPREAD
 
 - head: 14
-- 编码序: {Node}name, {Node}expr
+- 编码序: `{Node}name, {Node}expr`
 
 ### OBJECT ITEM SPREAD
 
 - head: 15
-- 编码序: {Node}name, {Node}expr
+- 编码序: `{Node}name, {Node}expr`
 
 ### ARRAY
 
 - head: 16
-- 编码序: {Array&lt;Node&gt;}items
+- 编码序: `{Array<Node>}items`
 
 ### ARRAY ITEM UNSPREAD
 
 - head: 17
-- 编码序: {Node}expr
+- 编码序: `{Node}expr`
 
 ### ARRAY ITEM SPREAD
 
 - head: 18
-- 编码序: {Node}expr
+- 编码序: `{Node}expr`
 
 ### NULL
 
@@ -136,46 +136,46 @@ ANode 压缩结构设计
 ### 普通属性
 
 - head: 2
-- 编码序: {string}name, {Node}expr
+- 编码序: `{string}name, {Node}expr`
 
 ### NOVALUE 属性
 
 - head: 33
-- 编码序: {string}name, {Node}expr
+- 编码序: `{string}name, {Node}expr`
 
 ### 双向绑定属性
 
 - head: 34
-- 编码序: {string}name, {Node}expr
+- 编码序: `{string}name, {Node}expr`
 
 ### 事件
 
 - head: 35
-- 编码序: {string}name, {Node}expr, {ObjectAsArray}modifier
+- 编码序: `{string}name, {Node}expr, {ObjectAsArray}modifier`
 
 ### var
 
 - head: 36
-- 编码序: {string}name, {Node}expr
+- 编码序: `{string}name, {Node}expr`
 
 
 ### 指令 for
 
 - head: 37
-- 编码序: {string}item, {string?}index, {string?}trackByRaw, {Node}value
+- 编码序: `{string}item, {string?}index, {string?}trackByRaw, {Node}value`
 - 注: trackBy 通过 trackByRaw 二次解析
 
 
 ### 指令 if
 
 - head: 38
-- 编码序: {Node}value, {Array&lt;Node&gt;?}elses
+- 编码序: `{Node}value, {Array<Node>?}elses`
 
 
 ### 指令 elif
 
 - head: 39
-- 编码序: {Node}value
+- 编码序: `{Node}value`
 
 
 ### 指令 else
@@ -188,26 +188,22 @@ ANode 压缩结构设计
 ### 指令 ref
 
 - head: 41
-- 编码序: {Node}value
+- 编码序: `{Node}value`
 
 
 ### 指令 bind
 
 - head: 42
-- 编码序: {Node}value
+- 编码序: `{Node}value`
 
 
 ### 指令 html
 
 - head: 43
-- 编码序: {Node}value
+- 编码序: `{Node}value`
 
 
 ### 指令 transition
 
 - head: 44
-- 编码序: {Node}value
-
-
-
-
+- 编码序: `{Node}value`
