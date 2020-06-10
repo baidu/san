@@ -39,9 +39,10 @@ function unpackANode(packed) {
                     directives: {},
                     props: [],
                     events: [],
-                    children: [],
-                    tagName: packed[++i]
+                    children: []
                 };
+                var tagName = packed[++i];
+                tagName && (node.tagName = tagName);
                 state = packed[++i] || -1;
                 break;
 
@@ -85,7 +86,7 @@ function unpackANode(packed) {
                     type: ExprType.INTERP,
                     filters: []
                 };
-                packed[++i] && (node.original = true);
+                packed[++i] && (node.original = 1);
                 state = -2;
                 break;
                 
@@ -103,7 +104,7 @@ function unpackANode(packed) {
                     segs: []
                 };
 
-                packed[++i] && (node.original = true);
+                packed[++i] && (node.original = 1);
                 state = packed[++i] || -1;
                 break;
 
@@ -141,9 +142,13 @@ function unpackANode(packed) {
                 break;
 
             case 14:
+                node = {};
+                state = -2;
+                break;
+
             case 15:
-                node = {spread: type === 15};
-                state = -4;
+                node = {spread: true};
+                state = -2;
                 break;
 
             case 16:
@@ -156,8 +161,8 @@ function unpackANode(packed) {
 
             case 17:
             case 18:
-                node = {spread: type === 18};
-                state = -4;
+                node = type === 18 ? {spread: true} : {};
+                state = -2;
                 break;
 
             case 2:
@@ -166,8 +171,8 @@ function unpackANode(packed) {
                 node = {
                     name: packed[++i]
                 };
-                (type === 33) && (node.noValue = true);
-                (type === 34) && (node.x = true);
+                (type === 33) && (node.noValue = 1);
+                (type === 34) && (node.x = 1);
                 state = -2;
                 break;
 
@@ -348,6 +353,11 @@ function unpackANode(packed) {
                 case 33:
                 case 34:
                 case 36:
+                // Object Spread Item
+                case 15:
+                // Expr: Array Item
+                case 17:
+                case 18:
                     current.expr = node;
                     stackIndex--;
                     break;
@@ -363,9 +373,8 @@ function unpackANode(packed) {
 
                 // Expr: Object Item
                 case 14:
-                case 15:
-                    if (currentState === -4) {
-                        currentState = -5;
+                    if (currentState === -2) {
+                        stateStack[stackIndex] = -4;
                         current.name = node;
                     }
                     else {
@@ -374,17 +383,10 @@ function unpackANode(packed) {
                     }
                     break;
 
-                // Expr: Array Item
-                case 17:
-                case 18:
-                    current.expr = node;
-                    stackIndex--;
-                    break;
-
                 // Event
                 case 35:
                     if (currentState === -2) {
-                        currentState = stateStack[stackIndex] = -3;
+                        stateStack[stackIndex] = -3;
                         current.expr = node;
                     }
                     else {
@@ -405,14 +407,21 @@ function unpackANode(packed) {
                     current.value = node;
                     stackIndex--;
                     break;
-
+                
+                // Directive: if
                 case 38:
-                    // Directive: if
-                    current.elses = current.elses || [];
-                    current.elses.push(node);
-                    if (!(--stateStack[stackIndex])) {
-                        stackIndex--;
+                    if (currentState === -2) {
+                        stateStack[stackIndex] = -3;
+                        current.value = node;
                     }
+                    else {
+                        current.elses = current.elses || [];
+                        current.elses.push(node);
+                        if (!(--stateStack[stackIndex])) {
+                            stackIndex--;
+                        }
+                    }
+                    
                     break;
 
                 // Node: Text
