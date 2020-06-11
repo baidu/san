@@ -37,7 +37,7 @@ ANode 压缩结构设计
 ### 元素节点
 
 - head: 1
-- 编码序: `{string?}tagName, {Array<Node>}propsAndChildren`
+- 编码序: `{string?}tagName, {Array<Node>}propsAndChildren, {Array<Node>?}elses`
 
 
 
@@ -169,7 +169,7 @@ ANode 压缩结构设计
 ### 指令 if
 
 - head: 38
-- 编码序: `{Node}value, {Array<Node>?}elses`
+- 编码序: `{Node}value`
 
 
 ### 指令 elif
