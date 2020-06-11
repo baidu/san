@@ -107,7 +107,7 @@ ANode 压缩结构设计
 ### OBJECT ITEM SPREAD
 
 - head: 15
-- 编码序: `{Node}name, {Node}expr`
+- 编码序: `{Node}expr`
 
 ### ARRAY
 
