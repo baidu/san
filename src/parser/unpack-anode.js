@@ -20,12 +20,15 @@ function unpackANode(packed) {
     var nodeStack = [];
     var typeStack = [];
     var stateStack = [];
+    var targetStack = [];
     var stackIndex = -1;
 
     for (var i = 0, l = packed.length; i < l; i++) {
         var current = nodeStack[stackIndex];
         var currentType = typeStack[stackIndex];
         var currentState = stateStack[stackIndex];
+        var currentTarget = targetStack[stackIndex];
+
         while (current) {
             if (currentState === -3) {
                 currentState = stateStack[stackIndex] = packed[i++] || -1;
@@ -35,6 +38,7 @@ function unpackANode(packed) {
                 current = nodeStack[--stackIndex];
                 currentType = typeStack[stackIndex];
                 currentState = stateStack[stackIndex];
+                currentTarget = targetStack[stackIndex];
             }
             else {
                 break;
@@ -44,6 +48,7 @@ function unpackANode(packed) {
         var type = packed[i];
         var node;
         var state = -1;
+        var target = false;
 
         switch (type) {
             // Node: Tag
@@ -255,60 +260,76 @@ function unpackANode(packed) {
             switch (currentType) {
                 // Node: Tag
                 case 1:
-                    switch (type) {
-                        case 2:
-                        case 33:
-                        case 34:
-                            current.props.push(node);
-                            break;
-                        
-                        case 35:
-                            current.events.push(node);
-                            break;
-
-                        case 36:
-                            current.vars = current.vars || [];
-                            current.vars.push(node);
-                            break;
-
-                        case 37:
-                            current.directives['for'] = node;
-                            break;
-
-                        case 38:
-                            current.directives['if'] = node;
-                            break;
-
-                        case 39:
-                            current.directives.elif = node;
-                            break;
-
-                        case 40:
-                            current.directives['else'] = node;
-                            break;
-
-                        case 41:
-                            current.directives.ref = node;
-                            break;
-                        
-                        case 42:
-                            current.directives.bind = node;
-                            break;
-
-                        case 43:
-                            current.directives.html = node;
-                            break;
-
-                        case 44:
-                            current.directives.transition = node;
-                            break;
-
-                        case 1:
-                        default:
-                            current.children.push(node);
+                    if (currentTarget) {
+                        current.elses = current.elses || [];
+                        current.elses.push(node);
+                        if (!(--stateStack[stackIndex])) {
+                            stackIndex--;
+                        }
                     }
-                    if (!(--stateStack[stackIndex])) {
-                        stackIndex--;
+                    else {
+                        switch (type) {
+                            case 2:
+                            case 33:
+                            case 34:
+                                current.props.push(node);
+                                break;
+                            
+                            case 35:
+                                current.events.push(node);
+                                break;
+
+                            case 36:
+                                current.vars = current.vars || [];
+                                current.vars.push(node);
+                                break;
+
+                            case 37:
+                                current.directives['for'] = node;
+                                break;
+
+                            case 38:
+                                current.directives['if'] = node;
+                                break;
+
+                            case 39:
+                                current.directives.elif = node;
+                                break;
+
+                            case 40:
+                                current.directives['else'] = node;
+                                break;
+
+                            case 41:
+                                current.directives.ref = node;
+                                break;
+                            
+                            case 42:
+                                current.directives.bind = node;
+                                break;
+
+                            case 43:
+                                current.directives.html = node;
+                                break;
+
+                            case 44:
+                                current.directives.transition = node;
+                                break;
+
+                            case 1:
+                            default:
+                                current.children.push(node);
+                        }
+
+                        if (!(--stateStack[stackIndex])) {
+                            if (current.directives['if']) {
+                                targetStack[stackIndex] = 'elses';
+                                stateStack[stackIndex] = -3;
+                            }
+                            else {
+                                stackIndex--;
+                            }
+                        }
                     }
                     break;
 
@@ -323,7 +344,7 @@ function unpackANode(packed) {
                 // Expr: Interp
                 case 7:
                     if (currentState === -2) {
-                        currentState = stateStack[stackIndex] = -3;
+                        stateStack[stackIndex] = -3;
                         current.expr = node;
                     }
                     else {
@@ -337,7 +358,7 @@ function unpackANode(packed) {
                 // Expr: CALL
                 case 8:
                     if (currentState === -2) {
-                        currentState = stateStack[stackIndex] = -3;
+                        stateStack[stackIndex] = -3;
                         current.name = node;
                     }
                     else {
@@ -410,8 +431,9 @@ function unpackANode(packed) {
                     }
                     break;
 
-                // Directive: for, elif, ref, bind, html, transition
+                // Directive: for, if, elif, ref, bind, html, transition
                 case 37:
+                case 38:
                 case 39:
                 case 41:
                 case 42:
@@ -419,22 +441,6 @@ function unpackANode(packed) {
                 case 44:
                     current.value = node;
                     stackIndex--;
-                    break;
-                
-                // Directive: if
-                case 38:
-                    if (currentState === -2) {
-                        stateStack[stackIndex] = -3;
-                        current.value = node;
-                    }
-                    else {
-                        current.elses = current.elses || [];
-                        current.elses.push(node);
-                        if (!(--stateStack[stackIndex])) {
-                            stackIndex--;
-                        }
-                    }
-                    
                     break;
 
                 // Node: Text
@@ -448,6 +454,7 @@ function unpackANode(packed) {
             nodeStack[++stackIndex] = node;
             typeStack[stackIndex] = type;
             stateStack[stackIndex] = state;
+            targetStack[stackIndex] = target;
         }
     }
 
