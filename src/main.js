@@ -48,6 +48,7 @@
     var parseTemplate = require('./parser/parse-template');
     var parseExpr = require('./parser/parse-expr');
     var ExprType = require('./parser/expr-type');
+    var unpackANode = require('./parser/unpack-anode');
     var LifeCycle = require('./view/life-cycle');
     var NodeType = require('./view/node-type');
     var Component = require('./view/component');
@@ -110,6 +111,14 @@
          * @return {ANode}
          */
         parseComponentTemplate: parseComponentTemplate,
+
+        /**
+         * 解压缩 ANode
+         *
+         * @param {Array} source ANode 压缩数据
+         * @return {Object}
+         */
+        unpackANode: unpackANode,
 
         /**
          * 解析 template
