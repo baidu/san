@@ -17,7 +17,7 @@ var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
 var createAccessor = require('../parser/create-accessor');
-
+var unpackANode = require('../parser/unpack-anode');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
@@ -111,7 +111,9 @@ function Component(options) { // eslint-disable-line
 
     // compile
     if (!proto.hasOwnProperty('aNode')) {
-        proto.aNode = parseComponentTemplate(clazz);
+        proto.aNode = proto.hasOwnProperty('aPack')
+            ? unpackANode(proto.aPack)
+            : parseComponentTemplate(clazz);
     }
     preheatANode(proto.aNode);
 
