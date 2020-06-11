@@ -1,7 +1,20 @@
-
+/**
+ * Copyright (c) Baidu Inc. All rights reserved.
+ *
+ * This source code is licensed under the MIT license.
+ * See LICENSE file in the project root for license information.
+ *
+ * @file 解压缩 ANode
+ */
 
 var ExprType = require('./expr-type');
 
+/**
+ * 解压缩 ANode
+ *
+ * @param {Array} packed ANode压缩数据
+ * @return {Object}
+ */
 function unpackANode(packed) {
     var root;
     var nodeStack = [];
