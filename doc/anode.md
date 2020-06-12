@@ -461,8 +461,7 @@ exprInfo = {
                 ]
             }
         }
-    ],
-    "raw": "{name: realName, email, ...ext}"
+    ]
 }
 ```
 
@@ -510,7 +509,7 @@ exprInfo = {
 ANode 的结构
 ------
 
-template 的 parse 直接返回一个 ANode 对象，ANode 对象是一个 plain object。ANode 对象上不包含任何方法，只有属性。
+template 的 parse 直接返回一个 ANode 对象。ANode 是一个 JSON Object，不包含任何方法，只有属性。
 
 
 #### {Object?} textExpr
@@ -555,13 +554,16 @@ aNode.directives['if'];
 
 节点的标签名。文本节点该属性无效
 
+#### {Array.<ANode>?} elses
+
+当节点包含 `if` directive 时，其对应的 `else` 和 `elif` 节点
 
 
 
 模板解析结果
 ----------
 
-模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `children` 包含节点结构、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名。
+模板解析的返回结果是一个标签节点的 ANode 实例，实例中 `children` 包含子节点、`props` 包含属性绑定信息、`events` 包含事件绑定信息、`directives` 包含指令信息、`tagName` 为节点标签名、`elses` 为条件节点结。
 
 本章节通过一些示例说明模板解析的 ANode 结果。其中表达式信息的详细说明请参考 [表达式](#user-content-表达式) 章节，ANode 结构请参考 [ANode 的结构](#user-content-anode-的结构) 章节。
 
@@ -649,8 +651,7 @@ aNode = {
                         "filters": []
                     }
                 ]
-            },
-            "raw": "This is {{name}}"
+            }
         }
     ],
     "events": [],
@@ -700,8 +701,7 @@ aNode = {
                         "value": "name"
                     }
                 ]
-            },
-            "raw": "{{name}}"
+            }
         }
     ],
     "events": [],
@@ -748,8 +748,7 @@ aNode = {
             "expr": {
                 "type": ExprType.STRING,
                 "value": "text"
-            },
-            "raw": "text"
+            }
         },
         {
             "name": "value",
@@ -875,8 +874,7 @@ aNode = {
                         ]
                     }
                 ]
-            },
-            "raw": "result: {{(var1 - var2) / var3 + 'static text' | comma(commaLength + 1)}}"
+            }
         }
     ],
     "events": [],
@@ -902,8 +900,7 @@ aNode = {
             "expr": {
                 "type": ExprType.STRING,
                 "value": "button"
-            },
-            "raw": "button"
+            }
         }
     ],
     "events": [
