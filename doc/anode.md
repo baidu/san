@@ -89,18 +89,18 @@ San 认为 template 应该尽量保持 HTML 的语法简洁性，所以双向绑
 
 ### 指令语法
 
-以 `san-` 为前缀的属性，将被解析成指令。常见的指令有 for、if 等。
+以 `s-` 为前缀的属性，将被解析成指令。常见的指令有 for、if 等。
 
 `示例`
 
 
 ```html
-<span san-if="isOnline">Hello!</span>
-<span san-else>Offline</span>
+<span s-if="isOnline">Hello!</span>
+<span s-else>Offline</span>
 
 <dl>
     <dt>name - email</dt>
-    <dd san-for="p in persons" title="{{p.name}}">{{p.name}}({{dept}}) - {{p.email}}</dd>
+    <dd s-for="p in persons" title="{{p.name}}">{{p.name}}({{dept}}) - {{p.email}}</dd>
 </dl>
 ```
 
@@ -948,8 +948,8 @@ if 指令的值是一个表达式信息对象，else 指令的值永远等于 tr
 
 ```html
 <div>
-    <span san-if="isOnline">Hello!</span>
-    <span san-else>Offline</span>
+    <span s-if="isOnline">Hello!</span>
+    <span s-else>Offline</span>
 </div>
 ```
 
@@ -1025,7 +1025,7 @@ aNode = {
 
 ```html
 <ul>
-    <li san-for="p, index in persons">{{p.name}} - {{p.email}}</li>
+    <li s-for="p, index in persons">{{p.name}} - {{p.email}}</li>
 </ul>
 ```
 
