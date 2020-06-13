@@ -104,7 +104,7 @@ function buildFile(filePath) {
 
         // iterate
         if (isDir) {
-            console.log(`[Build spec] ${filename}`);
+            console.log(`[Build Reverse Spec] ${filename}`);
             buildFile(abFilePath);
         }
     });
@@ -148,7 +148,7 @@ function writeIn({htmlTpl, html, specTpls}) {
 };
 
 console.log();
-console.log('----- Build Specs -----');
+console.log('----- Build Reverse Specs -----');
 
 
 buildFile(path.resolve(__dirname, './'));
