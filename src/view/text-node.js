@@ -7,6 +7,7 @@
  * @file text 节点类
  */
 
+var guid = require('../util/guid');
 var isBrowser = require('../browser/is-browser');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
@@ -41,6 +42,7 @@ function TextNode(aNode, parent, scope, owner, reverseWalker) {
             switch (currentNode.nodeType) {
                 case 8:
                     if (currentNode.data === 's-text') {
+                        this.id = this.id || guid++;
                         this.sel = currentNode;
                         currentNode.data = this.id;
                         reverseWalker.goNext();
@@ -93,6 +95,7 @@ TextNode.prototype.attach = function (parentEl, beforeEl) {
     this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner);
 
     if (this.aNode.textExpr.original) {
+        this.id = this.id || guid++;
         this.sel = document.createComment(this.id);
         insertBefore(this.sel, parentEl, beforeEl);
 
