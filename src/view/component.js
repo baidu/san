@@ -111,9 +111,14 @@ function Component(options) { // eslint-disable-line
 
     // compile
     if (!proto.hasOwnProperty('aNode')) {
-        proto.aNode = proto.hasOwnProperty('aPack')
-            ? unpackANode(proto.aPack)
-            : parseComponentTemplate(clazz);
+        var aPack = clazz.aPack || proto.hasOwnProperty('aPack') && proto.aPack;
+        if (aPack) {
+            proto.aNode = unpackANode(aPack);
+            clazz.aPack = proto.aPack = null;
+        }
+        else {
+            proto.aNode = parseComponentTemplate(clazz);
+        }
     }
     preheatANode(proto.aNode);
 

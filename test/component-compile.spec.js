@@ -35,10 +35,43 @@ describe("Component Compile", function () {
 
     });
 
-    it("unpack from aPack", function (done) {
+    it("unpack from prototype aPack", function (done) {
         var MyComponent = san.defineComponent({
             aPack: [1,"a",4,2,"class",7,,6,1,3,"class",1,8,6,1,3,"_class",,2,"style",7,,6,1,3,"style",1,8,6,1,3,"_style",,2,"id",6,1,3,"id",1,"span",2,2,"title",6,1,3,"name",,9,,1,7,,6,1,3,"name",]
         });
+
+        expect(MyComponent.prototype.aNode == null).toBeTruthy();
+
+        var myComponent = new MyComponent({
+            data: {
+                name: 'er'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('er');
+        expect(span.innerHTML.indexOf('er')).toBe(0);
+        myComponent.data.set('name', 'san');
+        myComponent.nextTick(function () {
+            expect(span.title).toBe('san');
+            expect(span.innerHTML.indexOf('san')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+
+    });
+
+    it("unpack from aPack static prop", function (done) {
+        var MyComponent = san.defineComponent({
+        });
+        MyComponent.aPack = [1,"a",4,2,"class",7,,6,1,3,"class",1,8,6,1,3,"_class",,2,"style",7,,6,1,3,"style",1,8,6,1,3,"_style",,2,"id",6,1,3,"id",1,"span",2,2,"title",6,1,3,"name",,9,,1,7,,6,1,3,"name",];
 
         expect(MyComponent.prototype.aNode == null).toBeTruthy();
 
