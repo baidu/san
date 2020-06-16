@@ -57,7 +57,7 @@ function parseTemplate(source, options) {
     var walker = new Walker(source);
 
     var tagReg = /<(\/)?([a-z][a-z0-9-]*)\s*/ig;
-    var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(['"])([^\3]*?)\3)?\s*/ig;
+    var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(([^'"<>\s]+)|(['"])([^\5]*?)\5))?\s*/ig;
 
     var tagMatch;
     var currentNode = rootNode;
@@ -185,24 +185,10 @@ function parseTemplate(source, options) {
                 // 读取 attribute
                 var attrMatch = walker.match(attrReg);
                 if (attrMatch) {
-
-                    // #[begin] error
-                    // 如果属性有 =，但没取到 value，报错
-                    if (
-                        walker.charCode(attrMatch.index + attrMatch[1].length) === 61
-                        && !attrMatch[2]
-                    ) {
-                        throw new Error(''
-                            + '[SAN ERROR] ' + getXPath(stack, tagName) + ' attribute `'
-                            + attrMatch[1] + '` is not wrapped with ""'
-                        );
-                    }
-                    // #[end]
-
                     integrateAttr(
                         aElement,
                         attrMatch[1],
-                        attrMatch[3] ? attrMatch[4] : void(0),
+                        attrMatch[2] ? (attrMatch[4] || attrMatch[6]) : void(0),
                         options
                     );
                 }
