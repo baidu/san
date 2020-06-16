@@ -513,6 +513,23 @@ Component.prototype.dispatch = function (name, value) {
 };
 
 /**
+ * 添加 this.data.set 的引用，即:this.$set('a', 1) => this.data.set('a', 1)
+ * 另外扩展支持 this.$set({a:1, b:2}) 的批量更新和直接 set this.data 的能力
+ *
+ * @param {string|Object?} exprOrData 数据项路径或者要批量更新的数据项
+ * @param {*} data 数据
+ * @return {null} null 返回为空
+ */
+Component.prototype.$set = function (exprOrData, data) {
+    if (typeof exprOrData === 'string') {
+        return this.data.set(exprOrData, data);
+    }
+    for (let key in exprOrData) {
+        exprOrData.hasOwnProperty(key) && this.data.set(key, exprOrData[key]);
+    }
+};
+
+/**
  * 获取组件内部的 slot
  *
  * @param {string=} name slot名称，空为default slot
