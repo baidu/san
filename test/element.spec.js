@@ -110,6 +110,29 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("bind prop, no quotes", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title={{name}} class=text>{{name}}</span></a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'errorrik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.getAttribute('title')).toBe('errorrik');
+        expect(span.className).toBe('text');
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("bind prop, which has xxx- prefix", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a data-name="{{name}}"><span data-name="{{name}}">{{name}}</span></a>'

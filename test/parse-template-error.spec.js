@@ -187,29 +187,6 @@ describe('parseTemplate', function () {
 
     });
 
-    it('should throw error if attributes is not wrapped with "" or \'\'', function () {
-
-        expect(function () {
-            san.parseTemplate('<div> <h1 title=aaa></h1> </div>');
-        }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
-
-        expect(function () {
-            san.parseTemplate('<div><h1 title="aaa></h1> </div>');
-        }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
-
-        expect(function () {
-            san.parseTemplate('<div> <h1 title=aaa"></h1> </div>');
-        }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
-
-        expect(function () {
-            san.parseTemplate('<div> <h1 title=\'aaa></h1> </div>');
-        }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
-
-        expect(function () {
-            san.parseTemplate('<div> <h1 title=aaa\'></h1> </div>');
-        }).toThrowError('[SAN ERROR] ROOT>div>h1 attribute `title` is not wrapped with ""');
-    });
-
     it('should return normal ANode by not string', function () {
 
         expect(san.parseTemplate({}).children.length).toBe(0);
