@@ -365,6 +365,7 @@ ForNode.prototype.opti = typeof navigator !== 'undefined'
 ForNode.prototype._updateArray = function (changes, newList) {
     var oldChildrenLen = this.children.length;
     var childrenChanges = new Array(oldChildrenLen);
+    var childIsElem = this.children[0].nodeType === NodeType.ELEM;
 
     function pushToChildrenChanges(change) {
         for (var i = 0, l = childrenChanges.length; i < l; i++) {
@@ -626,8 +627,6 @@ ForNode.prototype._updateArray = function (changes, newList) {
                                 expr: this.itemExpr,
                                 value: newList[newIndexEnd]
                             });
-
-
                         }
 
                         // refresh index
@@ -699,10 +698,15 @@ ForNode.prototype._updateArray = function (changes, newList) {
                     var newChildren = [];
                     var newChildrenChanges = [];
 
+                    var beforeEl = this.el;
+                    var parentEl = childIsElem && beforeEl.parentNode;
                     for (var i = newLen - 1; i >= 0; i--) {
                         if (i >= newIndexEnd) {
                             newChildren[i] = this.children[oldChildrenLen - newLen + i];
                             newChildrenChanges[i] = childrenChanges[oldChildrenLen - newLen + i];
+                            if (childIsElem) {
+                                beforeEl = newChildren[i].el;
+                            }
                         }
                         else if (i < newIndexStart) {
                             newChildren[i] = this.children[i];
@@ -710,9 +714,10 @@ ForNode.prototype._updateArray = function (changes, newList) {
                         }
                         else {
                             var oldListIndex = oldListKeyIndex[newListKeys[i]];
+                            var oldListNode = this.children[oldListIndex];
 
-                            if (i === staticPos) {
-                                var oldScope = this.children[oldListIndex].scope;
+                            if (oldListNode && (childIsElem || i === staticPos)) {
+                                var oldScope = oldListNode.scope;
 
                                 // 如果数据本身引用发生变化，设置变更
                                 if (this.listData[oldListIndex] !== newList[i]) {
@@ -739,20 +744,25 @@ ForNode.prototype._updateArray = function (changes, newList) {
                                     (childrenChanges[oldListIndex] = childrenChanges[oldListIndex] || []).push(change);
                                 }
 
-                                newChildren[i] = this.children[oldListIndex];
+                                newChildren[i] = oldListNode;
                                 newChildrenChanges[i] = childrenChanges[oldListIndex];
 
-                                staticPos = oldListLISPos ? oldListInNew[oldListLIS[--oldListLISPos] + oldIndexStart] : -1;
-                            }
-                            else {
-                                if (oldListIndex != null) {
-                                    disposeChildren.push(this.children[oldListIndex]);
+                                if (i === staticPos) {
+                                    staticPos = oldListLISPos ? oldListInNew[oldListLIS[--oldListLISPos] + oldIndexStart] : -1;
+                                }
+                                else {
+                                    parentEl.insertBefore(oldListNode.el, beforeEl);
                                 }
 
+                                if (childIsElem) {
+                                    beforeEl = oldListNode.el;
+                                }
+                            }
+                            else {
+                                oldListNode && disposeChildren.push(oldListNode);
                                 newChildren[i] = 0;
                                 newChildrenChanges[i] = 0;
                             }
-
                         }
                     }
 

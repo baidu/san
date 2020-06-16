@@ -2931,6 +2931,88 @@ describe("ForDirective", function () {
         });
     });
 
+    it("set outer data directly with trackBy, swap and remove", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li s-for="member in org.members trackBy member"><u>{{org.name}}</u><b>{{member}}</b></li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                org: {
+                    name: 'efe',
+                    members: [
+                        'leeight',
+                        'errorrik',
+                        'otakustay',
+                        'firede',
+                        'kener',
+                        'justice',
+                        'dafo'
+                    ]
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        var us = wrap.getElementsByTagName('u');
+        expect(bs.length).toBe(7);
+        expect(bs[0].innerHTML).toBe('leeight');
+        expect(bs[1].innerHTML).toBe('errorrik');
+        expect(bs[2].innerHTML).toBe('otakustay');
+        expect(bs[3].innerHTML).toBe('firede');
+        expect(bs[4].innerHTML).toBe('kener');
+        expect(bs[5].innerHTML).toBe('justice');
+        expect(bs[6].innerHTML).toBe('dafo');
+        expect(us[0].innerHTML).toBe('efe');
+        expect(us[1].innerHTML).toBe('efe');
+        expect(us[2].innerHTML).toBe('efe');
+
+
+        var lis = wrap.getElementsByTagName('li');
+        var errEl = lis[1];
+        var otaEl = lis[2];
+        var justEl = lis[5];
+
+        myComponent.data.set('org', {
+            name: 'fe',
+            members: [
+                'leeight',
+                'justice',
+                'otakustay',
+                'kener',
+                'errorrik',
+                'dafo'
+            ]
+        });
+        myComponent.nextTick(function () {
+
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis[4]).toBe(errEl);
+            expect(lis[2]).toBe(otaEl);
+            expect(lis[1]).toBe(justEl);
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(6);
+            expect(bs[0].innerHTML).toBe('leeight');
+            expect(bs[1].innerHTML).toBe('justice');
+            expect(bs[2].innerHTML).toBe('otakustay');
+            expect(bs[3].innerHTML).toBe('kener');
+            expect(bs[4].innerHTML).toBe('errorrik');
+            expect(bs[5].innerHTML).toBe('dafo');
+            var us = wrap.getElementsByTagName('u');
+            expect(us[0].innerHTML).toBe('fe');
+            expect(us[1].innerHTML).toBe('fe');
+            expect(us[2].innerHTML).toBe('fe');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("render object", function (done) {
         var MyComponent = san.defineComponent({
             template: '<ul><li san-for="p,i in persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
