@@ -5,8 +5,10 @@ ChangeLog
 3.9.0
 -------
 
++ 【新特性】- 支持组件 ANode 压缩和解压
 + 【变更】- 移除 compileComponent 方法，增加 parseComponentTemplate 方法
 + 【变更】- 删除组件不必要的 subTag 属性，可从 source.tagName 取得
++ 【优化】- template 的节点属性声明支持不以 `"'` 包围，提升 html 兼容性
 + 【优化】- 对组件 template 编译的 ANode 信息进行了精简和微调
 + 【bug修复】- 当组件根节点不为 HTMLElement 时，attached 中的数据变更，未触发视图更新
 
