@@ -5,6 +5,7 @@ ChangeLog
 3.9.0
 -------
 
++ 【新特性】- 数据 Data 对象新增 assign 方法
 + 【新特性】- 支持组件 ANode 压缩和解压
 + 【变更】- 移除 compileComponent 方法，增加 parseComponentTemplate 方法
 + 【变更】- 删除组件不必要的 subTag 属性，可从 source.tagName 取得
