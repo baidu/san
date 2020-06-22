@@ -7,7 +7,6 @@
  * @file template 节点类
  */
 
-var each = require('../util/each');
 var guid = require('../util/guid');
 var insertBefore = require('../browser/insert-before');
 var removeEl = require('../browser/remove-el');
