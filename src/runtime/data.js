@@ -227,10 +227,34 @@ Data.prototype.set = function (expr, value, option) {
 };
 
 /**
+ * 批量设置数据
+ *
+ * @param {Object} source 待设置的数据集
+ * @param {Object=} option 设置参数
+ * @param {boolean} option.silent 静默设置，不触发变更事件
+ */
+Data.prototype.assign = function (source, option) {
+    option = option || {};
+
+    for (var key in source) { // eslint-disable-line
+        this.set(
+            createAccessor([
+                {
+                    type: ExprType.STRING,
+                    value: key
+                }
+            ]),
+            source[key],
+            option
+        );
+    }
+};
+
+/**
  * 合并更新数据项
  *
  * @param {string|Object} expr 数据项路径
- * @param {Object} source 待合并的数据值
+ * @param {Object} source 待合并的数据
  * @param {Object=} option 设置参数
  * @param {boolean} option.silent 静默设置，不触发变更事件
  */
