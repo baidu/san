@@ -1352,4 +1352,42 @@ describe("Expression Update Detect", function () {
             });
         });
     });
+
+    it("update using data assign", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><b>{{title}}</b><span>{{text}}</span></a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                title: 'ER',
+                text: 'MVC'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(span.innerHTML).toBe('MVC');
+        expect(b.innerHTML).toBe('ER');
+        myComponent.data.assign({
+            title: 'San',
+            text: 'MVVM'
+        });
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(span.innerHTML).toBe('MVVM');
+            expect(b.innerHTML).toBe('San');
+            expect(myComponent.data.get('text')).toBe('MVVM');
+            expect(myComponent.data.get('title')).toBe('San');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });
