@@ -244,7 +244,7 @@ function Component(options) { // eslint-disable-line
 
     this.data = new Data(initData);
 
-    
+
     this.tagName = this.tagName || 'div';
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
@@ -283,8 +283,8 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        var RootComponentType = this.getComponentType 
-            ? this.getComponentType(this.aNode, this.data) 
+        var RootComponentType = this.getComponentType
+            ? this.getComponentType(this.aNode, this.data)
             : this.components[this.aNode.tagName];
 
         if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
@@ -311,7 +311,7 @@ function Component(options) { // eslint-disable-line
 
             reverseElementChildren(this, this.data, this);
         }
-        
+
         this._toPhase('created');
         this._attached();
         this._toPhase('attached');
@@ -389,7 +389,7 @@ Component.prototype._toPhase = function (name) {
         if (typeof this[name] === 'function') {
             this[name]();
         }
-        
+
         this._afterLife = this.lifeCycle;
 
         // 通知devtool
@@ -717,7 +717,7 @@ Component.prototype._update = function (changes) {
             }
         );
 
-        
+
         if (this._rootNode) {
             this._rootNode._update(dataChanges);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -885,85 +885,81 @@ Component.prototype._getElAsRootNode = function () {
  */
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        this._attach(parentEl, beforeEl);
+        var hasRootNode = this.aNode.hotspot.hasRootNode
+            || (this.getComponentType
+                ? this.getComponentType(this.aNode, this.data)
+                : this.components[this.aNode.tagName]
+            );
+
+        if (hasRootNode) {
+            this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
+            this._rootNode.attach(parentEl, beforeEl);
+            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+            this._toPhase('created');
+        }
+        else {
+            if (!this.el) {
+                var sourceNode = this.aNode.hotspot.sourceNode;
+                var props = this.aNode.props;
+
+                if (sourceNode) {
+                    this.el = sourceNode.cloneNode(false);
+                    props = this.aNode.hotspot.dynamicProps;
+                }
+                else {
+                    this.el = createEl(this.tagName);
+                }
+
+                if (this._sbindData) {
+                    for (var key in this._sbindData) {
+                        if (this._sbindData.hasOwnProperty(key)) {
+                            getPropHandler(this.tagName, key)(
+                                this.el,
+                                this._sbindData[key],
+                                key,
+                                this
+                            );
+                        }
+                    }
+                }
+
+                for (var i = 0, l = props.length; i < l; i++) {
+                    var prop = props[i];
+                    var value = evalExpr(prop.expr, this.data, this);
+
+                    if (value || !baseProps[prop.name]) {
+                        prop.handler(this.el, value, prop.name, this);
+                    }
+                }
+
+                this._toPhase('created');
+            }
+
+            insertBefore(this.el, parentEl, beforeEl);
+
+            if (!this._contentReady) {
+                for (var i = 0, l = this.aNode.children.length; i < l; i++) {
+                    var childANode = this.aNode.children[i];
+                    var child = childANode.Clazz
+                        ? new childANode.Clazz(childANode, this, this.data, this)
+                        : createNode(childANode, this, this.data, this);
+                    this.children.push(child);
+                    child.attach(this.el);
+                }
+
+                this._contentReady = 1;
+            }
+
+            this._attached();
+        }
+
+        this._toPhase('attached');
 
         // element 都是内部创建的，只有动态创建的 component 才会进入这个分支
         if (this.owner && !this.parent) {
             this.owner.implicitChildren.push(this);
         }
     }
-};
-
-Component.prototype._attach = function (parentEl, beforeEl) {
-    var hasRootNode = this.aNode.hotspot.hasRootNode 
-        || (this.getComponentType 
-            ? this.getComponentType(this.aNode, this.data) 
-            : this.components[this.aNode.tagName]
-        );
-
-    if (hasRootNode) {
-        this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
-        this._rootNode.attach(parentEl, beforeEl);
-        this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
-        this._toPhase('created');
-    }
-    else {
-        if (!this.el) {
-            var sourceNode = this.aNode.hotspot.sourceNode;
-            var props = this.aNode.props;
-
-            if (sourceNode) {
-                this.el = sourceNode.cloneNode(false);
-                props = this.aNode.hotspot.dynamicProps;
-            }
-            else {
-                this.el = createEl(this.tagName);
-            }
-
-            if (this._sbindData) {
-                for (var key in this._sbindData) {
-                    if (this._sbindData.hasOwnProperty(key)) {
-                        getPropHandler(this.tagName, key)(
-                            this.el,
-                            this._sbindData[key],
-                            key,
-                            this
-                        );
-                    }
-                }
-            }
-
-            for (var i = 0, l = props.length; i < l; i++) {
-                var prop = props[i];
-                var value = evalExpr(prop.expr, this.data, this);
-
-                if (value || !baseProps[prop.name]) {
-                    prop.handler(this.el, value, prop.name, this);
-                }
-            }
-
-            this._toPhase('created');
-        }
-
-        insertBefore(this.el, parentEl, beforeEl);
-
-        if (!this._contentReady) {
-            for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                var childANode = this.aNode.children[i];
-                var child = childANode.Clazz
-                    ? new childANode.Clazz(childANode, this, this.data, this)
-                    : createNode(childANode, this, this.data, this);
-                this.children.push(child);
-                child.attach(this.el);
-            }
-
-            this._contentReady = 1;
-        }
-
-        this._attached();
-    }
-
-    this._toPhase('attached');
 };
 
 Component.prototype.detach = elementOwnDetach;
@@ -991,7 +987,7 @@ Component.prototype._leave = function () {
             // 这里不用挨个调用 dispose 了，因为 children 释放链会调用的
             this.slotChildren = null;
 
-            
+
             if (this._rootNode) {
                 // 如果没有parent，说明是一个root component，一定要从dom树中remove
                 this._rootNode.dispose(this.disposeNoDetach && this.parent);
