@@ -103,6 +103,9 @@ CDN:
 - [san-mui](https://ecomfe.github.io/san-mui/) - [Material Design](https://www.material.io/) Components Library
 - [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
 - [drei](https://github.com/ssddi456/drei/) - VSCode extension for SAN
+- [san-cli](https://github.com/ecomfe/san-cli) - A CLI tooling based on SAN for rapid development
+- [san-test-utils](https://github.com/ecomfe/san-test-utils) - The unit testing utility library for SAN
+- [san-loader](https://github.com/ecomfe/san-cli/tree/master/packages/san-loader) - Webpack loader for single-file SAN components
 
 ## ChangeLog
 
