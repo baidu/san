@@ -602,7 +602,11 @@ aNode = {
                             ]
                         },
                         "filters": []
-                    }
+                    },
+                    {
+                        "type": ExprType.STRING,
+                        "value": "!"
+                    },
                 ]
             }
         }
