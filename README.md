@@ -101,12 +101,12 @@ CDN:
 - [san-factory](https://github.com/baidu/san-factory) - Component register and instantiation
 - [santd](https://ecomfe.github.io/santd/) - Components Library following the [Ant Design](https://ant.design/) specification
 - [san-mui](https://ecomfe.github.io/san-mui/) - [Material Design](https://www.material.io/) Components Library
-- [san-xui](https://ecomfe.github.io/san-xui/) - A Set of SAN UI Components that widely used on Baidu Cloud Console
+- [san-xui](https://ecomfe.github.io/san-xui/) - A Set of UI Components that widely used on Baidu Cloud Console
 - [drei](https://github.com/ssddi456/drei/) - VSCode extension for SAN
-- [san-cli](https://github.com/ecomfe/san-cli) - A CLI tooling based on SAN for rapid development
-- [san-loader](https://github.com/ecomfe/san-cli/tree/master/packages/san-loader) - Webpack loader for single-file SAN components
+- [san-cli](https://github.com/ecomfe/san-cli) - A CLI tooling for rapid development
+- [san-loader](https://github.com/ecomfe/san-cli/tree/master/packages/san-loader) - Webpack loader for single-file components
 - [san-anode-utils](https://github.com/ecomfe/san-anode-utils) - Util Functions for [ANode](https://github.com/baidu/san/blob/master/doc/anode.md)
-- [san-test-utils](https://github.com/ecomfe/san-test-utils) - The unit testing utility library for SAN
+- [san-test-utils](https://github.com/ecomfe/san-test-utils) - The unit testing utility library
 
 ## ChangeLog
 
