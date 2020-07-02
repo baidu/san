@@ -4,6 +4,8 @@ ANode 压缩结构设计
 
 提前将 template 编译成 ANode，可以避免在浏览器端进行 template 解析，提高初始装载性能。ANode 是个 JSON Object，stringify 后体积较大，需要设计一种压缩，让其体积更小，网络传输成本更低。
 
+ANode 压缩，简称 APack
+
 
 总体设计
 ------
@@ -34,6 +36,36 @@ ANode 压缩结构设计
 - head: 0
 - 编码序: `{Node}textExpr`
 
+```js
+aPack = [,9,,2,3,"Hello ",7,,6,1,3,"name",]
+/*
+{
+    "textExpr": {
+        "type": 7,
+        "segs": [
+            {
+                "type": 1,
+                "value": "Hello "
+            },
+            {
+                "type": 5,
+                "expr": {
+                    "type": 4,
+                    "paths": [
+                        {
+                            "type": 1,
+                            "value": "name"
+                        }
+                    ]
+                },
+                "filters": []
+            }
+        ]
+    }
+}
+*/
+```
+
 ### 元素节点
 
 - head: 1
@@ -49,20 +81,65 @@ ANode 压缩结构设计
 - head: 3
 - 编码序: `{string}value`
 
+```js
+aPack = [3,"Hello"]
+/*
+{
+    "type": 1,
+    "value": "Hello"
+}
+*/
+```
+
 ### NUMBER
 
 - head: 4
 - 编码序: `{number}value`
+
+```js
+aPack = [4,10]
+/*
+{
+    "type": 2,
+    "value": 10
+}
+*/
+```
 
 ### BOOL
 
 - head: 5
 - 编码序: `{bool}value`
 
+```js
+aPack = [5,1]
+/*
+{
+    "type": 3,
+    "value": true
+}
+*/
+```
+
 ### ACCESSOR
 
 - head: 6
 - 编码序: `{Array}paths`
+
+```js
+aPack = [6,1,3,"name"]
+/*
+{
+    "type": 4,
+    "paths": [
+        {
+            "type": 1,
+            "value": "name"
+        }
+    ]
+}
+*/
+```
 
 ### INTERP
 
@@ -78,6 +155,34 @@ ANode 压缩结构设计
 
 - head: 9
 - 编码序: `{bool}original, {Array<Node>}segs`
+
+```js
+aPack = [9,,2,3,"Hello ",7,,6,1,3,"name",]
+/*
+{
+    "type": 7,
+    "segs": [
+        {
+            "type": 1,
+            "value": "Hello "
+        },
+        {
+            "type": 5,
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "name"
+                    }
+                ]
+            },
+            "filters": []
+        }
+    ]
+}
+*/
+```
 
 ### BINARY
 
