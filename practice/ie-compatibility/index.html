@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
   
   <title>IE兼容性问题以及解决方案 | San</title>
@@ -47,11 +47,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
 
 
 </head>
-
+</html>
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -121,18 +121,24 @@ var _hmt = _hmt || [];
         <dd><a href="/san/doc/api/">组件 API</a></dd>
         <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack DOC</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
 
         <dt>周边</dt>
-        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">san-devtool</a></dd>
         <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
-        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
         <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
         <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
         <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli/tree/master/packages/san-loader" target="_blank">san-loader</a></dd>
         <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
         <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
 
         <dt>示例</dt>
         <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
@@ -179,7 +185,7 @@ var _hmt = _hmt || [];
 </ul>
 <p>本文内容不涵盖 CSS 兼容性问题和解决方案。</p>
 <h3 id="shim"><a href="#shim" class="headerlink" title="shim"></a>shim</h3><p>一些 shim 库使用老旧浏览器下的 API，实现现代浏览器的 API，帮助开发者抹平浏览器环境的差异。下面推荐一些常用的。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://wzrd.in/standalone/es7-shim@latest"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-sham.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-shim.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.2/es6-sham.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://wzrd.in/standalone/es7-shim@latest"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json2/20160511/json2.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>这些 shim 可以通过 IE 的条件注释，按需引入。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--[if lt IE 9]&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="es5-shim/es5-shim.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="es5-shim/es5-sham.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">  &lt;script src="/json2/json2.min.js"&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">&lt;![endif]--&gt;</span></span><br></pre></td></tr></table></figure>
 <p>想要更详细的了解条件注释，可以参考 <a href="https://www.cnblogs.com/dtdxrk/archive/2012/03/06/2381868.html" target="_blank" rel="noopener">https://www.cnblogs.com/dtdxrk/archive/2012/03/06/2381868.html</a></p>
@@ -254,18 +260,24 @@ var _hmt = _hmt || [];
         <dd><a href="/san/doc/api/">组件 API</a></dd>
         <dd><a href="/san/doc/main-members/">主模块 API</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack DOC</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
 
         <dt>周边</dt>
-        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">san-devtool</a></dd>
         <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
-        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
         <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
         <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
         <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli/tree/master/packages/san-loader" target="_blank">san-loader</a></dd>
         <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
         <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
 
         <dt>示例</dt>
         <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="/san/img/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="/san/img/icons/icon-144x144.png">
   
   <title>Data Manipulation | San</title>
@@ -17,7 +17,7 @@
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="San provides a number of methods on components’ data. You can retrieve data via .get() method and modify data via .set(), .splice() methods, views will be updated automatically. Note: You may ask why">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-05-13T06:21:47.014Z">
+<meta property="og:updated_time" content="2020-07-02T07:16:02.587Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Data Manipulation">
 <meta name="twitter:description" content="San provides a number of methods on components’ data. You can retrieve data via .get() method and modify data via .set(), .splice() methods, views will be updated automatically. Note: You may ask why">
@@ -47,11 +47,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
 
 
 </head>
-
+</html>
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -121,18 +121,24 @@ var _hmt = _hmt || [];
         <dd><a href="/san/en/doc/api/">Component API</a></dd>
         <dd><a href="/san/en/doc/main-members/">San API</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack DOC</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
 
         <dt>Facilities</dt>
-        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">san-devtool</a></dd>
         <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
-        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
         <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
         <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
         <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli/tree/master/packages/san-loader" target="_blank">san-loader</a></dd>
         <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
         <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
 
         <dt>Example</dt>
         <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
@@ -174,10 +180,16 @@ var _hmt = _hmt || [];
 <p>The <code>.set()</code> method should be used in most cases, which is equivalent to the JavaScript assignment operator (=).</p>
 <p><code>Usage</code>:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        requestUser().then(<span class="keyword">this</span>.userReceived.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    userReceived: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user'</span>, data);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    changeEmail: <span class="function"><span class="keyword">function</span> (<span class="params">email</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user.email'</span>, email);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">merge(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<h2 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">assign(&#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<p><code>Version</code>: &gt;= 3.9.0</p>
+<p><code>Explanation</code>:</p>
+<p><code>assign</code> method merges <code>source</code> object into component’s data, which is similar to <code>Object.assign</code> in JavaScript, this makes a batch update to view.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            title: <span class="string">'ER'</span>,</span><br><span class="line">            type: <span class="string">'MVC'</span>,</span><br><span class="line">            author: <span class="string">'Someone'</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.assign(&#123;</span><br><span class="line">            title: <span class="string">'San'</span>,</span><br><span class="line">            type: <span class="string">'MVVM'</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">merge(&#123;string|Object&#125;expr, &#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
 <p><code>Version</code>: &gt;= 3.4.0</p>
 <p><code>Explanation</code>:</p>
-<p>The <code>.merge()</code> method is used to assign properties of the source object to the target object, just like the <code>Object.assign()</code> method in JavaScript.</p>
+<p>The <code>.merge()</code> method merges <code>source</code> into the data item specified by <code>expr</code>.</p>
 <p><code>Usage</code>:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        requestUser().then(<span class="keyword">this</span>.updateUserInfo.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    updateUserInfo: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.merge(<span class="string">'user'</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <h2 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply(&#123;string|Object&#125;expr, &#123;function(&#123;*&#125;):&#123;*&#125;&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
@@ -238,7 +250,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Initialization"><span class="toc-text">Initialization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#get"><span class="toc-text">get</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#merge"><span class="toc-text">merge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#apply"><span class="toc-text">apply</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-Methods"><span class="toc-text">Array Methods</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#push"><span class="toc-text">push</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pop"><span class="toc-text">pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unshift"><span class="toc-text">unshift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shift"><span class="toc-text">shift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-text">remove</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#removeAt"><span class="toc-text">removeAt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#splice"><span class="toc-text">splice</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#option"><span class="toc-text">option</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#silent"><span class="toc-text">silent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#force"><span class="toc-text">force</span></a></li></ol></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Initialization"><span class="toc-text">Initialization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#get"><span class="toc-text">get</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#assign"><span class="toc-text">assign</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#merge"><span class="toc-text">merge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#apply"><span class="toc-text">apply</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-Methods"><span class="toc-text">Array Methods</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#push"><span class="toc-text">push</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pop"><span class="toc-text">pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unshift"><span class="toc-text">unshift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shift"><span class="toc-text">shift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-text">remove</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#removeAt"><span class="toc-text">removeAt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#splice"><span class="toc-text">splice</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#option"><span class="toc-text">option</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#silent"><span class="toc-text">silent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#force"><span class="toc-text">force</span></a></li></ol></li></ol>
   <a href="#" class="toc-top">Top</a>
 </aside>
 
@@ -282,18 +294,24 @@ var _hmt = _hmt || [];
         <dd><a href="/san/en/doc/api/">Component API</a></dd>
         <dd><a href="/san/en/doc/main-members/">San API</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode DOC</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack DOC</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
 
         <dt>Facilities</dt>
-        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">DevTool</a></dd>
+        <dd><a href="https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md" target="_blank">san-devtool</a></dd>
         <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
-        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
         <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
         <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
         <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli/tree/master/packages/san-loader" target="_blank">san-loader</a></dd>
         <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
         <dd><a href="https://github.com/ssddi456/drei" target="_blank">drei</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
 
         <dt>Example</dt>
         <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>

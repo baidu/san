@@ -103,7 +103,7 @@ header .icon{
 }
 
 #san-query-input::-webkit-input-placeholder{
-    color: #000;
+    color: rgba(255,255,255,.7);
     letter-spacing: 2px;
 }
 
