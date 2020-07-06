@@ -71,6 +71,63 @@ aPack = [,9,,2,3,"Hello ",7,,6,1,3,"name",]
 - head: 1
 - 编码序: `{string?}tagName, {Array<Node>}propsAndChildren, {Array<Node>?}elses`
 
+```js
+aPack = [1,"dd",3,38,6,1,3,"list",37,"item",,,6,1,3,"list",,9,,1,7,,6,1,3,"item",,]
+/*
+{
+    "directives": {
+        "if": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "list"
+                    }
+                ]
+            }
+        },
+        "for": {
+            "item": "item",
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "list"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "item"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "dd"
+}
+*/
+```
 
 
 表达式节点
@@ -145,6 +202,25 @@ aPack = [6,1,3,"name"]
 
 - head: 7
 - 编码序: `{bool}original, {Node}expr, {Array<Node>}filters`
+
+```js
+aPack = [7,,6,1,3,"name",]
+/*
+{
+    "type": 5,
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "name"
+            }
+        ]
+    },
+    "filters": []
+}
+*/
+```
 
 ### CALL
 
