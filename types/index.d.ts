@@ -311,6 +311,7 @@ declare namespace San {
     function parseExpr(template: string): ExprNode;
     function evalExpr<T, D extends SanComponent<{}>>(expr: ExprNode, data: SanData<T>, owner?: D): any;
     function parseTemplate(template: string, options?: ParseTemplateOption): ANode;
+    function parseComponentTemplate(componentClass: ComponentConstructor<{}, {}>): ANode;
     function inherits(childClazz: (...args: any[]) => void, parentClazz: ComponentConstructor<{}, {}>): void;
     function nextTick(doNextTick: () => any): void;
     const DataTypes: {
