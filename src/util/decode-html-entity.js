@@ -10,7 +10,7 @@
 var ENTITY_DECODE_MAP = {
     lt: '<',
     gt: '>',
-    nbsp: ' ',
+    nbsp: '\u00a0',
     quot: '\"',
     emsp: '\u2003',
     ensp: '\u2002',
