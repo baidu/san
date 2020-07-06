@@ -19,7 +19,7 @@ declare namespace San {
         setTypeChecker(checker: () => void): void;
 
         fire(change: SanDataChangeInfo): void;
-        get(expr?: string | ExprAccessorNode): any;
+        get<D = any>(expr?: string | ExprAccessorNode): D;
         set(expr: string | ExprAccessorNode, value: any, option?: SanDataChangeOption): void;
         merge(expr: string | ExprAccessorNode, source: {}, option?: SanDataChangeOption): void;
         apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: SanDataChangeOption): void;
@@ -155,14 +155,12 @@ declare namespace San {
 
     interface ExprNodeTpl<T extends ExprType> {
         type: T;        // 如果只有这一个属性，去掉泛型更可读
-        raw: string;
         value?: any;    // 在 eval 会统一处理，事实上作用于 null, string, number
         parenthesized?: boolean; // 在 read parenthesized expr 会统一设置
     }
     type ExprNode = ExprNodeTpl<any>;
     interface ExprStringNode extends ExprNodeTpl<ExprType.STRING> {
         value: string;
-        literal?: string;
     }
     interface ExprNumberNode extends ExprNodeTpl<ExprType.NUMBER> {
         value: number;
@@ -245,14 +243,14 @@ declare namespace San {
     interface ANodeProperty {
         name: string;
         expr: ExprNode;
-        raw: string;
+        noValue?: 1;
         x?: number;
     }
 
     interface ANode {
         isText?: boolean;
         text?: string;
-        textExpr?: ExprTextNode;
+        textExpr?: ExprTextNode | ExprStringNode;
         children?: ANode[];
         props: ANodeProperty[];
         events: SanIndexedList<ExprNode>;
@@ -265,7 +263,7 @@ declare namespace San {
     }
 
     interface ATextNode extends ANode {
-        textExpr: ExprTextNode;
+        textExpr: ExprTextNode | ExprStringNode;
     }
 
     interface ATemplateNode extends ANode {
