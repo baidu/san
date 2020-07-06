@@ -12,8 +12,9 @@ ChangeLog
 + 【优化】- template 的节点属性声明支持不以 `"'` 包围，提升 html 兼容性
 + 【优化】- 对组件 template 编译的 ANode 信息进行了精简和微调
 + 【优化】- trackBy 循环更新时，如果循环目标是普通节点，对乱序节点进行复用，避免丢弃重建
++ 【优化】- `SanData#get()` 支持类型参数 `data.get<string>()`
 + 【bug修复】- 当组件根节点不为 HTMLElement 时，attached 中的数据变更，未触发视图更新
-
++ 【bug修复】- `&nbsp;` 被解析为 `\u0020`（space），修复为 `\u00a0`（non-breaking space）
 
 3.8.5
 -------
