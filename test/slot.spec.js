@@ -2994,4 +2994,47 @@ describe("Slot", function () {
             done();
         });
     });
+
+    it("slot prop contains for loop parameters", function (done) {
+        var Folder = san.defineComponent({
+            template: '<div><p s-for="i in files" class="file-{{i}}"><slot name="slot-{{i}}"/></p></div>',
+            initData: function () {
+                return { files: ['error', 'rick'] }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-folder': Folder
+            },
+
+            initData: function () {
+                return {
+                    files: ['error', 'rick']
+                }
+            },
+
+            template: ''
+                + '<div>'
+                + '<x-folder><b s-for="i, j in files" slot="slot-{{i}}">{{ j }}-{{ i }}</b></x-folder>'
+                + '</div>'
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var p0 = wrap.getElementsByTagName('p')[0];
+        var bs0 = p0.getElementsByTagName('b');
+        expect(bs0.length).toBe(1);
+        expect(bs0[0].innerHTML).toBe('0-error');
+
+        var p1 = p0.nextSibling;
+        bs1 = p1.getElementsByTagName('b');
+        expect(bs1.length).toBe(1);
+        expect(bs1[0].innerHTML).toBe('1-rick');
+
+        done();
+    });
 });
