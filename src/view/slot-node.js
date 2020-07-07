@@ -95,7 +95,7 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
     // child owner & child scope
     if (this.isInserted) {
         this.childOwner = owner.owner;
-        this.childScope = owner.scope;
+        this.childScope = matchedSlots.scope || owner.scope;
     }
 
     if (initData) {

@@ -341,12 +341,41 @@ Component.prototype._initSourceSlots = function (isFirstTime) {
             if (slotBind) {
                 isFirstTime && this.sourceSlotNameProps.push(slotBind);
 
-                var slotName = evalExpr(slotBind.expr, this.scope, this.owner);
-                target = this.sourceSlots.named[slotName];
-                if (!target) {
-                    target = this.sourceSlots.named[slotName] = [];
+                // 处理slot+for的情况：https://github.com/baidu/san/issues/504
+                // 因为slot的name包含插值，且插值包含迭代变量，所以需要做特殊处理
+                var forDirective = child.directives
+                    && slotBind.expr
+                    && (slotBind.expr.type == ExprType.TEXT || slotBind.expr.type == ExprType.INTERP)
+                    && child.directives['for'] ; // eslint-disable-line dot-notation
+                var listData = null;
+                if(forDirective) {
+                    listData = evalExpr(forDirective.value, this.scope, this.owner);
                 }
-                target.push(child);
+
+                // 插槽未被scoped
+                if (forDirective && listData) {
+                    for (var index in listData) {
+                        if (listData.hasOwnProperty(index) && listData[index] != null) {
+                            var itemScope = {};
+                            itemScope[forDirective.item] = listData[index];
+                            itemScope[forDirective.index || '$index'] = index;
+                            var itemData = new Data(itemScope, this.scope);
+                            var slotName = evalExpr(slotBind.expr, itemData, this.owner);
+                            target = this.sourceSlots.named[slotName] = [];
+                            // cache item data for render
+                            target.scope = itemData;
+                            target.push(child.forRinsed);
+                        }
+                    }
+                }
+                else {
+                    var slotName = evalExpr(slotBind.expr, this.scope, this.owner);
+                    target = this.sourceSlots.named[slotName];
+                    if (!target) {
+                        target = this.sourceSlots.named[slotName] = [];
+                    }
+                    target.push(child);
+                }
             }
             else if (isFirstTime) {
                 target = this.sourceSlots.noname;
