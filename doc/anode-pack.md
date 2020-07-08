@@ -227,6 +227,35 @@ aPack = [7,,6,1,3,"name",]
 - head: 8
 - 编码序: `{Node}name, {Array<Node>}args`
 
+```js
+aPack = [8,6,1,3,"showToast",1,6,1,3,"msg"]
+/*
+{
+    "type": 6,
+    "name": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "showToast"
+            }
+        ]
+    },
+    "args": [
+        {
+            "type": 4,
+            "paths": [
+                {
+                    "type": 1,
+                    "value": "msg"
+                }
+            ]
+        }
+    ]
+}
+*/
+```
+
 ### TEXT
 
 - head: 9
@@ -310,6 +339,15 @@ aPack = [9,,2,3,"Hello ",7,,6,1,3,"name",]
 - head: 19
 - 编码序: 无
 
+```js
+aPack = [19]
+/*
+{
+    "type": 13
+}
+*/
+```
+
 
 泛属性节点
 -------
@@ -333,6 +371,39 @@ aPack = [9,,2,3,"Hello ",7,,6,1,3,"name",]
 
 - head: 35
 - 编码序: `{string}name, {Node}expr, {ObjectAsArray}modifier`
+
+```js
+aPack = [35,"click",8,6,1,3,"showToast",1,6,1,3,"msg",]
+/*
+{
+    "name": "click",
+    "modifier": {},
+    "expr": {
+        "type": 6,
+        "name": {
+            "type": 4,
+            "paths": [
+                {
+                    "type": 1,
+                    "value": "showToast"
+                }
+            ]
+        },
+        "args": [
+            {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "msg"
+                    }
+                ]
+            }
+        ]
+    }
+}
+*/
+```
 
 ### var
 
