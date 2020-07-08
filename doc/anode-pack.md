@@ -583,15 +583,82 @@ aPack = [19]
 - head: 2
 - 编码序: `{string}name, {Node}expr`
 
+
+```js
+aPack = [2,"title",9,,2,3,"Hello ",7,,6,1,3,"name",]
+/*
+{
+    "name": "title",
+    "expr": {
+        "type": 7,
+        "segs": [
+            {
+                "type": 1,
+                "value": "Hello "
+            },
+            {
+                "type": 5,
+                "expr": {
+                    "type": 4,
+                    "paths": [
+                        {
+                            "type": 1,
+                            "value": "name"
+                        }
+                    ]
+                },
+                "filters": []
+            }
+        ]
+    }
+}
+*/
+```
+
 ### NOVALUE 属性
 
 - head: 33
 - 编码序: `{string}name, {Node}expr`
 
+
+```js
+aPack = [33,"disabled",5,1]
+/*
+{
+    "name": "disabled",
+    "expr": {
+        "type": 3,
+        "value": true
+    },
+    "noValue": 1
+}
+*/
+```
+
 ### 双向绑定属性
 
 - head: 34
 - 编码序: `{string}name, {Node}expr`
+
+
+```js
+aPack = [34,"value",6,1,3,"name"]
+/*
+{
+    "name": "value",
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "name"
+            }
+        ]
+    },
+    "x": 1
+}
+*/
+```
 
 ### 事件
 
