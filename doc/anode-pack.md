@@ -292,17 +292,94 @@ aPack = [9,,2,3,"Hello ",7,,6,1,3,"name",]
 ### BINARY
 
 - head: 10
-- 编码序: `{number}operator, {Array<Node>}segs`
+- 编码序: `{number}operator, {Node}first, {Node}second`
+
+```js
+aPack = [10,43,6,1,3,"num",4,1]
+/*
+{
+    "type": 8,
+    "operator": 43,
+    "segs": [
+        {
+            "type": 4,
+            "paths": [
+                {
+                    "type": 1,
+                    "value": "num"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "value": 1
+        }
+    ]
+}
+*/
+```
 
 ### UNARY
 
 - head: 11
 - 编码序: `{number}operator, {Node}expr`
 
+```js
+aPack = [11,33,6,1,3,"exists"]
+/*
+{
+    "type": 9,
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "exists"
+            }
+        ]
+    },
+    "operator": 33
+}
+*/
+```
+
 ### TERTIARY
 
 - head: 12
-- 编码序: `{Array<Node>}segs`
+- 编码序: `{Node}condExpr, {Node}truthyExpr, {Node}falsyExpr`
+
+```js
+aPack = [12,6,1,3,"exists",6,1,3,"num",4,0]
+/*
+{
+    "type": 10,
+    "segs": [
+        {
+            "type": 4,
+            "paths": [
+                {
+                    "type": 1,
+                    "value": "exists"
+                }
+            ]
+        },
+        {
+            "type": 4,
+            "paths": [
+                {
+                    "type": 1,
+                    "value": "num"
+                }
+            ]
+        },
+        {
+            "type": 2,
+            "value": 0
+        }
+    ]
+}
+*/
+```
 
 ### OBJECT
 
