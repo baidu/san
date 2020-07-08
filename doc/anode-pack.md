@@ -386,30 +386,179 @@ aPack = [12,6,1,3,"exists",6,1,3,"num",4,0]
 - head: 13
 - 编码序: `{Array<Node>}items`
 
+```js
+aPack = [13,2,14,3,"key",6,1,3,"key",15,6,1,3,"ext"]
+/*
+{
+    "type": 11,
+    "items": [
+        {
+            "name": {
+                "type": 1,
+                "value": "key"
+            },
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "key"
+                    }
+                ]
+            }
+        },
+        {
+            "spread": true,
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "ext"
+                    }
+                ]
+            }
+        }
+    ]
+}
+*/
+```
+
 ### OBJECT ITEM UNSPREAD
 
 - head: 14
 - 编码序: `{Node}name, {Node}expr`
+
+```js
+aPack = [14,3,"key",6,1,3,"key"]
+/*
+{
+    "name": {
+        "type": 1,
+        "value": "key"
+    },
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "key"
+            }
+        ]
+    }
+}   
+*/
+```
 
 ### OBJECT ITEM SPREAD
 
 - head: 15
 - 编码序: `{Node}expr`
 
+```js
+aPack = [15,6,1,3,"ext"]
+/*
+{
+    "spread": true,
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "ext"
+            }
+        ]
+    }
+}
+*/
+```
+
 ### ARRAY
 
 - head: 16
 - 编码序: `{Array<Node>}items`
+
+```js
+aPack = [16,3,17,4,1,17,6,1,3,"two",18,6,1,3,"ext"]
+/*
+{
+    "type": 12,
+    "items": [
+        {
+            "expr": {
+                "type": 2,
+                "value": 1
+            }
+        },
+        {
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "two"
+                    }
+                ]
+            }
+        },
+        {
+            "spread": true,
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "ext"
+                    }
+                ]
+            }
+        }
+    ]
+}
+*/
+```
 
 ### ARRAY ITEM UNSPREAD
 
 - head: 17
 - 编码序: `{Node}expr`
 
+
+```js
+aPack = [17,4,1]
+/*
+{
+    "expr": {
+        "type": 2,
+        "value": 1
+    }
+}
+*/
+```
+
 ### ARRAY ITEM SPREAD
 
 - head: 18
 - 编码序: `{Node}expr`
+
+
+```js
+aPack = [18,6,1,3,"ext"]
+/*
+{
+    "spread": true,
+    "expr": {
+        "type": 4,
+        "paths": [
+            {
+                "type": 1,
+                "value": "ext"
+            }
+        ]
+    }
+}
+*/
+```
 
 ### NULL
 
