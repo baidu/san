@@ -28,7 +28,7 @@ var Element = require('./element');
  *
  * @param {Object} aNode 要预热的ANode
  */
-function preheatANode(aNode) {
+function preheatANode(aNode, skipTags) {
     var stack = [];
 
     function recordHotspotData(expr, notContentData) {
@@ -87,7 +87,7 @@ function preheatANode(aNode) {
                 each(aNode.props, function (prop) {
                     aNode.hotspot.binds.push({
                         name: kebab2camel(prop.name),
-                        expr: prop.noValue != null 
+                        expr: prop.noValue != null
                             ? {type: ExprType.BOOL, value: true}
                             : prop.expr,
                         x: prop.x,
@@ -197,8 +197,16 @@ function preheatANode(aNode) {
                     aNode = aNode.forRinsed;
                 }
 
-                if (hotTags[aNode.tagName]) {
-                    aNode.Clazz = Element;
+                if (skipTags !== 'all' && hotTags[aNode.tagName]) {
+                    if (skipTags[aNode.tagName]) {
+                        // #[begin] error
+                        /* eslint-disable max-len */
+                        warn('\`' + aNode.tagName + '\` is a reserved tag name. Using this to identify component may cause unknown exceptions.');
+                        /* eslint-enable max-len */
+                        // #[end]
+                    } else {
+                        aNode.Clazz = Element;
+                    }
                 }
                 else {
                     switch (aNode.tagName) {

@@ -49,7 +49,6 @@ var warn = require('../util/warn');
 
 
 
-
 /**
  * 组件类
  *
@@ -94,16 +93,18 @@ function Component(options) { // eslint-disable-line
     if (!proto.hasOwnProperty('_cmptReady')) {
         proto.components = clazz.components || proto.components || {};
         var components = proto.components;
+        // 收集要跳过preheat的标签
+        proto._preHeatSkip = {};
 
         for (var key in components) { // eslint-disable-line
             var cmptClass = components[key];
-
             if (typeof cmptClass === 'object' && !(cmptClass instanceof ComponentLoader)) {
                 components[key] = defineComponent(cmptClass);
             }
             else if (cmptClass === 'self') {
                 components[key] = clazz;
             }
+            proto._preHeatSkip[key] = 1;
         }
 
         proto._cmptReady = 1;
@@ -120,21 +121,27 @@ function Component(options) { // eslint-disable-line
             proto.aNode = parseComponentTemplate(clazz);
         }
     }
-    preheatANode(proto.aNode);
 
+
+    if (clazz.getComponentType || proto.getComponentType) {
+        proto._preHeatSkip = 'all';
+    }
+
+    preheatANode(proto.aNode, proto._preHeatSkip);
 
     this.tagName = proto.aNode.tagName;
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;
-    preheatANode(this.source);
+
+    preheatANode(this.source, proto._preHeatSkip);
+
 
 
     this.sourceSlotNameProps = [];
     this.sourceSlots = {
         named: {}
     };
-
 
     this.owner = options.owner;
     this.scope = options.scope;
@@ -243,7 +250,6 @@ function Component(options) { // eslint-disable-line
     }
 
     this.data = new Data(initData);
-
 
     this.tagName = this.tagName || 'div';
     // #[begin] allua

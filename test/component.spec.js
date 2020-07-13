@@ -4971,7 +4971,7 @@ describe("Component", function () {
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
             expect(bs[0].innerHTML).toBe('san');
-            
+
             myComponent.data.set('hidd', true);
             myComponent.nextTick(function () {
                 var as = wrap.getElementsByTagName('a');
@@ -5063,7 +5063,7 @@ describe("Component", function () {
                         linkText: 'HomePage'
                     }
                 ]
-                
+
             }
         });
 
@@ -5134,7 +5134,7 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        
+
         expect(myComponent.el.tagName).toBe('H3');
         expect(myComponent.el.className).toBe('');
         expect(!!myComponent.el.id).toBeFalsy();
@@ -5188,7 +5188,7 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        
+
         expect(myComponent.el.tagName).toBe('H3');
         expect(myComponent.el.className).toBe('');
         expect(!!myComponent.el.id).toBeFalsy();
@@ -5262,7 +5262,7 @@ describe("Component", function () {
         var myComponent = new MyComponent({
             data: {
                 list: [
-                    {name: 'err', email: 'errorrik@gmail.com'}, 
+                    {name: 'err', email: 'errorrik@gmail.com'},
                     {name: 'lee', email: 'leeight@gmail.com'},
                     {name: 'gray', email: 'xxx@outlook.com'}
                 ]
@@ -5513,8 +5513,8 @@ describe("Component", function () {
             as = wrap.getElementsByTagName('a');
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
-            
-            
+
+
             myComponent.data.set('hidd', true);
             myComponent.nextTick(function () {
                 var as = wrap.getElementsByTagName('a');
@@ -5541,14 +5541,80 @@ describe("Component", function () {
                     expect(as.length).toBe(1);
                     expect(as[0].innerHTML).toBe('github');
                     expect(bs[0].innerHTML).toBe('san');
-                    
+
                     myComponent.dispose();
                     document.body.removeChild(wrap);
                     done();
                 });
-                
+
             });
         });
+    });
+    it("identify subcomponent with reserved hot tag", function() {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'b': Label
+            },
+
+            template: '<div><b text="{{name}}"></b></div>',
+
+            initData: function() {
+                return { name: 'erik' };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerText).toBe('erik');
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
+
+    it("identify subcomponent with reserved hot tag with getComponentType", function() {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}<i>{{tip}}</i></span>'
+        });
+        var MyComponent = san.defineComponent({
+            getComponentType: function(aNode) {
+                if (aNode.tagName === 'b') {
+                    return Label;
+                }
+            },
+
+            template: '<div><b text="{{name}}" tip="{{company}}"></b></div>',
+
+            initData: function() {
+                return { name: 'erik', company: 'baidu' };
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerText).toBe('erikbaidu');
+        expect(span.title).toBe('erik');
+
+        var i = wrap.getElementsByTagName('i')[0];
+        expect(i.innerText).toBe('baidu');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
     });
 });
 
