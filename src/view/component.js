@@ -93,8 +93,6 @@ function Component(options) { // eslint-disable-line
     if (!proto.hasOwnProperty('_cmptReady')) {
         proto.components = clazz.components || proto.components || {};
         var components = proto.components;
-        // 收集要跳过preheat的标签
-        proto._preHeatSkip = {};
 
         for (var key in components) { // eslint-disable-line
             var cmptClass = components[key];
@@ -104,7 +102,6 @@ function Component(options) { // eslint-disable-line
             else if (cmptClass === 'self') {
                 components[key] = clazz;
             }
-            proto._preHeatSkip[key] = 1;
         }
 
         proto._cmptReady = 1;
@@ -122,19 +119,14 @@ function Component(options) { // eslint-disable-line
         }
     }
 
-
-    if (clazz.getComponentType || proto.getComponentType) {
-        proto._preHeatSkip = 'all';
-    }
-
-    preheatANode(proto.aNode, proto._preHeatSkip);
+    preheatANode(proto.aNode, this);
 
     this.tagName = proto.aNode.tagName;
     this.source = typeof options.source === 'string'
         ? parseTemplate(options.source).children[0]
         : options.source;
 
-    preheatANode(this.source, proto._preHeatSkip);
+    preheatANode(this.source);
 
 
 

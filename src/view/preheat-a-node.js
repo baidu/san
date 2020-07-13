@@ -28,7 +28,7 @@ var Element = require('./element');
  *
  * @param {Object} aNode 要预热的ANode
  */
-function preheatANode(aNode, skipTags) {
+function preheatANode(aNode, componentInstance) {
     var stack = [];
 
     function recordHotspotData(expr, notContentData) {
@@ -197,28 +197,33 @@ function preheatANode(aNode, skipTags) {
                     aNode = aNode.forRinsed;
                 }
 
-                if (skipTags !== 'all' && hotTags[aNode.tagName]) {
-                    if (skipTags[aNode.tagName]) {
-                        // #[begin] error
-                        /* eslint-disable max-len */
-                        warn('\`' + aNode.tagName + '\` is a reserved tag name. Using this to identify component may cause unknown exceptions.');
-                        /* eslint-enable max-len */
-                        // #[end]
-                    } else {
-                        aNode.Clazz = Element;
-                    }
-                }
-                else {
-                    switch (aNode.tagName) {
-                        case 'slot':
-                            aNode.Clazz = SlotNode;
-                            break;
+                switch (aNode.tagName) {
+                    case 'slot':
+                        aNode.Clazz = SlotNode;
+                        break;
 
-                        case 'template':
-                        case 'fragment':
-                            aNode.hotspot.hasRootNode = true;
-                            aNode.Clazz = TemplateNode;
-                    }
+                    case 'template':
+                    case 'fragment':
+                        aNode.hotspot.hasRootNode = true;
+                        aNode.Clazz = TemplateNode;
+                        break;
+
+                    default:
+                        if (hotTags[aNode.tagName]) {
+                            if (!componentInstance 
+                                || !(componentInstance.getComponentType || componentInstance.components[aNode.tagName])
+                            ) {
+                                aNode.Clazz = Element;
+                            }
+
+                            // #[begin] error
+                            if (componentInstance) {
+                                if (componentInstance.components[aNode.tagName]) {
+                                    warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
+                                }
+                            }
+                            // #[end]
+                        }
                 }
                 // === analyse hotspot props: end
             }
