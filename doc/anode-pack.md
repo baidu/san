@@ -703,6 +703,37 @@ aPack = [35,"click",8,6,1,3,"showToast",1,6,1,3,"msg",]
 - head: 36
 - 编码序: `{string}name, {Node}expr`
 
+```js
+aPack = [1,"dd",1,36,"name",6,2,3,"user",3,"name"]
+/*
+{
+    "directives": {},
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "dd",
+    "vars": [
+        {
+            "name": "name",
+            "expr": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "user"
+                    },
+                    {
+                        "type": 1,
+                        "value": "name"
+                    }
+                ]
+            }
+        }
+    ]
+}
+*/
+```
+
 
 ### 指令 for
 
@@ -735,11 +766,73 @@ aPack = [35,"click",8,6,1,3,"showToast",1,6,1,3,"msg",]
 - head: 41
 - 编码序: `{Node}value`
 
+```js
+aPack = [1,"x-item",1,41,9,,2,3,"item",7,,6,1,3,"i",]
+/*
+{
+    "directives": {
+        "ref": {
+            "value": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 1,
+                        "value": "item"
+                    },
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "i"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "x-item"
+}
+*/
+```
 
 ### 指令 bind
 
 - head: 42
 - 编码序: `{Node}value`
+
+```js
+aPack = [1,"x-info",1,42,6,1,3,"user"]
+/*
+{
+    "directives": {
+        "bind": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "user"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "x-info"
+}
+*/
+```
 
 
 ### 指令 html
@@ -747,8 +840,61 @@ aPack = [35,"click",8,6,1,3,"showToast",1,6,1,3,"msg",]
 - head: 43
 - 编码序: `{Node}value`
 
+```js
+aPack = [1,"u",1,43,6,1,3,"text"]
+/*
+{
+    "directives": {
+        "html": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "text"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "u"
+}
+*/
+```
 
 ### 指令 transition
 
 - head: 44
 - 编码序: `{Node}value`
+
+```js
+aPack = [1,"x-item",1,44,8,6,1,3,"trans",]
+/*
+{
+    "directives": {
+        "transition": {
+            "value": {
+                "type": 6,
+                "name": {
+                    "type": 4,
+                    "paths": [
+                        {
+                            "type": 1,
+                            "value": "trans"
+                        }
+                    ]
+                },
+                "args": []
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "x-item"
+}
+*/
+```
