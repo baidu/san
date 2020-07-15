@@ -741,18 +741,196 @@ aPack = [1,"dd",1,36,"name",6,2,3,"user",3,"name"]
 - 编码序: `{string}item, {string?}index, {string?}trackByRaw, {Node}value`
 - 注: trackBy 通过 trackByRaw 二次解析
 
+```js
+aPack = [1,"li",2,37,"item",,,6,1,3,"list",,9,,1,7,,6,1,3,"item",]
+/*
+{
+    "directives": {
+        "for": {
+            "item": "item",
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "list"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "item"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "li"
+}
+*/
+```
 
 ### 指令 if
 
 - head: 38
 - 编码序: `{Node}value`
 
+```js
+aPack = [1,"h2",2,38,6,1,3,"title",,9,,1,7,,6,1,3,"title",,]
+/*
+{
+    "directives": {
+        "if": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "title"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "title"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "h2"
+}
+*/
+```
 
 ### 指令 elif
 
 - head: 39
 - 编码序: `{Node}value`
 
+```js
+aPack = [1,"h2",2,38,6,1,3,"name",,9,,1,7,,6,1,3,"name",,1,1,"b",2,39,6,1,3,"shortname",,9,,1,7,,6,1,3,"shortname",]
+/*
+{
+    "directives": {
+        "if": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "name"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "name"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "h2",
+    "elses": [
+        {
+            "directives": {
+                "elif": {
+                    "value": {
+                        "type": 4,
+                        "paths": [
+                            {
+                                "type": 1,
+                                "value": "shortname"
+                            }
+                        ]
+                    }
+                }
+            },
+            "props": [],
+            "events": [],
+            "children": [
+                {
+                    "textExpr": {
+                        "type": 7,
+                        "segs": [
+                            {
+                                "type": 5,
+                                "expr": {
+                                    "type": 4,
+                                    "paths": [
+                                        {
+                                            "type": 1,
+                                            "value": "shortname"
+                                        }
+                                    ]
+                                },
+                                "filters": []
+                            }
+                        ]
+                    }
+                }
+            ],
+            "tagName": "b"
+        }
+    ]
+}
+*/
+```
 
 ### 指令 else
 
@@ -760,6 +938,71 @@ aPack = [1,"dd",1,36,"name",6,2,3,"user",3,"name"]
 - 编码序: 无
 - 注: 为保持一直，自生成 `{value:{}}`
 
+```js
+aPack = [1,"h2",2,38,6,1,3,"name",,9,,1,7,,6,1,3,"name",,1,1,"span",2,40,,3,"noname"]
+/*
+{
+    "directives": {
+        "if": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "name"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [
+        {
+            "textExpr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "name"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ],
+    "tagName": "h2",
+    "elses": [
+        {
+            "directives": {
+                "else": {
+                    "value": {}
+                }
+            },
+            "props": [],
+            "events": [],
+            "children": [
+                {
+                    "textExpr": {
+                        "type": 1,
+                        "value": "noname"
+                    }
+                }
+            ],
+            "tagName": "span"
+        }
+    ]
+}
+*/
+```
 
 ### 指令 ref
 
