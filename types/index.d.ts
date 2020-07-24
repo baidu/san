@@ -112,7 +112,7 @@ declare namespace San {
     }
 
     interface ComponentConstructor<T, D> {
-        new(option?: { data?: Partial<T> }): SanComponent<T> & D;
+        new(option?: { data?: Partial<T>, owner?: any, source?: string | ANode }): SanComponent<T> & D;
     }
 
     interface SanComponentLoaderOption<T, D> {
