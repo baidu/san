@@ -20,16 +20,16 @@ var createAccessor = require('../parser/create-accessor');
  * @param {Function} ComponentClass 组件类
  * @return {ANode}
  */
-function parseComponentTemplate(ComponentClass) {
+function parseComponentTemplate(ComponentClass, aNode) {
     var proto = ComponentClass.prototype;
 
-    
-    var tplANode = parseTemplate(ComponentClass.template || proto.template, {
+
+    var tplANode = aNode || parseTemplate(ComponentClass.template || proto.template, {
         trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
         delimiters: proto.delimiters || ComponentClass.delimiters
     });
 
-    var aNode = tplANode.children[0];
+    aNode = tplANode.children[0];
     if (aNode && aNode.textExpr) {
         aNode = null;
     }
@@ -80,7 +80,7 @@ function parseComponentTemplate(ComponentClass) {
 
                 case 'id':
                     extraPropExists[prop.name] = true;
-                
+
             }
         }
 
@@ -127,8 +127,8 @@ function parseComponentTemplate(ComponentClass) {
         }
 
         if (!extraPropExists.id) {
-            aNode.props.push({ 
-                name: 'id', 
+            aNode.props.push({
+                name: 'id',
                 expr: createAccessor([{
                     type: ExprType.STRING,
                     value: 'id'

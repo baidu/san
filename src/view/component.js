@@ -111,7 +111,11 @@ function Component(options) { // eslint-disable-line
     if (!proto.hasOwnProperty('aNode')) {
         var aPack = clazz.aPack || proto.hasOwnProperty('aPack') && proto.aPack;
         if (aPack) {
-            proto.aNode = unpackANode(aPack);
+            var aNode = unpackANode(aPack);
+            if(aPack.indexOf('class') < 0) {
+                aNode = parseComponentTemplate(clazz, aNode);
+            }
+            proto.aNode = aNode;
             clazz.aPack = proto.aPack = null;
         }
         else {

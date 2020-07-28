@@ -100,4 +100,31 @@ describe("Component Compile", function () {
         });
 
     });
+
+    it("use aPack from parseTemplate", function () {
+
+        var File = san.defineComponent({
+            // template: '<span>erik</span>',
+            aPack: [1,,1,1,"span",1,,3,"erik"]
+        });
+
+        var Folder = san.defineComponent({
+            template: '<div><f class="customClass" id="customId" style="color: red;" /></div>',
+            components: {
+                f: File
+            }
+        });
+
+        var myComponent = new Folder();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.id).toBe('customId');
+        expect(span.style.color).toBe('red');
+        expect(span.getAttribute('class')).toBe('customClass');
+
+    });
 });
