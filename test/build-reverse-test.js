@@ -4,11 +4,11 @@
  */
 
 
-const san = require('../../dist/san');
+const san = require('../dist/san');
 const fs = require('fs');
 const path = require('path');
 
-let htmlTpl = fs.readFileSync(path.resolve(__dirname, '..', 'index-reverse.html.tpl'), 'UTF-8');
+let htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index-reverse.html.tpl'), 'UTF-8');
 let html = '';
 let specTpls = '';
 
@@ -95,7 +95,12 @@ function buildFile(filePath) {
                         .replace(/;\s*$/, '');
                     break;
 
-                case 'result.html':
+                case 'data.json':
+                    compontentData = require(abFilePath);
+                    componentDataLiteral = fs.readFileSync(abFilePath, 'UTF-8');
+                    break;
+
+                case 'expected.html':
                     result = fs.readFileSync(path.resolve(abFilePath), 'UTF-8').replace('\n', '');
                     break;
             }
@@ -113,7 +118,7 @@ function buildFile(filePath) {
     // dirName is the identity of each component
     dirName = match[1];
     // generate html when it has source file
-    if (sourceFile) {
+    if (sourceFile && specTpl) {
         genContent({
             componentClass,
             componentSource,
@@ -127,15 +132,15 @@ function buildFile(filePath) {
 };
 
 function writeIn({htmlTpl, html, specTpls}) {
-    let karmaHtml = fs.readFileSync(path.resolve(__dirname, '..', 'karma-context.html.tpl'), 'UTF-8');
+    let karmaHtml = fs.readFileSync(path.resolve(__dirname, 'karma-context.html.tpl'), 'UTF-8');
     fs.writeFileSync(
-        path.resolve(__dirname, '..', 'karma-context.html'),
+        path.resolve(__dirname, 'karma-context.html'),
         karmaHtml.replace('##rendered-elements##', html),
         'UTF-8'
     );
 
     fs.writeFileSync(
-        path.resolve(__dirname, '..', 'index-reverse.html'),
+        path.resolve(__dirname, 'index-reverse.html'),
         htmlTpl.replace('##rendered-elements##', html),
         'UTF-8'
     );
@@ -151,7 +156,7 @@ console.log();
 console.log('----- Build Reverse Specs -----');
 
 
-buildFile(path.resolve(__dirname, './'));
+buildFile(path.join(__dirname, '../node_modules/san-html-cases/src'));
 // write into file
 writeIn({htmlTpl, html, specTpls});
 

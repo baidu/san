@@ -96,6 +96,7 @@ declare namespace San {
         el?: Element;
         nodeType: NodeType;
         data: SanData<T>;
+        parentComponent?: SanComponent<{}>;
         fire(eventName: string, eventData: any): void;
         dispatch(eventName: string, eventData: any): void;
 
