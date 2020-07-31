@@ -14,7 +14,8 @@ bug.html
 test.html
 coverage/
 errorShots/
+/test/karma-context.html
 /test/index-reverse.html
-/test/reverse/reverse.spec.js
+/test/reverse.spec.js
 /test/pref/tti.html
 *.vscode
