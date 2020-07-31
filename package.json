@@ -48,7 +48,8 @@
     "karma-sourcemap-loader": "^0.3.7",
     "mustache": "^3.0.1",
     "opener": "^1.5.1",
-    "san-html-cases": "^2.0.0",
+    "san-anode-cases": "^3.9.0",
+    "san-html-cases": "^2.0.1",
     "source-map": "^0.7.3",
     "swig-templates": "^2.0.3",
     "uglify-js": "^2.8.22",
@@ -56,7 +57,6 @@
     "wdio-jasmine-framework": "^0.3.0",
     "wdio-sauce-service": "^0.4.14",
     "wdio-spec-reporter": "^0.1.0",
-    "webdriverio": "^5.7.0",
-    "san-anode-cases": "^3.9.0"
+    "webdriverio": "^5.7.0"
   }
 }
