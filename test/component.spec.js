@@ -4933,7 +4933,7 @@ describe("Component", function () {
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
             expect(bs[0].innerHTML).toBe('san');
-            
+
             myComponent.data.set('hidd', true);
             myComponent.nextTick(function () {
                 var as = wrap.getElementsByTagName('a');
@@ -5025,7 +5025,7 @@ describe("Component", function () {
                         linkText: 'HomePage'
                     }
                 ]
-                
+
             }
         });
 
@@ -5096,7 +5096,7 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        
+
         expect(myComponent.el.tagName).toBe('H3');
         expect(myComponent.el.className).toBe('');
         expect(!!myComponent.el.id).toBeFalsy();
@@ -5150,7 +5150,7 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        
+
         expect(myComponent.el.tagName).toBe('H3');
         expect(myComponent.el.className).toBe('');
         expect(!!myComponent.el.id).toBeFalsy();
@@ -5224,7 +5224,7 @@ describe("Component", function () {
         var myComponent = new MyComponent({
             data: {
                 list: [
-                    {name: 'err', email: 'errorrik@gmail.com'}, 
+                    {name: 'err', email: 'errorrik@gmail.com'},
                     {name: 'lee', email: 'leeight@gmail.com'},
                     {name: 'gray', email: 'xxx@outlook.com'}
                 ]
@@ -5475,8 +5475,8 @@ describe("Component", function () {
             as = wrap.getElementsByTagName('a');
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
-            
-            
+
+
             myComponent.data.set('hidd', true);
             myComponent.nextTick(function () {
                 var as = wrap.getElementsByTagName('a');
@@ -5503,14 +5503,34 @@ describe("Component", function () {
                     expect(as.length).toBe(1);
                     expect(as[0].innerHTML).toBe('github');
                     expect(bs[0].innerHTML).toBe('san');
-                    
+
                     myComponent.dispose();
                     document.body.removeChild(wrap);
                     done();
                 });
-                
+
             });
         });
+    });
+
+    it('prop with raw filter and not', function () {
+        var MyComponent = san.defineComponent({});
+
+        MyComponent.template = '<div><img src="{{url}}" /><img src="{{url|raw}}"/>hello erik<div>';
+        var url = 'https://www.baidu.com/favicon.ico?from=san&context={"name":"erik"}';
+        var myComponent = new MyComponent({data: {url: url}});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var img1 = wrap.getElementsByTagName('img')[0];
+        var img2 = wrap.getElementsByTagName('img')[1];
+        expect(img1.getAttribute('src')).toBe(url);
+        expect(img2.getAttribute('src')).toBe(url);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
     });
 });
 

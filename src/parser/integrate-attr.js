@@ -156,7 +156,12 @@ function integrateProp(aNode, name, rawValue, options) {
             case 1:
                 expr = expr.segs[0];
                 if (expr.type === ExprType.INTERP && expr.filters.length === 0) {
-                    expr = expr.expr;
+                    if (expr.original) {
+                        expr = expr.expr;
+                        expr.original = 1;
+                    } else {
+                        expr = expr.expr;
+                    }
                 }
         }
     }
