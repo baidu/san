@@ -54,13 +54,11 @@ function parseText(source, delimiters) {
     var walker = new Walker(source);
     var beforeIndex = 0;
 
-    var expr = {
-        type: ExprType.TEXT,
-        segs: []
-    };
-
+    var segs = [];
+    var original;
+    
     function pushStringToSeg(text) {
-        text && expr.segs.push({
+        text && segs.push({
             type: ExprType.STRING,
             value: decodeHTMLEntity(text)
         });
@@ -82,21 +80,33 @@ function parseText(source, delimiters) {
         ));
 
         var interp = parseInterp(interpSource);
-        expr.original = expr.original || interp.original;
-        expr.segs.push(interp);
+        original = original || interp.original;
+        segs.push(interp);
 
         beforeIndex = walker.index;
     }
 
     pushStringToSeg(walker.cut(beforeIndex));
 
+    switch (segs.length) {
+        case 0:
+            return {
+                type: ExprType.STRING,
+                value: ''
+            };
 
-
-    if (expr.segs.length === 1 && expr.segs[0].type === ExprType.STRING) {
-        return expr.segs[0];
+        case 1:
+            return segs[0];
     }
 
-    return expr;
+    return original ? {
+        type: ExprType.TEXT,
+        segs: segs,
+        original: 1
+    } : {
+        type: ExprType.TEXT,
+        segs: segs
+    };
 }
 
 exports = module.exports = parseText;
