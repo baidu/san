@@ -160,11 +160,25 @@ function integrateProp(aNode, name, rawValue, options) {
                             args: []
                         });
                         break;
-                }
-        }
 
-        if (expr.type === ExprType.INTERP && expr.filters.length === 0 && !expr.original) {
-            expr = expr.expr;
+                    default:
+                        if (expr.type !== ExprType.STRING) {
+                            expr = {
+                                type: ExprType.INTERP,
+                                expr: expr,
+                                filters: [{
+                                    type: ExprType.CALL,
+                                    name: createAccessor([
+                                        {
+                                            type: ExprType.STRING,
+                                            value: '_' + name
+                                        }
+                                    ]),
+                                    args: []
+                                }]
+                            }
+                        }
+                }
         }
 
     }

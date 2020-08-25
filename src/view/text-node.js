@@ -93,6 +93,9 @@ TextNode.prototype.nodeType = NodeType.TEXT;
  */
 TextNode.prototype.attach = function (parentEl, beforeEl) {
     this.content = evalExpr(this.aNode.textExpr, this.scope, this.owner);
+    if (this.content == null) {
+        this.content = '';
+    }
 
     if (this.aNode.textExpr.original) {
         this.id = this.id || guid++;
@@ -147,6 +150,9 @@ TextNode.prototype._update = function (changes) {
     while (len--) {
         if (changeExprCompare(changes[len].expr, this.aNode.textExpr, this.scope)) {
             var text = evalExpr(this.aNode.textExpr, this.scope, this.owner);
+            if (text == null) {
+                text = '';
+            }
 
             if (text !== this.content) {
                 this.content = text;

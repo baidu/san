@@ -96,6 +96,9 @@ function parseText(source, delimiters) {
             };
 
         case 1:
+            if (segs[0].type === ExprType.INTERP && segs[0].filters.length === 0 && !segs[0].original) {
+                return segs[0].expr;
+            }
             return segs[0];
     }
 
