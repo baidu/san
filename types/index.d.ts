@@ -251,7 +251,7 @@ declare namespace San {
     interface ANode {
         isText?: boolean;
         text?: string;
-        textExpr?: ExprTextNode | ExprStringNode;
+        textExpr?: ExprTextNode | ExprStringNode | ExprAccessorNode;
         children?: ANode[];
         props: ANodeProperty[];
         events: SanIndexedList<ExprNode>;
@@ -264,7 +264,7 @@ declare namespace San {
     }
 
     interface ATextNode extends ANode {
-        textExpr: ExprTextNode | ExprStringNode;
+        textExpr: ExprTextNode | ExprStringNode | ExprAccessorNode;
     }
 
     interface ATemplateNode extends ANode {
