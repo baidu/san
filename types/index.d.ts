@@ -173,10 +173,9 @@ declare namespace San {
         paths: ExprNode[];
     }
     interface ExprInterpNode extends ExprNodeTpl<ExprType.INTERP> {
-        expr: ExprAccessorNode;
+        expr: ExprNode;
         filters: ExprCallNode[];
         original: boolean;
-        raw: string;
     }
     interface ExprCallNode extends ExprNodeTpl<ExprType.CALL> {
         name: ExprAccessorNode;
@@ -193,7 +192,7 @@ declare namespace San {
     }
     interface ExprUnaryNode extends ExprNodeTpl<ExprType.UNARY> {
         operator: number;
-        expr: ExprAccessorNode;
+        expr: ExprNode;
     }
     interface ExprTertiaryNode extends ExprNodeTpl<ExprType.TERTIARY> {
         segs: ExprNode[];
@@ -251,7 +250,7 @@ declare namespace San {
     interface ANode {
         isText?: boolean;
         text?: string;
-        textExpr?: ExprTextNode | ExprStringNode | ExprAccessorNode;
+        textExpr?: ExprNode;
         children?: ANode[];
         props: ANodeProperty[];
         events: SanIndexedList<ExprNode>;
@@ -264,7 +263,7 @@ declare namespace San {
     }
 
     interface ATextNode extends ANode {
-        textExpr: ExprTextNode | ExprStringNode | ExprAccessorNode;
+        textExpr: ExprNode;
     }
 
     interface ATemplateNode extends ANode {
