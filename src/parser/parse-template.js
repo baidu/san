@@ -58,7 +58,7 @@ function parseTemplate(source, options) {
     var walker = new Walker(source);
 
     var tagReg = /<(\/)?([a-z][a-z0-9-]*)\s*/ig;
-    var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(([^'"<>\s]+)|(['"])([^\5]*?)\5))?\s*/ig;
+    var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(([^'"<>\s]+)|"([^"]*?)"|'([^']*?)'))?\s*/ig;
 
     var tagMatch;
     var currentNode = rootNode;
@@ -189,7 +189,7 @@ function parseTemplate(source, options) {
                     integrateAttr(
                         aElement,
                         attrMatch[1],
-                        attrMatch[2] ? (attrMatch[4] || attrMatch[6]) : void(0),
+                        attrMatch[2] ? (attrMatch[4] || (attrMatch[5] == null ? attrMatch[6] : attrMatch[5])) : void(0),
                         options
                     );
                 }
