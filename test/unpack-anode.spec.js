@@ -206,8 +206,8 @@ describe("Unpack ANode", function () {
         });
         
         it("text-expr-interp", function () {
-            var packed = [,9,,1,7,,6,1,3,"name",];
-            var aNode = {"textExpr":{"type":7,"segs":[{"type":5,"expr":{"type":4,"paths":[{"type":1,"value":"name"}]},"filters":[]}]}};
+            var packed = [,6,1,3,"name",];
+            var aNode = {"textExpr":{"type":4,"paths":[{"type":1,"value":"name"}]}};
 
             expectEqual(san.unpackANode(packed), aNode);
     
