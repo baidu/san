@@ -9,11 +9,11 @@
 
 
 var Walker = require('./walker');
+var ExprType = require('./expr-type');
 var integrateAttr = require('./integrate-attr');
 var parseText = require('./parse-text');
 var svgTags = require('../browser/svg-tags');
 var autoCloseTags = require('../browser/auto-close-tags');
-const ExprType = require('./expr-type');
 
 // #[begin] error
 function getXPath(stack, currentTagName) {
