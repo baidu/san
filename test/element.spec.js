@@ -1146,4 +1146,29 @@ describe("Element", function () {
             });
         });
     });
+
+    it("show directive 4 display style", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-show="num == 3">{{num}}</span></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {num: 2}
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.style.display).toBe('none');
+
+        myComponent.data.set('num', 3);
+
+        myComponent.nextTick(function () {
+            expect(span.style.display).toBe('');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });

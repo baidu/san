@@ -5616,5 +5616,40 @@ describe("Component", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
     });
+
+
+
+    it("show directive apply to component", function (done) {
+        var Label = san.defineComponent({
+            template: '<span style="position:absolute">span</span>'
+        })
+        var MyComponent = san.defineComponent({
+            components: {'x-l': Label},
+            template: '<div><x-l s-show="num == 3" style="top:1px"/></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {num: 2}
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.style.display).toBe('none');
+        expect(span.style.position).toBe('absolute');
+        expect(span.style.top).toBe('1px');
+
+        myComponent.data.set('num', 3);
+
+        myComponent.nextTick(function () {
+            expect(span.style.display).toBe('');
+            expect(span.style.position).toBe('absolute');
+            expect(span.style.top).toBe('1px');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });
 
