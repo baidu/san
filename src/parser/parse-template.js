@@ -13,6 +13,7 @@ var integrateAttr = require('./integrate-attr');
 var parseText = require('./parse-text');
 var svgTags = require('../browser/svg-tags');
 var autoCloseTags = require('../browser/auto-close-tags');
+const ExprType = require('./expr-type');
 
 // #[begin] error
 function getXPath(stack, currentTagName) {
@@ -197,6 +198,49 @@ function parseTemplate(source, options) {
 
             if (aElement) {
                 pushTextNode(source.slice(beforeLastIndex, tagMatchStart));
+
+                // handle show directive, append expr to style prop
+                if (aElement.directives.show) {
+                    // find style prop
+                    var styleProp = null;
+                    var propsLen = aElement.props.length;
+                    while (propsLen--) {
+                        if (aElement.props[propsLen].name === 'style') {
+                            styleProp = aElement.props[propsLen];
+                            break;
+                        }
+                    }
+
+                    var showStyleExpr = {
+                        type: ExprType.TERTIARY,
+                        segs: [
+                            aElement.directives.show.value,
+                            {type: ExprType.STRING, value: ''},
+                            {type: ExprType.STRING, value: ';display:none;'}
+                        ]
+                    };
+
+                    if (styleProp) {
+                        if (styleProp.expr.type === ExprType.TEXT) {
+                            styleProp.expr.segs.push(showStyleExpr);
+                        }
+                        else {
+                            aElement.props[propsLen].expr = {
+                                type: ExprType.TEXT,
+                                segs: [
+                                    styleProp.expr,
+                                    showStyleExpr
+                                ]
+                            };
+                        }
+                    }
+                    else {
+                        aElement.props.push({
+                            name: 'style',
+                            expr: showStyleExpr
+                        });
+                    }
+                }
 
                 // match if directive for else/elif directive
                 var elseDirective = aElement.directives['else'] // eslint-disable-line dot-notation
