@@ -192,8 +192,13 @@ function parseTemplate(source, options) {
                         attrMatch[2] ? (attrMatch[4] || (attrMatch[5] == null ? attrMatch[6] : attrMatch[5])) : void(0),
                         options
                     );
+                    continue;
                 }
 
+                // #[begin] error
+                // 标签并未结束，但 attrReg 匹配不到合法的属性
+                throw new Error('[SAN ERROR] ' + getXPath(stack, tagName) + ' invalid attribute')
+                // #[end]
             }
 
             if (aElement) {
