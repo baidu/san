@@ -441,6 +441,9 @@ Component.prototype.un = function (name, listener) {
  */
 Component.prototype.fire = function (name, event) {
     var me = this;
+    // #[begin] devtool
+    emitDevtool('event-fire', {event, name, me});
+    // #[end] 
     each(this.listeners[name], function (listener) {
         listener.fn.call(me, event);
     });
@@ -495,7 +498,9 @@ Component.prototype._calcComputed = function (computedExpr) {
  */
 Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
-
+    // #[begin] devtool
+    var dispatched = false;
+    // #[end]
     while (parentComponent) {
         var receiver = parentComponent.messages[name] || parentComponent.messages['*'];
         if (typeof receiver === 'function') {
@@ -503,11 +508,17 @@ Component.prototype.dispatch = function (name, value) {
                 parentComponent,
                 {target: this, value: value, name: name}
             );
+            // #[begin] devtool
+            dispatched = true;
+            // #[end]
             break;
         }
 
         parentComponent = parentComponent.parentComponent;
     }
+    // #[begin] devtool
+    emitDevtool('message-dispatch', {target: this, value: value, name: name, source: dispatched ? parentComponent : null});
+    // #[end]    
 };
 
 /**
