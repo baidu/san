@@ -52,7 +52,8 @@ describe("parse", function () {
     it("template contain tag+invalid-attr like text", function () {
         var anode = san.parseTemplate('hello san<dd {{id}}');
         expect(anode.children.length).toBe(1);
-        expect(anode.children[0].textExpr.value).toBe('hello san<dd {{id}}');
+        expect(anode.children[0].textExpr.segs[0].value).toBe('hello san<dd ');
+        expect(anode.children[0].textExpr.segs[1].value).toBeUndefined();
 
     });
 
