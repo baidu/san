@@ -495,7 +495,9 @@ Component.prototype._calcComputed = function (computedExpr) {
  */
 Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
-
+    // #[begin] devtool
+    var dispatched = false;
+    // #[end]
     while (parentComponent) {
         var receiver = parentComponent.messages[name] || parentComponent.messages['*'];
         if (typeof receiver === 'function') {
@@ -503,11 +505,17 @@ Component.prototype.dispatch = function (name, value) {
                 parentComponent,
                 {target: this, value: value, name: name}
             );
+            // #[begin] devtool
+            dispatched = true;
+            // #[end]
             break;
         }
 
         parentComponent = parentComponent.parentComponent;
     }
+    // #[begin] devtool
+    emitDevtool('event-dispatch', dispatched ? parentComponent : null, {target: this, value: value, name: name});
+    // #[end]    
 };
 
 /**
