@@ -63,16 +63,6 @@ describe('parseTemplate', function () {
 
     });
 
-    it('should throw error if attribute invalid', function () {
-
-        expect(function () {
-            san.parseTemplate('<div id=');
-        }).toThrowError(
-            '[SAN ERROR] ROOT>div invalid attribute'
-        );
-
-    });
-
     it('sholud throw error if close tag is not closed', function () {
 
         // 只对非 auto-close 标签做此项校验，auto-close 标签有单独的校验
