@@ -514,7 +514,7 @@ Component.prototype.dispatch = function (name, value) {
         parentComponent = parentComponent.parentComponent;
     }
     // #[begin] devtool
-    emitDevtool('event-dispatch', dispatched ? parentComponent : null, {target: this, value: value, name: name});
+    emitDevtool('event-dispatch', {target: this, value: value, name: name, source: dispatched ? parentComponent : null});
     // #[end]    
 };
 
