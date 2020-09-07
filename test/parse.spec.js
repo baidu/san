@@ -27,4 +27,40 @@ describe("parse", function () {
         expect(anode.children[0].textExpr.value).toBe('hello san<dd title="good job"');
 
     });
+
+    it("template contain 1+ tag+attr like text", function () {
+        var anode = san.parseTemplate('hello<div id= <u {{');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].textExpr.value).toBe('hello<div id= <u {{');
+
+    });
+
+    it("template contain tag+attr+equal like text", function () {
+        var anode = san.parseTemplate('hello san<dd id=');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].textExpr.value).toBe('hello san<dd id=');
+
+    });
+
+    it("template contain tag+inter-start like text", function () {
+        var anode = san.parseTemplate('hello san<dd {{');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].textExpr.value).toBe('hello san<dd {{');
+
+    });
+
+    it("template contain tag+invalid-attr like text", function () {
+        var anode = san.parseTemplate('hello san<dd {{id}}');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].textExpr.value).toBe('hello san<dd {{id}}');
+
+    });
+
+    it("template contain tag+attr like text and tag", function () {
+        var anode = san.parseTemplate('<div id= <u>dd</u>');
+        expect(anode.children.length).toBe(2);
+        expect(anode.children[0].textExpr.value).toBe('<div id= ');
+        expect(anode.children[1].tagName).toBe('u');
+
+    });
 });
