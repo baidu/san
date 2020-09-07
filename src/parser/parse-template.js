@@ -333,28 +333,17 @@ function parseTemplate(source, options) {
             var textExpr = lastChild && lastChild.textExpr;
 
             if (textExpr) {
-                switch (textExpr.type) {
-                    case ExprType.TEXT:
-                        textExpr.segs = textExpr.segs.concat(expr.segs || expr);
-                        break;
-
-                    case ExprType.INTERP:
-                        lastChild.textExpr = {
-                            type: ExprType.TEXT,
-                            segs: [textExpr].concat(expr.segs || expr)
-                        };
-                        break;
-
-                    default:
-                        if (expr.value != null) {
-                            textExpr.value = textExpr.value + expr.value;
-                        }
-                        else {
-                            lastChild.textExpr = {
-                                type: ExprType.TEXT,
-                                segs: [textExpr].concat(expr.segs || expr)
-                            };
-                        }
+                if (textExpr.segs) {
+                    textExpr.segs = textExpr.segs.concat(expr.segs || expr);
+                }
+                else if (textExpr.value != null && expr.value != null) {
+                    textExpr.value = textExpr.value + expr.value;
+                }
+                else {
+                    lastChild.textExpr = {
+                        type: ExprType.TEXT,
+                        segs: [textExpr].concat(expr.segs || expr)
+                    };
                 }
             }
             else {
