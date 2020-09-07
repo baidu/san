@@ -441,6 +441,9 @@ Component.prototype.un = function (name, listener) {
  */
 Component.prototype.fire = function (name, event) {
     var me = this;
+    // #[begin] devtool
+    emitDevtool('event-fire', {event, name, me});
+    // #[end] 
     each(this.listeners[name], function (listener) {
         listener.fn.call(me, event);
     });
@@ -514,7 +517,7 @@ Component.prototype.dispatch = function (name, value) {
         parentComponent = parentComponent.parentComponent;
     }
     // #[begin] devtool
-    emitDevtool('event-dispatch', {target: this, value: value, name: name, source: dispatched ? parentComponent : null});
+    emitDevtool('message-dispatch', {target: this, value: value, name: name, source: dispatched ? parentComponent : null});
     // #[end]    
 };
 
