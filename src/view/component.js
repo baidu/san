@@ -504,15 +504,10 @@ Component.prototype._calcComputed = function (computedExpr) {
 Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
 
-    // #[begin] devtool
-    var received;
-    // #[end]
-
     while (parentComponent) {
         var handler = parentComponent.messages[name] || parentComponent.messages['*'];
         if (typeof handler === 'function') {
             // #[begin] devtool
-            received = true;
             emitDevtool('comp-message', {
                 target: this,
                 value: value, 
@@ -525,14 +520,14 @@ Component.prototype.dispatch = function (name, value) {
                 parentComponent,
                 {target: this, value: value, name: name}
             );
-            break;
+            return;
         }
 
         parentComponent = parentComponent.parentComponent;
     }
 
     // #[begin] devtool
-    !received && emitDevtool('comp-message', {target: this, value: value, name: name});
+    emitDevtool('comp-message', {target: this, value: value, name: name});
     // #[end]    
 };
 
