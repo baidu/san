@@ -184,7 +184,7 @@ function parseTemplate(source, options) {
                 // #[end]
 
                 // 读取 attribute
-                var attrMatch = walker.match(attrReg);
+                var attrMatch = walker.match(attrReg, 1);
                 if (attrMatch) {
                     integrateAttr(
                         aElement,
@@ -192,13 +192,12 @@ function parseTemplate(source, options) {
                         attrMatch[2] ? (attrMatch[4] || (attrMatch[5] == null ? attrMatch[6] : attrMatch[5])) : void(0),
                         options
                     );
-                    continue;
                 }
-
-                // #[begin] error
-                // 标签并未结束，但 attrReg 匹配不到合法的属性
-                throw new Error('[SAN ERROR] ' + getXPath(stack, tagName) + ' invalid attribute')
-                // #[end]
+                else {
+                    pushTextNode(walker.cut(beforeLastIndex, walker.index));
+                    aElement = null;
+                    break;
+                }
             }
 
             if (aElement) {
@@ -329,9 +328,40 @@ function parseTemplate(source, options) {
         }
 
         if (text) {
-            currentNode.children.push({
-                textExpr: parseText(text, options.delimiters)
-            });
+            var expr = parseText(text, options.delimiters);
+            var lastChild = currentNode.children[currentNode.children.length - 1];
+            var textExpr = lastChild && lastChild.textExpr;
+
+            if (textExpr) {
+                switch (textExpr.type) {
+                    case ExprType.TEXT:
+                        textExpr.segs = textExpr.segs.concat(expr.segs || expr);
+                        break;
+
+                    case ExprType.INTERP:
+                        lastChild.textExpr = {
+                            type: ExprType.TEXT,
+                            segs: [textExpr].concat(expr.segs || expr)
+                        };
+                        break;
+
+                    default:
+                        if (expr.value != null) {
+                            textExpr.value = textExpr.value + expr.value;
+                        }
+                        else {
+                            lastChild.textExpr = {
+                                type: ExprType.TEXT,
+                                segs: [textExpr].concat(expr.segs || expr)
+                            };
+                        }
+                }
+            }
+            else {
+                currentNode.children.push({
+                    textExpr: expr
+                });
+            }
         }
     }
 }
