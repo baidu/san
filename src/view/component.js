@@ -442,8 +442,13 @@ Component.prototype.un = function (name, listener) {
 Component.prototype.fire = function (name, event) {
     var me = this;
     // #[begin] devtool
-    emitDevtool('event-fire', {event, name, me});
+    emitDevtool('comp-event', {
+        name: name, 
+        event: event, 
+        target: this
+    });
     // #[end] 
+
     each(this.listeners[name], function (listener) {
         listener.fn.call(me, event);
     });
@@ -498,26 +503,36 @@ Component.prototype._calcComputed = function (computedExpr) {
  */
 Component.prototype.dispatch = function (name, value) {
     var parentComponent = this.parentComponent;
+
     // #[begin] devtool
-    var dispatched = false;
+    var received;
     // #[end]
+
     while (parentComponent) {
-        var receiver = parentComponent.messages[name] || parentComponent.messages['*'];
-        if (typeof receiver === 'function') {
-            receiver.call(
+        var handler = parentComponent.messages[name] || parentComponent.messages['*'];
+        if (typeof handler === 'function') {
+            // #[begin] devtool
+            received = true;
+            emitDevtool('comp-message', {
+                target: this,
+                value: value, 
+                name: name,
+                receiver: parentComponent
+            });
+            // #[end]
+
+            handler.call(
                 parentComponent,
                 {target: this, value: value, name: name}
             );
-            // #[begin] devtool
-            dispatched = true;
-            // #[end]
             break;
         }
 
         parentComponent = parentComponent.parentComponent;
     }
+
     // #[begin] devtool
-    emitDevtool('message-dispatch', {target: this, value: value, name: name, source: dispatched ? parentComponent : null});
+    !received && emitDevtool('comp-message', {target: this, value: value, name: name});
     // #[end]    
 };
 
