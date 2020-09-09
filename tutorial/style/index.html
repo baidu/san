@@ -17,7 +17,7 @@
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="样式处理是编写视图模板时常见的场景，涉及到的 attribute 有 class 和 style，它们的处理方式和其他元素 attribute 有一些区别。本文专门描述样式处理上常见的场景。 在开始前，先强调一下：San 并没有为 class 和 style 处理提供特殊的绑定语法，他们的处理与其它 attribute 方式一样。 class我们可能会设计一些用于表示状态的 class，这些 cl">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-03-22T06:33:28.000Z">
+<meta property="og:updated_time" content="2020-09-09T07:02:07.680Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="样式">
 <meta name="twitter:description" content="样式处理是编写视图模板时常见的场景，涉及到的 attribute 有 class 和 style，它们的处理方式和其他元素 attribute 有一些区别。本文专门描述样式处理上常见的场景。 在开始前，先强调一下：San 并没有为 class 和 style 处理提供特殊的绑定语法，他们的处理与其它 attribute 方式一样。 class我们可能会设计一些用于表示状态的 class，这些 cl">
@@ -177,6 +177,10 @@ var _hmt = _hmt || [];
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span></span></span><br><span class="line"><span class="tag">        <span class="attr">s-for</span>=<span class="string">"item, index in datasource"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">style</span>=<span class="string">"background: &#123;&#123;item.color&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"&#123;&#123;item.id == value ? 'selected' : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">on-click</span>=<span class="string">"itemClick(index)"</span></span></span><br><span class="line"><span class="tag">    &gt;</span>&#123;&#123; item.title &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>此时需要警惕的是，数据可能并不存在，导致你设置的 style 并不是一个合法的样式。如果你不能保证数据一定有值，需要把样式名包含在插值中。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span></span></span><br><span class="line"><span class="tag">        <span class="attr">s-for</span>=<span class="string">"item, index in datasource"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">style</span>=<span class="string">"&#123;&#123;item.color ? 'background:' + item.color : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"&#123;&#123;item.id == value ? 'selected' : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">on-click</span>=<span class="string">"itemClick(index)"</span></span></span><br><span class="line"><span class="tag">    &gt;</span>&#123;&#123; item.title &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="s-show"><a href="#s-show" class="headerlink" title="s-show"></a>s-show</h2><p><code>&gt;= 3.9.3</code></p>
+<p><strong>s-show</strong> 指令可以通过一个表达式控制元素的 <strong>显示/隐藏</strong>，是 <strong>display</strong> 样式的语法糖。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-show</span>=<span class="string">"isActive"</span>&gt;</span>Active<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>提示</code>：与 <strong>s-if</strong> 不同在于，当使用 <strong>s-show</strong> 并值为 false 时，元素依然在 DOM 树中存在。</p>
 
       
     </div>
@@ -184,7 +188,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#class"><span class="toc-text">class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#style"><span class="toc-text">style</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#class"><span class="toc-text">class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#style"><span class="toc-text">style</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s-show"><span class="toc-text">s-show</span></a></li></ol>
   <a href="#" class="toc-top">回到顶部</a>
 </aside>
 

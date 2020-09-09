@@ -156,7 +156,7 @@ body{
     margin-left: 4px;
     background-color: #fafafa;
     border: 1px solid #d4d4d4;
-        padding: 2px 5px 2px 4px;
+    padding: 2px 5px 2px 4px;
     color: #333;
     text-decoration: none;
     text-shadow: 0 1px 0 #fff;
@@ -352,7 +352,6 @@ text-align: center;
   border-radius: 4px;
   margin-left: 20px;
   margin-right: 20px;
-  cursor: pointer;
 }
 .resource-block:hover,.facility-block:hover{
   transition: transform .5s;
@@ -360,18 +359,18 @@ text-align: center;
   box-shadow: 0 1px 18px rgba(0, 0, 0, 0.1), 0 5px 30px rgba(0, 0, 0, 0.09);
 }
 
-.resource-item,.facility-block{
-text-decoration: none;
-}
-
 .resource-item:focus,.facility-block:focus,.resource-item:hover,.facility-block:hover{
     text-decoration: none;
     color: #2EA2F8;
 }
 
-.resource-item:hover,.facility-item:hover{
+.resource-item,
+.facility-block
+.resource-item:hover,
+.facility-item:hover,
+.facility-item a,
+.facility-item a:hover{
   text-decoration: none;
-  box-shadow:
 }
 .resource-item-top,.facility-item-top{
   height: 200px;
@@ -409,6 +408,7 @@ text-decoration: none;
 .resource-item-bottom,.facility-item-bottom{
   padding-right: 20px;
   padding-left: 20px;
+  display: block;
 }
 .resource-item-bottom>h5,.facility-item-bottom>h5{
   padding-top: 20px;
@@ -422,6 +422,10 @@ text-decoration: none;
   font-size:14px;
   padding-top: 10px;
   padding-bottom: 30px;
+}
+.facility-item-bottom>p{
+  height: 70px;
+  padding: 0
 }
 
 
