@@ -17,7 +17,7 @@
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="Style processing is a common scenario when writing view templates. The attributes involved are class and style, and they are handled differently from other element attributes. This article specificall">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-02-18T07:31:20.157Z">
+<meta property="og:updated_time" content="2020-09-14T07:16:01.704Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Style">
 <meta name="twitter:description" content="Style processing is a common scenario when writing view templates. The attributes involved are class and style, and they are handled differently from other element attributes. This article specificall">
@@ -177,6 +177,10 @@ var _hmt = _hmt || [];
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span></span></span><br><span class="line"><span class="tag">        <span class="attr">s-for</span>=<span class="string">"item, index in datasource"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">style</span>=<span class="string">"background: &#123;&#123;item.color&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"&#123;&#123;item.id == value ? 'selected' : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">on-click</span>=<span class="string">"itemClick(index)"</span></span></span><br><span class="line"><span class="tag">    &gt;</span>&#123;&#123; item.title &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>The caveat is that the data may not exist, and the style you set is not a legal style. If you can’t guarantee that the data must have a value, you need to include the style name in the interpolation.</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span></span></span><br><span class="line"><span class="tag">        <span class="attr">s-for</span>=<span class="string">"item, index in datasource"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">style</span>=<span class="string">"&#123;&#123;item.color ? 'background:' + item.color : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">class</span>=<span class="string">"&#123;&#123;item.id == value ? 'selected' : ''&#125;&#125;"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">on-click</span>=<span class="string">"itemClick(index)"</span></span></span><br><span class="line"><span class="tag">    &gt;</span>&#123;&#123; item.title &#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="s-show"><a href="#s-show" class="headerlink" title="s-show"></a>s-show</h2><p><code>&gt;= 3.9.3</code></p>
+<p>The <strong>s-show</strong> directive is used to conditionally display an element by toggling the <strong>display</strong> CSS property of the element.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">s-show</span>=<span class="string">"isActive"</span>&gt;</span>Active<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>Note</code>: The difference between <strong>s-show</strong> and <strong>s-if</strong> is that an element with <strong>s-show</strong> will always be rendered and remain in the DOM.</p>
 
       
     </div>
@@ -184,7 +188,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#class"><span class="toc-text">class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#style"><span class="toc-text">style</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#class"><span class="toc-text">class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#style"><span class="toc-text">style</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s-show"><span class="toc-text">s-show</span></a></li></ol>
   <a href="#" class="toc-top">Top</a>
 </aside>
 
