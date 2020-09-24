@@ -86,6 +86,11 @@ function Component(options) { // eslint-disable-line
         this.transition = options.transition;
     }
 
+
+    this.id = guid++;
+
+    this._toPhase('beforeCompile');
+
     var proto = clazz.prototype;
 
     // pre define components class
@@ -150,8 +155,6 @@ function Component(options) { // eslint-disable-line
         this.parentComponent = this.owner;
         this.scope = this.owner.data;
     }
-
-    this.id = guid++;
 
     // #[begin] reverse
     // 组件反解，读取注入的组件数据
@@ -224,6 +227,8 @@ function Component(options) { // eslint-disable-line
     this._toPhase('compiled');
 
     // init data
+    this._toPhase('beforeInit');
+
     var initData = extend(
         typeof this.initData === 'function' && this.initData() || {},
         options.data || this._srcSbindData
@@ -281,6 +286,8 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
+        this._toPhase('beforeCreate');
+
         var RootComponentType = this.getComponentType
             ? this.getComponentType(this.aNode, this.data)
             : this.components[this.aNode.tagName];
@@ -311,6 +318,8 @@ function Component(options) { // eslint-disable-line
         }
 
         this._toPhase('created');
+
+        this._toPhase('beforeAttach');
         this._attached();
         this._toPhase('attached');
     }
@@ -719,6 +728,8 @@ Component.prototype._update = function (changes) {
 
     var dataChanges = this._dataChanges;
     if (dataChanges) {
+        this._toPhase('beforeUpdate');
+
         this._dataChanges = null;
 
         this._sbindData = nodeSBindUpdate(
@@ -904,6 +915,8 @@ Component.prototype._getElAsRootNode = function () {
  */
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
+        this._toPhase('beforeAttach');
+
         var hasRootNode = this.aNode.hotspot.hasRootNode
             || (this.getComponentType
                 ? this.getComponentType(this.aNode, this.data)
@@ -911,6 +924,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             );
 
         if (hasRootNode) {
+            this._toPhase('beforeCreate');
             this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -918,6 +932,8 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         }
         else {
             if (!this.el) {
+                this._toPhase('beforeCreate');
+
                 var sourceNode = this.aNode.hotspot.sourceNode;
                 var props = this.aNode.props;
 
@@ -988,6 +1004,7 @@ Component.prototype._attached = elementOwnAttached;
 Component.prototype._leave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
+            this._toPhase('beforeDetach');
             this.data.unlisten();
             this.dataChanger = null;
             this._dataChanges = null;
@@ -1040,6 +1057,8 @@ Component.prototype._leave = function () {
 
             this._toPhase('detached');
 
+            this._toPhase('beforeDispose');
+
             this._rootNode = null;
             this.el = null;
             this.owner = null;
@@ -1054,6 +1073,8 @@ Component.prototype._leave = function () {
         }
     }
     else if (this.lifeCycle.attached) {
+        this._toPhase('beforeDetach');
+
         if (this._rootNode) {
             if (this._rootNode.detach) {
                 this._rootNode.detach();
