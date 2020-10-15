@@ -103,20 +103,18 @@ function integrateAttr(aNode, name, value, options) {
  */
 function integrateProp(aNode, name, rawValue, options) {
     // parse two way binding, e.g. value="{=ident=}"
-    var value = rawValue || '';
-    var xMatch = value.match(/^\{=\s*(.*?)\s*=\}$/);
-
-    if (xMatch) {
+    if (rawValue && rawValue.indexOf('{=') === 0 && rawValue.slice(-2) === '=}') {
         aNode.props.push({
             name: name,
-            expr: parseExpr(xMatch[1]),
+            expr: parseExpr(rawValue.slice(2, -2)),
             x: 1
         });
 
         return;
     }
 
-    var expr = parseText(value, options.delimiters);
+    var expr = parseText(rawValue || '', options.delimiters);
+
     if (expr.value === '') {
         if (boolAttrs[name]) {
             expr = {
