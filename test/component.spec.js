@@ -709,19 +709,17 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
-    it("components as getComponentType", function () {
+    it("components use s-is", function () {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>'
         });
         var MyComponent = san.defineComponent({
-            getComponentType: function (aNode) {
-                if (aNode.tagName === 'ui-label') {
-                    return Label;
-                }
+            components: {
+                'x-label': Label
             }
         });
 
-        MyComponent.template = '<div><ui-label text="erik"></ui-label></div>';
+        MyComponent.template = '<div><test text="erik" s-is="{{\'x-label\'}}"/></div>';
         var myComponent = new MyComponent();
 
         var wrap = document.createElement('div');
@@ -4752,7 +4750,7 @@ describe("Component", function () {
 
     });
 
-    it("getComponentType called by aNode and scope", function (done) {
+    it("s-is in for", function (done) {
         var Button = san.defineComponent({
             template: '<button><slot/></button>'
         });
@@ -4763,31 +4761,23 @@ describe("Component", function () {
 
         var MyComponent = san.defineComponent({
             components: {
-                'x-button': Button
+                'x-button': Button,
+                'x-link': Link
             },
 
             template: '<div>'
-                + '<x-link s-for="item in list">{{item.title}}</x-link>'
+                + '<x-what s-for="item in list" s-is="\'x-\' + item.type">{{item.title}}</x-what>'
                 + '<x-button>last</x-button>'
-                + '</div>',
-
-            getComponentType: function (aNode, scope) {
-                var tagName = aNode.tagName;
-                if (tagName === 'x-link') {
-                    return scope.get('item.type') === 'a' ? Link : Button
-                }
-
-                return this.components[tagName];
-            }
+                + '</div>'
         });
 
         var myComponent = new MyComponent({
             data: {
                 list: [
-                    { type: 'a', title: 'one' },
+                    { type: 'link', title: 'one' },
                     { type: 'button', title: 'two' },
                     { type: 'button', title: 'three' },
-                    { type: 'a', title: 'four' }
+                    { type: 'link', title: 'four' }
                 ]
             }
         });
@@ -5582,25 +5572,25 @@ describe("Component", function () {
 
     });
 
-    it("identify subcomponent with reserved hot tag with getComponentType", function() {
+    it("identify subcomponent with reserved hot tag with s-is", function() {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}<i>{{tip}}</i></span>'
         });
         var MyComponent = san.defineComponent({
-            getComponentType: function(aNode) {
-                if (aNode.tagName === 'b') {
-                    return Label;
-                }
+            components: {
+                'x-label': Label
             },
 
-            template: '<div><b text="{{name}}" tip="{{company}}"></b></div>',
-
-            initData: function() {
-                return { name: 'erik', company: 'baidu' };
-            }
+            template: '<div><b text="{{name}}" tip="{{company}}" s-is="cmpt"></b></div>'
         });
 
-        var myComponent = new MyComponent();
+        var myComponent = new MyComponent({
+            data: { 
+                name: 'erik', 
+                company: 'baidu',
+                cmpt: 'x-label'
+            }
+        });
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);

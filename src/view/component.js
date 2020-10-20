@@ -281,9 +281,9 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        var RootComponentType = this.getComponentType
-            ? this.getComponentType(this.aNode, this.data)
-            : this.components[this.aNode.tagName];
+        var RootComponentType = this.components[
+            this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
+        ];
 
         if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
@@ -905,10 +905,9 @@ Component.prototype._getElAsRootNode = function () {
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
         var hasRootNode = this.aNode.hotspot.hasRootNode
-            || (this.getComponentType
-                ? this.getComponentType(this.aNode, this.data)
-                : this.components[this.aNode.tagName]
-            );
+            || this.components[
+                this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
+            ];
 
         if (hasRootNode) {
             this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);

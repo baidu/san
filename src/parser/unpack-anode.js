@@ -240,6 +240,7 @@ function unpackANode(packed) {
             case 42:
             case 43:
             case 44:
+            case 45:
                 node = {};
                 state = -2;
                 break;
@@ -322,6 +323,10 @@ function unpackANode(packed) {
 
                             case 44:
                                 current.directives.transition = node;
+                                break;
+
+                            case 45:
+                                current.directives.is = node;
                                 break;
 
                             case 1:
@@ -425,7 +430,7 @@ function unpackANode(packed) {
                     }
                     break;
 
-                // Directive: for, if, elif, ref, bind, html, transition
+                // Directive: for, if, elif, ref, bind, html, transition, is
                 case 37:
                 case 38:
                 case 39:
@@ -433,6 +438,7 @@ function unpackANode(packed) {
                 case 42:
                 case 43:
                 case 44:
+                case 45:
                     current.value = node;
                     stackIndex--;
                     break;

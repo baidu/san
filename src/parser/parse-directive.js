@@ -91,6 +91,12 @@ var directiveParsers = {
         };
     },
 
+    'is': function (value) {
+        return {
+            value: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
+        };
+    },
+
     'transition': function (value) {
         return {
             value: parseCall(value)
