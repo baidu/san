@@ -19,7 +19,7 @@
     <script src="../dist/san.dev.js"></script>
 
     <!-- include spec files here... -->
-    <script src="reverse/reverse.spec.js"></script>
+    <script src="reverse.spec.js"></script>
 </head>
 
 <body>
