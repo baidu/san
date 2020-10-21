@@ -4,7 +4,6 @@
  */
 
 
-const san = require('../dist/san');
 const fs = require('fs');
 const path = require('path');
 
