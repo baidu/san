@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "node ./tool/dev.js",
     "dev:unit": "npx karma start ./test/karma.conf.js start",
-    "pretest": "npm run build && node ./test/build-reverse-test.js && node ./test/build-spec.js",
+    "pretest": "npm run build && NODE_PATH=dist node ./test/build-reverse-test.js && node ./test/build-spec.js",
     "size": "npm run build && gzip -k dist/san.spa.modern.min.js && stat dist/san.spa.modern.min.js.gz && rm -f dist/*.gz",
     "test": "npm run test:unit",
     "test:unit": "npx karma start ./test/karma.conf.js --single-run",
@@ -32,6 +32,10 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@wdio/cli": "^6.6.6",
+    "@wdio/jasmine-framework": "^6.6.6",
+    "@wdio/sauce-service": "^6.6.6",
+    "@wdio/spec-reporter": "^6.6.6",
     "art-template": "^4.10.2",
     "colors": "^1.0.3",
     "coveralls": "^3.0.1",
@@ -49,14 +53,11 @@
     "mustache": "^3.0.1",
     "opener": "^1.5.1",
     "san-anode-cases": "^3.10.0",
-    "san-html-cases": "^3.10.0",
+    "san-html-cases": "^3.10.1",
     "source-map": "^0.7.3",
     "swig-templates": "^2.0.3",
     "uglify-js": "^2.8.22",
     "watch": "^1.0.2",
-    "wdio-jasmine-framework": "^0.3.0",
-    "wdio-sauce-service": "^0.4.14",
-    "wdio-spec-reporter": "^0.1.0",
-    "webdriverio": "^5.7.0"
+    "webdriverio": "^6.6.6"
   }
 }
