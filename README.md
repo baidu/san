@@ -95,7 +95,7 @@ CDN:
 
 ## Companions
 
-- [san-devtool](https://github.com/baidu/san-devtool/blob/master/docs/user_guide.md) - Chrome DevTool extension
+- [san-devtools](https://github.com/baidu/san-devtools) - Development tools for debugging applications
 - [san-router](https://github.com/baidu/san-router) - SPA Router
 - [san-store](https://github.com/baidu/san-store) - Application States Management
 - [san-update](https://github.com/baidu/san-update) - Immutable Data Update
