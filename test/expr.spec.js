@@ -658,4 +658,39 @@ describe("Expression", function () {
         expect(san.evalExpr(san.parseExpr('arr[val4]-arr[0]+5'), data)).toBe(104);
     });
 
+    it("method", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{plus(val1) | tobe(3)}}</b>',
+            filters: { tobe: tobeFilter },
+            plus: function (a) {
+                return a + 1;
+            }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 2);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("not exists method", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{plus(val1) | tobe(undef)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('val1', 2);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
 });
