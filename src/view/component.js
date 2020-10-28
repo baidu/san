@@ -571,10 +571,14 @@ Component.prototype.ref = function (name) {
     var owner = this;
 
     function childrenTraversal(children) {
-        each(children, function (child) {
-            elementTraversal(child);
-            return !refTarget;
-        });
+        if (children) {
+            for (var i = 0, l = children.length; i < l; i++) {
+                elementTraversal(children[i]);
+                if (refTarget) {
+                    return;
+                }
+            }
+        }
     }
 
     function elementTraversal(element) {
@@ -600,13 +604,21 @@ Component.prototype.ref = function (name) {
                     }
             }
 
-            !refTarget && childrenTraversal(element.slotChildren);
+            if (refTarget) {
+                return;
+            }
+
+            childrenTraversal(element.slotChildren);
         }
 
-        !refTarget && childrenTraversal(element.children);
+        if (refTarget) {
+            return;
+        }
+
+        childrenTraversal(element.children);
     }
 
-    childrenTraversal(this.children);
+    this._rootNode ? elementTraversal(this._rootNode) : childrenTraversal(this.children);
 
     return refTarget;
 };
