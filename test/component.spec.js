@@ -2563,6 +2563,40 @@ describe("Component", function () {
         });
     });
 
+    it("ref when root is component", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><slot/></a>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Label
+            },
+            template: '<x-a><p>test<b s-ref="b">{{name}}</b>aa</p></x-a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'errorrik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.ref('b').innerHTML).toBe('errorrik');
+
+        myComponent.data.set('name', '2b');
+
+        san.nextTick(function () {
+            expect(myComponent.ref('b').innerHTML).toBe('2b');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
 
     it("update prop", function (done) {
         var MyComponent = san.defineComponent({
