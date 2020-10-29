@@ -48,6 +48,7 @@ function getXPropOutputer(element, xProp, data) {
 function getInputXPropOutputer(element, xProp, data) {
     return function () {
         // #[begin] allua
+        /* istanbul ignore if */
         if (element.__bkph) {
             element.__bkph = false;
             return;

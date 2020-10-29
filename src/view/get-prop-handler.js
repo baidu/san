@@ -73,6 +73,7 @@ function boolPropHandler(el, value, name) {
 // #[begin] allua
 // see https://github.com/baidu/san/issues/495
 function placeholderHandler(el, value, name, element) {
+    /* istanbul ignore if */
     if (ie > 9 && !el.value && value) {
         element.__bkph = true;
         nextTick(function () {
