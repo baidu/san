@@ -23,7 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm install
     - run: npm run test:coverage
-        env:
+      env:
         CI: true
     - name: Coveralls GitHub Action
       uses: coverallsapp/github-action@v1.1.2
