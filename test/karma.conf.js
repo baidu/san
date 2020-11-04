@@ -85,7 +85,7 @@ module.exports = function(config) {
     configuration.remapIstanbulReporter = {
         reports:{
             html: 'coverage/html',
-            lcovonly: 'coverage/report-lcov/lcov.info',
+            lcovonly: 'coverage/lcov.info',
         }
     };
 
