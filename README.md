@@ -13,7 +13,7 @@ A fast, portable, flexible JavaScript component framework.
 <p align="center">
   <a href="https://www.npmjs.com/package/san"><img src="http://img.shields.io/npm/v/san.svg?style=flat-square" alt="NPM version"></a>
   <a href="https://www.npmjs.com/package/san"><img src="https://img.shields.io/github/license/baidu/san.svg?style=flat-square" alt="License"></a>
-  <a href="https://travis-ci.org/baidu/san"><img src="https://img.shields.io/travis/baidu/san/master.svg?style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/baidu/san/actions"><img src="https://github.com/baidu/san/workflows/CI/badge.svg" alt="Build Status"></a>
   <a href="https://coveralls.io/github/baidu/san?branch=master"><img src="https://img.shields.io/coveralls/github/baidu/san.svg?style=flat-square" alt="Coverage Status"></a>
   <a href="https://github.com/baidu/san/issues"><img src="https://img.shields.io/github/issues/baidu/san.svg?style=flat-square" alt="Issues"></a>
 </p>
