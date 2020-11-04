@@ -22,10 +22,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
-    - run: npm run test:coverage
+    - run: npm run test:cov
       env:
         CI: true
     - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1.1.2
+      uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
