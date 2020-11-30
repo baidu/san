@@ -711,15 +711,30 @@ describe("Component", function () {
 
     it("components use s-is", function () {
         var Label = san.defineComponent({
-            template: '<span title="{{text}}">{{text}}</span>'
-        });
-        var MyComponent = san.defineComponent({
-            components: {
-                'x-label': Label
+            template: `<span title="{{text}}">{{text}}</span>`,
+            initData() {
+                return {
+                    text: 'erik'
+                }
             }
         });
 
-        MyComponent.template = '<div><test text="erik" s-is="{{\'x-label\'}}"/></div>';
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+            },
+            initData() {
+                return {
+                    cmpt: 'x-label'
+                }
+            }
+        });
+
+        MyComponent.template = `
+            <div>
+                <test s-is="cmpt"/>
+            </div>`;
+
         var myComponent = new MyComponent();
 
         var wrap = document.createElement('div');
@@ -731,6 +746,65 @@ describe("Component", function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+    });
+
+    it("s-is value update", function (done) {
+        var Label = san.defineComponent({
+            template: `<span
+                title="{{text}}"
+                >{{text}}
+            </span>`,
+            initData() {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var H2 = san.defineComponent({
+            template: `<h2>{{text}}.baidu</h2>`,
+            initData() {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+                'x-h2': H2
+            },
+            initData() {
+                return {
+                    cmpt: 'x-label'
+                }
+            }
+        });
+
+        MyComponent.template = `
+            <div>
+                <test s-is="cmpt"/>
+            </div>`;
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.data.set('cmpt', 'x-h2');
+        san.nextTick(function () {
+            var h2 = wrap.getElementsByTagName('h2')[0];
+            expect(h2.innerHTML.indexOf('erik.baidu')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
     it("components in inherits structure", function () {
@@ -4823,15 +4897,15 @@ describe("Component", function () {
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('one');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('two');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('three');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('four');
 
@@ -5232,6 +5306,58 @@ describe("Component", function () {
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
             expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("s-is value update in component as component root by s-is", function (done) {
+        var ChildA = san.defineComponent({
+            template: '<h2>erik</h2>'
+        });
+        var ChildB = san.defineComponent({
+            template: '<h3>varsha</h3>'
+        });
+
+        var Parent = san.defineComponent({
+            template: '<test s-is="cmpt"></test>',
+            components: {
+                'x-child-a': ChildA,
+                'x-child-b': ChildB
+            }
+        });
+
+
+        var MyComponent = san.defineComponent({
+            template: `<div>
+                    <x-parent cmpt="{{cmpt}}"/>
+                </div>`,
+            components: {
+                'x-parent': Parent
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                cmpt: 'x-child-a'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var childElm = myComponent.el.firstElementChild;
+        expect(childElm.tagName).toBe('H2');
+        expect(childElm.innerHTML).toBe('erik');
+
+        myComponent.data.set('cmpt', 'x-child-b');
+        myComponent.nextTick(function () {
+            var childElm = myComponent.el.firstElementChild;
+            expect(childElm.tagName).toBe('H3');
+            expect(childElm.innerHTML).toBe('varsha');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -5672,8 +5798,8 @@ describe("Component", function () {
         });
 
         var myComponent = new MyComponent({
-            data: { 
-                name: 'erik', 
+            data: {
+                name: 'erik',
                 company: 'baidu',
                 cmpt: 'x-label'
             }
