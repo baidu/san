@@ -291,9 +291,7 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        // #[begin] devtool
         this._toPhase('beforeCreate');
-        // #[end]
 
         var RootComponentType = this.components[
             this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
@@ -326,9 +324,7 @@ function Component(options) { // eslint-disable-line
 
         this._toPhase('created');
 
-        // #[begin] devtool
         this._toPhase('beforeAttach');
-        // #[end]
         this._attached();
         this._toPhase('attached');
     }
