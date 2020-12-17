@@ -291,8 +291,6 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        this._toPhase('beforeCreate');
-
         var RootComponentType = this.components[
             this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
         ];
@@ -324,7 +322,6 @@ function Component(options) { // eslint-disable-line
 
         this._toPhase('created');
 
-        this._toPhase('beforeAttach');
         this._attached();
         this._toPhase('attached');
     }
