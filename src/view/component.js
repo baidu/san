@@ -321,7 +321,6 @@ function Component(options) { // eslint-disable-line
         }
 
         this._toPhase('created');
-
         this._attached();
         this._toPhase('attached');
     }
