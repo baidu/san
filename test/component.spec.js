@@ -5672,8 +5672,8 @@ describe("Component", function () {
         });
 
         var myComponent = new MyComponent({
-            data: {
-                name: 'erik',
+            data: { 
+                name: 'erik', 
                 company: 'baidu',
                 cmpt: 'x-label'
             }
