@@ -254,6 +254,39 @@ describe("Element", function () {
         });
     });
 
+    it("bind style, auto expand object, only one expr", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span style="{{extra}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('extra', {
+            position: 'absolute',
+            display: 'none'
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        
+        expect(span.style.position).toBe('absolute');
+        expect(span.style.display).toBe('none');
+
+        myComponent.data.set('extra.display', 'block');
+
+
+        san.nextTick(function () {
+            expect(span.style.position).toBe('absolute');
+            expect(span.style.display).toBe('block');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind style", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span style="position: absolute; display: {{display}}"></span></a>'
@@ -283,7 +316,7 @@ describe("Element", function () {
         });
     });
 
-    it("bind style, auto expand object", function (done) {
+    it("bind style, auto expand object, in text", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span style="position: absolute; display: {{display}}; {{extra}}"></span></a>'
         });
@@ -1166,6 +1199,35 @@ describe("Element", function () {
 
         myComponent.nextTick(function () {
             expect(span.style.display).toBe('');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
+
+    it("show directive 4 display style, mix style declaration", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span s-show="num == 3" style="position:{{pos}}">{{num}}</span></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {num: 2, pos: 'absolute'}
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.style.display).toBe('none');
+        expect(span.style.position).toBe('absolute');
+
+        myComponent.data.set('num', 3);
+        myComponent.data.set('pos', 'relative');
+
+        myComponent.nextTick(function () {
+            expect(span.style.display).toBe('');
+            expect(span.style.position).toBe('relative');
+            
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();

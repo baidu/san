@@ -1141,3 +1141,33 @@ aPack = [1,"x-item",1,44,8,6,1,3,"trans",]
 }
 */
 ```
+
+### 指令 is
+
+- head: 45
+- 编码序: `{Node}value`
+
+```js
+aPack = [1,"u",1,45,6,1,3,"cmpt"]
+/*
+{
+    "directives": {
+        "is": {
+            "value": {
+                "type": 4,
+                "paths": [
+                    {
+                        "type": 1,
+                        "value": "cmpt"
+                    }
+                ]
+            }
+        }
+    },
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "u"
+}
+*/
+```

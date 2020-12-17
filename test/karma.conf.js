@@ -58,7 +58,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
 
     customLaunchers: {
         Chrome_travis_ci: {
@@ -85,16 +85,11 @@ module.exports = function(config) {
     configuration.remapIstanbulReporter = {
         reports:{
             html: 'coverage/html',
-            lcovonly: 'coverage/report-lcov/lcov.info',
+            lcovonly: 'coverage/lcov.info',
         }
     };
 
   }
-
-  if (process.env.TRAVIS) {
-    configuration.browsers = ['Chrome_travis_ci'];
-  }
-
 
   config.set(configuration);
 };

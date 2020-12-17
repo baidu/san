@@ -2380,6 +2380,100 @@ describe("Slot", function () {
         });
     });
 
+    it("dynamic slot name description in component root", function (done) {
+        var Panel = san.defineComponent({
+            template: '<div><slot/></div>'
+        });
+
+        var Table = san.defineComponent({
+            template: ''
+                + '<div>'
+                + '    <h3 s-for="col in columns">{{col.label}}</h3>'
+                + '    <ul s-for="row in datasource">'
+                + '      <li s-for="col in columns"><slot name="col-{{col.name}}" var-row="row" var-col="col">{{row[col.name]}}</slot></li>'
+                + '    </ul>'
+                + '</div>'
+          });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-table': Table,
+                'x-panel': Panel
+            },
+            template:
+                '<x-panel>'
+                    + '<x-table columns="{{columns}}" datasource="{{list}}">'
+                        + '<b slot="col-name">{{row.name}}</b>'
+                    + '</x-table>'
+                + '</x-panel>'
+
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                columns: [
+                    {name: 'name', label: '名'},
+                    {name: 'email', label: '邮'}
+                ],
+                list: [
+                    {name: 'errorrik', email: 'errorrik@gmail.com'},
+                    {name: 'leeight', email: 'leeight@gmail.com'}
+                ]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var bs = wrap.getElementsByTagName('b');
+        expect(bs.length).toBe(2);
+        expect(bs[0].innerHTML).toBe('errorrik');
+        expect(bs[1].innerHTML).toBe('leeight');
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toContain('errorrik@gmail.com');
+        expect(lis[3].innerHTML).toContain('leeight@gmail.com');
+
+        myComponent.data.push('list', {name: 'otakustay', email: 'otakustay@gmail.com'});
+        myComponent.data.set('list[0].email', 'erik168@163.com');
+
+        myComponent.nextTick(function () {
+            var bs = wrap.getElementsByTagName('b');
+            expect(bs.length).toBe(3);
+            expect(bs[2].innerHTML).toBe('otakustay');
+
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toContain('erik168@163.com');
+            expect(lis[5].innerHTML).toContain('otakustay@gmail.com');
+
+            myComponent.data.set('columns', [
+                {name: 'email', label: '邮'},
+                {name: 'name', label: '名'}
+            ]);
+
+            myComponent.nextTick(function () {
+                var bs = wrap.getElementsByTagName('b');
+                expect(bs.length).toBe(3);
+                expect(bs[0].innerHTML).toBe('errorrik');
+                expect(bs[1].innerHTML).toBe('leeight');
+
+                var lis = wrap.getElementsByTagName('li');
+                expect(lis.length).toBe(6);
+                expect(lis[2].innerHTML).toContain('leeight@gmail.com');
+                expect(lis[0].innerHTML).toContain('erik168@163.com');
+                expect(lis[4].innerHTML).toContain('otakustay@gmail.com');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+
+        });
+    });
+
     it("a complex spec may cause component _update re-in", function (done) {
         var ColFilter = san.defineComponent({
             template: '<div>'

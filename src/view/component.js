@@ -288,9 +288,9 @@ function Component(options) { // eslint-disable-line
     if (this.el || reverseWalker) {
         this._toPhase('beforeCreate');
 
-        var RootComponentType = this.getComponentType
-            ? this.getComponentType(this.aNode, this.data)
-            : this.components[this.aNode.tagName];
+        var RootComponentType = this.components[
+            this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
+        ];
 
         if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
@@ -452,11 +452,11 @@ Component.prototype.fire = function (name, event) {
     var me = this;
     // #[begin] devtool
     emitDevtool('comp-event', {
-        name: name, 
-        event: event, 
+        name: name,
+        event: event,
         target: this
     });
-    // #[end] 
+    // #[end]
 
     each(this.listeners[name], function (listener) {
         listener.fn.call(me, event);
@@ -519,7 +519,7 @@ Component.prototype.dispatch = function (name, value) {
             // #[begin] devtool
             emitDevtool('comp-message', {
                 target: this,
-                value: value, 
+                value: value,
                 name: name,
                 receiver: parentComponent
             });
@@ -537,7 +537,7 @@ Component.prototype.dispatch = function (name, value) {
 
     // #[begin] devtool
     emitDevtool('comp-message', {target: this, value: value, name: name});
-    // #[end]    
+    // #[end]
 };
 
 /**
@@ -580,10 +580,14 @@ Component.prototype.ref = function (name) {
     var owner = this;
 
     function childrenTraversal(children) {
-        each(children, function (child) {
-            elementTraversal(child);
-            return !refTarget;
-        });
+        if (children) {
+            for (var i = 0, l = children.length; i < l; i++) {
+                elementTraversal(children[i]);
+                if (refTarget) {
+                    return;
+                }
+            }
+        }
     }
 
     function elementTraversal(element) {
@@ -609,13 +613,21 @@ Component.prototype.ref = function (name) {
                     }
             }
 
-            !refTarget && childrenTraversal(element.slotChildren);
+            if (refTarget) {
+                return;
+            }
+
+            childrenTraversal(element.slotChildren);
         }
 
-        !refTarget && childrenTraversal(element.children);
+        if (refTarget) {
+            return;
+        }
+
+        childrenTraversal(element.children);
     }
 
-    childrenTraversal(this.children);
+    this._rootNode ? elementTraversal(this._rootNode) : childrenTraversal(this.children);
 
     return refTarget;
 };
@@ -918,10 +930,9 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         this._toPhase('beforeAttach');
 
         var hasRootNode = this.aNode.hotspot.hasRootNode
-            || (this.getComponentType
-                ? this.getComponentType(this.aNode, this.data)
-                : this.components[this.aNode.tagName]
-            );
+            || this.components[
+                this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
+            ];
 
         if (hasRootNode) {
             this._toPhase('beforeCreate');

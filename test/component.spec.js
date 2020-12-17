@@ -809,19 +809,17 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
-    it("components as getComponentType", function () {
+    it("components use s-is", function () {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>'
         });
         var MyComponent = san.defineComponent({
-            getComponentType: function (aNode) {
-                if (aNode.tagName === 'ui-label') {
-                    return Label;
-                }
+            components: {
+                'x-label': Label
             }
         });
 
-        MyComponent.template = '<div><ui-label text="erik"></ui-label></div>';
+        MyComponent.template = '<div><test text="erik" s-is="{{\'x-label\'}}"/></div>';
         var myComponent = new MyComponent();
 
         var wrap = document.createElement('div');
@@ -2657,6 +2655,40 @@ describe("Component", function () {
             expect(myComponent.ref('it-errorrik') == null).toBeTruthy();
             expect(myComponent.ref('it-2b').innerHTML).toBe('2b');
             expect(myComponent.ref('it-leeight').innerHTML).toBe('leeight');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
+    it("ref when root is component", function (done) {
+        var Label = san.defineComponent({
+            template: '<a><slot/></a>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-a': Label
+            },
+            template: '<x-a><p>test<b s-ref="b">{{name}}</b>aa</p></x-a>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                name: 'errorrik'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.ref('b').innerHTML).toBe('errorrik');
+
+        myComponent.data.set('name', '2b');
+
+        san.nextTick(function () {
+            expect(myComponent.ref('b').innerHTML).toBe('2b');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -4852,7 +4884,7 @@ describe("Component", function () {
 
     });
 
-    it("getComponentType called by aNode and scope", function (done) {
+    it("s-is in for", function (done) {
         var Button = san.defineComponent({
             template: '<button><slot/></button>'
         });
@@ -4863,31 +4895,23 @@ describe("Component", function () {
 
         var MyComponent = san.defineComponent({
             components: {
-                'x-button': Button
+                'x-button': Button,
+                'x-link': Link
             },
 
             template: '<div>'
-                + '<x-link s-for="item in list">{{item.title}}</x-link>'
+                + '<x-what s-for="item in list" s-is="\'x-\' + item.type">{{item.title}}</x-what>'
                 + '<x-button>last</x-button>'
-                + '</div>',
-
-            getComponentType: function (aNode, scope) {
-                var tagName = aNode.tagName;
-                if (tagName === 'x-link') {
-                    return scope.get('item.type') === 'a' ? Link : Button
-                }
-
-                return this.components[tagName];
-            }
+                + '</div>'
         });
 
         var myComponent = new MyComponent({
             data: {
                 list: [
-                    { type: 'a', title: 'one' },
+                    { type: 'link', title: 'one' },
                     { type: 'button', title: 'two' },
                     { type: 'button', title: 'three' },
-                    { type: 'a', title: 'four' }
+                    { type: 'link', title: 'four' }
                 ]
             }
         });
@@ -5227,6 +5251,59 @@ describe("Component", function () {
                 link: 'https://baidu.github.io/san/',
                 framework: 'San',
                 linkText: 'HomePage'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(myComponent.el.tagName).toBe('H3');
+        expect(myComponent.el.className).toBe('');
+        expect(!!myComponent.el.id).toBeFalsy();
+        expect(myComponent.el.style.fontSize).toContain('18');
+
+        var as = wrap.getElementsByTagName('a');
+        var bs = wrap.getElementsByTagName('b');
+        expect(as.length).toBe(1);
+        expect(as[0].innerHTML).toBe('HomePage');
+        expect(bs[0].innerHTML).toBe('San');
+
+        myComponent.data.set('linkText', 'github');
+        myComponent.data.set('link', 'https://github.com/baidu/san/');
+        myComponent.data.set('framework', 'san');
+        myComponent.nextTick(function () {
+            var as = wrap.getElementsByTagName('a');
+            var bs = wrap.getElementsByTagName('b');
+            expect(as.length).toBe(1);
+            expect(as[0].innerHTML).toBe('github');
+            expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("component as component root by s-is", function (done) {
+        var Child = san.defineComponent({
+            template: '<h3>see <a href="{{link}}">{{linkText || name}}</a> to start <b>{{name}}</b> framework</h3>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div s-is="type" link="{{link}}" name="{{framework}}" link-text="{{linkText}}" style="font-size:18px"/>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                link: 'https://baidu.github.io/san/',
+                framework: 'San',
+                linkText: 'HomePage',
+                type: 'x-child'
             }
         });
 
@@ -5682,25 +5759,25 @@ describe("Component", function () {
 
     });
 
-    it("identify subcomponent with reserved hot tag with getComponentType", function() {
+    it("identify subcomponent with reserved hot tag with s-is", function() {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}<i>{{tip}}</i></span>'
         });
         var MyComponent = san.defineComponent({
-            getComponentType: function(aNode) {
-                if (aNode.tagName === 'b') {
-                    return Label;
-                }
+            components: {
+                'x-label': Label
             },
 
-            template: '<div><b text="{{name}}" tip="{{company}}"></b></div>',
-
-            initData: function() {
-                return { name: 'erik', company: 'baidu' };
-            }
+            template: '<div><b text="{{name}}" tip="{{company}}" s-is="cmpt"></b></div>'
         });
 
-        var myComponent = new MyComponent();
+        var myComponent = new MyComponent({
+            data: { 
+                name: 'erik', 
+                company: 'baidu',
+                cmpt: 'x-label'
+            }
+        });
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);

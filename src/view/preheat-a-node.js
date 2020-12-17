@@ -210,17 +210,15 @@ function preheatANode(aNode, componentInstance) {
 
                     default:
                         if (hotTags[aNode.tagName]) {
-                            if (!componentInstance 
-                                || !(componentInstance.getComponentType || componentInstance.components[aNode.tagName])
+                            if (!aNode.directives.is 
+                                && (!componentInstance || !componentInstance.components[aNode.tagName])
                             ) {
                                 aNode.Clazz = Element;
                             }
 
                             // #[begin] error
-                            if (componentInstance) {
-                                if (componentInstance.components[aNode.tagName]) {
-                                    warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
-                                }
+                            if (componentInstance && componentInstance.components[aNode.tagName]) {
+                                warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
                             }
                             // #[end]
                         }
