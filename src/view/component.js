@@ -86,6 +86,13 @@ function Component(options) { // eslint-disable-line
         this.transition = options.transition;
     }
 
+
+    this.id = guid++;
+
+    // #[begin] devtool
+    this._toPhase('beforeCompile');
+    // #[end]
+
     var proto = clazz.prototype;
 
     // pre define components class
@@ -150,8 +157,6 @@ function Component(options) { // eslint-disable-line
         this.parentComponent = this.owner;
         this.scope = this.owner.data;
     }
-
-    this.id = guid++;
 
     // #[begin] reverse
     // 组件反解，读取注入的组件数据
@@ -222,6 +227,11 @@ function Component(options) { // eslint-disable-line
     }
 
     this._toPhase('compiled');
+
+
+    // #[begin] devtool
+    this._toPhase('beforeInit');
+    // #[end]
 
     // init data
     var initData = extend(
@@ -731,6 +741,10 @@ Component.prototype._update = function (changes) {
 
     var dataChanges = this._dataChanges;
     if (dataChanges) {
+        // #[begin] devtool
+        this._toPhase('beforeUpdate');
+        // #[end]
+
         this._dataChanges = null;
 
         this._sbindData = nodeSBindUpdate(
@@ -916,12 +930,19 @@ Component.prototype._getElAsRootNode = function () {
  */
 Component.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
+        // #[begin] devtool
+        this._toPhase('beforeAttach');
+        // #[end]
+
         var hasRootNode = this.aNode.hotspot.hasRootNode
             || this.components[
                 this.aNode.directives.is ? evalExpr(this.aNode.directives.is.value, this.data) : this.aNode.tagName
             ];
 
         if (hasRootNode) {
+            // #[begin] devtool
+            this._toPhase('beforeCreate');
+            // #[end]
             this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -929,6 +950,10 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         }
         else {
             if (!this.el) {
+                // #[begin] devtool
+                this._toPhase('beforeCreate');
+                // #[end]
+
                 var sourceNode = this.aNode.hotspot.sourceNode;
                 var props = this.aNode.props;
 
@@ -999,6 +1024,9 @@ Component.prototype._attached = elementOwnAttached;
 Component.prototype._leave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
+            // #[begin] devtool
+            this._toPhase('beforeDetach');
+            // #[end]
             this.data.unlisten();
             this.dataChanger = null;
             this._dataChanges = null;
@@ -1051,6 +1079,10 @@ Component.prototype._leave = function () {
 
             this._toPhase('detached');
 
+            // #[begin] devtool
+            this._toPhase('beforeDispose');
+            // #[end]
+
             this._rootNode = null;
             this.el = null;
             this.owner = null;
@@ -1065,6 +1097,10 @@ Component.prototype._leave = function () {
         }
     }
     else if (this.lifeCycle.attached) {
+        // #[begin] devtool
+        this._toPhase('beforeDetach');
+        // #[end]
+
         if (this._rootNode) {
             if (this._rootNode.detach) {
                 this._rootNode.detach();
