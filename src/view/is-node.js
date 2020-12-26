@@ -36,12 +36,13 @@ function IsNode(aNode, parent, scope, owner, reverseWalker) {
         : parent.parentComponent;
 
     this.id = guid++;
+    this.children = [];
 
     // #[begin] reverse
     if (reverseWalker) {
         var tagName = evalExpr(this.aNode.directives['is'].value, this.scope, this.owner);
         if (tagName) { // eslint-disable-line dot-notation
-            this.child = createReverseNode(
+            this.children[0] = createReverseNode(
                 this.aNode.isRinsed,
                 this,
                 this.scope,
@@ -69,13 +70,12 @@ IsNode.prototype.dispose = nodeOwnSimpleDispose;
  */
 IsNode.prototype.attach = function (parentEl, beforeEl) {
     var tagName = evalExpr(this.aNode.directives['is'].value, this.scope, this.owner);// eslint-disable-line dot-notation
-
     if (tagName) {
         var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner);
 
         if (child) {
             this.tagName = tagName;
-            this.child = child;
+            this.children[0] = child;
             child.attach(parentEl, beforeEl);
         }
     }
@@ -92,7 +92,7 @@ IsNode.prototype.attach = function (parentEl, beforeEl) {
 IsNode.prototype._update = function (changes) {
     var me = this;
     var childANode = this.aNode.isRinsed;
-    var child = this.child;
+    var child = this.children[0];
     var tagName = evalExpr(this.aNode.directives['is'].value, this.scope); // eslint-disable-line dot-notation
 
     if (tagName === this.tagName) {
@@ -110,7 +110,7 @@ IsNode.prototype._update = function (changes) {
 };
 
 IsNode.prototype._getElAsRootNode = function () {
-    var child = this.child;
+    var child = this.children[0];
     return child && child.el || this.el;
 };
 
