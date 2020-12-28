@@ -1,5 +1,4 @@
 describe("Component", function () {
-
     var ColorPicker = san.defineComponent({
         template: '<div><b title="{{value}}">{{value}}</b>'
             + '<ul class="ui-colorpicker">'
@@ -711,15 +710,27 @@ describe("Component", function () {
 
     it("components use s-is", function () {
         var Label = san.defineComponent({
-            template: '<span title="{{text}}">{{text}}</span>'
-        });
-        var MyComponent = san.defineComponent({
-            components: {
-                'x-label': Label
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData() {
+                return {
+                    text: 'erik'
+                }
             }
         });
 
-        MyComponent.template = '<div><test text="erik" s-is="{{\'x-label\'}}"/></div>';
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+            },
+            initData() {
+                return {
+                    cmpt: 'x-label'
+                }
+            }
+        });
+
+        MyComponent.template = '<div><test s-is="cmpt"/></div>';
+
         var myComponent = new MyComponent();
 
         var wrap = document.createElement('div');
@@ -731,6 +742,59 @@ describe("Component", function () {
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+    });
+
+    it("s-is value update", function (done) {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}" >{{text}}</span>',
+            initData() {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var H2 = san.defineComponent({
+            template: '<h2>{{text}}.baidu</h2>',
+            initData() {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+                'x-h2': H2
+            },
+            initData() {
+                return {
+                    cmpt: 'x-label'
+                }
+            }
+        });
+
+        MyComponent.template = '<div><test s-is="cmpt"/></div>';
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.data.set('cmpt', 'x-h2');
+        san.nextTick(function () {
+            var h2 = wrap.getElementsByTagName('h2')[0];
+            expect(h2.innerHTML.indexOf('erik.baidu')).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
     });
 
     it("components in inherits structure", function () {
@@ -4823,15 +4887,15 @@ describe("Component", function () {
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('one');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('two');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('three');
 
-        child = child.nextSibling;
+        child = child.nextSibling.nextSibling;
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('four');
 
@@ -4839,8 +4903,119 @@ describe("Component", function () {
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('last');
 
+        myComponent.data.push('list', {type: 'link', title: 'five'});
         myComponent.nextTick(function () {
+            var buttons = myComponent.el.getElementsByTagName('A');
+            expect(buttons.length).toBe(3);
+            expect(buttons[2].innerHTML).toContain('five');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
 
+    });
+
+    it("s-is in if", function (done) {
+        var ChildA = san.defineComponent({
+            template: '<h2>erik</h2>'
+        });
+
+        var ChildB = san.defineComponent({
+            template: '<h3>varsha</h3>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-child-a': ChildA,
+                'x-child-b': ChildB
+            },
+
+            template: '<div>'
+                + '<x-parent s-if="isOlder" s-is="\'x-child-a\'"/>'
+                + '<x-parent s-else s-is="\'x-child-b\'"/>'
+                + '</div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                isOlder: true,
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var children = myComponent.el.getElementsByTagName('H2');
+        expect(children.length).toBe(1);
+        expect(children[0].innerHTML).toBe('erik');
+
+        myComponent.data.set('isOlder', false);
+        myComponent.nextTick(function () {
+            var children = myComponent.el.getElementsByTagName('H3');
+            expect(children.length).toBe(1);
+            expect(children[0].innerHTML).toBe('varsha');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("s-if & s-for & s-is", function (done) {
+        var Button = san.defineComponent({
+            template: '<button><slot/></button>'
+        });
+
+        var Link = san.defineComponent({
+            template: '<a><slot/></a>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-button': Button,
+                'x-link': Link
+            },
+
+            template: '<div>'
+                + '<div s-if="isShow" s-for="item in list" s-is="\'x-\'+item.type">{{item.title}}</div>'
+                + '</div>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                isShow: true,
+                list: [
+                    { type: 'link', title: 'one'},
+                    { type: 'button', title: 'two'},
+                    { type: 'button', title: 'three'},
+                    { type: 'link', title: 'four' }
+                ]
+            }
+        });
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var child = myComponent.el.firstChild;
+        expect(child.tagName).toBe('A');
+        expect(child.innerHTML).toContain('one');
+
+        child = child.nextSibling.nextSibling;
+        expect(child.tagName).toBe('BUTTON');
+        expect(child.innerHTML).toContain('two');
+
+        child = child.nextSibling.nextSibling;
+        expect(child.tagName).toBe('BUTTON');
+        expect(child.innerHTML).toContain('three');
+
+        child = child.nextSibling.nextSibling;
+        expect(child.tagName).toBe('A');
+        expect(child.innerHTML).toContain('four');
+
+        myComponent.data.set('isShow', false);
+
+        myComponent.nextTick(function () {
+            expect(myComponent.el.children.length).toBe(0);
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
@@ -5232,6 +5407,55 @@ describe("Component", function () {
             expect(as.length).toBe(1);
             expect(as[0].innerHTML).toBe('github');
             expect(bs[0].innerHTML).toBe('san');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("dynamic s-is value as component root", function (done) {
+        var ChildA = san.defineComponent({
+            template: '<h2>erik</h2>'
+        });
+        var ChildB = san.defineComponent({
+            template: '<h3>varsha</h3>'
+        });
+
+        var Parent = san.defineComponent({
+            template: '<test s-is="cmpt"></test>',
+            components: {
+                'x-child-a': ChildA,
+                'x-child-b': ChildB
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-parent cmpt="{{cmpt}}"/></div>',
+            components: {
+                'x-parent': Parent
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                cmpt: 'x-child-a'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var children = myComponent.el.getElementsByTagName('H2');
+        expect(children.length).toBe(1);
+        expect(children[0].innerHTML).toBe('erik');
+
+        myComponent.data.set('cmpt', 'x-child-b');
+        myComponent.nextTick(function () {
+            var children = myComponent.el.getElementsByTagName('H3');
+            expect(children.length).toBe(1);
+            expect(children[0].innerHTML).toBe('varsha');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
@@ -5672,8 +5896,8 @@ describe("Component", function () {
         });
 
         var myComponent = new MyComponent({
-            data: { 
-                name: 'erik', 
+            data: {
+                name: 'erik',
                 company: 'baidu',
                 cmpt: 'x-label'
             }
