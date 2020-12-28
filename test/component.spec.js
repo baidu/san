@@ -710,7 +710,7 @@ describe("Component", function () {
 
     it("components use s-is", function () {
         var Label = san.defineComponent({
-            template: `<span title="{{text}}">{{text}}</span>`,
+            template: '<span title="{{text}}">{{text}}</span>',
             initData() {
                 return {
                     text: 'erik'
@@ -729,10 +729,7 @@ describe("Component", function () {
             }
         });
 
-        MyComponent.template = `
-            <div>
-                <test s-is="cmpt"/>
-            </div>`;
+        MyComponent.template = '<div><test s-is="cmpt"/></div>';
 
         var myComponent = new MyComponent();
 
@@ -749,10 +746,7 @@ describe("Component", function () {
 
     it("s-is value update", function (done) {
         var Label = san.defineComponent({
-            template: `<span
-                title="{{text}}"
-                >{{text}}
-            </span>`,
+            template: '<span title="{{text}}" >{{text}}</span>',
             initData() {
                 return {
                     text: 'erik'
@@ -761,7 +755,7 @@ describe("Component", function () {
         });
 
         var H2 = san.defineComponent({
-            template: `<h2>{{text}}.baidu</h2>`,
+            template: '<h2>{{text}}.baidu</h2>',
             initData() {
                 return {
                     text: 'erik'
@@ -781,10 +775,7 @@ describe("Component", function () {
             }
         });
 
-        MyComponent.template = `
-            <div>
-                <test s-is="cmpt"/>
-            </div>`;
+        MyComponent.template = '<div><test s-is="cmpt"/></div>';
 
         var myComponent = new MyComponent();
 
@@ -5440,9 +5431,7 @@ describe("Component", function () {
         });
 
         var MyComponent = san.defineComponent({
-            template: `<div>
-                    <x-parent cmpt="{{cmpt}}"/>
-                </div>`,
+            template: '<div><x-parent cmpt="{{cmpt}}"/></div>',
             components: {
                 'x-parent': Parent
             }
