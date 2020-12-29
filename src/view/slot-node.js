@@ -16,7 +16,6 @@ var evalExpr = require('../runtime/eval-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
 var changeExprCompare = require('../runtime/change-expr-compare');
-var insertBefore = require('../browser/insert-before');
 var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
