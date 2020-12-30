@@ -21,14 +21,12 @@ var AsyncComponent = require('./async-component');
  * @param {DOMChildrenWalker} reverseWalker 子元素遍历对象
  * @return {Node}
  */
-function createReverseNode(aNode, parent, scope, owner, reverseWalker) {
+function createReverseNode(aNode, parent, scope, owner, reverseWalker, componentName) {
     if (aNode.Clazz) {
         return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
     }
 
-    var ComponentOrLoader = owner.components[
-        aNode.directives.is ? evalExpr(aNode.directives.is.value, scope) : aNode.tagName
-    ];
+    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
 
     if (ComponentOrLoader) {
         return typeof ComponentOrLoader === 'function'

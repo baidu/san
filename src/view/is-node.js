@@ -8,12 +8,10 @@
  */
 
 var guid = require('../util/guid');
-var insertBefore = require('../browser/insert-before');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
-var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 /**
@@ -37,29 +35,24 @@ function IsNode(aNode, parent, scope, owner, reverseWalker) {
 
     this.id = guid++;
     this.children = [];
-
+    this.tagName = this.aNode.tagName;
     // #[begin] reverse
     if (reverseWalker) {
-        var tagName = evalExpr(this.aNode.directives['is'].value, this.scope, this.owner);
-        if (tagName) { // eslint-disable-line dot-notation
-            this.children[0] = createReverseNode(
-                this.aNode.isRinsed,
-                this,
-                this.scope,
-                this.owner,
-                reverseWalker
-            );
-        }
-
-        this._create();
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+        this.children[0] = createReverseNode(
+            this.aNode.isRinsed,
+            this,
+            this.scope,
+            this.owner,
+            reverseWalker,
+            this.cmpt
+        );
     }
     // #[end]
 }
 
 IsNode.prototype.nodeType = NodeType.IS;
 
-IsNode.prototype._create = nodeOwnCreateStump;
 IsNode.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
@@ -69,19 +62,11 @@ IsNode.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 IsNode.prototype.attach = function (parentEl, beforeEl) {
-    var tagName = evalExpr(this.aNode.directives['is'].value, this.scope, this.owner);// eslint-disable-line dot-notation
-    if (tagName) {
-        var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner);
+    this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
 
-        if (child) {
-            this.tagName = tagName;
-            this.children[0] = child;
-            child.attach(parentEl, beforeEl);
-        }
-    }
-
-    this._create();
-    insertBefore(this.el, parentEl, beforeEl);
+    var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner, this.cmpt);
+    this.children[0] = child;
+    child.attach(parentEl, beforeEl);
 };
 
 /**
@@ -90,28 +75,26 @@ IsNode.prototype.attach = function (parentEl, beforeEl) {
  * @param {Array} changes 数据变化信息
  */
 IsNode.prototype._update = function (changes) {
-    var me = this;
     var childANode = this.aNode.isRinsed;
     var child = this.children[0];
-    var tagName = evalExpr(this.aNode.directives['is'].value, this.scope); // eslint-disable-line dot-notation
+    var cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
 
-    if (tagName === this.tagName) {
-        child && child._update(changes);
+    if (cmpt === this.cmpt) {
+        child._update(changes);
     }
     else {
-        child._ondisposed = newChild;
-            child.dispose();
-    }
+        this.cmpt = cmpt;
+        var newChild = createNode(childANode, this, this.scope, this.owner, this.cmpt);
+        var el = child.el;
+        newChild.attach(el.parentNode, el);
 
-    function newChild() {
-        me.child = createNode(childANode, me, me.scope, me.owner)
-            .attach(me.el.parentNode, me.el);
+        child.dispose();
+        this.children[0] = newChild;
     }
 };
 
 IsNode.prototype._getElAsRootNode = function () {
-    var child = this.children[0];
-    return child && child.el || this.el;
+    return this.children[0].el;
 };
 
 exports = module.exports = IsNode;
