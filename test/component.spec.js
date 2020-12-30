@@ -4887,15 +4887,15 @@ describe("Component", function () {
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('one');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('two');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('three');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('four');
 
@@ -5000,15 +5000,15 @@ describe("Component", function () {
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('one');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('two');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('BUTTON');
         expect(child.innerHTML).toContain('three');
 
-        child = child.nextSibling.nextSibling;
+        child = child.nextSibling;
         expect(child.tagName).toBe('A');
         expect(child.innerHTML).toContain('four');
 
@@ -5462,6 +5462,39 @@ describe("Component", function () {
             done();
         });
     });
+
+    it("component as component root, check el", function () {
+        var SubChild = san.defineComponent({
+            template: '<h3>see framework</h3>'
+        });
+
+        var Child = san.defineComponent({
+            template: '<x-child/>',
+            components: {
+                'x-child': SubChild
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<x-child/>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+
+        expect(myComponent.el.tagName).toBe('H3');
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
 
     it("component as component root, use s-bind", function (done) {
         var Child = san.defineComponent({
