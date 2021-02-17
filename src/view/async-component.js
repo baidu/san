@@ -84,16 +84,22 @@ AsyncComponent.prototype.onload = function (ComponentClass) {
         var component = new ComponentClass(this.options);
         component.attach(this.el.parentNode, this.el);
 
-        var parentChildren = this.options.parent.children;
-        if (this.parentIndex == null || parentChildren[this.parentIndex] !== this) {
-            each(parentChildren, function (child, index) {
-                if (child instanceof AsyncComponent) {
-                    child.parentIndex = index;
-                }
-            });
-        }
+        // 如果异步组件时root节点，则更新为root节点
+        if(this.options.parent._rootNode === this){
+            this.options.parent._rootNode = component;
+        } else {
+            // 原本的逻辑
+            var parentChildren = this.options.parent.children;
+            if (this.parentIndex == null || parentChildren[this.parentIndex] !== this) {
+                each(parentChildren, function (child, index) {
+                    if (child instanceof AsyncComponent) {
+                        child.parentIndex = index;
+                    }
+                });
+            }
 
-        parentChildren[this.parentIndex] = component;
+            parentChildren[this.parentIndex] = component;
+        }
     }
 
     this.dispose();
