@@ -678,4 +678,74 @@ describe("Component Async", function () {
             }, 500);
         });
     });
+
+    it("as component root", function (done) {
+        var Label = san.defineComponent({
+            template: '<u><slot/></u>'
+        });
+
+        var LoadingLabel = san.defineComponent({
+            template: '<b><slot/></b>'
+        });
+
+        var loadSuccess;
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': san.createComponentLoader({
+                    load: function () {
+                        return {
+                            then: function (success) {
+                                loadSuccess = success;
+                            }
+                        };
+                    },
+                    placeholder: LoadingLabel
+                })
+            },
+
+            template: '<x-label>Hello {{text}}</x-label>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'San'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('u').length).toBe(0);
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('Hello San');
+
+        myComponent.data.set('text', 'SanUp');
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('u').length).toBe(0);
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+            expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('Hello SanUp');
+
+            loadSuccess(Label);
+            setTimeout(function () {
+                expect(wrap.getElementsByTagName('u').length).toBe(1);
+                expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('Hello SanUp');
+                expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+                myComponent.data.set('text', 'SanNext');
+                myComponent.nextTick(function () {
+                    expect(wrap.getElementsByTagName('u').length).toBe(1);
+                    expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('Hello SanNext');
+                    expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+            }, 500);
+        });
+
+
+
+    });
 });
