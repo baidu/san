@@ -91,13 +91,15 @@ AsyncComponent.prototype.onload = function (ComponentClass) {
 
         var parent = this.options.parent;
 
-        // 如果异步组件时root节点，则更新为root节点
         if (parent._rootNode === this) {
+            // 如果异步组件为 root 节点，直接更新
             parent._rootNode = component;
             component._getElAsRootNode && (parent.el = component._getElAsRootNode());
         } else {
-            // 原本的逻辑
+            // 在 children 中查找
             var parentChildren = parent.children;
+
+            // children 中存在多个 AsyncComponent 时，只循环一遍，为所有 AsyncComponent 的 parentIndex 赋值
             if (this.parentIndex == null || parentChildren[this.parentIndex] !== this) {
                 each(parentChildren, function (child, index) {
                     if (child instanceof AsyncComponent) {
