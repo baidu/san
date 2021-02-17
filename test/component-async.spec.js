@@ -719,6 +719,7 @@ describe("Component Async", function () {
         expect(wrap.getElementsByTagName('u').length).toBe(0);
         expect(wrap.getElementsByTagName('b').length).toBe(1);
         expect(wrap.getElementsByTagName('b')[0].innerHTML).toContain('Hello San');
+        expect(myComponent.el.tagName).toBe('B');
 
         myComponent.data.set('text', 'SanUp');
         myComponent.nextTick(function () {
@@ -731,6 +732,7 @@ describe("Component Async", function () {
                 expect(wrap.getElementsByTagName('u').length).toBe(1);
                 expect(wrap.getElementsByTagName('u')[0].innerHTML).toContain('Hello SanUp');
                 expect(wrap.getElementsByTagName('b').length).toBe(0);
+                expect(myComponent.el.tagName).toBe('U');
 
                 myComponent.data.set('text', 'SanNext');
                 myComponent.nextTick(function () {
