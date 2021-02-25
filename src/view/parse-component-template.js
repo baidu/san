@@ -20,16 +20,19 @@ var createAccessor = require('../parser/create-accessor');
  * @param {Function} ComponentClass 组件类
  * @return {ANode}
  */
-function parseComponentTemplate(ComponentClass) {
+function parseComponentTemplate(ComponentClass, tplANode) {
     var proto = ComponentClass.prototype;
+    var aNode;
 
-    
-    var tplANode = parseTemplate(ComponentClass.template || proto.template, {
-        trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
-        delimiters: proto.delimiters || ComponentClass.delimiters
-    });
-
-    var aNode = tplANode.children[0];
+    if (!tplANode) {
+        tplANode = parseTemplate(ComponentClass.template || proto.template, {
+            trimWhitespace: proto.trimWhitespace || ComponentClass.trimWhitespace,
+            delimiters: proto.delimiters || ComponentClass.delimiters
+        });
+        aNode = tplANode.children[0];
+    } else {
+        aNode = tplANode;
+    }
     if (aNode && aNode.textExpr) {
         aNode = null;
     }

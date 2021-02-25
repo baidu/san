@@ -111,7 +111,7 @@ function Component(options) { // eslint-disable-line
     if (!proto.hasOwnProperty('aNode')) {
         var aPack = clazz.aPack || proto.hasOwnProperty('aPack') && proto.aPack;
         if (aPack) {
-            proto.aNode = unpackANode(aPack);
+            proto.aNode = parseComponentTemplate(clazz, unpackANode(aPack));
             clazz.aPack = proto.aPack = null;
         }
         else {
