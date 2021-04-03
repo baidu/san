@@ -388,7 +388,6 @@ Component.prototype._ctx = (new Date()).getTime().toString(16);
  * @protected
  * @param {string} name 生命周期名称
  */
-Component.prototype._callHook =
 Component.prototype._toPhase = function (name) {
     if (!this.lifeCycle[name]) {
         this.lifeCycle = LifeCycle[name] || this.lifeCycle;
