@@ -68,8 +68,13 @@ function Component(options) { // eslint-disable-line
 
 
     options = options || {};
-
     this.lifeCycle = LifeCycle.start;
+    this.id = guid++;
+
+    if (typeof this.construct === 'function') {
+        this.construct(options);
+    }
+
     this.children = [];
     this._elFns = [];
     this.listeners = {};
@@ -86,8 +91,25 @@ function Component(options) { // eslint-disable-line
         this.transition = options.transition;
     }
 
+    this.owner = options.owner;
+    this.scope = options.scope;
+    this.el = options.el;
+    var parent = options.parent;
+    if (parent) {
+        this.parent = parent;
+        this.parentComponent = parent.nodeType === NodeType.CMPT
+            ? parent
+            : parent && parent.parentComponent;
+    }
+    else if (this.owner) {
+        this.parentComponent = this.owner;
+        this.scope = this.owner.data;
+    }
 
-    this.id = guid++;
+    this.sourceSlotNameProps = [];
+    this.sourceSlots = {
+        named: {}
+    };
 
     // #[begin] devtool
     this._toPhase('beforeCompile');
@@ -135,28 +157,6 @@ function Component(options) { // eslint-disable-line
 
     preheatANode(this.source);
 
-
-
-    this.sourceSlotNameProps = [];
-    this.sourceSlots = {
-        named: {}
-    };
-
-    this.owner = options.owner;
-    this.scope = options.scope;
-    this.el = options.el;
-
-    var parent = options.parent;
-    if (parent) {
-        this.parent = parent;
-        this.parentComponent = parent.nodeType === NodeType.CMPT
-            ? parent
-            : parent && parent.parentComponent;
-    }
-    else if (this.owner) {
-        this.parentComponent = this.owner;
-        this.scope = this.owner.data;
-    }
 
     // #[begin] reverse
     // 组件反解，读取注入的组件数据
