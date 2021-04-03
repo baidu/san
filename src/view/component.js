@@ -795,7 +795,9 @@ Component.prototype._update = function (changes) {
             this.implicitChildren[i]._update(dataChanges);
         }
 
-        this._toPhase('updated');
+        if (typeof this.updated === 'function') {
+            this.updated();
+        }
 
         if (this.owner && this._updateBindxOwner(dataChanges)) {
             this.owner._update();
