@@ -26,11 +26,13 @@ describe("Component", function () {
     });
 
     it("life cycle", function () {
+        var mainConstruct = 0;
         var mainInited = 0;
         var mainCreated = 0;
         var mainAttached = 0;
         var mainDetached = 0;
         var mainDisposed = 0;
+        var labelConstruct = 0;
         var labelInited = 0;
         var labelCreated = 0;
         var labelAttached = 0;
@@ -39,6 +41,10 @@ describe("Component", function () {
 
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>',
+
+            construct: function () {
+                labelConstruct++;
+            },
 
             inited: function () {
                 labelInited++;
@@ -69,6 +75,10 @@ describe("Component", function () {
             },
             template: '<div title="{{color}}"><ui-label text="{{color}}"/>{{color}}</div>',
 
+            construct: function () {
+                mainConstruct++;
+            },
+
             inited: function () {
                 mainInited++;
             },
@@ -96,9 +106,11 @@ describe("Component", function () {
         expect(myComponent.lifeCycle.is('inited')).toBeTruthy();
         expect(myComponent.lifeCycle.is('created')).toBeFalsy();
         expect(myComponent.lifeCycle.is('attached')).toBeFalsy();
+        expect(mainConstruct).toBe(1);
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(0);
         expect(mainAttached).toBe(0);
+        expect(labelConstruct).toBe(0);
         expect(labelInited).toBe(0);
 
         myComponent.data.set('color', 'green');
@@ -109,10 +121,13 @@ describe("Component", function () {
         expect(myComponent.lifeCycle.is('inited')).toBeTruthy();
         expect(myComponent.lifeCycle.is('created')).toBeTruthy();
         expect(myComponent.lifeCycle.is('attached')).toBeTruthy();
+        expect(mainConstruct).toBe(1);
         expect(mainInited).toBe(1);
         expect(mainCreated).toBe(1);
         expect(mainAttached).toBe(1);
         expect(mainDetached).toBe(0);
+
+        expect(labelConstruct).toBe(1);
         expect(labelInited).toBe(1);
         expect(labelCreated).toBe(1);
         expect(labelAttached).toBe(1);
@@ -232,6 +247,39 @@ describe("Component", function () {
         myComponent.dispose();
         document.body.removeChild(wrap);
         expect(phases.detached).toBeTruthy();
+    });
+
+    it("life cycle construct", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{email}}">{{name}}</span></a>',
+
+            construct: function (options) {
+                expect(options.from).toBe('err');
+                expect(typeof this.template).toBe('string');
+                expect(this.data).toBeUndefined();
+                expect(this.scope).toBeUndefined();
+                expect(this.owner).toBeUndefined();
+            }
+        });
+
+        var myComponent = new MyComponent({
+            from: 'err',
+            data: {
+                'email': 'errorrik@gmail.com',
+                'name': 'errorrik'
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML.indexOf('errorrik')).toBe(0);
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
     });
 
     it("life cycle updated", function (done) {
