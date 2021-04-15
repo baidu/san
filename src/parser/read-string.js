@@ -18,7 +18,7 @@ var ExprType = require('./expr-type');
  */
 function readString(walker) {
     var startCode = walker.currentCode();
-    var value = '';
+    var value = "";
     var charCode;
 
     walkLoop: while ((charCode = walker.nextCode())) {
@@ -76,7 +76,7 @@ function readString(walker) {
     return {
         type: ExprType.STRING,
         // 处理字符转义
-        value
+        value: value
     };
 }
 
