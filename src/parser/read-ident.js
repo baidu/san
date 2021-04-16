@@ -21,7 +21,7 @@ function readIdent(walker) {
 
     // #[begin] error
     if (!match) {
-        throw new Error('[SAN FATAL] expect an ident: ' + walker.cut(walker.index));
+        throw new Error('[SAN FATAL] expect an ident: ' + walker.source.slice(walker.index));
     }
     // #[end]
 

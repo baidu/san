@@ -22,12 +22,12 @@ function readMultiplicativeExpr(walker) {
     while (1) {
         walker.goUntil();
 
-        var code = walker.currentCode();
+        var code = walker.source.charCodeAt(walker.index);
         switch (code) {
             case 37: // %
             case 42: // *
             case 47: // /
-                walker.go(1);
+                walker.index++;
                 expr = {
                     type: ExprType.BINARY,
                     operator: code,

@@ -20,7 +20,7 @@ function readEqualityExpr(walker) {
     var expr = readRelationalExpr(walker);
     walker.goUntil();
 
-    var code = walker.currentCode();
+    var code = walker.source.charCodeAt(walker.index);
     switch (code) {
         case 61: // =
         case 33: // !
@@ -28,7 +28,7 @@ function readEqualityExpr(walker) {
                 code += 61;
                 if (walker.nextCode() === 61) {
                     code += 61;
-                    walker.go(1);
+                    walker.index++;
                 }
 
                 return {
@@ -38,7 +38,7 @@ function readEqualityExpr(walker) {
                 };
             }
 
-            walker.go(-1);
+            walker.index--;
     }
 
     return expr;

@@ -20,13 +20,13 @@ function readRelationalExpr(walker) {
     var expr = readAdditiveExpr(walker);
     walker.goUntil();
 
-    var code = walker.currentCode();
+    var code = walker.source.charCodeAt(walker.index);
     switch (code) {
         case 60: // <
         case 62: // >
             if (walker.nextCode() === 61) {
                 code += 61;
-                walker.go(1);
+                walker.index++;
             }
 
             return {

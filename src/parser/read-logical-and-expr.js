@@ -20,9 +20,9 @@ function readLogicalANDExpr(walker) {
     var expr = readEqualityExpr(walker);
     walker.goUntil();
 
-    if (walker.currentCode() === 38) { // &
+    if (walker.source.charCodeAt(walker.index) === 38) { // &
         if (walker.nextCode() === 38) {
-            walker.go(1);
+            walker.index++;
             return {
                 type: ExprType.BINARY,
                 operator: 76,
@@ -30,7 +30,7 @@ function readLogicalANDExpr(walker) {
             };
         }
 
-        walker.go(-1);
+        walker.index--;
     }
 
     return expr;

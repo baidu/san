@@ -56,7 +56,7 @@ function parseText(source, delimiters) {
 
     var segs = [];
     var original;
-    
+
     function pushStringToSeg(text) {
         text && segs.push({
             type: ExprType.STRING,
@@ -68,13 +68,13 @@ function parseText(source, delimiters) {
     while ((exprMatch = walker.match(exprStartReg)) != null) {
         var interpSource = exprMatch[1];
         var interpLen = exprMatch[0].length;
-        if (walker.cut(walker.index + 1 - delimEndLen, walker.index + 1) === delimiters[1]) {
-            interpSource += walker.cut(walker.index, walker.index + 1);
-            walker.go(1);
+        if (walker.source.slice(walker.index + 1 - delimEndLen, walker.index + 1) === delimiters[1]) {
+            interpSource += walker.source.slice(walker.index, walker.index + 1);
+            walker.index++;
             interpLen++;
         }
 
-        pushStringToSeg(walker.cut(
+        pushStringToSeg(walker.source.slice(
             beforeIndex,
             walker.index - interpLen
         ));
@@ -86,7 +86,7 @@ function parseText(source, delimiters) {
         beforeIndex = walker.index;
     }
 
-    pushStringToSeg(walker.cut(beforeIndex));
+    pushStringToSeg(walker.source.slice(beforeIndex));
 
     switch (segs.length) {
         case 0:

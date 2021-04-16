@@ -22,12 +22,12 @@ function readAdditiveExpr(walker) {
 
     while (1) {
         walker.goUntil();
-        var code = walker.currentCode();
+        var code = walker.source.charCodeAt(walker.index);
 
         switch (code) {
             case 43: // +
             case 45: // -
-                walker.go(1);
+                walker.index++;
                 expr = {
                     type: ExprType.BINARY,
                     operator: code,

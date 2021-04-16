@@ -17,7 +17,7 @@ var ExprType = require('./expr-type');
  * @return {Object}
  */
 function readString(walker) {
-    var startCode = walker.currentCode();
+    var startCode = walker.source.charCodeAt(walker.index);
     var value = "";
     var charCode;
 
@@ -29,16 +29,16 @@ function readString(walker) {
                 switch (charCode) {
                     case 117: // \u
                         value += String.fromCharCode(parseInt(
-                            walker.cut(walker.index + 1, walker.index + 5)
+                            walker.source.slice(walker.index + 1, walker.index + 5)
                         ), 16);
-                        walker.go(4);
+                        walker.index += 4;
                         break;
 
                     case 120: // \x
                         value += String.fromCharCode(parseInt(
-                            walker.cut(walker.index + 1, walker.index + 3)
+                            walker.source.slice(walker.index + 1, walker.index + 3)
                         ), 16);
-                        walker.go(2);
+                        walker.index += 2;
                         break;
 
                     case 98:
@@ -66,7 +66,7 @@ function readString(walker) {
 
                 break;
             case startCode:
-                walker.go(1);
+                walker.index++;
                 break walkLoop;
             default:
                 value += String.fromCharCode(charCode);

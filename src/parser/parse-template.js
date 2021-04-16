@@ -79,7 +79,7 @@ function parseTemplate(source, options) {
         // 47: /
         // 处理 </xxxx >
         if (tagEnd) {
-            if (walker.currentCode() === 62) {
+            if (walker.source.charCodeAt(walker.index) === 62) {
                 // 满足关闭标签的条件时，关闭标签
                 // 向上查找到对应标签，找不到时忽略关闭
                 var closeIndex = stackIndex;
@@ -113,14 +113,14 @@ function parseTemplate(source, options) {
                     stackIndex = closeIndex - 1;
                     currentNode = stack[stackIndex];
                 }
-                walker.go(1);
+                walker.index++;
             }
             // #[begin] error
             else {
                 // 处理 </xxx 非正常闭合标签
 
                 // 如果闭合标签时，匹配后的下一个字符是 <，即下一个标签的开始，那么当前闭合标签未闭合
-                if (walker.currentCode() === 60) {
+                if (walker.source.charCodeAt(walker.index) === 60) {
                     throw new Error(''
                         + '[SAN ERROR] ' + getXPath(stack)
                         + '\'s close tag not closed'
@@ -151,20 +151,20 @@ function parseTemplate(source, options) {
             while (1) {
             /* eslint-enable no-constant-condition */
 
-                var nextCharCode = walker.currentCode();
+                var nextCharCode = walker.source.charCodeAt(walker.index);
 
                 // 标签结束时跳出 attributes 读取
                 // 标签可能直接结束或闭合结束
                 if (nextCharCode === 62) {
-                    walker.go(1);
+                    walker.index++;
                     break;
                 }
 
                 // 遇到 /> 按闭合处理
                 if (nextCharCode === 47
-                    && walker.charCode(walker.index + 1) === 62
+                    && walker.source.charCodeAt(walker.index + 1) === 62
                 ) {
-                    walker.go(2);
+                    walker.index += 2;
                     tagClose = 1;
                     break;
                 }
@@ -172,7 +172,7 @@ function parseTemplate(source, options) {
                 // template 串结束了
                 // 这时候，说明这个读取周期的所有内容，都是text
                 if (!nextCharCode) {
-                    pushTextNode(walker.cut(beforeLastIndex));
+                    pushTextNode(walker.source.slice(beforeLastIndex));
                     aElement = null;
                     break;
                 }
@@ -195,7 +195,7 @@ function parseTemplate(source, options) {
                     );
                 }
                 else {
-                    pushTextNode(walker.cut(beforeLastIndex, walker.index));
+                    pushTextNode(walker.source.slice(beforeLastIndex, walker.index));
                     aElement = null;
                     break;
                 }
@@ -305,7 +305,7 @@ function parseTemplate(source, options) {
         beforeLastIndex = walker.index;
     }
 
-    pushTextNode(walker.cut(beforeLastIndex));
+    pushTextNode(walker.source.slice(beforeLastIndex));
 
     return rootNode;
 

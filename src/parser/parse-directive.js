@@ -39,7 +39,7 @@ var directiveParsers = {
             if (walker.match(/\s*trackby\s+/ig, 1)) {
                 var start = walker.index;
                 directive.trackBy = readAccessor(walker);
-                directive.trackByRaw = walker.cut(start, walker.index);
+                directive.trackByRaw = walker.source.slice(start, walker.index);
             }
             return directive;
         }

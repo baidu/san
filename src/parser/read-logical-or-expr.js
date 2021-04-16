@@ -20,9 +20,9 @@ function readLogicalORExpr(walker) {
     var expr = readLogicalANDExpr(walker);
     walker.goUntil();
 
-    if (walker.currentCode() === 124) { // |
+    if (walker.source.charCodeAt(walker.index) === 124) { // |
         if (walker.nextCode() === 124) {
-            walker.go(1);
+            walker.index++;
             return {
                 type: ExprType.BINARY,
                 operator: 248,
@@ -30,7 +30,7 @@ function readLogicalORExpr(walker) {
             };
         }
 
-        walker.go(-1);
+        walker.index--;
     }
 
     return expr;

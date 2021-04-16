@@ -21,52 +21,13 @@ function Walker(source) {
 }
 
 /**
- * 获取当前字符码
- *
- * @return {number}
- */
-Walker.prototype.currentCode = function () {
-    return this.source.charCodeAt(this.index);
-};
-
-/**
- * 截取字符串片段
- *
- * @param {number} start 起始位置
- * @param {number} end 结束位置
- * @return {string}
- */
-Walker.prototype.cut = function (start, end) {
-    return this.source.slice(start, end);
-};
-
-/**
- * 向前读取字符
- *
- * @param {number} distance 读取字符数
- */
-Walker.prototype.go = function (distance) {
-    this.index += distance;
-};
-
-/**
  * 读取下一个字符，返回下一个字符的 code
  *
  * @return {number}
  */
 Walker.prototype.nextCode = function () {
-    this.go(1);
-    return this.currentCode();
-};
-
-/**
- * 获取相应位置字符的 code
- *
- * @param {number} index 字符位置
- * @return {number}
- */
-Walker.prototype.charCode = function (index) {
-    return this.source.charCodeAt(index);
+    this.index++;
+    return this.source.charCodeAt(this.index);
 };
 
 /**
@@ -78,7 +39,7 @@ Walker.prototype.charCode = function (index) {
  */
 Walker.prototype.goUntil = function (charCode) {
     var code;
-    while (this.index < this.len && (code = this.currentCode())) {
+    while (this.index < this.len && (code = this.source.charCodeAt(this.index))) {
         switch (code) {
             case 32: // 空格 space
             case 9: // 制表符 tab

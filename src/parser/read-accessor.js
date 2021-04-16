@@ -44,9 +44,9 @@ function readAccessor(walker) {
     accessorLoop: while (1) {
     /* eslint-enable no-constant-condition */
 
-        switch (walker.currentCode()) {
+        switch (walker.source.charCodeAt(walker.index)) {
             case 46: // .
-                walker.go(1);
+                walker.index++;
 
                 // ident as string
                 result.paths.push({
@@ -56,7 +56,7 @@ function readAccessor(walker) {
                 break;
 
             case 91: // [
-                walker.go(1);
+                walker.index++;
                 result.paths.push(readTertiaryExpr(walker));
                 walker.goUntil(93); // ]
                 break;
