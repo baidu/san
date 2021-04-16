@@ -30,11 +30,11 @@ var ENTITY_DECODE_MAP = {
  */
 function decodeHTMLEntity(source) {
     return source
-        .replace(/&#([0-9]+);/g, function (match, code) {
+        .replace(/&#(x[0-9a-f]+|[0-9]+);/g, function (match, code) {
+            if (code.charCodeAt(0) === 120) { // x
+                return String.fromCharCode(parseInt(code.slice(1), 16));
+            }
             return String.fromCharCode(+code);
-        })
-        .replace(/&#x([0-9a-f]+);/ig, function (match, code) {
-            return String.fromCharCode(parseInt(code, 16));
         })
         .replace(/&([a-z]+);/ig, function (match, code) {
             return ENTITY_DECODE_MAP[code] || match;
