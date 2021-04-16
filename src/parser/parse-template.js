@@ -54,8 +54,9 @@ function parseTemplate(source, options) {
         return rootNode;
     }
 
-    source = source.replace(/<!--([\s\S]*?)-->/mg, '').replace(/(^\s+|\s+$)/g, '');
+    source = source.replace(/<!--([\s\S]*?)-->/mg, '');
     var walker = new Walker(source);
+    walker.goUntil();
 
     var tagReg = /<(\/)?([a-z][a-z0-9-]*)\s*/ig;
     var attrReg = /([-:0-9a-z\[\]_]+)(\s*=\s*(([^'"<>\s]+)|"([^"]*?)"|'([^']*?)'))?\s*/ig;
