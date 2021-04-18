@@ -65,7 +65,7 @@ function parseTemplate(source, options) {
     var currentNode = rootNode;
     var stack = [rootNode];
     var stackIndex = 0;
-    var beforeLastIndex = 0;
+    var beforeLastIndex = walker.index;
 
     while ((tagMatch = walker.match(tagReg)) != null) {
         var tagMatchStart = walker.index - tagMatch[0].length;
