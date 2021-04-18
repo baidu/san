@@ -7,6 +7,13 @@ describe("parse", function () {
 
     });
 
+    it("leading whitespaces should be ignore", function () {
+        var anode = san.parseTemplate('   \t\r\n <div></div>');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].tagName).toBe('div');
+
+    });
+
     it("template start with tag like text", function () {
         var anode = san.parseTemplate('<dd');
         expect(anode.children[0].textExpr).not.toBeUndefined();
