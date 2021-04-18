@@ -57,13 +57,6 @@ function parseText(source, delimiters) {
     var segs = [];
     var original;
 
-    function pushStringToSeg(text) {
-        text && segs.push({
-            type: ExprType.STRING,
-            value: decodeHTMLEntity(text)
-        });
-    }
-
     var delimEndLen = delimiters[1].length;
     while ((exprMatch = walker.match(exprStartReg)) != null) {
         var interpSource = exprMatch[1];
@@ -74,11 +67,17 @@ function parseText(source, delimiters) {
             interpLen++;
         }
 
-        pushStringToSeg(walker.source.slice(
+        // pushStringToSeg
+        var strValue = walker.source.slice(
             beforeIndex,
             walker.index - interpLen
-        ));
+        );
+        strValue && segs.push({
+            type: ExprType.STRING,
+            value: decodeHTMLEntity(strValue)
+        });
 
+        // pushInterpToSeg
         var interp = parseInterp(interpSource);
         original = original || interp.original;
         segs.push(interp);
@@ -86,7 +85,12 @@ function parseText(source, delimiters) {
         beforeIndex = walker.index;
     }
 
-    pushStringToSeg(walker.source.slice(beforeIndex));
+    // pushStringToSeg
+    var strValue = walker.source.slice(beforeIndex);
+    strValue && segs.push({
+        type: ExprType.STRING,
+        value: decodeHTMLEntity(strValue)
+    });
 
     switch (segs.length) {
         case 0:
