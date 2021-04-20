@@ -11,7 +11,6 @@ var each = require('../util/each');
 var guid = require('../util/guid');
 var extend = require('../util/extend');
 var ExprType = require('../parser/expr-type');
-var createAccessor = require('../parser/create-accessor');
 var evalExpr = require('../runtime/eval-expr');
 var Data = require('../runtime/data');
 var DataChangeType = require('../runtime/data-change-type');
@@ -230,9 +229,12 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                     me.childScope.set(name, value);
                     scopedChanges.push({
                         type: DataChangeType.SET,
-                        expr: createAccessor([
-                            {type: ExprType.STRING, value: name}
-                        ]),
+                        expr: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {type: ExprType.STRING, value: name}
+                            ]
+                        },
                         value: value,
                         option: {}
                     });
@@ -255,18 +257,24 @@ SlotNode.prototype._update = function (changes, isFromOuter) {
                     if (change.type !== DataChangeType.SPLICE) {
                         scopedChanges.push({
                             type: DataChangeType.SET,
-                            expr: createAccessor([
-                                {type: ExprType.STRING, value: name}
-                            ]),
+                            expr: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: name}
+                                ]
+                            },
                             value: me.childScope.get(name),
                             option: change.option
                         });
                     }
                     else if (relation === 2) {
                         scopedChanges.push({
-                            expr: createAccessor([
-                                {type: ExprType.STRING, value: name}
-                            ]),
+                            expr: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: name}
+                                ]
+                            },
                             type: DataChangeType.SPLICE,
                             index: change.index,
                             deleteCount: change.deleteCount,
