@@ -54,40 +54,52 @@ function ForItemData(forElement, item, index) {
  * @return {Object}
  */
 ForItemData.prototype.exprResolve = function (expr) {
-    var me = this;
     var directive = this.directive;
 
-    function resolveItem(expr) {
-        if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === directive.item) {
-            return {
-                type: ExprType.ACCESSOR,
-                paths: directive.value.paths.concat(
-                    {
-                        type: ExprType.NUMBER,
-                        value: me.raw[me.indexName]
-                    },
-                    expr.paths.slice(1)
-                )
-            };
-        }
-
-        return expr;
+    if (expr.type === ExprType.ACCESSOR && expr.paths[0].value === directive.item) {
+        expr = {
+            type: ExprType.ACCESSOR,
+            paths: directive.value.paths.concat(
+                {
+                    type: ExprType.NUMBER,
+                    value: this.raw[this.indexName]
+                },
+                expr.paths.slice(1)
+            )
+        };
     }
-
-    expr = resolveItem(expr);
 
     var resolvedPaths = [];
 
-    each(expr.paths, function (item) {
-        resolvedPaths.push(
-            item.type === ExprType.ACCESSOR && item.paths[0].value === me.indexName
-                ? {
-                    type: ExprType.NUMBER,
-                    value: me.raw[me.indexName]
-                }
-                : resolveItem(item)
-        );
-    });
+    for (var i = 0, l = expr.paths.length; i < l; i++) {
+        var pathSeg = expr.paths[i];
+
+        if (pathSeg.type === ExprType.ACCESSOR) {
+            switch (pathSeg.paths[0].value) {
+                case directive.item:
+                    pathSeg = {
+                        type: ExprType.ACCESSOR,
+                        paths: directive.value.paths.concat(
+                            {
+                                type: ExprType.NUMBER,
+                                value: this.raw[this.indexName]
+                            },
+                            pathSeg.paths.slice(1)
+                        )
+                    };
+                    break;
+                   
+                case this.indexName:
+                    pathSeg = {
+                        type: ExprType.NUMBER,
+                        value: this.raw[this.indexName]
+                    };
+                    break;
+            }
+        }
+
+        resolvedPaths.push(pathSeg);
+    }
 
     return {
         type: ExprType.ACCESSOR,
