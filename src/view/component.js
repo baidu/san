@@ -16,7 +16,6 @@ var emitDevtool = require('../util/emit-devtool');
 var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
-var createAccessor = require('../parser/create-accessor');
 var unpackANode = require('../parser/unpack-anode');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
@@ -683,14 +682,15 @@ Component.prototype._update = function (changes) {
                     && (relation = changeExprCompare(changeExpr, updateExpr, me.scope))
                 ) {
                     if (relation > 2) {
-                        setExpr = createAccessor(
-                            [
+                        setExpr = {
+                            type: ExprType.ACCESSOR,
+                            paths: [
                                 {
                                     type: ExprType.STRING,
                                     value: setExpr
                                 }
                             ].concat(changeExpr.paths.slice(updateExpr.paths.length))
-                        );
+                        };
                         updateExpr = changeExpr;
                     }
 
@@ -819,9 +819,10 @@ Component.prototype._updateBindxOwner = function (dataChanges) {
             ) {
                 var updateScopeExpr = bindItem.expr;
                 if (changeExpr.paths.length > 1) {
-                    updateScopeExpr = createAccessor(
-                        bindItem.expr.paths.concat(changeExpr.paths.slice(1))
-                    );
+                    updateScopeExpr = {
+                        type: ExprType.ACCESSOR,
+                        paths: bindItem.expr.paths.concat(changeExpr.paths.slice(1))
+                    };
                 }
 
                 xbindUped = 1;

@@ -11,7 +11,6 @@ var each = require('../util/each');
 var kebab2camel = require('../util/kebab2camel');
 var boolAttrs = require('../browser/bool-attrs');
 var ExprType = require('./expr-type');
-var createAccessor = require('./create-accessor');
 var parseExpr = require('./parse-expr');
 var parseCall = require('./parse-call');
 var parseText = require('./parse-text');
@@ -59,9 +58,12 @@ function integrateAttr(aNode, name, value, options) {
             }
 
             event.expr = parseCall(value, [
-                createAccessor([
-                    {type: ExprType.STRING, value: '$event'}
-                ])
+                {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: '$event'}
+                    ]
+                }
             ]);
             break;
 
@@ -134,12 +136,12 @@ function integrateProp(aNode, name, rawValue, options) {
                             if (expr.segs[i].type === ExprType.INTERP) {
                                 expr.segs[i].filters.push({
                                     type: ExprType.CALL,
-                                    name: createAccessor([
-                                        {
-                                            type: ExprType.STRING,
-                                            value: '_' + name
-                                        }
-                                    ]),
+                                    name: {
+                                        type: ExprType.ACCESSOR,
+                                        paths: [
+                                            {type: ExprType.STRING, value: '_' + name}
+                                        ]
+                                    },
                                     args: []
                                 });
                             }
@@ -149,12 +151,12 @@ function integrateProp(aNode, name, rawValue, options) {
                     case ExprType.INTERP:
                         expr.filters.push({
                             type: ExprType.CALL,
-                            name: createAccessor([
-                                {
-                                    type: ExprType.STRING,
-                                    value: '_' + name
-                                }
-                            ]),
+                            name: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: '_' + name}
+                                ]
+                            },
                             args: []
                         });
                         break;
@@ -166,12 +168,12 @@ function integrateProp(aNode, name, rawValue, options) {
                                 expr: expr,
                                 filters: [{
                                     type: ExprType.CALL,
-                                    name: createAccessor([
-                                        {
-                                            type: ExprType.STRING,
-                                            value: '_' + name
-                                        }
-                                    ]),
+                                    name: {
+                                        type: ExprType.ACCESSOR,
+                                        paths: [
+                                            {type: ExprType.STRING, value: '_' + name}
+                                        ]
+                                    },
                                     args: []
                                 }]
                             }

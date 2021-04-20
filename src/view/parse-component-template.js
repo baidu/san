@@ -10,7 +10,6 @@
 var warn = require('../util/warn');
 var parseTemplate = require('../parser/parse-template');
 var ExprType = require('../parser/expr-type');
-var createAccessor = require('../parser/create-accessor');
 
 
 
@@ -63,17 +62,21 @@ function parseComponentTemplate(ComponentClass) {
                     extraPropExists[prop.name] = true;
                     prop.expr = {
                         type: ExprType.INTERP,
-                        expr: createAccessor([{
-                            type: ExprType.STRING,
-                            value: prop.name
-                        }]),
+                        expr: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {type: ExprType.STRING, value: prop.name}
+                            ]
+                        },
                         filters: [{
                             type: ExprType.CALL,
                             args: [prop.expr],
-                            name: createAccessor([{
-                                type: ExprType.STRING,
-                                value: '_x' + prop.name
-                            }])
+                            name: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: '_x' + prop.name}
+                                ]
+                            }
                         }]
                     }
                     break;
@@ -89,17 +92,21 @@ function parseComponentTemplate(ComponentClass) {
                 name: 'class',
                 expr: {
                     type: ExprType.INTERP,
-                    expr: createAccessor([{
-                        type: ExprType.STRING,
-                        value: 'class'
-                    }]),
+                    expr: {
+                        type: ExprType.ACCESSOR,
+                        paths: [
+                            {type: ExprType.STRING, value: 'class'}
+                        ]
+                    },
                     filters: [{
                         type: ExprType.CALL,
                         args: [],
-                        name: createAccessor([{
-                            type: ExprType.STRING,
-                            value: '_class'
-                        }])
+                        name: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {type: ExprType.STRING, value: '_class'}
+                            ]
+                        }
                     }]
                 }
             });
@@ -110,17 +117,21 @@ function parseComponentTemplate(ComponentClass) {
                 name: 'style',
                 expr: {
                     type: ExprType.INTERP,
-                    expr: createAccessor([{
-                        type: ExprType.STRING,
-                        value: 'style'
-                    }]),
+                    expr: {
+                        type: ExprType.ACCESSOR,
+                        paths: [
+                            {type: ExprType.STRING, value: 'style'}
+                        ]
+                    },
                     filters: [{
                         type: ExprType.CALL,
                         args: [],
-                        name: createAccessor([{
-                            type: ExprType.STRING,
-                            value: '_style'
-                        }])
+                        name: {
+                            type: ExprType.ACCESSOR,
+                            paths: [
+                                {type: ExprType.STRING, value: '_style'}
+                            ]
+                        }
                     }]
                 }
             });
@@ -129,10 +140,12 @@ function parseComponentTemplate(ComponentClass) {
         if (!extraPropExists.id) {
             aNode.props.push({ 
                 name: 'id', 
-                expr: createAccessor([{
-                    type: ExprType.STRING,
-                    value: 'id'
-                }])
+                expr: {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: 'id'}
+                    ]
+                }
             });
         }
     }

@@ -10,7 +10,6 @@
 var ExprType = require('../parser/expr-type');
 var evalExpr = require('./eval-expr');
 var DataChangeType = require('./data-change-type');
-var createAccessor = require('../parser/create-accessor');
 var parseExpr = require('../parser/parse-expr');
 
 /**
@@ -238,12 +237,12 @@ Data.prototype.assign = function (source, option) {
 
     for (var key in source) { // eslint-disable-line
         this.set(
-            createAccessor([
-                {
-                    type: ExprType.STRING,
-                    value: key
-                }
-            ]),
+            {
+                type: ExprType.ACCESSOR,
+                paths: [
+                    {type: ExprType.STRING, value: key}
+                ]
+            },
             source[key],
             option
         );
@@ -283,8 +282,9 @@ Data.prototype.merge = function (expr, source, option) {
 
     for (var key in source) { // eslint-disable-line
         this.set(
-            createAccessor(
-                expr.paths.concat(
+            {
+                type: ExprType.ACCESSOR,
+                paths: expr.paths.concat(
                     [
                         {
                             type: ExprType.STRING,
@@ -292,7 +292,7 @@ Data.prototype.merge = function (expr, source, option) {
                         }
                     ]
                 )
-            ),
+            },
             source[key],
             option
         );
