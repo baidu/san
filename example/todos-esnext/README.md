@@ -3,7 +3,7 @@ todos-esnext
 
 > Todos demo use `.san` components and `esnext`
 
-Notice: This demo is incompatible with old IE. More infomation see https://github.com/baidu/san/issues/291
+Notice: This demo is incompatible with old IE. More information see https://github.com/baidu/san/issues/291
 
 ## Prepare
 
