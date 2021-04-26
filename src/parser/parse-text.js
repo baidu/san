@@ -8,8 +8,9 @@
  */
 
 var Walker = require('./walker');
+var readTertiaryExpr = require('./read-tertiary-expr');
 var ExprType = require('./expr-type');
-var parseInterp = require('./parse-interp');
+var readCall = require('./read-call');
 var decodeHTMLEntity = require('../util/decode-html-entity');
 
 
@@ -54,9 +55,8 @@ function parseText(source, delimiters) {
         if (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
             delimEndIndex++;
         }
-        var interp = parseInterp(
-            walker.source.slice(delimStartIndex + delimStartLen, delimEndIndex)
-        );
+        walker.index = delimStartIndex + delimStartLen;
+        var interp = readInterp(walker);
         original = original || interp.original;
         segs.push(interp);
 
@@ -92,6 +92,35 @@ function parseText(source, delimiters) {
         type: ExprType.TEXT,
         segs: segs
     };
+}
+
+/**
+ * 读取插值替换
+ *
+ * @param {Walker} walker 源码读取对象
+ * @return {Object}
+ */
+function readInterp(walker) {
+    var interp = {
+        type: ExprType.INTERP,
+        expr: readTertiaryExpr(walker),
+        filters: []
+    };
+
+    while (walker.goUntil(124)) { // |
+        var callExpr = readCall(walker, []);
+        switch (callExpr.name.paths[0].value) {
+            case 'html':
+                break;
+            case 'raw':
+                interp.original = 1;
+                break;
+            default:
+                interp.filters.push(callExpr);
+        }
+    }
+
+    return interp;
 }
 
 exports = module.exports = parseText;
