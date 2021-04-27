@@ -69,7 +69,11 @@ function integrateAttr(aNode, name, value, options) {
 
         case 'san':
         case 's':
-            parseDirective(aNode, realName, value, options);
+            if (realName === 'else-if') {
+                realName = 'elif';
+            }
+            var directiveValue = parseDirective(realName, value, options);
+            directiveValue && (aNode.directives[realName] = directiveValue);
             break;
 
         case 'prop':
