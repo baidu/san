@@ -76,10 +76,6 @@ function integrateAttr(aNode, name, value, options) {
             directiveValue && (aNode.directives[realName] = directiveValue);
             break;
 
-        case 'prop':
-            integrateProp(aNode, realName, value, options);
-            break;
-
         case 'var':
             if (!aNode.vars) {
                 aNode.vars = [];
@@ -93,52 +89,55 @@ function integrateAttr(aNode, name, value, options) {
             break;
 
         default:
-            integrateProp(aNode, name, value, options);
-    }
-}
+            if (prefix === 'prop') {
+                name = realName;
+            } 
 
-/**
- * 解析抽象节点绑定属性
- *
- * @inner
- * @param {ANode} aNode 抽象节点
- * @param {string} name 属性名称
- * @param {string} rawValue 属性值
- * @param {Object} options 解析参数
- * @param {Array?} options.delimiters 插值分隔符列表
- */
-function integrateProp(aNode, name, rawValue, options) {
-    // parse two way binding, e.g. value="{=ident=}"
-    if (rawValue && rawValue.indexOf('{=') === 0 && rawValue.slice(-2) === '=}') {
-        aNode.props.push({
-            name: name,
-            expr: parseExpr(rawValue.slice(2, -2)),
-            x: 1
-        });
+            // parse two way binding, e.g. value="{=ident=}"
+            if (value && value.indexOf('{=') === 0 && value.slice(-2) === '=}') {
+                aNode.props.push({
+                    name: name,
+                    expr: parseExpr(value.slice(2, -2)),
+                    x: 1
+                });
 
-        return;
-    }
+                return;
+            }
 
-    var expr = parseText(rawValue || '', options.delimiters);
-
-    if (expr.value === '') {
-        if (boolAttrs[name]) {
-            expr = {
-                type: ExprType.BOOL,
-                value: true
-            };
-        }
-    }
-    else {
-        switch (name) {
-            case 'class':
-            case 'style':
-
-                switch (expr.type) {
-                    case ExprType.TEXT:
-                        for (var i = 0, l = expr.segs.length; i < l; i++) {
-                            if (expr.segs[i].type === ExprType.INTERP) {
-                                expr.segs[i].filters.push({
+            var expr = parseText(value || '', options.delimiters);
+            if (expr.value === '') {
+                if (boolAttrs[name]) {
+                    expr = {
+                        type: ExprType.BOOL,
+                        value: true
+                    };
+                }
+            }
+            else {
+                switch (name) {
+                    case 'class':
+                    case 'style':
+        
+                        switch (expr.type) {
+                            case ExprType.TEXT:
+                                for (var i = 0, l = expr.segs.length; i < l; i++) {
+                                    if (expr.segs[i].type === ExprType.INTERP) {
+                                        expr.segs[i].filters.push({
+                                            type: ExprType.CALL,
+                                            name: {
+                                                type: ExprType.ACCESSOR,
+                                                paths: [
+                                                    {type: ExprType.STRING, value: '_' + name}
+                                                ]
+                                            },
+                                            args: []
+                                        });
+                                    }
+                                }
+                                break;
+        
+                            case ExprType.INTERP:
+                                expr.filters.push({
                                     type: ExprType.CALL,
                                     name: {
                                         type: ExprType.ACCESSOR,
@@ -148,50 +147,36 @@ function integrateProp(aNode, name, rawValue, options) {
                                     },
                                     args: []
                                 });
-                            }
-                        }
-                        break;
-
-                    case ExprType.INTERP:
-                        expr.filters.push({
-                            type: ExprType.CALL,
-                            name: {
-                                type: ExprType.ACCESSOR,
-                                paths: [
-                                    {type: ExprType.STRING, value: '_' + name}
-                                ]
-                            },
-                            args: []
-                        });
-                        break;
-
-                    default:
-                        if (expr.type !== ExprType.STRING) {
-                            expr = {
-                                type: ExprType.INTERP,
-                                expr: expr,
-                                filters: [{
-                                    type: ExprType.CALL,
-                                    name: {
-                                        type: ExprType.ACCESSOR,
-                                        paths: [
-                                            {type: ExprType.STRING, value: '_' + name}
-                                        ]
-                                    },
-                                    args: []
-                                }]
-                            }
+                                break;
+        
+                            default:
+                                if (expr.type !== ExprType.STRING) {
+                                    expr = {
+                                        type: ExprType.INTERP,
+                                        expr: expr,
+                                        filters: [{
+                                            type: ExprType.CALL,
+                                            name: {
+                                                type: ExprType.ACCESSOR,
+                                                paths: [
+                                                    {type: ExprType.STRING, value: '_' + name}
+                                                ]
+                                            },
+                                            args: []
+                                        }]
+                                    }
+                                }
                         }
                 }
-        }
+        
+            }
 
+            aNode.props.push(
+                value != null
+                    ? {name: name, expr: expr}
+                    : {name: name, expr: expr, noValue: 1}
+            );
     }
-
-    aNode.props.push(
-        rawValue != null
-            ? {name: name, expr: expr}
-            : {name: name, expr: expr, noValue: 1}
-    );
 }
 
 
