@@ -55,8 +55,26 @@ function parseText(source, delimiters) {
         if (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
             delimEndIndex++;
         }
-        walker.index = delimStartIndex + delimStartLen;
-        var interp = readInterp(walker);
+
+        var interpWalker = new Walker(walker.source.slice(delimStartIndex + delimStartLen, delimEndIndex));
+        var interp = {
+            type: ExprType.INTERP,
+            expr: readTertiaryExpr(interpWalker),
+            filters: []
+        };
+        while (interpWalker.goUntil(124)) { // |
+            var callExpr = readCall(interpWalker, []);
+            switch (callExpr.name.paths[0].value) {
+                case 'html':
+                    break;
+                case 'raw':
+                    interp.original = 1;
+                    break;
+                default:
+                    interp.filters.push(callExpr);
+            }
+        }
+
         original = original || interp.original;
         segs.push(interp);
 
@@ -92,35 +110,6 @@ function parseText(source, delimiters) {
         type: ExprType.TEXT,
         segs: segs
     };
-}
-
-/**
- * 读取插值替换
- *
- * @param {Walker} walker 源码读取对象
- * @return {Object}
- */
-function readInterp(walker) {
-    var interp = {
-        type: ExprType.INTERP,
-        expr: readTertiaryExpr(walker),
-        filters: []
-    };
-
-    while (walker.goUntil(124)) { // |
-        var callExpr = readCall(walker, []);
-        switch (callExpr.name.paths[0].value) {
-            case 'html':
-                break;
-            case 'raw':
-                interp.original = 1;
-                break;
-            default:
-                interp.filters.push(callExpr);
-        }
-    }
-
-    return interp;
 }
 
 exports = module.exports = parseText;
