@@ -91,7 +91,7 @@ function integrateAttr(aNode, name, value, options) {
         default:
             if (prefix === 'prop') {
                 name = realName;
-            } 
+            }
 
             // parse two way binding, e.g. value="{=ident=}"
             if (value && value.indexOf('{=') === 0 && value.slice(-2) === '=}') {
@@ -117,7 +117,7 @@ function integrateAttr(aNode, name, value, options) {
                 switch (name) {
                     case 'class':
                     case 'style':
-        
+
                         switch (expr.type) {
                             case ExprType.TEXT:
                                 for (var i = 0, l = expr.segs.length; i < l; i++) {
@@ -135,7 +135,7 @@ function integrateAttr(aNode, name, value, options) {
                                     }
                                 }
                                 break;
-        
+
                             case ExprType.INTERP:
                                 expr.filters.push({
                                     type: ExprType.CALL,
@@ -148,7 +148,7 @@ function integrateAttr(aNode, name, value, options) {
                                     args: []
                                 });
                                 break;
-        
+
                             default:
                                 if (expr.type !== ExprType.STRING) {
                                     expr = {
@@ -168,7 +168,7 @@ function integrateAttr(aNode, name, value, options) {
                                 }
                         }
                 }
-        
+
             }
 
             aNode.props.push(
