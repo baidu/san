@@ -86,6 +86,51 @@ describe("Expression", function () {
         document.body.removeChild(wrap);
     });
 
+    it("unary +true", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{+true | tobe(1)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("unary +string", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{+"20" | tobe(20)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("unary +number", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{+5-2 | tobe(3)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("unary !", function () {
         var MyComponent = san.defineComponent({
             template: '<b>{{!val1 | tobe(false)}}</b>',
@@ -93,6 +138,51 @@ describe("Expression", function () {
         });
         var myComponent = new MyComponent();
         myComponent.data.set('val1', 10);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("unary !null", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{!null | tobe(true)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("unary !array", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{![] | tobe(false)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("unary !obj", function () {
+        var MyComponent = san.defineComponent({
+            template: '<b>{{!{} | tobe(false)}}</b>',
+            filters: { tobe: tobeFilter }
+        });
+        var myComponent = new MyComponent();
 
         var wrap = document.createElement('div');
         document.body.appendChild(wrap);

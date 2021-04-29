@@ -863,6 +863,35 @@ describe("Expression Update Detect", function () {
         });
     });
 
+    it("array literal in class", function (done) {
+
+        var MyComponent = san.defineComponent({
+            template: '<div><u class="{{[\'test\', cls]}}">test</u></div>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                cls: 'a'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.className).toBe('test a');
+
+        myComponent.data.set('cls', 'b');
+        san.nextTick(function () {
+            expect(u.className).toBe('test b');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("array literal with spread", function (done) {
         var List = san.defineComponent({
             template: '<ul><li s-for="item in list">{{item}}</li></ul>'
