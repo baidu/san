@@ -223,6 +223,36 @@ describe("Element", function () {
         });
     });
 
+    it("bind class, auto expand array by filter", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span class="{{extra|raw}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('extra', ['msg-notice', 'msg-error']);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(/(^| )msg-notice( |$)/.test(span.className)).toBeTruthy();
+        expect(/(^| )msg-error( |$)/.test(span.className)).toBeTruthy();
+
+        myComponent.data.set('extra', 'msg-error');
+
+
+        san.nextTick(function () {
+            expect(/(^| )msg( |$)/.test(span.className)).toBeFalsy();
+            expect(/(^| )msg-notice( |$)/.test(span.className)).toBeFalsy();
+            expect(/(^| )msg-error( |$)/.test(span.className)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind class, auto expand array", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span class="msg {{extra}}"></span></a>'
@@ -269,7 +299,7 @@ describe("Element", function () {
         myComponent.attach(wrap);
 
         var span = wrap.firstChild.firstChild;
-        
+
         expect(span.style.position).toBe('absolute');
         expect(span.style.display).toBe('none');
 
@@ -1227,7 +1257,7 @@ describe("Element", function () {
         myComponent.nextTick(function () {
             expect(span.style.display).toBe('');
             expect(span.style.position).toBe('relative');
-            
+
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
