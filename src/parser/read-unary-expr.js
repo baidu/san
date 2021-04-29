@@ -9,7 +9,6 @@
 
 var ExprType = require('./expr-type');
 var readString = require('./read-string');
-var readNumber = require('./read-number');
 var readCall = require('./read-call');
 var readParenthesizedExpr = require('./read-parenthesized-expr');
 var readTertiaryExpr = require('./read-tertiary-expr');
@@ -104,7 +103,10 @@ function readUnaryExpr(walker) {
         case 55:
         case 56:
         case 57:
-            return readNumber(walker);
+            return {
+                type: ExprType.NUMBER,
+                value: +(walker.match(/[0-9]+(\.[0-9]+)?/g, 1)[0])
+            };
 
         case 40: // (
             return readParenthesizedExpr(walker);
