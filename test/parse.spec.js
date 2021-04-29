@@ -66,7 +66,7 @@ describe("parse", function () {
 
     });
 
-    it("template contain tag+attr+equal like text, interp mixed", function () {
+    it("template contain tag+attr like text, interp mixed", function () {
         var anode = san.parseTemplate('hello {{name}}<dd id');
         expect(anode.children.length).toBe(1);
         expect(anode.children[0].textExpr.segs.length).toBe(3);
@@ -87,6 +87,17 @@ describe("parse", function () {
         expect(anode.children.length).toBe(1);
         expect(anode.children[0].textExpr.segs[0].value).toBe('hello san<dd ');
         expect(anode.children[0].textExpr.segs[1].value).toBeUndefined();
+
+    });
+
+    it("template contain tag+invalid-attr like text, interp mixed", function () {
+        var anode = san.parseTemplate('hello {{name}}<dd {{id}}');
+        expect(anode.children.length).toBe(1);
+        expect(anode.children[0].textExpr.segs[0].value).toBe('hello ');
+        expect(anode.children[0].textExpr.segs[1].value).toBeUndefined();
+
+        expect(anode.children[0].textExpr.segs[2].value).toBe('<dd ');
+        expect(anode.children[0].textExpr.segs[3].value).toBeUndefined();
 
     });
 
