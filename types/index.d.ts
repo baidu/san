@@ -21,6 +21,7 @@ declare namespace San {
         fire(change: SanDataChangeInfo): void;
         get<D = any>(expr?: string | ExprAccessorNode): D;
         set(expr: string | ExprAccessorNode, value: any, option?: SanDataChangeOption): void;
+        assign(source: {}, options?: SanDataChangeOption): void;
         merge(expr: string | ExprAccessorNode, source: {}, option?: SanDataChangeOption): void;
         apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: SanDataChangeOption): void;
         splice(expr: string | ExprAccessorNode, spliceArgs: Array<any>, option?: SanDataChangeOption): void;
