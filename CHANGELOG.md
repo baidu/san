@@ -2,6 +2,11 @@
 ChangeLog
 ========
 
+3.10.4
+-------
+
++ 【bug修复】- index.d.ts 补充缺失的 data.assign 声明
+
 
 3.10.3
 -------
