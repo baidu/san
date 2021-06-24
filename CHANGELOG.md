@@ -2,6 +2,12 @@
 ChangeLog
 ========
 
+3.10.5 (2021-6-24)
+-------
+
++ 【优化】- 优化 svg 标签表。增加 linearGradient radialGradient stop，删除 animateColor，更新 textPath。
+
+
 3.10.4
 -------
 
