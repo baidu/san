@@ -84,6 +84,7 @@ IsNode.prototype._update = function (changes) {
     }
     else {
         this.cmpt = cmpt;
+        childANode.Clazz = undefined;
         var newChild = createNode(childANode, this, this.scope, this.owner, this.cmpt);
         var el = child.el;
         newChild.attach(el.parentNode, el);

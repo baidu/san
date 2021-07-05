@@ -845,6 +845,62 @@ describe("Component", function () {
         });
     });
 
+    it("s-is html buildin tag", function (done) {
+
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}" >{{text}}</span>',
+            initData() {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label
+            },
+            initData() {
+                return {
+                    cmpt: 'div'
+                }
+            }
+        });
+
+        MyComponent.template = '<div><span s-is="cmpt" id="comp"></span></div>';
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var comp = wrap.querySelector('#comp');
+        expect(comp.tagName.toLowerCase()).toBe('div');
+
+        myComponent.data.set('cmpt', 'article');
+        san.nextTick(function () {
+            var article = wrap.querySelector('#comp');
+            expect(article.tagName.toLowerCase()).toBe('article');
+
+            myComponent.data.set('cmpt', '');
+            san.nextTick(function () {
+                var span = wrap.querySelector('#comp');
+                expect(span.tagName.toLowerCase()).toBe('span');
+
+                myComponent.data.set('cmpt', 'x-label');
+                san.nextTick(function () {
+                    var label = wrap.querySelector('#comp');
+                    expect(label.innerHTML).toBe('erik');
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
+                    done();
+                });
+            });
+        });
+    });
+
     it("components in inherits structure", function () {
         var Span = san.defineComponent({});
         Span.template = '<span title="span">span</span>';

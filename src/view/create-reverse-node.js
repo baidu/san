@@ -23,7 +23,7 @@ var AsyncComponent = require('./async-component');
  */
 function createReverseNode(aNode, parent, scope, owner, reverseWalker, componentName) {
     if (aNode.Clazz) {
-        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
+        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker, componentName);
     }
 
     var ComponentOrLoader = owner.components[componentName || aNode.tagName];
@@ -46,7 +46,7 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker, component
             }, ComponentOrLoader);
     }
 
-    return new Element(aNode, parent, scope, owner, reverseWalker);
+    return new Element(aNode, parent, scope, owner, reverseWalker, componentName);
 }
 // #[end]
 

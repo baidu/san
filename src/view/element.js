@@ -37,8 +37,9 @@ var getNodePath = require('./get-node-path');
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {string} IsNode 传入动态的 tag 名
  */
-function Element(aNode, parent, scope, owner, reverseWalker) {
+function Element(aNode, parent, scope, owner, reverseWalker, componentName) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -51,7 +52,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.tagName = aNode.tagName;
+    this.tagName = componentName || aNode.tagName;
 
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
