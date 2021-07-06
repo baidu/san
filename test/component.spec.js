@@ -5570,7 +5570,7 @@ describe("Component", function () {
         });
     });
 
-    it("dynamic s-is on fragment", function (done) {
+    it("dynamic s-is value update to fragment", function (done) {
         var Child = san.defineComponent({
             template: '<h2><slot>default</slot></h2>'
         });
@@ -5600,6 +5600,41 @@ describe("Component", function () {
         myComponent.nextTick(function () {
             expect(myComponent.el.innerHTML).toContain('cxtom');
             expect(myComponent.el.innerHTML).not.toContain('fragment');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("dynamic s-is on fragment", function (done) {
+        var Child = san.defineComponent({
+            template: '<h2><slot>default</slot></h2>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child s-is="cmpt">cxtom</x-child></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                cmpt: 'fragment'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.el.innerHTML).toContain('cxtom');
+        expect(myComponent.el.innerHTML).not.toContain('fragment');
+
+        myComponent.data.set('cmpt', 'h2');
+        myComponent.nextTick(function () {
+            expect(myComponent.el.innerHTML).toBe('<h2>cxtom</h2>');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
