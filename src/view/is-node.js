@@ -13,6 +13,7 @@ var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
+var TemplateNode = require('./template-node');
 
 /**
  * is 指令节点类
@@ -63,8 +64,13 @@ IsNode.prototype.dispose = nodeOwnSimpleDispose;
  */
 IsNode.prototype.attach = function (parentEl, beforeEl) {
     this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+    var childANode = this.aNode.isRinsed;
 
-    var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner, this.cmpt);
+    if (this.cmpt === 'template' || this.cmpt === 'fragment') {
+        childANode.Clazz = TemplateNode;
+    }
+
+    var child = createNode(childANode, this, this.scope, this.owner, this.cmpt);
     this.children[0] = child;
     child.attach(parentEl, beforeEl);
 };
@@ -84,6 +90,12 @@ IsNode.prototype._update = function (changes) {
     }
     else {
         this.cmpt = cmpt;
+        if (this.cmpt === 'template' || this.cmpt === 'fragment') {
+            childANode.Clazz = TemplateNode;
+        }
+        else {
+            childANode.Clazz = undefined;
+        }
         var newChild = createNode(childANode, this, this.scope, this.owner, this.cmpt);
         var el = child.el;
         newChild.attach(el.parentNode, el);

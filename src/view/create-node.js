@@ -23,7 +23,7 @@ var AsyncComponent = require('./async-component');
  */
 function createNode(aNode, parent, scope, owner, componentName) {
     if (aNode.Clazz) {
-        return new aNode.Clazz(aNode, parent, scope, owner);
+        return new aNode.Clazz(aNode, parent, scope, owner, null, componentName);
     }
 
     var ComponentOrLoader = owner.components[componentName || aNode.tagName];
@@ -45,7 +45,7 @@ function createNode(aNode, parent, scope, owner, componentName) {
     }
 
     aNode.Clazz = Element;
-    return new Element(aNode, parent, scope, owner);
+    return new Element(aNode, parent, scope, owner, null, componentName);
 }
 
 exports = module.exports = createNode;
