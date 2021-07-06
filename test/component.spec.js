@@ -759,7 +759,7 @@ describe("Component", function () {
     it("components use s-is", function () {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>',
-            initData() {
+            initData: function () {
                 return {
                     text: 'erik'
                 }
@@ -770,7 +770,7 @@ describe("Component", function () {
             components: {
                 'x-label': Label,
             },
-            initData() {
+            initData: function () {
                 return {
                     cmpt: 'x-label'
                 }
@@ -795,7 +795,7 @@ describe("Component", function () {
     it("s-is value update", function (done) {
         var Label = san.defineComponent({
             template: '<span title="{{text}}" >{{text}}</span>',
-            initData() {
+            initData: function () {
                 return {
                     text: 'erik'
                 }
@@ -804,7 +804,7 @@ describe("Component", function () {
 
         var H2 = san.defineComponent({
             template: '<h2>{{text}}.baidu</h2>',
-            initData() {
+            initData: function () {
                 return {
                     text: 'erik'
                 }
@@ -816,7 +816,7 @@ describe("Component", function () {
                 'x-label': Label,
                 'x-h2': H2
             },
-            initData() {
+            initData: function () {
                 return {
                     cmpt: 'x-label'
                 }
@@ -846,10 +846,9 @@ describe("Component", function () {
     });
 
     it("s-is html buildin tag", function (done) {
-
         var Label = san.defineComponent({
             template: '<span title="{{text}}" >{{text}}</span>',
-            initData() {
+            initData: function () {
                 return {
                     text: 'erik'
                 }
@@ -860,9 +859,9 @@ describe("Component", function () {
             components: {
                 'x-label': Label
             },
-            initData() {
+            initData: function () {
                 return {
-                    cmpt: 'div'
+                    cmpt: 'h1'
                 }
             }
         });
@@ -875,23 +874,20 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var comp = wrap.querySelector('#comp');
-        expect(comp.tagName.toLowerCase()).toBe('div');
+        var comp = wrap.getElementsByTagName('div')[0];
+        expect(comp.innerHTML).toBe('<h1 id="comp"></h1>');
 
         myComponent.data.set('cmpt', 'article');
         san.nextTick(function () {
-            var article = wrap.querySelector('#comp');
-            expect(article.tagName.toLowerCase()).toBe('article');
+            expect(comp.innerHTML).toBe('<article id="comp"></article>');
 
             myComponent.data.set('cmpt', '');
             san.nextTick(function () {
-                var span = wrap.querySelector('#comp');
-                expect(span.tagName.toLowerCase()).toBe('span');
+                expect(comp.innerHTML).toBe('<span id="comp"></span>');
 
                 myComponent.data.set('cmpt', 'x-label');
                 san.nextTick(function () {
-                    var label = wrap.querySelector('#comp');
-                    expect(label.innerHTML).toBe('erik');
+                    expect(comp.innerHTML).toBe('<span title="erik" id="comp">erik</span>');
 
                     myComponent.dispose();
                     document.body.removeChild(wrap);
@@ -5527,7 +5523,7 @@ describe("Component", function () {
         });
 
         var Parent = san.defineComponent({
-            template: '<test s-is="cmpt"></test>',
+            template: '<test s-is="cmpt">content</test>',
             components: {
                 'x-child-a': ChildA,
                 'x-child-b': ChildB
@@ -5560,6 +5556,50 @@ describe("Component", function () {
             var children = myComponent.el.getElementsByTagName('H3');
             expect(children.length).toBe(1);
             expect(children[0].innerHTML).toBe('varsha');
+
+            myComponent.data.set('cmpt', 'h6');
+            myComponent.nextTick(function () {
+                var children = myComponent.el.getElementsByTagName('H6');
+                expect(children.length).toBe(1);
+                expect(children[0].innerHTML).toBe('content');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    it("dynamic s-is on fragment", function (done) {
+        var Child = san.defineComponent({
+            template: '<h2><slot>default</slot></h2>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child s-is="cmpt">cxtom</x-child></div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                cmpt: ''
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var children = myComponent.el.getElementsByTagName('H2');
+        expect(children.length).toBe(1);
+        expect(children[0].innerHTML).toContain('cxtom');
+
+        myComponent.data.set('cmpt', 'fragment');
+        myComponent.nextTick(function () {
+            expect(myComponent.el.innerHTML).toContain('cxtom');
+            expect(myComponent.el.innerHTML).not.toContain('fragment');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
