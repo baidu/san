@@ -460,3 +460,5 @@ function unpackANode(packed) {
 
     return root;
 }
+
+exports = module.exports = unpackANode;
