@@ -40,8 +40,12 @@ function IsNode(aNode, parent, scope, owner, reverseWalker) {
     // #[begin] reverse
     if (reverseWalker) {
         this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+        var childANode = this.aNode.isRinsed;
+        if (this.cmpt === 'template' || this.cmpt === 'fragment') {
+            childANode.Clazz = TemplateNode;
+        }
         this.children[0] = createReverseNode(
-            this.aNode.isRinsed,
+            childANode,
             this,
             this.scope,
             this.owner,
