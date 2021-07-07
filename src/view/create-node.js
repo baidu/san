@@ -22,8 +22,12 @@ var AsyncComponent = require('./async-component');
  * @return {Node}
  */
 function createNode(aNode, parent, scope, owner, componentName) {
+    if (aNode.elem) {
+        return new Element(aNode, parent, scope, owner, componentName);
+    }
+
     if (aNode.Clazz) {
-        return new aNode.Clazz(aNode, parent, scope, owner, null, componentName);
+        return new aNode.Clazz(aNode, parent, scope, owner);
     }
 
     var ComponentOrLoader = owner.components[componentName || aNode.tagName];
@@ -44,8 +48,18 @@ function createNode(aNode, parent, scope, owner, componentName) {
             }, ComponentOrLoader);
     }
 
-    aNode.Clazz = Element;
-    return new Element(aNode, parent, scope, owner, null, componentName);
+    if (aNode.directives.is) {
+        switch (componentName) {
+            case 'fragment':
+            case 'template':
+                    return new TemplateNode(aNode, parent, scope, owner);
+        }
+    }
+    else {
+        aNode.elem = true;
+    }
+
+    return new Element(aNode, parent, scope, owner, componentName);
 }
 
 exports = module.exports = createNode;

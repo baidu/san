@@ -224,11 +224,9 @@ function preheatANode(aNode, componentInstance) {
                         break;
 
                     default:
-                        if (hotTags[aNode.tagName]) {
-                            if (!aNode.directives.is
-                                && (!componentInstance || !componentInstance.components[aNode.tagName])
-                            ) {
-                                aNode.Clazz = Element;
+                        if (!aNode.directives.is && hotTags[aNode.tagName]) {
+                            if (!componentInstance || !componentInstance.components[aNode.tagName]) {
+                                aNode.elem = true;
                             }
 
                             // #[begin] error

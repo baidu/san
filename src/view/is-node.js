@@ -64,13 +64,8 @@ IsNode.prototype.dispose = nodeOwnSimpleDispose;
  */
 IsNode.prototype.attach = function (parentEl, beforeEl) {
     this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
-    var childANode = this.aNode.isRinsed;
-
-    if (this.cmpt === 'template' || this.cmpt === 'fragment') {
-        childANode.Clazz = TemplateNode;
-    }
-
-    var child = createNode(childANode, this, this.scope, this.owner, this.cmpt);
+    
+    var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner, this.cmpt);
     this.children[0] = child;
     child.attach(parentEl, beforeEl);
 };
@@ -81,7 +76,6 @@ IsNode.prototype.attach = function (parentEl, beforeEl) {
  * @param {Array} changes 数据变化信息
  */
 IsNode.prototype._update = function (changes) {
-    var childANode = this.aNode.isRinsed;
     var child = this.children[0];
     var cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
 
@@ -90,13 +84,8 @@ IsNode.prototype._update = function (changes) {
     }
     else {
         this.cmpt = cmpt;
-        if (this.cmpt === 'template' || this.cmpt === 'fragment') {
-            childANode.Clazz = TemplateNode;
-        }
-        else {
-            childANode.Clazz = undefined;
-        }
-        var newChild = createNode(childANode, this, this.scope, this.owner, this.cmpt);
+
+        var newChild = createNode(this.aNode.isRinsed, this, this.scope, this.owner, this.cmpt);
         var el = child.el;
         newChild.attach(el.parentNode, el);
 
