@@ -845,14 +845,9 @@ describe("Component", function () {
         });
     });
 
-    it("s-is html buildin tag", function (done) {
+    it("s-is for html element and component", function (done) {
         var Label = san.defineComponent({
-            template: '<span title="{{text}}" >{{text}}</span>',
-            initData: function () {
-                return {
-                    text: 'erik'
-                }
-            }
+            template: '<b><slot/></b>'
         });
 
         var MyComponent = san.defineComponent({
@@ -861,12 +856,13 @@ describe("Component", function () {
             },
             initData: function () {
                 return {
-                    cmpt: 'h1'
+                    cmpt: 'h1',
+                    text: 'hello'
                 }
-            }
+            },
+            template: '<div><span s-is="cmpt" id="comp">{{text}}</span></div>'
         });
 
-        MyComponent.template = '<div><span s-is="cmpt" id="comp"></span></div>';
 
         var myComponent = new MyComponent();
 
@@ -874,20 +870,31 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var comp = wrap.getElementsByTagName('div')[0];
-        expect(comp.innerHTML).toBe('<h1 id="comp"></h1>');
+        var el = wrap.getElementsByTagName('div')[0].firstChild;
+        expect(el.id).toBe('comp');
+        expect(el.tagName).toBe('H1');
+        expect(el.innerHTML).toContain('hello');
 
-        myComponent.data.set('cmpt', 'article');
-        san.nextTick(function () {
-            expect(comp.innerHTML).toBe('<article id="comp"></article>');
+        myComponent.data.set('cmpt', '');
+        myComponent.nextTick(function () {
+            var el = wrap.getElementsByTagName('div')[0].firstChild;
+            expect(el.id).toBe('comp');
+            expect(el.tagName).toBe('SPAN');
+            expect(el.innerHTML).toContain('hello');
 
-            myComponent.data.set('cmpt', '');
+            myComponent.data.set('cmpt', 'x-label');
             san.nextTick(function () {
-                expect(comp.innerHTML).toBe('<span id="comp"></span>');
+                var el = wrap.getElementsByTagName('div')[0].firstChild;
+                expect(el.id).toBe('comp');
+                expect(el.tagName).toBe('B');
+                expect(el.innerHTML).toContain('hello');
 
-                myComponent.data.set('cmpt', 'x-label');
+                myComponent.data.set('cmpt', 'u');
                 san.nextTick(function () {
-                    expect(comp.innerHTML).toBe('<span title="erik" id="comp">erik</span>');
+                    var el = wrap.getElementsByTagName('div')[0].firstChild;
+                    expect(el.id).toBe('comp');
+                    expect(el.tagName).toBe('U');
+                    expect(el.innerHTML).toContain('hello');
 
                     myComponent.dispose();
                     document.body.removeChild(wrap);
