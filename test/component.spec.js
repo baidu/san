@@ -845,6 +845,52 @@ describe("Component", function () {
         });
     });
 
+    it("s-is component which fragment rooted", function (done) {
+        var Frag = san.defineComponent({
+            template: '<fragment><b>icon</b><slot></slot></fragment>'
+        });
+
+        var U = san.defineComponent({
+            template: '<u><slot/></u>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-f': Frag,
+                'x-u': U
+            },
+            initData: function () {
+                return {
+                    cmpt: 'x-f'
+                }
+            },
+            template:'<p><test s-is="cmpt">erik</test></p>'
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var p = wrap.getElementsByTagName('p')[0];
+        expect(p.getElementsByTagName('b').length).toBe(1);
+        expect(p.getElementsByTagName('u').length).toBe(0);
+        expect(p.innerHTML).toContain('erik');
+
+        myComponent.data.set('cmpt', 'x-u');
+        san.nextTick(function () {
+            expect(p.getElementsByTagName('b').length).toBe(0);
+            expect(p.getElementsByTagName('u').length).toBe(1);
+            expect(p.getElementsByTagName('u')[0].innerHTML).toContain('erik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("s-is for html element and component", function (done) {
         var Label = san.defineComponent({
             template: '<b><slot/></b>'
