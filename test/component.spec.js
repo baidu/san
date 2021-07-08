@@ -5619,6 +5619,50 @@ describe("Component", function () {
         });
     });
 
+    it("s-is as component root", function (done) {
+        var Child = san.defineComponent({
+            template: '<h2><slot>default</slot></h2>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div s-is="type">{{name}}</div>',
+            components: {
+                'x-child': Child
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                type: 'x-child',
+                name: 'cxtom'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.firstChild.tagName).toBe('H2');
+        expect(wrap.firstChild.innerHTML).toContain('cxtom');
+
+        myComponent.data.set('type', 'h3');
+        myComponent.nextTick(function () {
+            
+            expect(wrap.firstChild.tagName).toBe('H3');
+            expect(wrap.firstChild.innerHTML).toContain('cxtom');
+
+            myComponent.data.set('name', 'erik');
+            myComponent.nextTick(function () {
+                expect(wrap.firstChild.tagName).toBe('H3');
+                expect(wrap.firstChild.innerHTML).toContain('erik');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
 
     it("component as component root, check el", function () {
         var SubChild = san.defineComponent({
