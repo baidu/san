@@ -121,4 +121,8 @@ TemplateNode.prototype._update = function (changes) {
     }
 };
 
+TemplateNode.prototype._getElAsRootNode = function () {
+    return this.sel;
+};
+
 exports = module.exports = TemplateNode;
