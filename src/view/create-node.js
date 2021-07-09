@@ -7,8 +7,8 @@
  * @file 创建节点的工厂方法
  */
 
-var evalExpr = require('../runtime/eval-expr');
 var Element = require('./element');
+var TemplateNode = require('./template-node');
 var AsyncComponent = require('./async-component');
 
 

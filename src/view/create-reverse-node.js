@@ -8,6 +8,7 @@
  */
 
 var Element = require('./element');
+var TemplateNode = require('./template-node');
 var AsyncComponent = require('./async-component');
 
 // #[begin] reverse
