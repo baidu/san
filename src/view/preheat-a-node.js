@@ -9,7 +9,6 @@
 
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
-var extend = require('../util/extend');
 var kebab2camel = require('../util/kebab2camel');
 var hotTags = require('../browser/hot-tags');
 var createEl = require('../browser/create-el');
