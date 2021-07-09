@@ -19,6 +19,7 @@ var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
 var createNode = require('./create-node');
+var preheatEl = require('./preheat-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -113,15 +114,17 @@ Element.prototype.nodeType = NodeType.ELEM;
  */
 Element.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        if (!this.el) {
-            var sourceNode = this.aNode.hotspot.sourceNode;
-            var props = this.aNode.props;
+        var aNode = this.aNode;
 
-            if (sourceNode) {
-                this.el = sourceNode.cloneNode(false);
-                props = this.aNode.hotspot.dynamicProps;
+        if (!this.el) {
+            var props;
+
+            if (aNode.hotspot.cacheEl) {
+                props = aNode.hotspot.dynamicProps;
+                this.el = (aNode.hotspot.el || preheatEl(aNode)).cloneNode(false);
             }
             else {
+                props = aNode.props;
                 this.el = createEl(this.tagName);
             }
 
@@ -152,7 +155,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
-            var htmlDirective = this.aNode.directives.html;
+            var htmlDirective = aNode.directives.html;
 
             if (htmlDirective) {
                 // #[begin] error
@@ -162,8 +165,8 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
             }
             else {
-                for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                    var childANode = this.aNode.children[i];
+                for (var i = 0, l = aNode.children.length; i < l; i++) {
+                    var childANode = aNode.children[i];
                     var child = childANode.Clazz
                         ? new childANode.Clazz(childANode, this, this.scope, this.owner)
                         : createNode(childANode, this, this.scope, this.owner);

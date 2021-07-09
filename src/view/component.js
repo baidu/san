@@ -27,6 +27,7 @@ var un = require('../browser/un');
 var defineComponent = require('./define-component');
 var ComponentLoader = require('./component-loader');
 var createNode = require('./create-node');
+var preheatEl = require('./preheat-el');
 var parseComponentTemplate = require('./parse-component-template');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
@@ -950,14 +951,14 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                 this._toPhase('beforeCreate');
                 // #[end]
 
-                var sourceNode = this.aNode.hotspot.sourceNode;
-                var props = this.aNode.props;
+                var props;
 
-                if (sourceNode) {
-                    this.el = sourceNode.cloneNode(false);
+                if (this.aNode.hotspot.cacheEl) {
                     props = this.aNode.hotspot.dynamicProps;
+                    this.el = (this.aNode.hotspot.el || preheatEl(this.aNode)).cloneNode(false);
                 }
                 else {
+                    props = this.aNode.props;
                     this.el = createEl(this.tagName);
                 }
 

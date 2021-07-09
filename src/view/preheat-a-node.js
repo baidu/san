@@ -62,21 +62,14 @@ function preheatANode(aNode, componentInstance) {
                 recordHotspotData(aNode.textExpr);
             }
             else {
-                var sourceNode;
-                if (isBrowser && aNode.tagName
-                    && aNode.tagName.indexOf('-') < 0
-                    && !aNode.directives.is
-                    && !/^(template|slot|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName)
-                ) {
-                    sourceNode = createEl(aNode.tagName);
-                }
-
                 aNode.hotspot = {
                     dynamicProps: [],
                     xProps: [],
                     props: {},
                     binds: [],
-                    sourceNode: sourceNode
+                    cacheEl: !aNode.directives.is
+                        && aNode.tagName && aNode.tagName.indexOf('-') < 0
+                        && !/^(template|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName)
                 };
 
 
@@ -137,12 +130,7 @@ function preheatANode(aNode, componentInstance) {
                     aNode.hotspot.props[prop.name] = index;
                     prop.handler = getPropHandler(aNode.tagName, prop.name);
 
-                    if (prop.expr.value != null) {
-                        if (sourceNode) {
-                            prop.handler(sourceNode, prop.expr.value, prop.name, aNode);
-                        }
-                    }
-                    else {
+                    if (prop.expr.value == null) {
                         if (prop.x) {
                             aNode.hotspot.xProps.push(prop);
                         }
