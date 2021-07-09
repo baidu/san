@@ -56,7 +56,7 @@ function defaultElementPropHandler(el, value, name) {
         el.setAttribute(name, value);
     }
 
-    if (!valueNotNull) {
+    if (!valueNotNull || value === false) {
         el.removeAttribute(name);
     }
 }
