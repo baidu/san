@@ -292,7 +292,7 @@ function Component(options) { // eslint-disable-line
     if (this.el || reverseWalker) {
         var RootComponentType = this.components[this.aNode.tagName];
 
-        if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
+        if (reverseWalker && (this.aNode.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
@@ -935,7 +935,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         // #[end]
 
 
-        if (this.aNode.hotspot.hasRootNode || this.components[this.aNode.tagName]) {
+        if (this.aNode.hasRootNode || this.components[this.aNode.tagName]) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
             // #[end]

@@ -177,7 +177,7 @@ function preheatANode(aNode, componentInstance) {
                         hotspot: aNode.hotspot,
                         directives: aNode.directives
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = IfNode;
                     aNode = aNode.ifRinsed;
                 }
@@ -192,7 +192,7 @@ function preheatANode(aNode, componentInstance) {
                         hotspot: aNode.hotspot,
                         directives: aNode.directives
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = ForNode;
                     aNode = aNode.forRinsed;
                 }
@@ -207,7 +207,7 @@ function preheatANode(aNode, componentInstance) {
                         hotspot: aNode.hotspot,
                         directives: aNode.directives
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = IsNode;
                     aNode = aNode.isRinsed;
                 }
@@ -219,7 +219,7 @@ function preheatANode(aNode, componentInstance) {
 
                     case 'template':
                     case 'fragment':
-                        aNode.hotspot.hasRootNode = true;
+                        aNode.hasRootNode = true;
                         aNode.Clazz = TemplateNode;
                         break;
 
