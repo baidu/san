@@ -156,6 +156,7 @@ function Component(options) { // eslint-disable-line
         : options.source;
 
     preheatANode(this.source);
+    proto.aNode.hotspot.ins++;
 
 
     // #[begin] reverse
@@ -953,7 +954,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                 var props;
 
-                if (this.aNode.hotspot.cacheEl) {
+                if (this.aNode.hotspot.cacheEl && this.aNode.hotspot.ins > 1) {
                     props = this.aNode.hotspot.dynamicProps;
                     this.el = (this.aNode.hotspot.el || preheatEl(this.aNode)).cloneNode(false);
                 }

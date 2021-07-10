@@ -63,6 +63,7 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
     }
     // #[end]
 
+    aNode.hotspot.ins++;
     this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
     this.lifeCycle = LifeCycle.inited;
 
@@ -119,7 +120,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.el) {
             var props;
 
-            if (aNode.hotspot.cacheEl) {
+            if (aNode.hotspot.cacheEl && aNode.hotspot.ins > 1) {
                 props = aNode.hotspot.dynamicProps;
                 this.el = (aNode.hotspot.el || preheatEl(aNode)).cloneNode(false);
             }

@@ -63,6 +63,7 @@ function preheatANode(aNode, componentInstance) {
             }
             else {
                 aNode.hotspot = {
+                    ins: 0,
                     dynamicProps: [],
                     xProps: [],
                     props: {},
