@@ -33,8 +33,9 @@ function preheatANode(aNode, componentInstance) {
 
     function recordHotspotData(expr, notContentData) {
         var refs = analyseExprDataHotspot(expr);
+        var refsLen = refs.length;
 
-        if (refs.length) {
+        if (refsLen) {
             for (var i = 0, len = stack.length; i < len; i++) {
                 if (!notContentData || i !== len - 1) {
                     var data = stack[i]._d; // hotspot: data
@@ -42,9 +43,9 @@ function preheatANode(aNode, componentInstance) {
                         data = stack[i]._d = {};
                     }
 
-                    each(refs, function (ref) {
-                        data[ref] = 1;
-                    });
+                    for (var j = 0; j < refsLen; j++) {
+                        data[refs[j]] = 1;
+                    }
                 }
             }
         }
