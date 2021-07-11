@@ -63,7 +63,7 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
     }
     // #[end]
 
-    aNode.hotspot.ins++;
+    aNode._i++;
     this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
     this.lifeCycle = LifeCycle.inited;
 
@@ -120,9 +120,9 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.el) {
             var props;
 
-            if (aNode.hotspot.cacheEl && aNode.hotspot.ins > 1) {
-                props = aNode.hotspot.dynamicProps;
-                this.el = (aNode.hotspot.el || preheatEl(aNode)).cloneNode(false);
+            if (aNode._ce && aNode._i > 1) {
+                props = aNode._dp;
+                this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
             }
             else {
                 props = aNode.props;
@@ -237,7 +237,7 @@ Element.prototype._leave = function () {
  * @param {Array} changes 数据变化信息
  */
 Element.prototype._update = function (changes) {
-    var dataHotspot = this.aNode.hotspot.data;
+    var dataHotspot = this.aNode._d;
     if (dataHotspot && changesIsInDataRef(changes, dataHotspot)) {
 
         // update s-bind
@@ -249,7 +249,7 @@ Element.prototype._update = function (changes) {
             this.owner,
             changes,
             function (name, value) {
-                if (name in me.aNode.hotspot.props) {
+                if (name in me.aNode._pi) {
                     return;
                 }
 
@@ -258,7 +258,7 @@ Element.prototype._update = function (changes) {
         );
 
         // update prop
-        var dynamicProps = this.aNode.hotspot.dynamicProps;
+        var dynamicProps = this.aNode._dp;
         for (var i = 0, l = dynamicProps.length; i < l; i++) {
             var prop = dynamicProps[i];
             var propName = prop.name;

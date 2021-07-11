@@ -15,7 +15,7 @@
  * @return {Object}
  */
 function getANodeProp(aNode, name) {
-    var index = aNode.hotspot.props[name];
+    var index = aNode._pi[name];
     if (index != null) {
         return aNode.props[index];
     }

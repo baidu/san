@@ -15,7 +15,7 @@
  */
 function preheatEl(aNode) {
     var el = createEl(aNode.tagName);
-    aNode.hotspot.el = el;
+    aNode._el = el;
 
     for (var i = 0, l = aNode.props.length; i < l; i++) {
         var prop = aNode.props[i];

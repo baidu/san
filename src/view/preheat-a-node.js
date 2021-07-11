@@ -37,9 +37,9 @@ function preheatANode(aNode, componentInstance) {
         if (refs.length) {
             for (var i = 0, len = stack.length; i < len; i++) {
                 if (!notContentData || i !== len - 1) {
-                    var data = stack[i].hotspot.data;
+                    var data = stack[i]._d; // hotspot: data
                     if (!data) {
-                        data = stack[i].hotspot.data = {};
+                        data = stack[i]._d = {};
                     }
 
                     each(refs, function (ref) {
@@ -52,26 +52,25 @@ function preheatANode(aNode, componentInstance) {
 
 
     function analyseANodeHotspot(aNode) {
-        if (!aNode.hotspot) {
+        if (!aNode._ht) {
             stack.push(aNode);
 
 
             if (aNode.textExpr) {
-                aNode.hotspot = {};
+                aNode._ht = true;
                 aNode.Clazz = TextNode;
                 recordHotspotData(aNode.textExpr);
             }
             else {
-                aNode.hotspot = {
-                    ins: 0,
-                    dynamicProps: [],
-                    xProps: [],
-                    props: {},
-                    binds: [],
-                    cacheEl: !aNode.directives.is
-                        && aNode.tagName && aNode.tagName.indexOf('-') < 0
-                        && !/^(template|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName)
-                };
+                aNode._ht = true;
+                aNode._i = 0; // hotspot: instance count
+                aNode._dp = []; // hotspot: dynamic props
+                aNode._xp = []; // hotspot: x props
+                aNode._pi = {}; // hotspot: props index
+                aNode._b = []; // hotspot: binds
+                aNode._ce = !aNode.directives.is // cache element
+                    && aNode.tagName && aNode.tagName.indexOf('-') < 0
+                    && !/^(template|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName);
 
 
                 // === analyse hotspot data: start
@@ -80,7 +79,7 @@ function preheatANode(aNode, componentInstance) {
                 });
 
                 each(aNode.props, function (prop) {
-                    aNode.hotspot.binds.push({
+                    aNode._b.push({
                         name: kebab2camel(prop.name),
                         expr: prop.noValue != null
                             ? {type: ExprType.BOOL, value: true}
@@ -107,7 +106,7 @@ function preheatANode(aNode, componentInstance) {
                                 && trackBy.type === ExprType.ACCESSOR
                                 && trackBy.paths[0].value === directive.item
                             ) {
-                                aNode.hotspot.getForKey = new Function(
+                                aNode._gfk = new Function( // hotspot: getForKey
                                     directive.item,
                                     'return ' + directive.trackByRaw
                                 );
@@ -128,14 +127,14 @@ function preheatANode(aNode, componentInstance) {
 
                 // === analyse hotspot props: start
                 each(aNode.props, function (prop, index) {
-                    aNode.hotspot.props[prop.name] = index;
+                    aNode._pi[prop.name] = index;
                     prop.handler = getPropHandler(aNode.tagName, prop.name);
 
                     if (prop.expr.value == null) {
                         if (prop.x) {
-                            aNode.hotspot.xProps.push(prop);
+                            aNode._xp.push(prop);
                         }
-                        aNode.hotspot.dynamicProps.push(prop);
+                        aNode._dp.push(prop);
                     }
                 });
 
@@ -151,8 +150,8 @@ function preheatANode(aNode, componentInstance) {
                         handler: getPropHandler(aNode.tagName, 'value')
                     };
                     aNode.props.push(valueProp);
-                    aNode.hotspot.dynamicProps.push(valueProp);
-                    aNode.hotspot.props.value = aNode.props.length - 1;
+                    aNode._dp.push(valueProp);
+                    aNode._pi.value = aNode.props.length - 1;
                 }
 
                 if (aNode.directives['if']) { // eslint-disable-line dot-notation
@@ -162,8 +161,15 @@ function preheatANode(aNode, componentInstance) {
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
                     aNode.hasRootNode = true;
                     aNode.Clazz = IfNode;
@@ -177,8 +183,15 @@ function preheatANode(aNode, componentInstance) {
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
                     aNode.hasRootNode = true;
                     aNode.Clazz = ForNode;
@@ -192,8 +205,15 @@ function preheatANode(aNode, componentInstance) {
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
                     aNode.hasRootNode = true;
                     aNode.Clazz = IsNode;
