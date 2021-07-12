@@ -79,7 +79,11 @@ function preheatANode(aNode, componentInstance) {
                     recordHotspotData(varItem.expr);
                 });
 
-                each(aNode.props, function (prop) {
+                var props = aNode.props;
+                var propsLen = props.length;
+
+                for (var i = 0; i < propsLen; i++) {
+                    var prop = props[i];
                     aNode._b.push({
                         name: kebab2camel(prop.name),
                         expr: prop.noValue != null
@@ -89,7 +93,7 @@ function preheatANode(aNode, componentInstance) {
                         noValue: prop.noValue
                     });
                     recordHotspotData(prop.expr);
-                });
+                }
 
                 for (var key in aNode.directives) {
                     /* istanbul ignore else  */
@@ -120,15 +124,16 @@ function preheatANode(aNode, componentInstance) {
                     analyseANodeHotspot(child);
                 });
 
-                each(aNode.children, function (child) {
-                    analyseANodeHotspot(child);
-                });
+                for (var i = 0, l = aNode.children.length; i < l; i++) {
+                    analyseANodeHotspot(aNode.children[i]);
+                }
                 // === analyse hotspot data: end
 
 
                 // === analyse hotspot props: start
-                each(aNode.props, function (prop, index) {
-                    aNode._pi[prop.name] = index;
+                for (var i = 0; i < propsLen; i++) {
+                    var prop = props[i];
+                    aNode._pi[prop.name] = i;
                     prop.handler = getPropHandler(aNode.tagName, prop.name);
 
                     if (prop.expr.value == null) {
@@ -137,7 +142,7 @@ function preheatANode(aNode, componentInstance) {
                         }
                         aNode._dp.push(prop);
                     }
-                });
+                }
 
                 // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
                 // 所以没有设置 value 时，默认把 option 的内容作为 value
@@ -152,13 +157,13 @@ function preheatANode(aNode, componentInstance) {
                     };
                     aNode.props.push(valueProp);
                     aNode._dp.push(valueProp);
-                    aNode._pi.value = aNode.props.length - 1;
+                    aNode._pi.value = props.length - 1;
                 }
 
                 if (aNode.directives['if']) { // eslint-disable-line dot-notation
                     aNode.ifRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
@@ -180,7 +185,7 @@ function preheatANode(aNode, componentInstance) {
                 if (aNode.directives['for']) { // eslint-disable-line dot-notation
                     aNode.forRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
@@ -202,7 +207,7 @@ function preheatANode(aNode, componentInstance) {
                 if (aNode.directives.is) {
                     aNode.isRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
