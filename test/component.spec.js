@@ -5168,7 +5168,7 @@ describe("Component", function () {
         myComponent.data.set('isShow', false);
 
         myComponent.nextTick(function () {
-            expect(myComponent.el.children.length).toBe(0);
+            expect(myComponent.el.getElementsByTagName('div').length).toBe(0);
             myComponent.dispose();
             document.body.removeChild(wrap);
             done();
@@ -5693,7 +5693,7 @@ describe("Component", function () {
 
         myComponent.data.set('type', 'h3');
         myComponent.nextTick(function () {
-            
+
             expect(wrap.firstChild.tagName).toBe('H3');
             expect(wrap.firstChild.innerHTML).toContain('cxtom');
 
