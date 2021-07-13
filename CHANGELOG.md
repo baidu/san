@@ -2,13 +2,14 @@
 ChangeLog
 ========
 
-3.10.6
+3.10.6 (2021-7-13)
 -------
 
 + 【优化】- s-is 支持 html 内置标签以及 fragment
-+ 【优化】- ANode preheat 时不再创建 HTMLElement 源节点
-+ 【优化】- 优化 ANode preheat 的结构与生成性能
++ 【优化】- 模板预热时不再创建 HTMLElement 源节点
++ 【优化】- 优化模板预热的结构与性能
 + 【优化】- nextTick 实现增加对 setImmediate 是否原生方法的判断
++ 【bug修复】- 忽略模板解析时尾部多余的空文本节点。该问题为 3.10.3 引入
 
 
 3.10.5 (2021-6-24)
