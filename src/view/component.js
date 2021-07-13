@@ -954,7 +954,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                 var props;
 
-                if (this.aNode._ce && this.aNode._i > 1) {
+                if (this.aNode._ce && this.aNode._i > 2) {
                     props = this.aNode._dp;
                     this.el = (this.aNode._el || preheatEl(this.aNode)).cloneNode(false);
                 }

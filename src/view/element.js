@@ -120,7 +120,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.el) {
             var props;
 
-            if (aNode._ce && aNode._i > 1) {
+            if (aNode._ce && aNode._i > 2) {
                 props = aNode._dp;
                 this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
             }
