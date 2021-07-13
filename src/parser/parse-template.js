@@ -305,7 +305,7 @@ function parseTemplate(source, options) {
         beforeLastIndex = walker.index;
     }
 
-    pushTextNode(walker.source.slice(beforeLastIndex));
+    pushTextNode(walker.source.slice(beforeLastIndex).replace(/^\s+$/, ''));
 
     return rootNode;
 
