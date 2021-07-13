@@ -6,6 +6,9 @@ ChangeLog
 -------
 
 + 【优化】- s-is 支持 html 内置标签以及 fragment
++ 【优化】- ANode preheat 时不再创建 HTMLElement 源节点
++ 【优化】- 优化 ANode preheat 的结构与生成性能
++ 【优化】- nextTick 实现增加对 setImmediate 是否原生方法的判断
 
 
 3.10.5 (2021-6-24)
