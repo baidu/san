@@ -190,7 +190,7 @@ function parseTemplate(source, options) {
                     integrateAttr(
                         aElement,
                         attrMatch[1],
-                        attrMatch[2] ? (attrMatch[4] || (attrMatch[5] == null ? attrMatch[6] : attrMatch[5])) : void(0),
+                        attrMatch[2] ? (attrMatch[5] || attrMatch[6] || attrMatch[4] || '') : void(0),
                         options
                     );
                 }
