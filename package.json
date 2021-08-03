@@ -22,8 +22,8 @@
     "report-cov": "cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "types": "types",
-  "main": "dist/san.dev.js",
-  "browser": "dist/san.dev.js",
+  "main": "dist/index.js",
+  "browser": "dist/index.js",
   "unpkg": "dist/san.min.js",
   "files": [
     "src",
