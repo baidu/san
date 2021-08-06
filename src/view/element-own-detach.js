@@ -36,14 +36,13 @@ function elementOwnDetach() {
                 transition.leave(this.el, function () {
                     me._leave();
                 });
+                return;
             }
             catch (e) {
                 var isComponent = this.nodeType === NodeType.CMPT;
                 var owner = isComponent ? this : this.owner;
                 errorHandler(e, owner, 'transition leave');
             }
-
-            return;
         }
     }
 

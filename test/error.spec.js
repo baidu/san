@@ -387,7 +387,6 @@ describe('error', function () {
 
             var args = spy.calls.first().args;
             expect(args[2]).toBe('transition leave');
-            console.log(args[1]);
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
