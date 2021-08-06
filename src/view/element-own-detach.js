@@ -7,6 +7,7 @@
  * @file 将元素从页面上移除
  */
 
+var NodeType = require('./node-type');
 var errorHandler = require('../util/handle-error');
 var elementGetTransition = require('./element-get-transition');
 
@@ -37,7 +38,9 @@ function elementOwnDetach() {
                 });
             }
             catch (e) {
-                errorHandler(e, this, 'transition leave');
+                var isComponent = this.nodeType === NodeType.CMPT;
+                var owner = isComponent ? this : this.owner;
+                errorHandler(e, owner, 'transition leave');
             }
 
             return;

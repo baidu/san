@@ -263,6 +263,141 @@ describe('error', function () {
         document.body.removeChild(wrap);
     });
 
+    it('transition creator', function (done) {
+        var spy = jasmine.createSpy();
+        var Child = san.defineComponent({
+            template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
+            initData() {
+                return {
+                    num: 0
+                };
+            },
+            transCreator: function () {
+                throw new Error('error');
+            }
+        });
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child><x-slot-child /></x-child></div>',
+            components: {
+                'x-child': Child
+            },
+            error: spy
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.children[0].data.set('num', 2);
+        san.nextTick(function () {
+            expect(spy).toHaveBeenCalled();
+
+            var args = spy.calls.first().args;
+            expect(args[2]).toBe('transition creator');
+            expect(args[1] instanceof Child).toBe(true);
+            expect(args[0] instanceof Error).toBe(true);
+            expect(args[0].message).toBe('error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it('transition enter', function (done) {
+        var spy = jasmine.createSpy();
+        var Child = san.defineComponent({
+            template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
+            initData() {
+                return {
+                    num: 0
+                };
+            },
+            transCreator: function () {
+                return {
+                    enter: function () {
+                        throw new Error('error');
+                    }
+                };
+            }
+        });
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child><x-slot-child /></x-child></div>',
+            components: {
+                'x-child': Child
+            },
+            error: spy
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.children[0].data.set('num', 2);
+        san.nextTick(function () {
+            expect(spy).toHaveBeenCalled();
+
+            var args = spy.calls.first().args;
+            expect(args[2]).toBe('transition enter');
+            expect(args[1] instanceof Child).toBe(true);
+            expect(args[0] instanceof Error).toBe(true);
+            expect(args[0].message).toBe('error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it('transition leave', function (done) {
+        var spy = jasmine.createSpy();
+        var Child = san.defineComponent({
+            template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
+            initData() {
+                return {
+                    num: 2
+                };
+            },
+            transCreator: function () {
+                return {
+                    leave: function () {
+                        throw new Error('error');
+                    }
+                };
+            }
+        });
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child><x-slot-child /></x-child></div>',
+            components: {
+                'x-child': Child
+            },
+            error: spy
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.children[0].data.set('num', 0);
+        san.nextTick(function () {
+            expect(spy).toHaveBeenCalled();
+
+            var args = spy.calls.first().args;
+            expect(args[2]).toBe('transition leave');
+            console.log(args[1]);
+            expect(args[1] instanceof Child).toBe(true);
+            expect(args[0] instanceof Error).toBe(true);
+            expect(args[0].message).toBe('error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it('slot children', function () {
         var spy = jasmine.createSpy();
         var slotChild = san.defineComponent({

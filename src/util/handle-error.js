@@ -10,10 +10,6 @@
 var warn = require('../util/warn');
 
 function errorHandler(e, instance, info) {
-    if (!instance) {
-        return;
-    }
-
     var current = instance;
     while (current) {
         var handler = current.error;
