@@ -19,7 +19,7 @@ module.exports = function(config) {
     files: [
       'test/lib/triggerEvent.js',
       'dist/san.dev.js',
-      'test/**/error.spec.js'
+      'test/**/*.spec.js'
     ],
 
 
