@@ -9,7 +9,6 @@
 
 var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
-var extend = require('../util/extend');
 var kebab2camel = require('../util/kebab2camel');
 var hotTags = require('../browser/hot-tags');
 var createEl = require('../browser/create-el');
@@ -34,18 +33,19 @@ function preheatANode(aNode, componentInstance) {
 
     function recordHotspotData(expr, notContentData) {
         var refs = analyseExprDataHotspot(expr);
+        var refsLen = refs.length;
 
-        if (refs.length) {
+        if (refsLen) {
             for (var i = 0, len = stack.length; i < len; i++) {
                 if (!notContentData || i !== len - 1) {
-                    var data = stack[i].hotspot.data;
+                    var data = stack[i]._d; // hotspot: data
                     if (!data) {
-                        data = stack[i].hotspot.data = {};
+                        data = stack[i]._d = {};
                     }
 
-                    each(refs, function (ref) {
-                        data[ref] = 1;
-                    });
+                    for (var j = 0; j < refsLen; j++) {
+                        data[refs[j]] = 1;
+                    }
                 }
             }
         }
@@ -53,31 +53,25 @@ function preheatANode(aNode, componentInstance) {
 
 
     function analyseANodeHotspot(aNode) {
-        if (!aNode.hotspot) {
+        if (!aNode._ht) {
             stack.push(aNode);
 
 
             if (aNode.textExpr) {
-                aNode.hotspot = {};
+                aNode._ht = true;
                 aNode.Clazz = TextNode;
                 recordHotspotData(aNode.textExpr);
             }
             else {
-                var sourceNode;
-                if (isBrowser && aNode.tagName
-                    && aNode.tagName.indexOf('-') < 0
-                    && !/^(template|slot|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName)
-                ) {
-                    sourceNode = createEl(aNode.tagName);
-                }
-
-                aNode.hotspot = {
-                    dynamicProps: [],
-                    xProps: [],
-                    props: {},
-                    binds: [],
-                    sourceNode: sourceNode
-                };
+                aNode._ht = true;
+                aNode._i = 0; // hotspot: instance count
+                aNode._dp = []; // hotspot: dynamic props
+                aNode._xp = []; // hotspot: x props
+                aNode._pi = {}; // hotspot: props index
+                aNode._b = []; // hotspot: binds
+                aNode._ce = !aNode.directives.is // cache element
+                    && aNode.tagName && aNode.tagName.indexOf('-') < 0
+                    && !/^(template|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName);
 
 
                 // === analyse hotspot data: start
@@ -85,8 +79,12 @@ function preheatANode(aNode, componentInstance) {
                     recordHotspotData(varItem.expr);
                 });
 
-                each(aNode.props, function (prop) {
-                    aNode.hotspot.binds.push({
+                var props = aNode.props;
+                var propsLen = props.length;
+
+                for (var i = 0; i < propsLen; i++) {
+                    var prop = props[i];
+                    aNode._b.push({
                         name: kebab2camel(prop.name),
                         expr: prop.noValue != null
                             ? {type: ExprType.BOOL, value: true}
@@ -95,7 +93,7 @@ function preheatANode(aNode, componentInstance) {
                         noValue: prop.noValue
                     });
                     recordHotspotData(prop.expr);
-                });
+                }
 
                 for (var key in aNode.directives) {
                     /* istanbul ignore else  */
@@ -113,7 +111,7 @@ function preheatANode(aNode, componentInstance) {
                                 && trackBy.type === ExprType.ACCESSOR
                                 && trackBy.paths[0].value === directive.item
                             ) {
-                                aNode.hotspot.getForKey = new Function(
+                                aNode._gfk = new Function( // hotspot: getForKey
                                     directive.item,
                                     'return ' + directive.trackByRaw
                                 );
@@ -126,29 +124,25 @@ function preheatANode(aNode, componentInstance) {
                     analyseANodeHotspot(child);
                 });
 
-                each(aNode.children, function (child) {
-                    analyseANodeHotspot(child);
-                });
+                for (var i = 0, l = aNode.children.length; i < l; i++) {
+                    analyseANodeHotspot(aNode.children[i]);
+                }
                 // === analyse hotspot data: end
 
 
                 // === analyse hotspot props: start
-                each(aNode.props, function (prop, index) {
-                    aNode.hotspot.props[prop.name] = index;
+                for (var i = 0; i < propsLen; i++) {
+                    var prop = props[i];
+                    aNode._pi[prop.name] = i;
                     prop.handler = getPropHandler(aNode.tagName, prop.name);
 
-                    if (prop.expr.value != null) {
-                        if (sourceNode) {
-                            prop.handler(sourceNode, prop.expr.value, prop.name, aNode);
-                        }
-                    }
-                    else {
+                    if (prop.expr.value == null) {
                         if (prop.x) {
-                            aNode.hotspot.xProps.push(prop);
+                            aNode._xp.push(prop);
                         }
-                        aNode.hotspot.dynamicProps.push(prop);
+                        aNode._dp.push(prop);
                     }
-                });
+                }
 
                 // ie 下，如果 option 没有 value 属性，select.value = xx 操作不会选中 option
                 // 所以没有设置 value 时，默认把 option 的内容作为 value
@@ -162,21 +156,28 @@ function preheatANode(aNode, componentInstance) {
                         handler: getPropHandler(aNode.tagName, 'value')
                     };
                     aNode.props.push(valueProp);
-                    aNode.hotspot.dynamicProps.push(valueProp);
-                    aNode.hotspot.props.value = aNode.props.length - 1;
+                    aNode._dp.push(valueProp);
+                    aNode._pi.value = props.length - 1;
                 }
 
                 if (aNode.directives['if']) { // eslint-disable-line dot-notation
                     aNode.ifRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = IfNode;
                     aNode = aNode.ifRinsed;
                 }
@@ -184,14 +185,21 @@ function preheatANode(aNode, componentInstance) {
                 if (aNode.directives['for']) { // eslint-disable-line dot-notation
                     aNode.forRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = ForNode;
                     aNode = aNode.forRinsed;
                 }
@@ -199,14 +207,21 @@ function preheatANode(aNode, componentInstance) {
                 if (aNode.directives.is) {
                     aNode.isRinsed = {
                         children: aNode.children,
-                        props: aNode.props,
+                        props: props,
                         events: aNode.events,
                         tagName: aNode.tagName,
                         vars: aNode.vars,
-                        hotspot: aNode.hotspot,
-                        directives: aNode.directives
+                        directives: aNode.directives,
+                        _ht: true,
+                        _i: 0,
+                        _d: aNode._d,
+                        _dp: aNode._dp,
+                        _xp: aNode._xp,
+                        _pi: aNode._pi,
+                        _b: aNode._b,
+                        _ce: aNode._ce
                     };
-                    aNode.hotspot.hasRootNode = true;
+                    aNode.hasRootNode = true;
                     aNode.Clazz = IsNode;
                     aNode = aNode.isRinsed;
                 }
@@ -218,16 +233,14 @@ function preheatANode(aNode, componentInstance) {
 
                     case 'template':
                     case 'fragment':
-                        aNode.hotspot.hasRootNode = true;
+                        aNode.hasRootNode = true;
                         aNode.Clazz = TemplateNode;
                         break;
 
                     default:
-                        if (hotTags[aNode.tagName]) {
-                            if (!aNode.directives.is
-                                && (!componentInstance || !componentInstance.components[aNode.tagName])
-                            ) {
-                                aNode.Clazz = Element;
+                        if (!aNode.directives.is && hotTags[aNode.tagName]) {
+                            if (!componentInstance || !componentInstance.components[aNode.tagName]) {
+                                aNode.elem = true;
                             }
 
                             // #[begin] error

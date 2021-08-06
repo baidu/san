@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A fast, portable, flexible JavaScript component framework",
-  "version": "3.10.4",
+  "version": "3.10.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/baidu/san.git"
@@ -22,8 +22,8 @@
     "report-cov": "cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "types": "types",
-  "main": "dist/san.dev.js",
-  "browser": "dist/san.dev.js",
+  "main": "dist/index.js",
+  "browser": "dist/index.js",
   "unpkg": "dist/san.min.js",
   "files": [
     "src",
@@ -54,7 +54,7 @@
     "mustache": "^3.0.1",
     "opener": "^1.5.1",
     "san-anode-cases": "^3.10.1",
-    "san-html-cases": "^3.10.9",
+    "san-html-cases": "^3.10.14",
     "source-map": "^0.7.3",
     "swig-templates": "^2.0.3",
     "uglify-js": "^2.8.22",

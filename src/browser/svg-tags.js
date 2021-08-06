@@ -44,11 +44,5 @@ var svgTags = splitStr2Obj(''
     + 'clipPath,cursor,filter,foreignObject,view'
 );
 
-// 把小写转驼峰：HTML中的svg标签不区分大小写，但通过document.createElementNS创建需要区分
-for (var tag in svgTags) {
-    if (/[A-Z]/.test(tag)) {
-        svgTags[tag.toLowerCase()] = svgTags[tag];
-    }
-}
 
 exports = module.exports = svgTags;

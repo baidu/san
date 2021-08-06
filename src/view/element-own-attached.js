@@ -134,7 +134,7 @@ function elementOwnAttached() {
     /* eslint-disable no-redeclare */
 
     // 处理自身变化时双向绑定的逻辑
-    var xProps = this.aNode.hotspot.xProps;
+    var xProps = this.aNode._xp;
     for (var i = 0, l = xProps.length; i < l; i++) {
         var xProp = xProps[i];
 

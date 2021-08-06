@@ -52,6 +52,40 @@ describe("Element", function () {
         document.body.removeChild(wrap);
     });
 
+    it("single quotes wrapped attribute", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title=\'san\'>test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans[0].title).toBe('san');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("no quote wrapped attribute", function () {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title=san>test</span></a>'
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var spans = wrap.getElementsByTagName('span');
+        expect(spans[0].title).toBe('san');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("line-break attribute", function () {
         var MyComponent = san.defineComponent({
             template: '<a title="line1\r\nline2"><span title="line1\r\nline2">test</span><span class="test2">test2</span></a>'

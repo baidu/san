@@ -283,7 +283,7 @@ ForNode.prototype._update = function (changes) {
             for (var cIndex = 0; !isListChanged && cIndex < changes.length; cIndex++) {
                 isListChanged = changeExprCompare(changes[cIndex].expr, this.param.value, this.scope);
             }
-            var dataHotspot = this.aNode.hotspot.data;
+            var dataHotspot = this.aNode._d;
             if (isListChanged || dataHotspot && changesIsInDataRef(changes, dataHotspot)) {
                 var me = this;
                 this._disposeChildren(null, function () {
@@ -404,7 +404,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
     var childrenNeedUpdate = {};
 
     var newLen = newList.length;
-    var getItemKey = this.aNode.hotspot.getForKey;
+    var getItemKey = this.aNode._gfk;
 
     /* eslint-disable no-redeclare */
     for (var cIndex = 0; cIndex < changes.length; cIndex++) {
@@ -840,7 +840,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
             }
         };
 
-        if (changesIsInDataRef([lengthChange], this.aNode.hotspot.data)) {
+        if (changesIsInDataRef([lengthChange], this.aNode._d)) {
             pushToChildrenChanges(lengthChange);
         }
     }

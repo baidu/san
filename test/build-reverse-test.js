@@ -76,6 +76,10 @@ function buildFile(filePath) {
                                 return '';
                             }
 
+                            if (/^\s*console.log/.test(line)) {
+                                return '//' + line;
+                            }
+
                             return line;
                         })
                         .join('\n');
@@ -83,7 +87,7 @@ function buildFile(filePath) {
                     break;
 
                 case 'spec.js':
-                    specTpl = fs.readFileSync(path.resolve(abFilePath), 'UTF-8');
+                    specTpl = fs.readFileSync(path.resolve(abFilePath), 'UTF-8').replace('console.log', '//console.log');
                     break;
 
                 case 'data.js':

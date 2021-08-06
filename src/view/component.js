@@ -27,6 +27,7 @@ var un = require('../browser/un');
 var defineComponent = require('./define-component');
 var ComponentLoader = require('./component-loader');
 var createNode = require('./create-node');
+var preheatEl = require('./preheat-el');
 var parseComponentTemplate = require('./parse-component-template');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
@@ -155,6 +156,7 @@ function Component(options) { // eslint-disable-line
         : options.source;
 
     preheatANode(this.source);
+    proto.aNode._i++;
 
 
     // #[begin] reverse
@@ -219,7 +221,7 @@ function Component(options) { // eslint-disable-line
         }
 
         this.tagName = this.tagName || this.source.tagName;
-        this.binds = this.source.hotspot.binds;
+        this.binds = this.source._b;
 
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
@@ -292,7 +294,7 @@ function Component(options) { // eslint-disable-line
     if (this.el || reverseWalker) {
         var RootComponentType = this.components[this.aNode.tagName];
 
-        if (reverseWalker && (this.aNode.hotspot.hasRootNode || RootComponentType)) {
+        if (reverseWalker && (this.aNode.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
@@ -657,7 +659,7 @@ Component.prototype._update = function (changes) {
                 this.owner,
                 changes,
                 function (name, value) {
-                    if (name in me.source.hotspot.props) {
+                    if (name in me.source._pi) {
                         return;
                     }
 
@@ -751,7 +753,7 @@ Component.prototype._update = function (changes) {
             this,
             dataChanges,
             function (name, value) {
-                if (me._rootNode || (name in me.aNode.hotspot.props)) {
+                if (me._rootNode || (name in me.aNode._pi)) {
                     return;
                 }
 
@@ -765,24 +767,24 @@ Component.prototype._update = function (changes) {
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
-            var dynamicProps = this.aNode.hotspot.dynamicProps;
-                for (var i = 0; i < dynamicProps.length; i++) {
-                    var prop = dynamicProps[i];
+            var dynamicProps = this.aNode._dp;
+            for (var i = 0; i < dynamicProps.length; i++) {
+                var prop = dynamicProps[i];
 
-                    for (var j = 0; j < dataChanges.length; j++) {
-                        var change = dataChanges[j];
-                        if (changeExprCompare(change.expr, prop.expr, this.data)
-                            || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
-                        ) {
-                            prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
-                            break;
-                        }
+                for (var j = 0; j < dataChanges.length; j++) {
+                    var change = dataChanges[j];
+                    if (changeExprCompare(change.expr, prop.expr, this.data)
+                        || prop.hintExpr && changeExprCompare(change.expr, prop.hintExpr, this.data)
+                    ) {
+                        prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
+                        break;
                     }
                 }
+            }
 
-                for (var i = 0; i < this.children.length; i++) {
-                    this.children[i]._update(dataChanges);
-                }
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i]._update(dataChanges);
+            }
         }
 
         if (needReloadForSlot) {
@@ -935,7 +937,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         // #[end]
 
 
-        if (this.aNode.hotspot.hasRootNode || this.components[this.aNode.tagName]) {
+        if (this.aNode.hasRootNode || this.components[this.aNode.tagName]) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
             // #[end]
@@ -950,14 +952,14 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                 this._toPhase('beforeCreate');
                 // #[end]
 
-                var sourceNode = this.aNode.hotspot.sourceNode;
-                var props = this.aNode.props;
+                var props;
 
-                if (sourceNode) {
-                    this.el = sourceNode.cloneNode(false);
-                    props = this.aNode.hotspot.dynamicProps;
+                if (this.aNode._ce && this.aNode._i > 2) {
+                    props = this.aNode._dp;
+                    this.el = (this.aNode._el || preheatEl(this.aNode)).cloneNode(false);
                 }
                 else {
+                    props = this.aNode.props;
                     this.el = createEl(this.tagName);
                 }
 

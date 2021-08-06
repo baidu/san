@@ -39,6 +39,14 @@ var nextHandler;
 var isNativePromise = typeof Promise === 'function' && /native code/.test(Promise);
 
 /**
+ * 浏览器是否支持原生setImmediate
+ *
+ * @inner
+ * @type {boolean}
+ */
+var isNativeSetImmediate = typeof setImmediate === 'function' && /native code/.test(setImmediate);
+
+/**
  * 在下一个时间周期运行任务
  *
  * @inner
@@ -67,7 +75,7 @@ function nextTick(fn, thisArg) {
 
     // 非标准方法，但是此方法非常吻合要求。
     /* istanbul ignore next */
-    if (typeof setImmediate === 'function') {
+    if (isNativeSetImmediate) {
         setImmediate(nextHandler);
     }
     // 用MessageChannel去做setImmediate的polyfill

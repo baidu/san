@@ -19,6 +19,7 @@ var reverseElementChildren = require('./reverse-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
 var createNode = require('./create-node');
+var preheatEl = require('./preheat-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementOwnOnEl = require('./element-own-on-el');
@@ -36,9 +37,10 @@ var getNodePath = require('./get-node-path');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
+ * @param {string} tagName 元素标签名
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function Element(aNode, parent, scope, owner, reverseWalker) {
+function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -51,7 +53,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
         ? parent
         : parent.parentComponent;
 
-    this.tagName = aNode.tagName;
+    this.tagName = tagName || aNode.tagName;
 
     // #[begin] allua
     // ie8- 不支持innerHTML输出自定义标签
@@ -61,6 +63,7 @@ function Element(aNode, parent, scope, owner, reverseWalker) {
     }
     // #[end]
 
+    aNode._i++;
     this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
     this.lifeCycle = LifeCycle.inited;
 
@@ -112,15 +115,17 @@ Element.prototype.nodeType = NodeType.ELEM;
  */
 Element.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
-        if (!this.el) {
-            var sourceNode = this.aNode.hotspot.sourceNode;
-            var props = this.aNode.props;
+        var aNode = this.aNode;
 
-            if (sourceNode) {
-                this.el = sourceNode.cloneNode(false);
-                props = this.aNode.hotspot.dynamicProps;
+        if (!this.el) {
+            var props;
+
+            if (aNode._ce && aNode._i > 2) {
+                props = aNode._dp;
+                this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
             }
             else {
+                props = aNode.props;
                 this.el = createEl(this.tagName);
             }
 
@@ -151,7 +156,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         insertBefore(this.el, parentEl, beforeEl);
 
         if (!this._contentReady) {
-            var htmlDirective = this.aNode.directives.html;
+            var htmlDirective = aNode.directives.html;
 
             if (htmlDirective) {
                 // #[begin] error
@@ -161,8 +166,8 @@ Element.prototype.attach = function (parentEl, beforeEl) {
                 this.el.innerHTML = evalExpr(htmlDirective.value, this.scope, this.owner);
             }
             else {
-                for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                    var childANode = this.aNode.children[i];
+                for (var i = 0, l = aNode.children.length; i < l; i++) {
+                    var childANode = aNode.children[i];
                     var child = childANode.Clazz
                         ? new childANode.Clazz(childANode, this, this.scope, this.owner)
                         : createNode(childANode, this, this.scope, this.owner);
@@ -232,7 +237,7 @@ Element.prototype._leave = function () {
  * @param {Array} changes 数据变化信息
  */
 Element.prototype._update = function (changes) {
-    var dataHotspot = this.aNode.hotspot.data;
+    var dataHotspot = this.aNode._d;
     if (dataHotspot && changesIsInDataRef(changes, dataHotspot)) {
 
         // update s-bind
@@ -244,7 +249,7 @@ Element.prototype._update = function (changes) {
             this.owner,
             changes,
             function (name, value) {
-                if (name in me.aNode.hotspot.props) {
+                if (name in me.aNode._pi) {
                     return;
                 }
 
@@ -253,7 +258,7 @@ Element.prototype._update = function (changes) {
         );
 
         // update prop
-        var dynamicProps = this.aNode.hotspot.dynamicProps;
+        var dynamicProps = this.aNode._dp;
         for (var i = 0, l = dynamicProps.length; i < l; i++) {
             var prop = dynamicProps[i];
             var propName = prop.name;

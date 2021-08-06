@@ -7,8 +7,8 @@
  * @file 创建节点的工厂方法
  */
 
-var evalExpr = require('../runtime/eval-expr');
 var Element = require('./element');
+var TemplateNode = require('./template-node');
 var AsyncComponent = require('./async-component');
 
 
@@ -22,6 +22,10 @@ var AsyncComponent = require('./async-component');
  * @return {Node}
  */
 function createNode(aNode, parent, scope, owner, componentName) {
+    if (aNode.elem) {
+        return new Element(aNode, parent, scope, owner, componentName);
+    }
+
     if (aNode.Clazz) {
         return new aNode.Clazz(aNode, parent, scope, owner);
     }
@@ -44,8 +48,18 @@ function createNode(aNode, parent, scope, owner, componentName) {
             }, ComponentOrLoader);
     }
 
-    aNode.Clazz = Element;
-    return new Element(aNode, parent, scope, owner);
+    if (aNode.directives.is) {
+        switch (componentName) {
+            case 'fragment':
+            case 'template':
+                    return new TemplateNode(aNode, parent, scope, owner);
+        }
+    }
+    else {
+        aNode.elem = true;
+    }
+
+    return new Element(aNode, parent, scope, owner, componentName);
 }
 
 exports = module.exports = createNode;
