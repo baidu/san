@@ -277,7 +277,7 @@ describe('error', function () {
             }
         });
         var MyComponent = san.defineComponent({
-            template: '<div><x-child><x-slot-child /></x-child></div>',
+            template: '<div><x-child></x-child></div>',
             components: {
                 'x-child': Child
             },
@@ -323,7 +323,7 @@ describe('error', function () {
             }
         });
         var MyComponent = san.defineComponent({
-            template: '<div><x-child><x-slot-child /></x-child></div>',
+            template: '<div><x-child></x-child></div>',
             components: {
                 'x-child': Child
             },
@@ -369,7 +369,111 @@ describe('error', function () {
             }
         });
         var MyComponent = san.defineComponent({
-            template: '<div><x-child><x-slot-child /></x-child></div>',
+            template: '<div><x-child></x-child></div>',
+            components: {
+                'x-child': Child
+            },
+            error: spy
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.children[0].data.set('num', 0);
+        san.nextTick(function () {
+            expect(spy).toHaveBeenCalled();
+
+            var args = spy.calls.first().args;
+            expect(args[2]).toBe('transition leave');
+            expect(args[1] instanceof Child).toBe(true);
+            expect(args[0] instanceof Error).toBe(true);
+            expect(args[0].message).toBe('error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it('transition enter component', function (done) {
+        var spy = jasmine.createSpy();
+        var subChild = san.defineComponent({
+            template: '<span></span>'
+        });
+        var Child = san.defineComponent({
+            template: '<h1><sub-child s-if="num > 1" s-transition="transCreator">test</sub-child></h1>',
+            initData() {
+                return {
+                    num: 2
+                };
+            },
+            transCreator: function () {
+                return {
+                    enter: function () {
+                        throw new Error('error');
+                    }
+                };
+            },
+            components: {
+                'sub-child': subChild
+            },
+        });
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child></x-child></div>',
+            components: {
+                'x-child': Child
+            },
+            error: spy
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        myComponent.children[0].data.set('num', 0);
+        san.nextTick(function () {
+            expect(spy).toHaveBeenCalled();
+
+            var args = spy.calls.first().args;
+            expect(args[2]).toBe('transition enter');
+            expect(args[1] instanceof Child).toBe(true);
+            expect(args[0] instanceof Error).toBe(true);
+            expect(args[0].message).toBe('error');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it('transition leave component', function (done) {
+        var spy = jasmine.createSpy();
+        var subChild = san.defineComponent({
+            template: '<span></span>'
+        });
+        var Child = san.defineComponent({
+            template: '<h1><sub-child s-if="num > 1" s-transition="transCreator">test</sub-child></h1>',
+            initData() {
+                return {
+                    num: 2
+                };
+            },
+            transCreator: function () {
+                return {
+                    leave: function () {
+                        throw new Error('error');
+                    }
+                };
+            },
+            components: {
+                'sub-child': subChild
+            },
+        });
+        var MyComponent = san.defineComponent({
+            template: '<div><x-child></x-child></div>',
             components: {
                 'x-child': Child
             },

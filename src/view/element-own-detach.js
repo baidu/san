@@ -40,7 +40,7 @@ function elementOwnDetach() {
             }
             catch (e) {
                 var isComponent = this.nodeType === NodeType.CMPT;
-                var owner = isComponent ? this : this.owner;
+                var owner = isComponent ? this.parentComponent : this.owner;
                 errorHandler(e, owner, 'transition leave');
             }
         }

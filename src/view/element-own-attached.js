@@ -221,7 +221,7 @@ function elementOwnAttached() {
             transition.enter(this.el, empty);
         }
         catch (e) {
-            errorHandler(e, owner, 'transition enter');
+            errorHandler(e, isComponent ? owner.parentComponent : owner, 'transition enter');
         }
     }
 }
