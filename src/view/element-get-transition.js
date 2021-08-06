@@ -9,6 +9,7 @@
 
 var evalArgs = require('../runtime/eval-args');
 var findMethod = require('../runtime/find-method');
+var errorHandler = require('../util/handle-error');
 var NodeType = require('./node-type');
 
 /**
@@ -36,10 +37,15 @@ function elementGetTransition(element) {
         transition = findMethod(owner, directive.value.name);
 
         if (typeof transition === 'function') {
-            transition = transition.apply(
-                owner,
-                evalArgs(directive.value.args, element.scope, owner)
-            );
+            try {
+                transition = transition.apply(
+                    owner,
+                    evalArgs(directive.value.args, element.scope, owner)
+                );
+            }
+            catch (e) {
+                errorHandler(e, owner, 'transition creator')
+            }
         }
     }
 

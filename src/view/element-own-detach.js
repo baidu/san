@@ -7,6 +7,7 @@
  * @file 将元素从页面上移除
  */
 
+var errorHandler = require('../util/handle-error');
 var elementGetTransition = require('./element-get-transition');
 
 /**
@@ -30,9 +31,14 @@ function elementOwnDetach() {
             }
 
             var me = this;
-            transition.leave(this.el, function () {
-                me._leave();
-            });
+            try {
+                transition.leave(this.el, function () {
+                    me._leave();
+                });
+            }
+            catch (e) {
+                errorHandler(e, this, 'transition leave');
+            }
 
             return;
         }
