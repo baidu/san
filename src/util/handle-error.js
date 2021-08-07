@@ -7,24 +7,20 @@
  * @file 处理组件异常
  */
 
-var warn = require('../util/warn');
 
-function errorHandler(e, instance, info) {
-    var current = instance;
+function handleError(e, component, info) {
+    var current = component;
+
     while (current) {
-        var handler = current.error;
-        if (typeof handler === 'function') {
-            handler.call(current, e, instance, info);
+        if (typeof current.error === 'function') {
+            current.error(e, component, info);
             return;
         }
+
         current = current.parentComponent
     }
-
-    // #[begin] error
-    warn('Error in ' + instance.tagName + ' ' + info + ': ' + e.toString())
-    // #[end]
 
     throw e;
 }
 
-exports = module.exports = errorHandler;
+exports = module.exports = handleError;

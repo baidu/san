@@ -15,7 +15,7 @@ var NodeType = require('./node-type');
 var elementGetTransition = require('./element-get-transition');
 var getEventListener = require('./get-event-listener');
 var warnEventListenMethod = require('./warn-event-listen-method');
-const errorHandler = require('../util/handle-error');
+const handleError = require('../util/handle-error');
 
 /**
  * 双绑输入框CompositionEnd事件监听函数
@@ -221,7 +221,7 @@ function elementOwnAttached() {
             transition.enter(this.el, empty);
         }
         catch (e) {
-            errorHandler(e, isComponent ? owner.parentComponent : owner, 'transition enter');
+            handleError(e, isComponent ? owner.parentComponent : owner, 'transitionEnter');
         }
     }
 }

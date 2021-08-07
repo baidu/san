@@ -24,7 +24,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('attached hook');
+        expect(args[2]).toBe('hook:attached');
         expect(args[1] instanceof Child).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -94,7 +94,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('message computed');
+        expect(args[2]).toBe('computed:message');
         expect(args[1] instanceof Child).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -136,7 +136,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('message watch handler');
+        expect(args[2]).toBe('watch:message');
         expect(args[1] instanceof Child).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -174,7 +174,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('hello message handler');
+        expect(args[2]).toBe('message:hello');
         expect(args[1] instanceof MyComponent).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -214,7 +214,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('add filter');
+        expect(args[2]).toBe('filter:add');
         expect(args[1] instanceof Child).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -254,7 +254,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('ready event listener');
+        expect(args[2]).toBe('event:ready');
         expect(args[1] instanceof Child).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');
@@ -294,7 +294,7 @@ describe('error', function () {
             expect(spy).toHaveBeenCalled();
 
             var args = spy.calls.first().args;
-            expect(args[2]).toBe('transition creator');
+            expect(args[2]).toBe('transitionCreate');
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
@@ -340,7 +340,7 @@ describe('error', function () {
             expect(spy).toHaveBeenCalled();
 
             var args = spy.calls.first().args;
-            expect(args[2]).toBe('transition enter');
+            expect(args[2]).toBe('transitionEnter');
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
@@ -386,7 +386,7 @@ describe('error', function () {
             expect(spy).toHaveBeenCalled();
 
             var args = spy.calls.first().args;
-            expect(args[2]).toBe('transition leave');
+            expect(args[2]).toBe('transitionLeave');
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
@@ -438,7 +438,7 @@ describe('error', function () {
             expect(spy).toHaveBeenCalled();
 
             var args = spy.calls.first().args;
-            expect(args[2]).toBe('transition enter');
+            expect(args[2]).toBe('transitionEnter');
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
@@ -490,7 +490,7 @@ describe('error', function () {
             expect(spy).toHaveBeenCalled();
 
             var args = spy.calls.first().args;
-            expect(args[2]).toBe('transition leave');
+            expect(args[2]).toBe('transitionLeave');
             expect(args[1] instanceof Child).toBe(true);
             expect(args[0] instanceof Error).toBe(true);
             expect(args[0].message).toBe('error');
@@ -529,7 +529,7 @@ describe('error', function () {
         expect(spy).toHaveBeenCalled();
 
         var args = spy.calls.first().args;
-        expect(args[2]).toBe('attached hook');
+        expect(args[2]).toBe('hook:attached');
         expect(args[1] instanceof slotChild).toBe(true);
         expect(args[0] instanceof Error).toBe(true);
         expect(args[0].message).toBe('error');

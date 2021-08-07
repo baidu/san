@@ -46,7 +46,7 @@ var warnEventListenMethod = require('./warn-event-listen-method');
 var elementDisposeChildren = require('./element-dispose-children');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
-var errorHandler = require('../util/handle-error');
+var handleError = require('../util/handle-error');
 
 
 
@@ -236,15 +236,14 @@ function Component(options) { // eslint-disable-line
     // #[end]
 
     // init data
-    var initDataResult;
+    var initData;
     try {
-        initDataResult = typeof this.initData === 'function' && this.initData() || {};
+        initData = typeof this.initData === 'function' && this.initData();
     }
     catch (e) {
-        initDataResult = {};
-        errorHandler(e, this, 'initData');
+        handleError(e, this, 'initData');
     }
-    var initData = extend(initDataResult, options.data || this._srcSbindData);
+    initData = extend(initData || {}, options.data || this._srcSbindData);
 
     if (this.binds && this.scope) {
         for (var i = 0, l = this.binds.length; i < l; i++) {
@@ -403,7 +402,7 @@ Component.prototype._toPhase = function (name) {
                 this[name]();
             }
             catch (e) {
-                errorHandler(e, this, name + ' hook');
+                handleError(e, this, 'hook:' + name);
             }
         }
 
@@ -473,7 +472,7 @@ Component.prototype.fire = function (name, event) {
             listener.fn.call(me, event);
         }
         catch (e) {
-            errorHandler(e, me, name + ' event listener')
+            handleError(e, me, 'event:' + name);
         }
     });
 };
@@ -520,7 +519,7 @@ Component.prototype._calcComputed = function (computedExpr) {
         this.data.set(computedExpr, result);
     }
     catch (e) {
-        errorHandler(e, this, computedExpr + ' computed');
+        handleError(e, this, 'computed:' + computedExpr);
     }
 };
 
@@ -553,7 +552,7 @@ Component.prototype.dispatch = function (name, value) {
                 );
             }
             catch (e) {
-                errorHandler(e, parentComponent, (name || '*') + ' message handler');
+                handleError(e, parentComponent, 'message:' + (name || '*'));
             }
             return;
         }
@@ -946,7 +945,7 @@ Component.prototype.watch = function (dataName, listener) {
                 listener.call(this, evalExpr(dataExpr, this.data, this), change);
             }
             catch (e) {
-                errorHandler(e, this, dataName + ' watch handler');
+                handleError(e, this, 'watch:' + dataName);
             }
         }
     }, this));

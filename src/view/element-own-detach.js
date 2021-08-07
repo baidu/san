@@ -8,7 +8,7 @@
  */
 
 var NodeType = require('./node-type');
-var errorHandler = require('../util/handle-error');
+var handleError = require('../util/handle-error');
 var elementGetTransition = require('./element-get-transition');
 
 /**
@@ -39,9 +39,11 @@ function elementOwnDetach() {
                 return;
             }
             catch (e) {
-                var isComponent = this.nodeType === NodeType.CMPT;
-                var owner = isComponent ? this.parentComponent : this.owner;
-                errorHandler(e, owner, 'transition leave');
+                handleError(
+                    e, 
+                    this.nodeType === NodeType.CMPT ? this.parentComponent : this.owner, 
+                    'transitionLeave'
+                );
             }
         }
     }

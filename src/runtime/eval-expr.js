@@ -9,7 +9,7 @@
 
 var ExprType = require('../parser/expr-type');
 var extend = require('../util/extend');
-var errorHandler = require('../util/handle-error');
+var handleError = require('../util/handle-error');
 var DEFAULT_FILTERS = require('./default-filters');
 var evalArgs = require('./eval-args');
 
@@ -189,7 +189,7 @@ function evalExpr(expr, data, owner) {
                                 );
                             }
                             catch (e) {
-                                errorHandler(e, owner, filterName + ' filter');
+                                handleError(e, owner, 'filter:' + filterName);
                             }
                     }
                 }

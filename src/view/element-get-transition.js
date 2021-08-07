@@ -9,7 +9,7 @@
 
 var evalArgs = require('../runtime/eval-args');
 var findMethod = require('../runtime/find-method');
-var errorHandler = require('../util/handle-error');
+var handleError = require('../util/handle-error');
 var NodeType = require('./node-type');
 
 /**
@@ -44,7 +44,7 @@ function elementGetTransition(element) {
                 );
             }
             catch (e) {
-                errorHandler(e, owner, 'transition creator')
+                handleError(e, owner, 'transitionCreate')
             }
         }
     }
