@@ -46,6 +46,7 @@ var warnEventListenMethod = require('./warn-event-listen-method');
 var elementDisposeChildren = require('./element-dispose-children');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
+var errorHandler = require('../util/handle-error');
 
 
 
@@ -235,10 +236,15 @@ function Component(options) { // eslint-disable-line
     // #[end]
 
     // init data
-    var initData = extend(
-        typeof this.initData === 'function' && this.initData() || {},
-        options.data || this._srcSbindData
-    );
+    var initDataResult;
+    try {
+        initDataResult = typeof this.initData === 'function' && this.initData() || {};
+    }
+    catch (e) {
+        initDataResult = {};
+        errorHandler(e, this, 'initData');
+    }
+    var initData = extend(initDataResult, options.data || this._srcSbindData);
 
     if (this.binds && this.scope) {
         for (var i = 0, l = this.binds.length; i < l; i++) {
@@ -393,7 +399,12 @@ Component.prototype._toPhase = function (name) {
     if (!this.lifeCycle[name]) {
         this.lifeCycle = LifeCycle[name] || this.lifeCycle;
         if (typeof this[name] === 'function') {
-            this[name]();
+            try {
+                this[name]();
+            }
+            catch (e) {
+                errorHandler(e, this, name + ' hook');
+            }
         }
 
         this._afterLife = this.lifeCycle;
@@ -458,7 +469,12 @@ Component.prototype.fire = function (name, event) {
     // #[end]
 
     each(this.listeners[name], function (listener) {
-        listener.fn.call(me, event);
+        try {
+            listener.fn.call(me, event);
+        }
+        catch (e) {
+            errorHandler(e, me, name + ' event listener')
+        }
     });
 };
 
@@ -475,31 +491,37 @@ Component.prototype._calcComputed = function (computedExpr) {
     }
 
     var me = this;
-    this.data.set(computedExpr, this.computed[computedExpr].call({
-        data: {
-            get: function (expr) {
-                // #[begin] error
-                if (!expr) {
-                    throw new Error('[SAN ERROR] call get method in computed need argument');
-                }
-                // #[end]
+    try {
+        var result = this.computed[computedExpr].call({
+            data: {
+                get: function (expr) {
+                    // #[begin] error
+                    if (!expr) {
+                        throw new Error('[SAN ERROR] call get method in computed need argument');
+                    }
+                    // #[end]
 
-                if (!computedDeps[expr]) {
-                    computedDeps[expr] = 1;
+                    if (!computedDeps[expr]) {
+                        computedDeps[expr] = 1;
 
-                    if (me.computed[expr] && !me.computedDeps[expr]) {
-                        me._calcComputed(expr);
+                        if (me.computed[expr] && !me.computedDeps[expr]) {
+                            me._calcComputed(expr);
+                        }
+
+                        me.watch(expr, function () {
+                            me._calcComputed(computedExpr);
+                        });
                     }
 
-                    me.watch(expr, function () {
-                        me._calcComputed(computedExpr);
-                    });
+                    return me.data.get(expr);
                 }
-
-                return me.data.get(expr);
             }
-        }
-    }));
+        });
+        this.data.set(computedExpr, result);
+    }
+    catch (e) {
+        errorHandler(e, this, computedExpr + ' computed');
+    }
 };
 
 /**
@@ -524,10 +546,15 @@ Component.prototype.dispatch = function (name, value) {
             });
             // #[end]
 
-            handler.call(
-                parentComponent,
-                {target: this, value: value, name: name}
-            );
+            try {
+                handler.call(
+                    parentComponent,
+                    {target: this, value: value, name: name}
+                );
+            }
+            catch (e) {
+                errorHandler(e, parentComponent, (name || '*') + ' message handler');
+            }
             return;
         }
 
@@ -915,7 +942,12 @@ Component.prototype.watch = function (dataName, listener) {
 
     this.data.listen(bind(function (change) {
         if (changeExprCompare(change.expr, dataExpr, this.data)) {
-            listener.call(this, evalExpr(dataExpr, this.data, this), change);
+            try {
+                listener.call(this, evalExpr(dataExpr, this.data, this), change);
+            }
+            catch (e) {
+                errorHandler(e, this, dataName + ' watch handler');
+            }
         }
     }, this));
 };
