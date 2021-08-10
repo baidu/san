@@ -491,7 +491,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     var me = this;
     try {
-        var result = this.computed[computedExpr].call({
+        var result = (this.computed[computedExpr].get || this.computed[computedExpr]).call({
             data: {
                 get: function (expr) {
                     // #[begin] error
@@ -516,10 +516,18 @@ Component.prototype._calcComputed = function (computedExpr) {
                 }
             }
         });
-        this.data.set(computedExpr, result);
+        this.data.set(computedExpr, result, {
+            // 添加一个flag，避免死循环
+            __forceComputed: 1
+        });
     }
     catch (e) {
         handleError(e, this, 'computed:' + computedExpr);
+    }
+    // 如果computed是对象且存在set方法
+    if (this.computed[computedExpr].set) {
+        this.data.__computed = this.data.__computed || {};
+        this.data.__computed[computedExpr] = bind(this.computed[computedExpr].set, this);
     }
 };
 

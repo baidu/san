@@ -178,6 +178,17 @@ function immutableSet(source, exprPaths, pathsStart, pathsLen, value, data) {
 }
 
 /**
+ * 检查是否是在更新computed的数据
+ *
+ * @param {string} prop 数据项路径
+ * @param {*} value 数据值
+ * @return {boolean} 是否执行了computed的setter
+ */
+ Data.prototype._updateComputed = function (prop, value) {
+    return this.__computed && this.__computed[prop] && (this.__computed[prop](value) || 1);
+};
+
+/**
  * 设置数据项
  *
  * @param {string|Object} expr 数据项路径
@@ -210,6 +221,11 @@ Data.prototype.set = function (expr, value, option) {
     };
 
     var prop = expr.paths[0].value;
+
+    if (!option.__forceComputed && this._updateComputed(prop, value)) {
+        return;
+    }
+
     this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, value, this);
 
     this.fire({
