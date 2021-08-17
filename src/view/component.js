@@ -938,17 +938,32 @@ Component.prototype._initDataChanger = function (change) {
  */
 Component.prototype.watch = function (dataName, listener) {
     var dataExpr = parseExpr(dataName);
+    var value = evalExpr(dataExpr, this.data, this);
+    var me = this;
 
-    this.data.listen(bind(function (change) {
-        if (changeExprCompare(change.expr, dataExpr, this.data)) {
-            try {
-                listener.call(this, evalExpr(dataExpr, this.data, this), change);
-            }
-            catch (e) {
-                handleError(e, this, 'watch:' + dataName);
+    this.data.listen(function (change) {
+        if (changeExprCompare(change.expr, dataExpr, me.data)) {
+            var newValue = evalExpr(dataExpr, me.data, me);
+
+            if (newValue !== value) {
+                try {
+                    listener.call(
+                        me, 
+                        newValue, 
+                        {
+                            oldValue: value,
+                            newValue: newValue,
+                            change: change
+                        }
+                    );
+                }
+                catch (e) {
+                    handleError(e, me, 'watch:' + dataName);
+                }
+                oldValue = newValue;
             }
         }
-    }, this));
+    });
 };
 
 Component.prototype._getElAsRootNode = function () {
