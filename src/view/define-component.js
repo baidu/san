@@ -30,12 +30,13 @@ function defineComponent(proto, SuperComponent) {
     }
     // #[end]
 
+    SuperComponent = SuperComponent || Component;
     function ComponentClass(option) { // eslint-disable-line
-        Component.call(this, option);
+        SuperComponent.call(this, option);
     }
 
     ComponentClass.prototype = proto;
-    inherits(ComponentClass, SuperComponent || Component);
+    inherits(ComponentClass, SuperComponent);
 
     return ComponentClass;
 }
