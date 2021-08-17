@@ -3127,8 +3127,10 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var watchTriggerTimes = 0;
-        myComponent.watch('email', function (value) {
+        myComponent.watch('email', function (value, e) {
             expect(value).toBe('erik168@163.com');
+            expect(e.oldValue).toBe('errorrik@gmail.com');
+            expect(e.newValue).toBe(value);
             expect(this.data.get('email')).toBe(value);
             watchTriggerTimes++;
         });
@@ -3179,15 +3181,19 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var watchTriggerTimes = 0;
-        myComponent.watch('projects[0].author', function (value) {
+        myComponent.watch('projects[0].author', function (value, e) {
             expect(value.email).toBe('erik168@163.com');
+            expect(e.oldValue.email).toBe('errorrik@gmail.com');
+            expect(e.newValue).toBe(value);
             expect(this.data.get('projects[0].author.email')).toBe(value.email);
             watchTriggerTimes++;
         });
 
         var emailTriggerTimes = 0;
-        myComponent.watch('projects[0].author.email', function (value) {
+        myComponent.watch('projects[0].author.email', function (value, e) {
             expect(value).toBe('erik168@163.com');
+            expect(e.oldValue).toBe('errorrik@gmail.com');
+            expect(e.newValue).toBe(value);
             expect(this.data.get('projects[0].author.email')).toBe(value);
             emailTriggerTimes++;
         });
