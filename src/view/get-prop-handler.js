@@ -93,6 +93,15 @@ function placeholderHandler(el, value, name, element) {
  * @type {Object}
  */
 var defaultElementPropHandlers = {
+    id: function (el, value) {
+        if (value != null) {
+            el.id = value;
+        }
+        else if (el.id) {
+            el.removeAttribute('id');
+        }
+    },
+
     style: function (el, value) {
         el.style.cssText = value;
     },

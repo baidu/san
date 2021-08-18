@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file 元素的基本属性
+ * @file 样式的基本属性
  */
 
 var splitStr2Obj = require('../util/split-str-2-obj');
@@ -14,6 +14,6 @@ var splitStr2Obj = require('../util/split-str-2-obj');
  *
  * @type {Object}
  */
-var baseProps = splitStr2Obj('class,style,id');
+var styleProps = splitStr2Obj('class,style');
 
-exports = module.exports = baseProps;
+exports = module.exports = styleProps;

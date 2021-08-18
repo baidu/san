@@ -36,6 +36,7 @@ var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var NodeType = require('./node-type');
+var styleProps = require('./style-props');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementOwnAttached = require('./element-own-attached');
@@ -1026,7 +1027,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                     var prop = props[i];
                     var value = evalExpr(prop.expr, this.data, this);
 
-                    if (value || !baseProps[prop.name]) {
+                    if (value || !styleProps[prop.name]) {
                         prop.handler(this.el, value, prop.name, this);
                     }
                 }
