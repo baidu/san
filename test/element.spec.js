@@ -449,6 +449,50 @@ describe("Element", function () {
         });
     });
 
+    it("bind id", function (done) {
+        var Button = san.defineComponent({
+            template: '<button>btn</button>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-btn': Button
+            },
+            template: '<div><x-btn id="{{id1}}"/><b id="{{id2}}">bb</b></div>'
+        });
+
+
+        var myComponent = new MyComponent({
+            data: {
+                id2: false
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = document.getElementsByTagName('button')[0];
+        var b = document.getElementsByTagName('b')[0];
+        expect(b.id).toBe('false');
+        expect(btn.hasAttribute('id')).toBeFalsy();
+
+        myComponent.data.set('id1', 0);
+        myComponent.data.set('id2', null);
+
+        san.nextTick(function () {
+            var btn = document.getElementsByTagName('button')[0];
+            var b = document.getElementsByTagName('b')[0];
+            expect(btn.id).toBe('0');
+            expect(b.hasAttribute('id')).toBeFalsy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
+
     it("bind draggable", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><div draggable="{{draggable}}"></div></a>'
