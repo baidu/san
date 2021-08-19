@@ -1,17 +1,20 @@
-import * as san from "san";
+import { defineComponent, Component } from "../..";
 
 interface ColorPickerData {
     data: string;
     datasource: string[];
 }
 
-interface ColorPicker extends san.SanComponent<ColorPickerData> {
+// san 作为命名空间使用（其中的 Component）
+interface ColorPicker extends Component {
     itemClick(color: string): void;
 }
 
 function ColorPicker(this: ColorPicker, options: { data: ColorPickerData }) {
     san.Component.call(this, options);
 }
+
+// san 作为全局变量使用
 san.inherits(ColorPicker, san.Component);
 
 ColorPicker.prototype.template = ''
@@ -60,7 +63,7 @@ interface ClickerMethods {
 }
 
 let clicked = 0;
-const MyComponent = san.defineComponent<ClickerData, ClickerMethods>({
+const MyComponent = defineComponent({
     template: '<a on-click="mainClicker"><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
 
     mainClicker: function () {
@@ -86,7 +89,7 @@ interface TestData {
     otherProp: number,
 }
 
-const Test = san.defineComponent<TestData, {}>({
+const Test = san.defineComponent({
     template: '<div>{name}</div>',
     displayName: 'Test',
     dataTypes: {
