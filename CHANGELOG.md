@@ -2,6 +2,16 @@
 ChangeLog
 ========
 
+3.10.7 (2021-8-24)
+-------
+
++ 【新特性】- 组件增加 error hook 的支持
++ 【新特性】- 组件的 watch 方法，handler 支持第二个参数 {newValue, oldValue, change}
++ 【新特性】- main 入口根据 process.env.NODE_ENV 判断引用的版本
++ 【bug修复】- 元素的 id 属性，当绑定表达式的值为 falsy(false / 0 /'') 时，属性没有正确设置
++ 【bug修复】- 在 IE8-，模板的属性值不支持单引号包裹
+
+
 3.10.6 (2021-7-13)
 -------
 
