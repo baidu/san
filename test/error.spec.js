@@ -227,7 +227,7 @@ describe('error', function () {
         var spy = jasmine.createSpy();
         var Child = san.defineComponent({
             template: '<h1>{{ msg }}</h1>',
-            initData() {
+            initData: function () {
                 return {
                     msg: 'test'
                 };
@@ -267,7 +267,7 @@ describe('error', function () {
         var spy = jasmine.createSpy();
         var Child = san.defineComponent({
             template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
-            initData() {
+            initData: function () {
                 return {
                     num: 0
                 };
@@ -309,7 +309,7 @@ describe('error', function () {
         var spy = jasmine.createSpy();
         var Child = san.defineComponent({
             template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
-            initData() {
+            initData: function () {
                 return {
                     num: 0
                 };
@@ -355,7 +355,7 @@ describe('error', function () {
         var spy = jasmine.createSpy();
         var Child = san.defineComponent({
             template: '<h1><span s-if="num > 1" s-transition="transCreator">test</span></h1>',
-            initData() {
+            initData: function () {
                 return {
                     num: 2
                 };
@@ -404,7 +404,7 @@ describe('error', function () {
         });
         var Child = san.defineComponent({
             template: '<h1><sub-child s-if="num > 1" s-transition="transCreator">test</sub-child></h1>',
-            initData() {
+            initData: function () {
                 return {
                     num: 2
                 };
@@ -456,7 +456,7 @@ describe('error', function () {
         });
         var Child = san.defineComponent({
             template: '<h1><sub-child s-if="num > 1" s-transition="transCreator">test</sub-child></h1>',
-            initData() {
+            initData: function () {
                 return {
                     num: 2
                 };
