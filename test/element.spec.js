@@ -472,8 +472,8 @@ describe("Element", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var btn = document.getElementsByTagName('button')[0];
-        var b = document.getElementsByTagName('b')[0];
+        var btn = wrap.getElementsByTagName('button')[0];
+        var b = wrap.getElementsByTagName('b')[0];
         expect(b.id).toBe('false');
         expect(btn.hasAttribute('id')).toBeFalsy();
 
@@ -481,8 +481,8 @@ describe("Element", function () {
         myComponent.data.set('id2', null);
 
         san.nextTick(function () {
-            var btn = document.getElementsByTagName('button')[0];
-            var b = document.getElementsByTagName('b')[0];
+            var btn = wrap.getElementsByTagName('button')[0];
+            var b = wrap.getElementsByTagName('b')[0];
             expect(btn.id).toBe('0');
             expect(b.hasAttribute('id')).toBeFalsy();
 
