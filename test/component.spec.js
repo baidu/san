@@ -3127,15 +3127,17 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var watchTriggerTimes = 0;
+        var oldValue = 'errorrik@gmail.com';
+        var newValue = 'erik168@163.com';
         myComponent.watch('email', function (value, e) {
-            expect(value).toBe('erik168@163.com');
-            expect(e.oldValue).toBe('errorrik@gmail.com');
+            expect(value).toBe(newValue);
+            expect(e.oldValue).toBe(oldValue);
             expect(e.newValue).toBe(value);
             expect(this.data.get('email')).toBe(value);
             watchTriggerTimes++;
         });
 
-        myComponent.data.set('email', 'erik168@163.com');
+        myComponent.data.set('email', newValue);
         myComponent.data.set('name', 'erik');
         expect(watchTriggerTimes).toBe(1);
 
@@ -3146,11 +3148,22 @@ describe("Component", function () {
             expect(watchTriggerTimes).toBe(1);
 
             var span = wrap.getElementsByTagName('span')[0];
-            expect(span.title).toBe('erik168@163.com');
+            expect(span.title).toBe(newValue);
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
+            newValue = 'errorrik@gmail.com';
+            oldValue = 'erik168@163.com';
+
+            myComponent.data.set('email', newValue);
+            myComponent.nextTick(function () {
+                expect(watchTriggerTimes).toBe(2);
+
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.title).toBe(newValue);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         })
 
     });
