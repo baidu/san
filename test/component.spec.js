@@ -3194,24 +3194,27 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         var watchTriggerTimes = 0;
+        var oldEmail = 'errorrik@gmail.com';
         myComponent.watch('projects[0].author', function (value, e) {
             expect(value.email).toBe('erik168@163.com');
-            expect(e.oldValue.email).toBe('errorrik@gmail.com');
+            expect(e.oldValue.email).toBe(oldEmail);
             expect(e.newValue).toBe(value);
             expect(this.data.get('projects[0].author.email')).toBe(value.email);
+            
             watchTriggerTimes++;
         });
 
         var emailTriggerTimes = 0;
         myComponent.watch('projects[0].author.email', function (value, e) {
             expect(value).toBe('erik168@163.com');
-            expect(e.oldValue).toBe('errorrik@gmail.com');
+            expect(e.oldValue).toBe(oldEmail);
             expect(e.newValue).toBe(value);
             expect(this.data.get('projects[0].author.email')).toBe(value);
             emailTriggerTimes++;
         });
 
         myComponent.data.set('projects[0].author.email', 'erik168@163.com');
+        oldEmail = 'erik168@163.com';
         myComponent.data.set('projects[0].author.name', 'erik');
         expect(watchTriggerTimes).toBe(2);
         expect(emailTriggerTimes).toBe(1);
