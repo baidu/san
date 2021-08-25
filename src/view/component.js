@@ -961,7 +961,7 @@ Component.prototype.watch = function (dataName, listener) {
                 catch (e) {
                     handleError(e, me, 'watch:' + dataName);
                 }
-                oldValue = newValue;
+                value = newValue;
             }
         }
     });
