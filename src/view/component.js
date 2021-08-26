@@ -788,10 +788,24 @@ Component.prototype._update = function (changes) {
             }
         );
 
-
+        var htmlDirective = this.aNode.directives.html;
+        
         if (this._rootNode) {
             this._rootNode._update(dataChanges);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+        }
+        else if (htmlDirective) {
+            var len = dataChanges.length;
+            while (len--) {
+                if (changeExprCompare(dataChanges[len].expr, htmlDirective.value, this.data)) {
+                    // #[begin] error
+                    warnSetHTML(this.el);
+                    // #[end]
+
+                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+                    break;
+                }
+            }
         }
         else {
             var dynamicProps = this.aNode._dp;
@@ -983,12 +997,13 @@ Component.prototype.attach = function (parentEl, beforeEl) {
         this._toPhase('beforeAttach');
         // #[end]
 
+        var aNode = this.aNode;
 
-        if (this.aNode.hasRootNode || this.components[this.aNode.tagName]) {
+        if (aNode.hasRootNode || this.components[aNode.tagName]) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
             // #[end]
-            this._rootNode = this._rootNode || createNode(this.aNode, this, this.data, this);
+            this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
             this._toPhase('created');
@@ -1001,12 +1016,12 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                 var props;
 
-                if (this.aNode._ce && this.aNode._i > 2) {
-                    props = this.aNode._dp;
-                    this.el = (this.aNode._el || preheatEl(this.aNode)).cloneNode(false);
+                if (aNode._ce && aNode._i > 2) {
+                    props = aNode._dp;
+                    this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
                 }
                 else {
-                    props = this.aNode.props;
+                    props = aNode.props;
                     this.el = createEl(this.tagName);
                 }
 
@@ -1038,13 +1053,24 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             insertBefore(this.el, parentEl, beforeEl);
 
             if (!this._contentReady) {
-                for (var i = 0, l = this.aNode.children.length; i < l; i++) {
-                    var childANode = this.aNode.children[i];
-                    var child = childANode.Clazz
-                        ? new childANode.Clazz(childANode, this, this.data, this)
-                        : createNode(childANode, this, this.data, this);
-                    this.children.push(child);
-                    child.attach(this.el);
+                var htmlDirective = aNode.directives.html;
+
+                if (htmlDirective) {
+                    // #[begin] error
+                    warnSetHTML(this.el);
+                    // #[end]
+
+                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+                }
+                else {
+                    for (var i = 0, l = aNode.children.length; i < l; i++) {
+                        var childANode = aNode.children[i];
+                        var child = childANode.Clazz
+                            ? new childANode.Clazz(childANode, this, this.data, this)
+                            : createNode(childANode, this, this.data, this);
+                        this.children.push(child);
+                        child.attach(this.el);
+                    }
                 }
 
                 this._contentReady = 1;

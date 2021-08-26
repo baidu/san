@@ -731,7 +731,29 @@ describe("Element", function () {
         });
     });
 
+    it("s-html on component root", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<span s-html="html"></span>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('html', '<b>xxx</b>');
 
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(/^<b>xxx<\/b>/i.test(myComponent.el.innerHTML)).toBeTruthy();
+        myComponent.data.set('html', '<u>aaa</u>');
+
+        san.nextTick(function () {
+            expect(/^<u>aaa<\/u>/i.test(myComponent.el.innerHTML)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 
 
     it("complex structure in textnode", function (done) {
