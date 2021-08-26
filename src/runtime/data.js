@@ -109,7 +109,7 @@ Data.prototype.get = function (expr, callee) {
 
     value = value[paths[0].value];
 
-    if (value == null && this.parent) {
+    if (typeof value == 'undefined' && this.parent) {
         value = this.parent.get(expr, callee);
     }
     else {
