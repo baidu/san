@@ -28,7 +28,21 @@ function parseText(source, delimiters) {
     var beforeIndex = 0;
 
     var segs = [];
+    var segIndex = -1;
     var original;
+
+    function pushString(value) {
+        var current = segs[segIndex];
+        if (!current || current.type !== ExprType.STRING) {
+            segs[++segIndex] = {
+                type: ExprType.STRING,
+                value: value
+            };
+        }
+        else {
+            current.value = current.value + value; 
+        }
+    }
 
     var delimStart = delimiters[0];
     var delimStartLen = delimStart.length;
@@ -46,10 +60,7 @@ function parseText(source, delimiters) {
             beforeIndex,
             delimStartIndex
         );
-        strValue && segs.push({
-            type: ExprType.STRING,
-            value: decodeHTMLEntity(strValue)
-        });
+        strValue && pushString(decodeHTMLEntity(strValue));
 
         // pushInterpToSeg
         if (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
@@ -57,36 +68,38 @@ function parseText(source, delimiters) {
         }
 
         var interpWalker = new Walker(walker.source.slice(delimStartIndex + delimStartLen, delimEndIndex));
-        var interp = {
-            type: ExprType.INTERP,
-            expr: readTertiaryExpr(interpWalker),
-            filters: []
-        };
-        while (interpWalker.goUntil(124)) { // |
-            var callExpr = readCall(interpWalker, []);
-            switch (callExpr.name.paths[0].value) {
-                case 'html':
-                    break;
-                case 'raw':
-                    interp.original = 1;
-                    break;
-                default:
-                    interp.filters.push(callExpr);
+        if (!interpWalker.goUntil(125) && interpWalker.index < interpWalker.len) {
+            var interp = {
+                type: ExprType.INTERP,
+                expr: readTertiaryExpr(interpWalker),
+                filters: []
+            };
+            while (interpWalker.goUntil(124)) { // |
+                var callExpr = readCall(interpWalker, []);
+                switch (callExpr.name.paths[0].value) {
+                    case 'html':
+                        break;
+                    case 'raw':
+                        interp.original = 1;
+                        break;
+                    default:
+                        interp.filters.push(callExpr);
+                }
             }
+    
+            original = original || interp.original;
+            segs[++segIndex] = interp;
         }
-
-        original = original || interp.original;
-        segs.push(interp);
+        else {
+            pushString(delimStart + interpWalker.source + delimEnd);
+        }
 
         beforeIndex = walker.index = delimEndIndex + delimEndLen;
     }
 
     // pushStringToSeg
     var strValue = walker.source.slice(beforeIndex);
-    strValue && segs.push({
-        type: ExprType.STRING,
-        value: decodeHTMLEntity(strValue)
-    });
+    strValue && pushString(decodeHTMLEntity(strValue));
 
     switch (segs.length) {
         case 0:

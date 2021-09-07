@@ -121,4 +121,23 @@ describe("parse", function () {
         expect(anode.children[1].tagName).toBe('u');
 
     });
+
+
+    it("empty interp as normal text", function () {
+        var anode = san.parseTemplate('<u>Hello {{  }}!</u>');
+        expect(anode.children.length).toBe(1);
+        
+        var u = anode.children[0];
+        var text = u.children[0];
+        expect(text.textExpr.value).toBe('Hello {{  }}!');
+    });
+
+    it("empty interp and reverse delim", function () {
+        var anode = san.parseTemplate('<u>Hello {{  }}}}{{!</u>');
+        expect(anode.children.length).toBe(1);
+        
+        var u = anode.children[0];
+        var text = u.children[0];
+        expect(text.textExpr.value).toBe('Hello {{  }}}}{{!');
+    });
 });
