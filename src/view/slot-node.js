@@ -106,10 +106,11 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
 
     // #[begin] reverse
     if (reverseWalker) {
+        var currentNode = reverseWalker.current;
         var hasFlagComment;
 
         // start flag
-        if (reverseWalker.current && reverseWalker.current.nodeType === 8 && reverseWalker.current.data === 's-slot') {
+        if (currentNode && currentNode.nodeType === 8 && currentNode.data === 's-slot') {
             this.sel = reverseWalker.current;
             hasFlagComment = 1;
             reverseWalker.goNext();
