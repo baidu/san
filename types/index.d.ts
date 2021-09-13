@@ -257,6 +257,7 @@ declare namespace San {
         events: SanIndexedList<ExprNode>;
         directives: { [k: string]: Directive<any> };
         tagName: string;
+        elses?: ANode[];
         vars?: [{
             name: string;
             expr: ExprNode
