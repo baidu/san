@@ -111,6 +111,7 @@ declare namespace San {
         attach(container: Element): void;
         detach(): void;
         dispose(): void;
+        error(e: Error, instance: SanComponent<{}>, info: string): void;
     }
 
     interface ComponentConstructor<T, D> {
