@@ -6302,5 +6302,45 @@ describe("Component", function () {
             done();
         })
     });
+
+    it("watch listener nest invoked", function (done) {
+        var counter = 0;
+        var MyComponent = san.defineComponent({
+            template: '<u>{{width}}</u>',
+
+            attached: function () {
+                var me = this;
+                this.watch('width', function (value) {
+                    counter++;
+                    if (typeof value === 'number') {
+                        me.data.set('width', value + 'px');
+                    }
+                })
+            }
+        });
+        var myComponent = new MyComponent({
+            data: {width: '600px'}
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var u = wrap.getElementsByTagName('u')[0];
+        expect(u.innerHTML).toContain('600px');
+        expect(counter).toBe(0);
+
+        myComponent.data.set('width', 700);
+        myComponent.data.set('width', 700);
+
+        myComponent.nextTick(function () {
+            expect(u.innerHTML).toContain('700px');
+            expect(counter).toBe(4);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        })
+    });
 });
 
