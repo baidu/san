@@ -789,7 +789,7 @@ Component.prototype._update = function (changes) {
         );
 
         var htmlDirective = this.aNode.directives.html;
-        
+
         if (this._rootNode) {
             this._rootNode._update(dataChanges);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -961,12 +961,15 @@ Component.prototype.watch = function (dataName, listener) {
             var newValue = evalExpr(dataExpr, me.data, me);
 
             if (newValue !== value) {
+                var oldValue = value;
+                value = newValue;
+
                 try {
                     listener.call(
-                        me, 
-                        newValue, 
+                        me,
+                        newValue,
                         {
-                            oldValue: value,
+                            oldValue: oldValue,
                             newValue: newValue,
                             change: change
                         }
@@ -975,7 +978,6 @@ Component.prototype.watch = function (dataName, listener) {
                 catch (e) {
                     handleError(e, me, 'watch:' + dataName);
                 }
-                value = newValue;
             }
         }
     });
