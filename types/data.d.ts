@@ -57,10 +57,12 @@ export class Data<T extends {}> {
 
     assign(source: Partial<T>, options?: DataChangeOption): void;
 
-    merge<TPath extends string>(expr: string, source: Partial<Get<T, TPath>>, option?: DataChangeOption): void;
+    merge<TPath extends string>(expr: TPath, source: Partial<Get<T, TPath>>, option?: DataChangeOption): void;
     merge(expr: ExprAccessorNode, source: {}, option?: DataChangeOption): void;
 
-    apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: DataChangeOption): void;
+    apply<TPath extends string>(expr: TPath, changer: (oldValue: Get<T, TPath>) => Get<T, TPath>, option?: DataChangeOption): void;
+    apply(expr: ExprAccessorNode, changer: (oldValue: any) => any, option?: DataChangeOption): void;
+    
     splice(expr: string | ExprAccessorNode, spliceArgs: Array<any>, option?: DataChangeOption): void;
     push(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
     pop(expr: string | ExprAccessorNode, option?: DataChangeOption): any;
