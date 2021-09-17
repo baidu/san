@@ -23,6 +23,17 @@ export enum DataChangeType {
     SPLICE = 2
 }
 
+
+// TODO: unknown? any? never?
+type Get<T, K> = K extends `${infer L}.${infer R}`
+    ? L extends keyof T
+        ? Get<T[L], R>
+        : unknown
+    : K extends keyof T
+        ? T[K]
+        : unknown
+
+
 export class Data<T extends {}> {
     constructor(init?: Partial<T>, parent?: Data<{}>);
     parent: Data<{}>;
@@ -38,12 +49,17 @@ export class Data<T extends {}> {
     fire(change: DataChangeInfo): void;
 
     get(): Partial<T>;
+    get<TPath extends string>(name: TPath): Get<T, TPath>;
     get(expr: ExprAccessorNode): any;
-    get(expr: string): any;
 
-    set(expr: string | ExprAccessorNode, value: any, option?: DataChangeOption): void;
-    assign(source: {}, options?: DataChangeOption): void;
-    merge(expr: string | ExprAccessorNode, source: {}, option?: DataChangeOption): void;
+    set<TPath extends string>(expr: TPath, value: Get<T, TPath>, option?: DataChangeOption): void;
+    set(expr: ExprAccessorNode, value: any, option?: DataChangeOption): void;
+
+    assign(source: Partial<T>, options?: DataChangeOption): void;
+
+    merge<TPath extends string>(expr: string, source: Partial<Get<T, TPath>>, option?: DataChangeOption): void;
+    merge(expr: ExprAccessorNode, source: {}, option?: DataChangeOption): void;
+
     apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: DataChangeOption): void;
     splice(expr: string | ExprAccessorNode, spliceArgs: Array<any>, option?: DataChangeOption): void;
     push(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
