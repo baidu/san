@@ -20,3 +20,4 @@ errorShots/
 /test/unpack-anode.spec.js
 /test/pref/tti.html
 *.vscode
+types/test/san-test.js
