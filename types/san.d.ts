@@ -48,7 +48,8 @@ interface SlotNode {
 
     dispatch<TMsg>(messageName: string, message: TMsg): void;
 
-    watch(propName: string, watcher: (newValue: any) => any): void;
+    // TODO: any? unknown?
+    watch(propName: string, watcher: (value: any, arg: {oldValue?: any, newValue?: any}) => void): void;
     
     ref<TCmpt extends Component<{}>>(refName: string): TCmpt;
     ref(refName: string): Component<{}> | Element;
