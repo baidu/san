@@ -2,9 +2,8 @@
  * 本文件 export 暴露在 require('san') 上的根属性/方法
  */
 import { ExprNode, ExprAccessorNode } from "./expr";
-import { ANode, NodeType } from "./anode";
+import { ANode } from "./anode";
 
-export { NodeType } from "./anode";
 export { ExprType } from "./expr";
 export function defineComponent<T extends ComponentConstructor>(config: ComponentConfig): T;
 export function createComponentLoader(options: ComponentLoaderOption | ComponentLoaderOption['load']): ComponentLoader;
@@ -16,6 +15,18 @@ export function parseTemplate(template: string, options?: ParseTemplateOption): 
 declare function parseComponentTemplate(componentClass: ComponentConstructor): ANode;
 export function inherits(childClazz: (...args: any[]) => void, parentClazz: typeof Component): void;
 export function nextTick(doNextTick: () => any): void;
+
+export enum NodeType {
+    TEXT = 1,
+    IF = 2,
+    FOR = 3,
+    ELEM = 4,
+    CMPT = 5,
+    SLOT = 6,
+    TPL = 7,
+    LOADER = 8,
+    IS = 9
+}
 
 /**
  * Component 类型的接口
@@ -111,7 +122,7 @@ interface DataChangeOption {
 
 declare enum DataChangeType {
     SET = 1,
-    SPLICE = 2,
+    SPLICE = 2
 }
 
 type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
