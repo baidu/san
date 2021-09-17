@@ -1,20 +1,13 @@
 /**
  * 本文件 export 暴露在 require('san') 上的根属性/方法
  */
-import { ExprNode, ExprAccessorNode } from "./expr";
+import { ExprNode } from "./expr";
 import { ANode } from "./anode";
+import { Data } from "./data";
+
 
 export { ExprType } from "./expr";
-export function defineComponent<T extends ComponentConstructor>(config: ComponentConfig): T;
-export function createComponentLoader(options: ComponentLoaderOption | ComponentLoaderOption['load']): ComponentLoader;
-export function compileComponent(component: Component): void;
-
-export function parseExpr(template: string): ExprNode;
-export function evalExpr(expr: ExprNode, data: Data, owner?: Component): any;
-export function parseTemplate(template: string, options?: ParseTemplateOption): ANode;
-declare function parseComponentTemplate(componentClass: ComponentConstructor): ANode;
-export function inherits(childClazz: (...args: any[]) => void, parentClazz: typeof Component): void;
-export function nextTick(doNextTick: () => any): void;
+export { Data } from "./data";
 
 export enum NodeType {
     TEXT = 1,
@@ -28,173 +21,126 @@ export enum NodeType {
     IS = 9
 }
 
+interface SlotNode {
+    isScoped: boolean;
+    isInserted: boolean;
+    isNamed?: boolean;
+    name?: string;
+    nodeType: NodeType.SLOT;
+}
+
 /**
- * Component 类型的接口
- *
- * 用来继承的抽象基类，无法直接 new
+ * Component 类
  */
-export abstract class Component {
-    constructor(option?: ComponentInit);
+ export class Component<T extends {}> {
+    constructor(option?: ComponentNewOptions<T>);
 
     el?: Element;
-    nodeType: NodeType;
-    data: Data;
-    parentComponent?: Component;
-    fire(eventName: string, eventData: any): void;
-    dispatch(eventName: string, eventData: any): void;
+    data: Data<T>;
+    parentComponent?: Component<{}>;
 
-    on(eventName: string, listener: SanEventListener<unknown>): void;
-    un(eventName: string, listener?: SanEventListener<unknown>): void;
+    nodeType: NodeType.CMPT;
+
+    fire<TEventArg>(eventName: string, eventArg: TEventArg): void;
+    on(eventName: string, listener: () => void): void;
+    on<TEventArg>(eventName: string, listener: (eventArg: TEventArg) => void): void;
+    un(eventName: string, listener?: Function): void;
+
+    dispatch<TMsg>(messageName: string, message: TMsg): void;
 
     watch(propName: string, watcher: (newValue: any) => any): void;
-    ref<T extends Component | Element>(refName: string): T;
-    slot<T extends Component>(name?: string): Array<T & SanSlot>;
-    nextTick(doNextTick: () => any): void;
-    attach(container: Element): void;
+    
+    ref<TCmpt extends Component<{}>>(refName: string): TCmpt;
+    ref(refName: string): Component<{}> | Element;
+
+    slot(name?: string): SlotNode[];
+
+    attach(parentEl: Element, beforeEl?: Element): void;
     detach(): void;
     dispose(): void;
+
+    nextTick(handler: () => any): void;
 }
 
-/**
- * 可以得到 Component 的构造函数
- *
- * 可以直接 new 得到具体 Component 的实例
- */
-interface ComponentConstructor {
-    new(option?: ComponentInit): Component;
-}
-
-export class Data {
-    constructor(init?: DataInit, parent?: Data);
-    parent: Data;
-    raw: DataInit;
-
-    listeners: DataChangeListener[];
-    listen(listener: DataChangeListener): void;
-    unlisten(listener?: DataChangeListener): void;
-
-    typeChecker: () => void;
-    setTypeChecker(checker: () => void): void;
-
-    fire(change: DataChangeInfo): void;
-    get(expr?: string | ExprAccessorNode): any;
-    set(expr: string | ExprAccessorNode, value: any, option?: DataChangeOption): void;
-    assign(source: {}, options?: DataChangeOption): void;
-    merge(expr: string | ExprAccessorNode, source: {}, option?: DataChangeOption): void;
-    apply(expr: string | ExprAccessorNode, changer: (oldval: {}) => {}, option?: DataChangeOption): void;
-    splice(expr: string | ExprAccessorNode, spliceArgs: Array<any>, option?: DataChangeOption): void;
-    push(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
-    pop(expr: string | ExprAccessorNode, option?: DataChangeOption): any;
-    shift(expr: string | ExprAccessorNode, option?: DataChangeOption): any;
-    unshift(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
-    removeAt(expr: string | ExprAccessorNode, index: number, option?: DataChangeOption): void;
-    remove(expr: string | ExprAccessorNode, value: any, option?: DataChangeOption): void;
-}
-
-export interface ComponentInit {
-  data?: DataInit;
-  owner?: any;
+export interface ComponentNewOptions<T extends {}> {
+  data?: Partial<T>;
+  owner?: Component<{}>;
   source?: string | ANode
 }
 
-interface SanEvent<E> {
-    target: Component;
-    value: E;
-    name: string;
+interface ComponentClass<T extends {}> {
+    new(option?: ComponentNewOptions<T>): Component<T>;
 }
 
-type SanEventListener<N> = (e: SanEvent<N>) => any;
-
-interface DataChangeListener {
-    (this: Data, change: DataChangeInfo): void
-}
-interface DataChangeInfo {
-    option: DataChangeOption,
-    type: DataChangeType,
-    expr: ExprAccessorNode,
-    value: any,
-}
-interface DataChangeOption {
-    silent?: boolean;
-    silence?: boolean;
-    quiet?: boolean;
+interface DefinedComponentClass<T extends {}, M> {
+    new(option?: ComponentNewOptions<T>): Component<T> & M;
 }
 
-declare enum DataChangeType {
-    SET = 1,
-    SPLICE = 2
+interface ComponentDefineOptions<T extends {}> {
+    trimWhitespace?: 'none' | 'blank' | 'all';
+    delimiters?: [string, string];
+    autoFillStyleAndId?: boolean;
+    initData?(): Partial<T>;
+    template?: string;
+
+    filters?: {
+        // TODO: any?unknown?
+        [k: string]: (value: any, ...filterOption: any[]) => any;
+    };
+
+    components?: {
+        [k: string]: ComponentClass<{}> | ComponentDefineOptions<{}> | ComponentLoader<{}> | 'self';
+    };
+
+    computed?: {
+        [k: string]: (this: { data: Data<T> }) => unknown;
+    };
+
+    messages?: {
+        [k: string]: (arg?: {name?: string, target?: Component<{}>, value?: unknown}) => void;
+    };
+
+    dataTypes?: {
+        [k: string]: DataTypeChecker;
+    },
+
+    construct?(this: Component<T>, options?: ComponentNewOptions<T>): void;
+    compiled?(this: Component<T>): void;
+    inited?(this: Component<T>): void;
+    created?(this: Component<T>): void;
+    attached?(this: Component<T>): void;
+    detached?(this: Component<T>): void;
+    disposed?(this: Component<T>): void;
+    updated?(this: Component<T>): void;
+    error?(e: Error, instance: Component<{}>, info: string): void;
+
+    // other methods/props on proto
+    [key: string]: any;
 }
+
+export function defineComponent<T extends {}>(options: ComponentDefineOptions<T>): DefinedComponentClass<T, typeof options>;
+
+
+interface ComponentLoaderOptions<T> {
+    load(): Promise<ComponentClass<T>>;
+    placeholder?: ComponentClass<{}>;
+    fallback?: ComponentClass<{}>;
+}
+
+export class ComponentLoader<T> {
+    constructor(options: ComponentLoaderOptions<T>);
+    start(onload: (componentClass: ComponentClass<T> | ComponentClass<{}>) => void): void;
+    done(componentClass: ComponentClass<T> | ComponentClass<{}>): void;
+}
+
+export function createComponentLoader<T extends {}>(options: ComponentLoaderOptions<T> | ComponentLoaderOptions<T>['load']): ComponentLoader<T>;
+
 
 type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
 interface ChainableDataTypeChecker extends DataTypeChecker {
     isRequired: DataTypeChecker;
 }
 
-interface ComponentConfig {
-    el?: Element;
-    trimWhitespace?: 'none' | 'blank' | 'all';
-    data?: DataInit;
-    initData?(): DataInit;
-    displayName?: string;
-    template?: string;
-    filters?: {
-        [k: string]: (value: any, ...filterOption: any[]) => any,
-    };
-    components?: {
-        [k: string]: ComponentConstructor | ComponentConfig | ComponentLoader | 'self',
-    };
-    computed?: {
-        [k: string]: (this: { data: Data }) => any,
-    };
-
-    messages?: {
-        [k: string]: SanEventListener<SanEvent< unknown>>,
-    };
-    dataTypes?: {
-        [k: string]: DataTypeChecker;
-    },
-    compiled?(this: Component): void;
-    inited?(this: Component): void;
-    created?(this: Component): void;
-    attached?(this: Component): void;
-    detached?(this: Component): void;
-    disposed?(this: Component): void;
-    updated?(this: Component): void;
-
-    // other methods/props on proto
-    [key: string]: any;
-}
-
-interface ComponentLoaderOption {
-    load(): Promise<ComponentConstructor>;
-    placeholder?: ComponentConstructor;
-    fallback?: ComponentConstructor;
-}
-
-declare class ComponentLoader {
-    constructor(
-        load: ComponentConstructor,
-        placeholder: ComponentConstructor,
-        fallback: ComponentConstructor
-    );
-    start(onload: (ComponentClass: ComponentConstructor) => void): void;
-    done(ComponentClass: ComponentConstructor): void;
-}
-
-interface SanSlot {
-    isScoped: boolean;
-    isInserted: boolean;
-    children: SanSlot[];
-}
-
-
-
-interface ParseTemplateOption {
-    trimWhitespace?: 'none' | 'blank' | 'all';
-    delimiters?: [string, string];
-}
-
-type SanRenderer<T> = (data: T) => string;
 
 export const DataTypes: {
     any: ChainableDataTypeChecker;
@@ -286,17 +232,19 @@ export const LifeCycle: {
     }
 }
 
-type Primitive = | bigint
-  | boolean
-  | null
-  | number
-  | string
-  | symbol
-  | undefined;
-
-export interface DataInit {
-    [key: string]: Primitive | DataInit;
+interface ParseTemplateOption {
+    trimWhitespace?: 'none' | 'blank' | 'all';
+    delimiters?: [string, string];
 }
 
+export function parseTemplate(template: string, options?: ParseTemplateOption): ANode;
+export function parseComponentTemplate(componentClass: ComponentClass<{}>): ANode;
+
+export function parseExpr(template: string): ExprNode;
+export function evalExpr<T extends {}>(expr: ExprNode, data: Data<T>, owner?: Component<T>): any;
+
+export function inherits(subClass: ComponentClass<{}>, superClass: ComponentClass<{}>): void;
+export function inherits<T>(subClass: (options: ComponentNewOptions<T>) => void, superClass: ComponentClass<{}>): void;
+export function nextTick(handler: () => any): void;
 export const debug: boolean;
 export const version: string;
