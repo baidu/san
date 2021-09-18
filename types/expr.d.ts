@@ -14,60 +14,86 @@ export enum ExprType {
     NULL = 13
 }
 
-export interface ExprNodeTpl<T extends ExprType> {
-    type: T;        // 如果只有这一个属性，去掉泛型更可读
-    value?: any;    // 在 eval 会统一处理，事实上作用于 null, string, number
-    parenthesized?: boolean; // 在 read parenthesized expr 会统一设置
+export interface Expr {
+    type: ExprType;
+    parenthesized?: boolean;
 }
-export type ExprNode = ExprNodeTpl<any>;
-export interface ExprStringNode extends ExprNodeTpl<ExprType.STRING> {
+
+export interface StringLiteral extends Expr {
+    type: ExprType.STRING;
     value: string;
 }
-export interface ExprNumberNode extends ExprNodeTpl<ExprType.NUMBER> {
+export interface NumberLiteral extends Expr {
+    type: ExprType.NUMBER;
     value: number;
 }
-export interface ExprBoolNode extends ExprNodeTpl<ExprType.BOOL> {
+
+export interface BoolLiteral extends Expr {
+    type: ExprType.BOOL;
     value: boolean;
 }
-export interface ExprAccessorNode extends ExprNodeTpl<ExprType.ACCESSOR> {
-    paths: ExprNode[];
+
+export interface NullLiteral extends Expr {
+    type: ExprType.NULL;
 }
-export interface ExprInterpNode extends ExprNodeTpl<ExprType.INTERP> {
-    expr: ExprNode;
-    filters: ExprCallNode[];
-    original: boolean;
+
+export interface AccessorExpr extends Expr {
+    type: ExprType.ACCESSOR;
+    paths: Expr[];
 }
-export interface ExprCallNode extends ExprNodeTpl<ExprType.CALL> {
-    name: ExprAccessorNode;
-    args: ExprNode[];
+export interface InterpExpr extends Expr {
+    type: ExprType.INTERP;
+    expr: Expr;
+    filters: CallExpr[];
+    original?: boolean;
 }
-export interface ExprTextNode extends ExprNodeTpl<ExprType.TEXT> {
-    segs: ExprNode[];
+
+export interface CallExpr extends Expr {
+    type: ExprType.CALL;
+    name: AccessorExpr;
+    args: Expr[];
+}
+
+export interface TextExpr extends Expr {
+    type: ExprType.TEXT;
+    segs: Array<InterpExpr | StringLiteral>;
     original?: number;
     value?: string; // segs 由一个 STRING 构成时存在
 }
-export interface ExprBinaryNode extends ExprNodeTpl<ExprType.BINARY> {
-    segs: [ExprNode, ExprNode];
+
+export interface BinaryExpr extends Expr {
+    type: ExprType.BINARY;
+    segs: [Expr, Expr];
     operator: number;
 }
-export interface ExprUnaryNode extends ExprNodeTpl<ExprType.UNARY> {
+
+export interface UnaryExpr extends Expr {
+    type: ExprType.UNARY;
     operator: number;
-    expr: ExprNode;
+    expr: Expr;
 }
-export interface ExprTertiaryNode extends ExprNodeTpl<ExprType.TERTIARY> {
-    segs: ExprNode[];
+export interface TertiaryExpr extends Expr {
+    type: ExprType.TERTIARY;
+    segs: [Expr, Expr, Expr];
 }
-export interface ExprObjectNode extends ExprNodeTpl<ExprType.OBJECT> {
-    items: [{
-        spread: boolean;
-        expr: ExprNode;
-        name: ExprNode;
-    }];
+
+interface ObjectLiteralItem {
+    expr: Expr;
+    name?: Expr;
+    spread?: boolean;
 }
-export interface ExprArrayNode extends ExprNodeTpl<ExprType.ARRAY> {
-    items: [{
-        spread: boolean;
-        expr: ExprNode;
-    }];
+export interface ObjectLiteral extends Expr {
+    type: ExprType.OBJECT;
+    items: ObjectLiteralItem[];
 }
-export interface ExprNullNode extends ExprNodeTpl<ExprType.NULL> {}
+
+interface ArrayLiteralItem {
+    expr: Expr;
+    spread?: boolean;
+}
+
+export interface ArrayLiteral extends Expr {
+    type: ExprType.ARRAY;
+    items: ArrayLiteralItem[];
+}
+

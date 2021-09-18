@@ -1,25 +1,25 @@
 /**
  * ANode 的类型文件
  */
-import { ExprNode, ExprAccessorNode } from "./expr.d";
+import { Expr, AccessorExpr } from "./expr.d";
 
 export interface ANode {
     isText?: boolean;
     text?: string;
-    textExpr?: ExprNode;
+    textExpr?: Expr;
     children?: ANode[];
     props: ANodeProperty[];
-    events: SanIndexedList<ExprNode>;
+    events: SanIndexedList<Expr>;
     directives: { [k: string]: Directive<any> };
     tagName: string;
     vars?: [{
         name: string;
-        expr: ExprNode
+        expr: Expr
     }];
 }
 
 export interface ATextNode extends ANode {
-    textExpr: ExprNode;
+    textExpr: Expr;
 }
 
 export interface ATemplateNode extends ANode {
@@ -62,16 +62,16 @@ export interface SanIndexedList<T> {
     concat(other: SanIndexedList<T>): SanIndexedList<T>;
 }
 
-export interface Directive<T extends ExprNode> {
+export interface Directive<T extends Expr> {
     item?: string;
     index?: number;
-    trackBy?: ExprAccessorNode;
+    trackBy?: AccessorExpr;
     value: T;
 }
 
 export interface ANodeProperty {
     name: string;
-    expr: ExprNode;
+    expr: Expr;
     noValue?: 1;
     x?: number;
 }

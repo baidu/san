@@ -1,7 +1,7 @@
 /**
  * 本文件 export 暴露在 require('san') 上的根属性/方法
  */
-import { ExprNode } from "./expr";
+import { Expr } from "./expr";
 import { ANode } from "./anode";
 import { Data } from "./data";
 
@@ -241,8 +241,8 @@ interface ParseTemplateOption {
 export function parseTemplate(template: string, options?: ParseTemplateOption): ANode;
 export function parseComponentTemplate(componentClass: ComponentClass<{}>): ANode;
 
-export function parseExpr(template: string): ExprNode;
-export function evalExpr<T extends {}>(expr: ExprNode, data: Data<T>, owner?: Component<T>): any;
+export function parseExpr(template: string): Expr;
+export function evalExpr<T extends {}>(expr: Expr, data: Data<T>, owner?: Component<T>): any;
 
 export function inherits(subClass: ComponentClass<{}>, superClass: ComponentClass<{}>): void;
 export function inherits<T>(subClass: (options: ComponentNewOptions<T>) => void, superClass: ComponentClass<{}>): void;

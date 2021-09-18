@@ -1,4 +1,4 @@
-import { ExprAccessorNode } from "./expr";
+import { AccessorExpr } from "./expr";
 
 interface DataChangeOption {
     silent?: boolean;
@@ -13,7 +13,7 @@ interface DataChangeListener<T> {
 interface DataChangeInfo {
     option: DataChangeOption,
     type: DataChangeType,
-    expr: ExprAccessorNode,
+    expr: AccessorExpr,
     value: any,
 }
 
@@ -50,24 +50,24 @@ export class Data<T extends {}> {
 
     get(): Partial<T>;
     get<TPath extends string>(name: TPath): Get<T, TPath>;
-    get(expr: ExprAccessorNode): any;
+    get(expr: AccessorExpr): any;
 
     set<TPath extends string>(expr: TPath, value: Get<T, TPath>, option?: DataChangeOption): void;
-    set(expr: ExprAccessorNode, value: any, option?: DataChangeOption): void;
+    set(expr: AccessorExpr, value: any, option?: DataChangeOption): void;
 
     assign(source: Partial<T>, options?: DataChangeOption): void;
 
     merge<TPath extends string>(expr: TPath, source: Partial<Get<T, TPath>>, option?: DataChangeOption): void;
-    merge(expr: ExprAccessorNode, source: {}, option?: DataChangeOption): void;
+    merge(expr: AccessorExpr, source: {}, option?: DataChangeOption): void;
 
     apply<TPath extends string>(expr: TPath, changer: (oldValue: Get<T, TPath>) => Get<T, TPath>, option?: DataChangeOption): void;
-    apply(expr: ExprAccessorNode, changer: (oldValue: any) => any, option?: DataChangeOption): void;
+    apply(expr: AccessorExpr, changer: (oldValue: any) => any, option?: DataChangeOption): void;
     
-    splice(expr: string | ExprAccessorNode, spliceArgs: Array<any>, option?: DataChangeOption): void;
-    push(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
-    pop(expr: string | ExprAccessorNode, option?: DataChangeOption): any;
-    shift(expr: string | ExprAccessorNode, option?: DataChangeOption): any;
-    unshift(expr: string | ExprAccessorNode, item: any, option?: DataChangeOption): number;
-    removeAt(expr: string | ExprAccessorNode, index: number, option?: DataChangeOption): void;
-    remove(expr: string | ExprAccessorNode, value: any, option?: DataChangeOption): void;
+    splice(expr: string | AccessorExpr, spliceArgs: Array<any>, option?: DataChangeOption): void;
+    push(expr: string | AccessorExpr, item: any, option?: DataChangeOption): number;
+    pop(expr: string | AccessorExpr, option?: DataChangeOption): any;
+    shift(expr: string | AccessorExpr, option?: DataChangeOption): any;
+    unshift(expr: string | AccessorExpr, item: any, option?: DataChangeOption): number;
+    removeAt(expr: string | AccessorExpr, index: number, option?: DataChangeOption): void;
+    remove(expr: string | AccessorExpr, value: any, option?: DataChangeOption): void;
 }
