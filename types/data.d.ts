@@ -2,8 +2,7 @@ import { AccessorExpr } from "./expr";
 
 interface DataChangeOption {
     silent?: boolean;
-    silence?: boolean;
-    quiet?: boolean;
+    force?: boolean;
 }
 
 interface DataChangeListener<T> {
