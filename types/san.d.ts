@@ -1,25 +1,15 @@
 /**
  * 本文件 export 暴露在 require('san') 上的根属性/方法
  */
-import { Expr } from "./expr";
-import { ANode } from "./anode";
-import { Data } from "./data";
+import { Expr } from "./expr"
+import { ANode } from "./anode"
+import { Data } from "./data"
+import { NodeType } from "./node"
 
 
-export { ExprType } from "./expr";
-export { Data } from "./data";
+export { ExprType } from "./expr"
+export { Data } from "./data"
 
-export enum NodeType {
-    TEXT = 1,
-    IF = 2,
-    FOR = 3,
-    ELEM = 4,
-    CMPT = 5,
-    SLOT = 6,
-    TPL = 7,
-    LOADER = 8,
-    IS = 9
-}
 
 interface SlotNode {
     isScoped: boolean;
