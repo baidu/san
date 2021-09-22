@@ -19,7 +19,9 @@ function lifeCycleOwnIs(name) {
  * @type {Object}
  */
 var LifeCycle = {
-    start: {},
+    start: {
+        is: lifeCycleOwnIs
+    },
 
     compiled: {
         is: lifeCycleOwnIs,
