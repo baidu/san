@@ -18,7 +18,7 @@ interface Directives {
     transition?: ADirectiveTransition;
     ref?: ADirectiveRef;
     for?: ADirectiveFor;
-};
+}
 
 export interface AElement {
     directives: Directives;
