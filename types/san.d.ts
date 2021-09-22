@@ -162,7 +162,8 @@ export const DataTypes: {
     exact(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
 };
 
-export interface SanLifeCycleStage {
+
+export interface LifeCycleStage {
     is(stat: string): boolean;
     attached?: true;
     compiled?: true;
@@ -174,63 +175,66 @@ export interface SanLifeCycleStage {
     painting?: true;
 }
 
+export interface LifeCycleStart extends LifeCycleStage {
+}
+
+export interface LifeCycleCompiled extends LifeCycleStage {
+    compiled: true;
+}
+
+export interface LifeCycleInited extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+}
+
+export interface LifeCyclePainting extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+    painting: true;
+}
+
+export interface LifeCycleCreated extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+    created: true;
+}
+
+export interface LifeCycleAttached extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+    created: true;
+    attached: true;
+}
+
+export interface LifeCycleLeaving extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+    created: true;
+    attached: true;
+    leaving: true;
+}
+
+export interface LifeCycleDetached extends LifeCycleStage {
+    compiled: true;
+    inited: true;
+    created: true;
+    detached: true;
+}
+
+export interface LifeCycleDisposed extends LifeCycleStage {
+    disposed: true;
+}
+
 export const LifeCycle: {
-    start: {},
-
-    compiled: {
-        is(stat: string): boolean,
-        compiled: true
-    },
-
-    inited: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true
-    },
-
-    painting: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true,
-        painting: true
-    },
-
-    created: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true,
-        created: true
-    },
-
-    attached: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true,
-        created: true,
-        attached: true
-    },
-
-    leaving: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true,
-        created: true,
-        attached: true,
-        leaving: true
-    },
-
-    detached: {
-        is(stat: string): boolean,
-        compiled: true,
-        inited: true,
-        created: true,
-        detached: true
-    },
-
-    disposed: {
-        is(stat: string): boolean,
-        disposed: true
-    }
+    start: LifeCycleStage;
+    compiled: LifeCycleCompiled;
+    inited: LifeCycleInited;
+    painting: LifeCyclePainting;
+    created: LifeCycleCreated;
+    attached: LifeCycleAttached;
+    leaving: LifeCycleLeaving;
+    detached: LifeCycleDetached;
+    disposed: LifeCycleDisposed;
 }
 
 interface ParseTemplateOption {
