@@ -70,3 +70,28 @@ export class Data<T extends {}> {
     removeAt(expr: string | AccessorExpr, index: number, option?: DataChangeOption): void;
     remove(expr: string | AccessorExpr, value: any, option?: DataChangeOption): void;
 }
+
+export type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
+interface ChainableDataTypeChecker extends DataTypeChecker {
+    isRequired: DataTypeChecker;
+}
+
+
+export const DataTypes: {
+    any: ChainableDataTypeChecker;
+    array: ChainableDataTypeChecker;
+    object: ChainableDataTypeChecker;
+    func: ChainableDataTypeChecker;
+    string: ChainableDataTypeChecker;
+    number: ChainableDataTypeChecker;
+    bool: ChainableDataTypeChecker;
+    symbol: ChainableDataTypeChecker;
+
+    arrayOf(arrayItemChecker: DataTypeChecker): ChainableDataTypeChecker;
+    instanceOf<T>(expectedClass: new () => T): ChainableDataTypeChecker;
+    shape(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
+    oneOf(expectedEnumValues: any[]): ChainableDataTypeChecker;
+    oneOfType(expectedEnumOfTypeValues: DataTypeChecker[]): ChainableDataTypeChecker;
+    objectOf(typeChecker: DataTypeChecker): ChainableDataTypeChecker;
+    exact(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
+};

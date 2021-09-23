@@ -3,7 +3,7 @@
  */
 import { Expr } from "./expr"
 import { ANode } from "./anode"
-import { Data } from "./data"
+import { Data, DataTypeChecker } from "./data"
 import { Component, ComponentNewOptions } from "./component"
 
 
@@ -85,30 +85,6 @@ declare class ComponentLoader<T> {
 export function createComponentLoader<T extends {}>(options: ComponentLoaderOptions<T> | ComponentLoaderOptions<T>['load']): ComponentLoader<T>;
 
 
-type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
-interface ChainableDataTypeChecker extends DataTypeChecker {
-    isRequired: DataTypeChecker;
-}
-
-
-export const DataTypes: {
-    any: ChainableDataTypeChecker;
-    array: ChainableDataTypeChecker;
-    object: ChainableDataTypeChecker;
-    func: ChainableDataTypeChecker;
-    string: ChainableDataTypeChecker;
-    number: ChainableDataTypeChecker;
-    bool: ChainableDataTypeChecker;
-    symbol: ChainableDataTypeChecker;
-
-    arrayOf(arrayItemChecker: DataTypeChecker): ChainableDataTypeChecker;
-    instanceOf<T>(expectedClass: new () => T): ChainableDataTypeChecker;
-    shape(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
-    oneOf(expectedEnumValues: any[]): ChainableDataTypeChecker;
-    oneOfType(expectedEnumOfTypeValues: DataTypeChecker[]): ChainableDataTypeChecker;
-    objectOf(typeChecker: DataTypeChecker): ChainableDataTypeChecker;
-    exact(shapeTypes: { [k: string]: DataTypeChecker }): ChainableDataTypeChecker;
-};
 
 
 
