@@ -14,14 +14,15 @@ interface SlotNode {
 export interface ComponentNewOptions<T extends {}> {
     data?: Partial<T>;
     owner?: Component<{}>;
-    source?: string | ANode
+    source?: string | ANode;
+    el?: Element;
 }
 
 /**
  * Component 类
  */
- export class Component<T extends {}> {
-    constructor(option?: ComponentNewOptions<T>);
+ export interface Component<T extends {}> {
+    new(option?: ComponentNewOptions<T>): Component<T>;
 
     el?: Element;
     data: Data<T>;
