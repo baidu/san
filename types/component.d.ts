@@ -1,4 +1,4 @@
-import { NodeType } from "./node"
+import { NodeType, LifeCycleStage } from "./node"
 import { Data, DataTypeChecker } from "./data"
 import { ANode } from "./anode"
 
@@ -29,6 +29,7 @@ export interface ComponentNewOptions<T extends {}> {
     parentComponent?: Component<{}>;
 
     nodeType: NodeType.CMPT;
+    lifeCycle: LifeCycleStage;
 
     fire<TEventArg>(eventName: string, eventArg: TEventArg): void;
     on(eventName: string, listener: () => void): void;
@@ -107,76 +108,4 @@ export interface ComponentLoader<T> {
     done(componentClass: Component<T> | Component<{}>): void;
 }
 
-export interface LifeCycleStage {
-    is(stat: string): boolean;
-    attached?: true;
-    compiled?: true;
-    created?: true;
-    detached?: true;
-    disposed?: true;
-    inited?: true;
-    leaving?: true;
-    painting?: true;
-}
 
-export interface LifeCycleStart extends LifeCycleStage {
-}
-
-export interface LifeCycleCompiled extends LifeCycleStage {
-    compiled: true;
-}
-
-export interface LifeCycleInited extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-}
-
-export interface LifeCyclePainting extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-    painting: true;
-}
-
-export interface LifeCycleCreated extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-    created: true;
-}
-
-export interface LifeCycleAttached extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-    created: true;
-    attached: true;
-}
-
-export interface LifeCycleLeaving extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-    created: true;
-    attached: true;
-    leaving: true;
-}
-
-export interface LifeCycleDetached extends LifeCycleStage {
-    compiled: true;
-    inited: true;
-    created: true;
-    detached: true;
-}
-
-export interface LifeCycleDisposed extends LifeCycleStage {
-    disposed: true;
-}
-
-export const LifeCycle: {
-    start: LifeCycleStage;
-    compiled: LifeCycleCompiled;
-    inited: LifeCycleInited;
-    painting: LifeCyclePainting;
-    created: LifeCycleCreated;
-    attached: LifeCycleAttached;
-    leaving: LifeCycleLeaving;
-    detached: LifeCycleDetached;
-    disposed: LifeCycleDisposed;
-}
