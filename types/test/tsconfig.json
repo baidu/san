@@ -5,17 +5,17 @@
             "dom",
             "es2015"
         ],
-        "module": "commonjs",
         "baseUrl": ".",
         "paths": {
             "san": [
                 "../index.d.ts"
             ]
-        }
+        },
+        "esModuleInterop": true
     },
     "files": [
         "../index.d.ts",
-        "san-test.ts"
+        "./san-test.ts"
     ],
     "compileOnSave": false
 }

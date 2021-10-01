@@ -1,82 +1,106 @@
-import { defineComponent, Component } from "../..";
+import san, { defineComponent, Component, ComponentDefineOptions } from "../index";
+
+
+
+
+
 
 interface ColorPickerData {
     data: string;
     datasource: string[];
 }
 
-// san 作为命名空间使用（其中的 Component）
-interface ColorPicker extends Component {
+
+interface ColorPicker extends Component<ColorPickerData> {
     itemClick(color: string): void;
 }
 
-function ColorPicker(this: ColorPicker, options: { data: ColorPickerData }) {
-    san.Component.call(this, options);
+interface ColorPickerDefineOptions extends ComponentDefineOptions<ColorPickerData> {
+    itemClick: (item: string) => void;
 }
 
-// san 作为全局变量使用
-san.inherits(ColorPicker, san.Component);
-
-ColorPicker.prototype.template = ''
+const ColorPicker = san.defineComponent<ColorPickerData, ColorPickerDefineOptions>({
+    template: ''
     + '<ul class="ui-colorpicker">'
     + '<li '
     + 'san-for="item in datasource" '
     + 'style="cursor:pointer; background: {{item}};{{item == value ? \'border:2px solid #ccc;\' : \'\'}}" '
     + 'on-click="itemClick(item)"'
     + '>click</li>'
-    + '</ul>';
+    + '</ul>',
 
-ColorPicker.prototype.initData = function () {
-    return {
-        datasource: [
-            'red', 'blue', 'yellow', 'green'
-        ]
-    }
-};
+    itemClick (this: ColorPicker, item: string) {
+        this.data.set('value', item);
+    },
 
-ColorPicker.prototype.itemClick = function (this: ColorPicker, item: string) {
-    this.data.set('value', item);
-};
-
-ColorPicker.prototype.attached = function (this: ColorPicker) {
-    const me = this;
-    let nextValue: string;
-    const value = this.data.get('value') as string;
-    const datasource = this.data.get('datasource') as string[];
-    for (let i = 0; i < 4; i++) {
-        nextValue = datasource[i];
-        if (nextValue !== value) {
-            break;
+    attached(this: ColorPicker) {
+        const me = this;
+        let nextValue: string;
+        const value = this.data.get('value') as string;
+        const datasource = this.data.get('datasource') as string[];
+        for (let i = 0; i < 4; i++) {
+            nextValue = datasource[i];
+            if (nextValue !== value) {
+                break;
+            }
         }
-    }
+    
+        setTimeout(function () { me.itemClick(nextValue) }, 20);
+    },
 
-    setTimeout(function () { me.itemClick(nextValue) }, 20);
-};
+    initData() {
+        return {
+            datasource: [
+                'red', 'blue', 'yellow', 'green'
+            ]
+        };
+    }
+});
+
+let colorPicker = new ColorPicker();
+
+
 
 interface ClickerData {
     name: string;
     email: string;
+    dep: {
+        name: string;
+        info: {
+            du: boolean
+        }
+        age: number
+    }
 }
-interface ClickerMethods {
+
+interface ClickerOptions extends ComponentDefineOptions<ClickerData> {
+    clicker(name: string, email: string);
     mainClicker(): void;
-    clicker(name: string, email: string, event: Event): void;
 }
 
 let clicked = 0;
-const MyComponent = defineComponent({
+const MyComponent = defineComponent<ClickerData, ClickerOptions>({
     template: '<a on-click="mainClicker"><span title="{{name}}" on-click="clicker(name, email, $event)" style="color: red; cursor: pointer">{{name}}, please click here!</span></a>',
 
     mainClicker: function () {
         clicked++;
     },
 
-    clicker: function (name, email, event) {
+    clicker: function (name, email) {
         clicked++;
+    },
+
+    initData() {
+        return {name: 'aa'};
     }
 });
 
 const myComponent = new MyComponent();
-myComponent.data.set('name', 'errorrik');
+let name = myComponent.data.get('b');
+
+myComponent.data.set('name', '');
+myComponent.data.set('b', 2);
+
 myComponent.data.set('email', 'errorrik@gmail.com');
 
 const wrap = document.createElement('div');
@@ -111,13 +135,14 @@ let app = new Test({
 });
 
 // slot.spec
-const Head = san.defineComponent({
-    template: '<h3><slot/></h3>'
-});
+class Head extends Component {
+    static template = '<h3><slot/></h3>'
+}
 
-const Content = san.defineComponent({
-    template: '<p><slot/></p>'
-});
+class Content extends san.Component {
+    static template = '<p><slot/></p>'
+}
+
 
 const Folder = san.defineComponent({
     components: {
@@ -198,9 +223,10 @@ const InputComponent = san.defineComponent({
     template: '<input type="text" value="{{value}}"/>'
 });
 
-const LabelComponent = san.defineComponent({
-    template: '<u>{{value}}</u>'
-});
+class LabelComponent extends san.Component {
+    static template = '<u>{{value}}</u>';
+}
+
 
 san.defineComponent({
     components: {
