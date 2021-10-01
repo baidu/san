@@ -489,17 +489,17 @@ declare namespace san {
     }
 
     
-    interface ComponentLoaderOptions<T> {
-        load(): Promise<Component<T>>;
-        placeholder?: Component<{}>;
-        fallback?: Component<{}>;
+    interface ComponentLoaderOptions<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = {}> {
+        load(): Promise<DefinedComponentClass<DataT, OptionsT>>;
+        placeholder?: DefinedComponentClass<{}, {}>;
+        fallback?: DefinedComponentClass<{}, {}>;
     }
     
-    interface ComponentLoader<T> {
-        new(option?: ComponentNewOptions<T>): ComponentLoader<T>;
+    interface ComponentLoader<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = {}> {
+        new(option?: ComponentLoaderOptions<DataT, OptionsT>): ComponentLoader<DataT, OptionsT>;
     
-        start(onload: (componentClass: Component<T>) => void): void;
-        done(componentClass: Component<T> | Component<{}>): void;
+        start(onload: (componentClass: DefinedComponentClass<{}, {}>) => void): void;
+        done(componentClass: DefinedComponentClass<{}, {}>): void;
     }
 
     interface DefinedComponentClass<T extends {}, M> {
@@ -508,7 +508,7 @@ declare namespace san {
     
     
     function defineComponent<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = {}>(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
-    function createComponentLoader<T extends {}>(options: ComponentLoaderOptions<T> | ComponentLoaderOptions<T>['load']): ComponentLoader<T>;
+    function createComponentLoader<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = {}>(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptions<DataT, OptionsT>['load']): ComponentLoader<DataT, OptionsT>;
     
     function parseTemplate(template: string, options?: {
         trimWhitespace?: 'none' | 'blank' | 'all';
