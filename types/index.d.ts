@@ -6,9 +6,13 @@ type Get<T, K> = K extends `${infer L}.${infer R}`
     ? L extends keyof T
         ? Get<T[L], R>
         : unknown
-    : K extends keyof T
-        ? T[K]
-        : unknown
+    : K extends `${infer First}[${infer Tail}]`
+        ? First extends keyof T
+            ? T[First] extends Array<infer AT> ? AT : unknown
+            : unknown
+        : K extends keyof T
+            ? T[K]
+            : unknown
 
 type Result<T> = {
     [P in keyof T]: T[P]

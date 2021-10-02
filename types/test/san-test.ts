@@ -1,13 +1,10 @@
-import san, { defineComponent, Component, ComponentDefineOptions } from "../index";
-
-
-
+import san, { defineComponent, Component, ComponentDefineOptions, parseTemplate } from "../index";
 
 
 
 interface ColorPickerData {
     data: string;
-    datasource: string[];
+    datasource: Array<{name:string}>;
 }
 
 
@@ -20,26 +17,26 @@ interface ColorPickerDefineOptions extends ComponentDefineOptions<ColorPickerDat
 }
 
 const ColorPicker = san.defineComponent<ColorPickerData, ColorPickerDefineOptions>({
-    template: ''
-    + '<ul class="ui-colorpicker">'
-    + '<li '
-    + 'san-for="item in datasource" '
-    + 'style="cursor:pointer; background: {{item}};{{item == value ? \'border:2px solid #ccc;\' : \'\'}}" '
-    + 'on-click="itemClick(item)"'
-    + '>click</li>'
-    + '</ul>',
-
-    itemClick (this: ColorPicker, item: string) {
+    template: '' // Auto Complete
+        + '<ul class="ui-colorpicker">'
+        + '<li '
+        + 'san-for="item in datasource" '
+        + 'style="cursor:pointer; background: {{item}};{{item == value ? \'border:2px solid #ccc;\' : \'\'}}" '
+        + 'on-click="itemClick(item)"'
+        + '>click</li>'
+        + '</ul>',
+    
+    itemClick (this: ColorPicker, item: string) { // Auto Complete
         this.data.set('value', item);
     },
 
-    attached(this: ColorPicker) {
+    attached(this: ColorPicker) { // Auto Complete
         const me = this;
         let nextValue: string;
         const value = this.data.get('value') as string;
-        const datasource = this.data.get('datasource') as string[];
+        const datasource = this.data.get('datasource');
         for (let i = 0; i < 4; i++) {
-            nextValue = datasource[i];
+            nextValue = datasource[i].name;  // Auto Complete
             if (nextValue !== value) {
                 break;
             }
@@ -48,16 +45,23 @@ const ColorPicker = san.defineComponent<ColorPickerData, ColorPickerDefineOption
         setTimeout(function () { me.itemClick(nextValue) }, 20);
     },
 
-    initData() {
+    initData() { // Auto Complete
         return {
-            datasource: [
-                'red', 'blue', 'yellow', 'green'
+            datasource: [ // Auto Complete
+                {name:'red'}, 
+                {name:'blue'}, 
+                {name:'yellow'}, 
+                {name:'green'}
             ]
         };
     }
 });
 
 let colorPicker = new ColorPicker();
+let item2 = colorPicker.data.get('datasource[0]');
+let datasource = colorPicker.data.get('datasource') 
+item2.name // Auto Complete
+datasource[0].name  // Auto Complete
 
 
 
@@ -96,12 +100,12 @@ const MyComponent = defineComponent<ClickerData, ClickerOptions>({
 });
 
 const myComponent = new MyComponent();
-let name = myComponent.data.get('b');
+let name = myComponent.data.get('dep.info.du'); // boolean
 
-myComponent.data.set('name', '');
-myComponent.data.set('b', 2);
+myComponent.data.set('name', ''); // Type Check
+myComponent.data.set('b', 2); // Type Check
 
-myComponent.data.set('email', 'errorrik@gmail.com');
+myComponent.data.set('email', 'errorrik@gmail.com');  // Type Check
 
 const wrap = document.createElement('div');
 document.body.appendChild(wrap);
@@ -114,9 +118,8 @@ interface TestData {
 }
 
 const Test = san.defineComponent({
-    template: '<div>{name}</div>',
-    displayName: 'Test',
-    dataTypes: {
+    template: '<div>{name}</div>',  // Auto Complete
+    dataTypes: {  // Auto Complete
         name(data, dataName, componentName) {
             if (data[dataName] === 'hello') {
                 throw new Error('no `hello` allowed');
@@ -129,7 +132,7 @@ const Test = san.defineComponent({
 });
 
 let app = new Test({
-    data: {
+    data: {  // Auto Complete
         name: 'San'
     }
 });
@@ -145,12 +148,12 @@ class Content extends san.Component {
 
 
 const Folder = san.defineComponent({
-    components: {
+    components: {  // Auto Complete
         'x-head': Head,
         'x-content': Content
     },
 
-    template:
+    template:  // Auto Complete
         '<div>'
         + '<x-head on-click="native:toggle"><slot name="head">head</slot></x-head>'
         + '<x-content style="{{isShow ? \'\' : \'display:none\'}}"><slot>content</slot></x-content>'
@@ -165,10 +168,10 @@ const Folder = san.defineComponent({
 
 
 const ComponentWithSlot = san.defineComponent({
-    components: {
+    components: {  // Auto Complete
         'x-folder': Folder
     },
-    template:
+    template:  // Auto Complete
         '<div>'
         + '<x-folder isShow="true" s-ref="folder">'
         + '<b slot="head">{{head}}</b>'
@@ -181,20 +184,18 @@ const ComponentWithSlot = san.defineComponent({
 
 
 const slotComponent = new ComponentWithSlot({
-    data: {
+    data: {  // Auto Complete
         head: 'Hello',
         content: 'San',
         foot: 'Bye ER'
     }
 });
 
-slotComponent.attach(wrap);
+slotComponent.attach(wrap);  // Auto Complete
 
 // datatypes
-
 san.defineComponent({
     template: '<div>{name}</div>',
-    displayName: 'Test',
     dataTypes: {
         arrayOf1: san.DataTypes.arrayOf(san.DataTypes.number).isRequired,
         arrayOf2: san.DataTypes.arrayOf(san.DataTypes.number),
@@ -248,4 +249,5 @@ san.defineComponent({
 
 san.evalExpr(san.parseExpr('1+1'), new san.Data());
 
-san.parseTemplate('<div></div>', {trimWhitespace: 'all'});
+san.parseTemplate('<div></div>', {trimWhitespace: 'all'});  // Auto Complete
+parseTemplate('<div></div>', {trimWhitespace: 'blank'});
