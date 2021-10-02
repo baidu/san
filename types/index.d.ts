@@ -105,7 +105,10 @@ declare namespace san {
         dispatch<TMsg>(messageName: string, message: TMsg): void;
     
         // TODO: any? unknown?
-        watch(propName: string, watcher: (value: any, arg: {oldValue?: any, newValue?: any}) => void): void;
+        watch(
+            propName: string, 
+            watcher: (value: any, arg: {oldValue?: any, newValue?: any}) => void
+        ): void;
         
         ref<TCmpt extends Component<{}>>(refName: string): TCmpt;
         ref(refName: string): Component<{}> | Element;
@@ -263,7 +266,14 @@ declare namespace san {
         value: any,
     }
     
-    type DataTypeChecker = (data: any, dataName: string, componentName: string, fullDataName: string, secret?: any) => void;
+    type DataTypeChecker = (
+        data: any, 
+        dataName: string, 
+        componentName: string, 
+        fullDataName: string, 
+        secret?: any
+    ) => void;
+
     interface ChainableDataTypeChecker extends DataTypeChecker {
         isRequired: DataTypeChecker;
     }
@@ -496,17 +506,27 @@ declare namespace san {
         };
     
         // other methods/props on proto
-        // [key: string]: any;
+        [key: string]: any;
     }
 
-    
-    interface ComponentLoaderOptions<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = {}> {
-        load(): Promise<DefinedComponentClass<DataT, OptionsT>>;
+    type ComponentLoaderOptionsLoad<
+        DataT extends {} = {},
+        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
+    > = Promise<DefinedComponentClass<DataT, OptionsT>>;
+
+    interface ComponentLoaderOptions<
+        DataT extends {} = {},
+        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
+    > {
+        load(): ComponentLoaderOptionsLoad<DataT, OptionsT>;
         placeholder?: DefinedComponentClass<{}, {}>;
         fallback?: DefinedComponentClass<{}, {}>;
     }
     
-    interface ComponentLoader<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = {}> {
+    interface ComponentLoader<
+        DataT extends {} = {},
+        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
+    > {
         new(option?: ComponentLoaderOptions<DataT, OptionsT>): ComponentLoader<DataT, OptionsT>;
     
         start(onload: (componentClass: DefinedComponentClass<{}, {}>) => void): void;
@@ -517,8 +537,15 @@ declare namespace san {
         new(option?: ComponentNewOptions<T>): Component<T> & M;
     }
     
-    function defineComponent<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>>(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
-    function createComponentLoader<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>>(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptions<DataT, OptionsT>['load']): ComponentLoader<DataT, OptionsT>;
+    function defineComponent<
+        DataT extends {} = {}, 
+        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
+    >(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
+
+    function createComponentLoader<
+        DataT extends {}, 
+        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
+    >(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptionsLoad<DataT, OptionsT>): ComponentLoader<DataT, OptionsT>;
     
     function parseTemplate(
         template: string, 
@@ -527,6 +554,7 @@ declare namespace san {
             delimiters?: TemplateParseOptionDelimiters;
         }
     ): ANode;
+    
     function parseComponentTemplate(componentClass: Component<{}>): ANode;
     function unpackANode(source: Array<string|number|null|undefined>): ANode;
     
