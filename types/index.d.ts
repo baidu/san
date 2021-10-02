@@ -89,7 +89,7 @@ declare namespace san {
 
     class Component<T extends {} = {}> {
         constructor(option?: ComponentNewOptions<T>);
-    
+        
         el?: Element;
         data: Data<T>;
         parentComponent?: Component<{}>;
@@ -450,34 +450,37 @@ declare namespace san {
         el?: Element;
     }
 
+    interface ComponentDefineOptionFilters {
+        // TODO: any?unknown?
+        [k: string]: (value: any, ...filterOption: any[]) => any;
+    }
+
+    interface ComponentDefineOptionComponents {
+        [k: string]: Component<{}> | ComponentDefineOptions<{}> | ComponentLoader<{}> | 'self';
+    }
+
+    interface ComponentDefineOptionComputed<T> {
+        [k: string]: (this: { data: Data<T> }) => unknown;
+    }
+
+    interface ComponentDefineOptionMessages {
+        [k: string]: (arg?: {name?: string, target?: Component<{}>, value?: unknown}) => void;
+    }
+
+    type TemplateParseOptionDelimiters = [string, string]
+    type TemplateParseOptionTrimWhitespace = 'none' | 'blank' | 'all'
+
     interface ComponentDefineOptions<T extends {} = {}> {
-        trimWhitespace?: 'none' | 'blank' | 'all';
-        delimiters?: [string, string];
-        autoFillStyleAndId?: boolean;
-        initData?(): Partial<T>;
         template?: string;
-    
-        filters?: {
-            // TODO: any?unknown?
-            [k: string]: (value: any, ...filterOption: any[]) => any;
-        };
-    
-        components?: {
-            [k: string]: Component<{}> | ComponentDefineOptions<{}> | ComponentLoader<{}> | 'self';
-        };
-    
-        computed?: {
-            [k: string]: (this: { data: Data<T> }) => unknown;
-        };
-    
-        messages?: {
-            [k: string]: (arg?: {name?: string, target?: Component<{}>, value?: unknown}) => void;
-        };
-    
-        dataTypes?: {
-            [k: string]: DataTypeChecker;
-        },
-    
+        filters?: ComponentDefineOptionFilters;
+        components?: ComponentDefineOptionComponents;
+        computed?: ComponentDefineOptionComputed<T>;
+        messages?: ComponentDefineOptionMessages;
+        trimWhitespace?: TemplateParseOptionTrimWhitespace;
+        delimiters?: TemplateParseOptionDelimiters;
+        autoFillStyleAndId?: boolean;
+        
+        initData?(): Partial<T>;
         construct?(this: Component<T>, options?: ComponentNewOptions<T>): void;
         compiled?(this: Component<T>): void;
         inited?(this: Component<T>): void;
@@ -487,9 +490,13 @@ declare namespace san {
         disposed?(this: Component<T>): void;
         updated?(this: Component<T>): void;
         error?(e: Error, instance: Component<{}>, info: string): void;
+
+        dataTypes?: {
+            [k: string]: DataTypeChecker;
+        };
     
         // other methods/props on proto
-        [key: string]: any;
+        // [key: string]: any;
     }
 
     
@@ -510,14 +517,16 @@ declare namespace san {
         new(option?: ComponentNewOptions<T>): Component<T> & M;
     }
     
+    function defineComponent<DataT extends {} = {}, OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>>(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
+    function createComponentLoader<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>>(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptions<DataT, OptionsT>['load']): ComponentLoader<DataT, OptionsT>;
     
-    function defineComponent<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = {}>(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
-    function createComponentLoader<DataT extends {}, OptionsT extends ComponentDefineOptions<DataT> = {}>(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptions<DataT, OptionsT>['load']): ComponentLoader<DataT, OptionsT>;
-    
-    function parseTemplate(template: string, options?: {
-        trimWhitespace?: 'none' | 'blank' | 'all';
-        delimiters?: [string, string];
-    }): ANode;
+    function parseTemplate(
+        template: string, 
+        options?: {
+            trimWhitespace?: TemplateParseOptionTrimWhitespace;
+            delimiters?: TemplateParseOptionDelimiters;
+        }
+    ): ANode;
     function parseComponentTemplate(componentClass: Component<{}>): ANode;
     function unpackANode(source: Array<string|number|null|undefined>): ANode;
     
