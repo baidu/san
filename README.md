@@ -99,6 +99,7 @@ CDN:
 - [san-router](https://github.com/baidu/san-router) - SPA Router
 - [san-store](https://github.com/baidu/san-store) - Application States Management
 - [san-update](https://github.com/baidu/san-update) - Immutable Data Update
+- [san-composition](https://github.com/baidu/san-composition) - Composition API
 - [san-ssr](https://baidu.github.io/san-ssr/) - SSR framework and utils
 - [santd](https://ecomfe.github.io/santd/) - Components Library following the [Ant Design](https://ant.design/) specification
 - [san-mui](https://ecomfe.github.io/san-mui/) - [Material Design](https://www.material.io/) Components Library
