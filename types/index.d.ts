@@ -1,18 +1,17 @@
 export as namespace san
 export = san
 
-// TODO: unknown? any? never?
 type Get<T, K> = K extends `${infer L}.${infer R}`
     ? L extends keyof T
         ? Get<T[L], R>
-        : unknown
+        : any
     : K extends `${infer First}[${infer Tail}]`
         ? First extends keyof T
-            ? T[First] extends Array<infer AT> ? AT : unknown
-            : unknown
+            ? T[First] extends Array<infer AT> ? AT : any
+            : any
         : K extends keyof T
             ? T[K]
-            : unknown
+            : any
 
 type Result<T> = {
     [P in keyof T]: T[P]
@@ -554,7 +553,7 @@ declare namespace san {
             delimiters?: TemplateParseOptionDelimiters;
         }
     ): ANode;
-    
+
     function parseComponentTemplate(componentClass: Component<{}>): ANode;
     function unpackANode(source: Array<string|number|null|undefined>): ANode;
     
