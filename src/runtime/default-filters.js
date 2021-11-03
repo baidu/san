@@ -72,6 +72,8 @@ var DEFAULT_FILTERS = {
         outer = outer && defaultStyleFilter(outer);
         if (outer) {
             if (inner) {
+                // 移除最后多余的分号
+                inner = inner.replace(/;$/g, '');
                 return inner + ';' + outer;
             }
 
