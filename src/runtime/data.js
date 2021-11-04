@@ -156,24 +156,23 @@ function immutableSet(source, exprPaths, pathsStart, pathsLen, value, data) {
     }
     else if (typeof source === 'object') {
         result = {};
+        var needAssigned = true;
 
         for (var key in source) {
-
-
             /* istanbul ignore else  */
-            if (!source.hasOwnProperty(key)) {
-                continue;
-            }
-            if (key !== prop) {
-                result[key] = source[key];
-            }
-            else {
-                result[prop] = immutableSet(source[prop], exprPaths, pathsStart + 1, pathsLen, value, data);
+            if (source.hasOwnProperty(key)) {
+                if (key === prop) {
+                    needAssigned = false;
+                    result[prop] = immutableSet(source[prop], exprPaths, pathsStart + 1, pathsLen, value, data);
+                }
+                else {
+                    result[key] = source[key];
+                }
             }
         }
 
         // 如果set的是一个不存在的属性，会走到该逻辑
-        if (!source.hasOwnProperty(prop)) {
+        if (needAssigned) {
             result[prop] = immutableSet(source[prop], exprPaths, pathsStart + 1, pathsLen, value, data);
         }
     }
