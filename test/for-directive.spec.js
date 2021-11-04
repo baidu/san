@@ -3085,7 +3085,7 @@ describe("ForDirective", function () {
 
         var erikHTML = 'erik-erik@gmail.com';
         var grayHTML = 'otakustay-otakustay@gmail.com';
-        var xiaobeiHTML = 'xiaobei-xiaobei@gmai.com';
+        var xiaobeiHTML = 'xiaobei-xiaobei@gmail.com';
 
         myComponent.data.set('persons.erik', 'erik@gmail.com');
         myComponent.nextTick(function () {
