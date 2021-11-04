@@ -3063,7 +3063,51 @@ describe("ForDirective", function () {
                 done();
             });
         });
+    });
 
+    it("render object and set data, Object.keys should not change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p}}">{{i}}-{{p}}</li></ul>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                persons: {
+                    'erik': 'errorrik@gmail.com',
+                    'otakustay': 'otakustay@gmail.com'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var erikHTML = 'erik-erik@gmail.com';
+        var grayHTML = 'otakustay-otakustay@gmail.com';
+        var xiaobeiHTML = 'xiaobei-xiaobei@gmail.com';
+
+        myComponent.data.set('persons.erik', 'erik@gmail.com');
+        myComponent.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].innerHTML === erikHTML).toBeTruthy();
+            expect(lis[1].innerHTML === grayHTML).toBeTruthy();
+
+            myComponent.data.set('persons.xiaobei', 'xiaobei@gmail.com');
+            myComponent.nextTick(function () {
+                var lis = wrap.getElementsByTagName('li');
+
+                expect(lis.length).toBe(3);
+                expect(lis[0].innerHTML === erikHTML).toBeTruthy();
+                expect(lis[1].innerHTML === grayHTML).toBeTruthy();
+                expect(lis[2].innerHTML === xiaobeiHTML).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
     });
 
     it("render object, do nothing if irrelevant prop modified", function (done) {
