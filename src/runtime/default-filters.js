@@ -73,7 +73,10 @@ var DEFAULT_FILTERS = {
         if (outer) {
             if (inner) {
                 // 移除最后多余的分号
-                inner = inner.replace(/;$/g, '');
+                let len = inner.length;
+                if (inner[len - 1] === ';') {
+                    inner = inner.slice(0, len - 1);
+                }
                 return inner + ';' + outer;
             }
 
