@@ -814,7 +814,7 @@ describe("Form TwoWay Binding", function () {
 
     });
 
-    it("checkbox, typeof value is number", function (done) {
+    it("checkbox, typeof value is number and string", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
                 + '<input type="checkbox" checked="{= saChecked =}" value="{{value1}}">'
@@ -825,7 +825,7 @@ describe("Form TwoWay Binding", function () {
                 return {
                     saChecked: [1],
                     value1: 1,
-                    value2: 2
+                    value2: '2'
                 };
             }
         });
@@ -845,11 +845,11 @@ describe("Form TwoWay Binding", function () {
 
             function doneSpec1() {
                 var saChecked1 = myComponent.data.get('saChecked');
-                expect(saChecked1).toEqual([2]);
+                expect(saChecked1).toEqual(['2']);
 
                 function doneSpec2() {
                     var saChecked2 = myComponent.data.get('saChecked');
-                    expect(saChecked2).toEqual([2, 1]);
+                    expect(saChecked2).toEqual(['2', 1]);
                     done();
                 }
                 triggerEvent(inputs[0], 'click');
