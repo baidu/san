@@ -814,6 +814,55 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("checkbox, typeof value is number and string", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<input type="checkbox" checked="{= saChecked =}" value="{{value1}}">'
+                + '<input type="checkbox" checked="{= saChecked =}" value="{{value2}}">'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    saChecked: [1],
+                    value1: 1,
+                    value2: '2'
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(true);
+        expect(inputs[1].checked).toBe(false);
+
+        function doneSpec() {
+            var saChecked = myComponent.data.get('saChecked');
+            expect(saChecked).toEqual([]);
+
+            function doneSpec1() {
+                var saChecked1 = myComponent.data.get('saChecked');
+                expect(saChecked1).toEqual(['2']);
+
+                function doneSpec2() {
+                    var saChecked2 = myComponent.data.get('saChecked');
+                    expect(saChecked2).toEqual(['2', 1]);
+                    done();
+                }
+                triggerEvent(inputs[0], 'click');
+                setTimeout(doneSpec2, 500);
+            }
+            triggerEvent(inputs[1], 'click');
+            setTimeout(doneSpec1, 500);
+        }
+
+        triggerEvent(inputs[0], 'click');
+        setTimeout(doneSpec, 500);
+    });
+
     it("radio", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'

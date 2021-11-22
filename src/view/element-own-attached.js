@@ -96,7 +96,7 @@ function xPropOutput(element, bindInfo, data) {
         if (bindValue && bindType) {
             switch (el.type.toLowerCase()) {
                 case 'checkbox':
-                    data[el.checked ? 'push' : 'remove'](bindInfo.expr, el.value);
+                    data[el.checked ? 'push' : 'remove'](bindInfo.expr, evalExpr(bindValue.expr, data));
                     return;
 
                 case 'radio':
