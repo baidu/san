@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "noEmit": true,
         "target": "es5",
         "lib": [
             "dom",
@@ -7,7 +8,6 @@
         ],
         "baseUrl": ".",
         "strict": true,
-        "noEmit": true,
         "paths": {
             "san": [
                 "../index.d.ts"

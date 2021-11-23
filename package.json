@@ -17,7 +17,7 @@
     "test:cov": "npm run test -- -- --coverage",
     "test:e2e": "node ./test/e2e/wdio-launcher.js",
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
-    "test:types": "tsc -p ./types/test/tsconfig.json",
+    "test:types": "rm -f ./types/test/*.js && tsc -p ./types/test/tsconfig.json",
     "build": "node ./tool/build.js",
     "report-cov": "cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
