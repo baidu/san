@@ -96,7 +96,7 @@ const template = `
 </div>
 `;
 
-export default san.defineComponent<{
+interface FormData {
     id?: number;
     todo: Todo;
     categories: Category[];
@@ -105,7 +105,19 @@ export default san.defineComponent<{
             id:string
         }
     };
-}>({
+}
+
+interface IForm {
+    joinEndTime: () => void;
+    submit: () => void;
+    cancel: () => void;
+    startAddCategory: () => void;
+    startEditCategory: () => void;
+    updateCategories: () => void;
+}
+
+
+export default san.defineComponent<FormData, IForm>({
     template,
     
     components: {
@@ -115,22 +127,6 @@ export default san.defineComponent<{
     },
 
     computed: {
-        todo() {
-            let id = this.data.get('id');
-            if (id) {
-                return service.todo(id);
-            }
-
-            return {
-                id: 0,
-                title: '',
-                desc: '',
-                endTime: new Date().getTime(),
-                categoryId: null,
-                done: false
-            };
-        },
-
         endTimeHour() {
             let endTime = new Date(this.data.get('todo').endTime);
             return endTime.getHours();
@@ -148,9 +144,22 @@ export default san.defineComponent<{
 
     created() {
         let id = this.data.get('route.query.id');
+        let todo: Todo | null = null;
 
         if (id) {
             this.data.set('id', +id);
+            todo = service.todo(+id);
+        }
+
+        if (!todo) {
+            todo = {
+                id: 0,
+                title: '',
+                desc: '',
+                endTime: new Date().getTime(),
+                done: false,
+                categoryId: 1
+            }
         }
 
         this.updateCategories();
@@ -165,7 +174,6 @@ export default san.defineComponent<{
     submit() {
         this.joinEndTime();
         let todo = this.data.get('todo');
-        let id = this.data.get('id');
         if (!todo.id) {
             service.addTodo(todo);
         }
