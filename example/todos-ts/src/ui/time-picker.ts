@@ -12,6 +12,10 @@ class Layer extends san.Component<{
     value: number;
 }>{
     static filters = {formatHour};
+    static template = `
+    <ul class="ui-layer ui-timepicker-layer" style="left: {{left}}px; top: {{top}}px">
+        <li s-for="item, index in datasource" class="{{item == value ? 'selected' : ''}}" on-click="itemClick(item)">{{ item | formatHour }}</li>
+    </ul>`;
     
     initData() {
         let datasource = [];

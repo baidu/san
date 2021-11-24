@@ -11,22 +11,6 @@ import './form.css'
 import Todo from './model'
 import Category from '../category/model'
 
-const template = `
-<div class="form">
-    <input type="text" class="form-title" placeholder="标题" value="{= todo.title =}">
-    <textarea class="form-desc" placeholder="备注" value="{= todo.desc =}"></textarea>
-
-    <ui-categorypicker datasource="{{categories}}" value="{= todo.categoryId =}" />
-    <i class="fa fa-plus add-category" on-click="startAddCategory"></i>
-    <i class="fa fa-pencil edit-category" on-click="startEditCategory"></i>
-    <div>预期完成时间： <ui-calendar value="{= endTimeDate =}" /><ui-timepicker value="{= endTimeHour =}" /></div>
-
-    <div class="form-op">
-        <button type="button" class="form-ok" on-click="submit"><i class="fa fa-check-circle-o"></i></button>
-        <button type="button" class="form-cancel" on-click="cancel"><i class="fa fa-times-circle-o"></i></button>
-    </div>
-</div>
-`;
 
 
 const AddCategoryDialog = san.defineComponent({
@@ -94,6 +78,24 @@ const EditCategoryDialog = san.defineComponent({
     }
 });
 
+
+const template = `
+<div class="form">
+    <input type="text" class="form-title" placeholder="标题" value="{= todo.title =}">
+    <textarea class="form-desc" placeholder="备注" value="{= todo.desc =}"></textarea>
+
+    <ui-categorypicker datasource="{{categories}}" value="{= todo.categoryId =}" />
+    <i class="fa fa-plus add-category" on-click="startAddCategory"></i>
+    <i class="fa fa-pencil edit-category" on-click="startEditCategory"></i>
+    <div>预期完成时间： <ui-calendar value="{= endTimeDate =}" /><ui-timepicker value="{= endTimeHour =}" /></div>
+
+    <div class="form-op">
+        <button type="button" class="form-ok" on-click="submit"><i class="fa fa-check-circle-o"></i></button>
+        <button type="button" class="form-cancel" on-click="cancel"><i class="fa fa-times-circle-o"></i></button>
+    </div>
+</div>
+`;
+
 export default san.defineComponent<{
     id?: number;
     todo: Todo;
@@ -104,7 +106,8 @@ export default san.defineComponent<{
         }
     };
 }>({
-
+    template,
+    
     components: {
         'ui-categorypicker': CategoryPicker,
         'ui-timepicker': TimePicker,

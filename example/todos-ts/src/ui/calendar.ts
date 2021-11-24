@@ -120,6 +120,11 @@ const Layer = san.defineComponent<{
 
 
 export default san.defineComponent<{value: Date}>({
+    template: `
+    <div on-click="mainClick" class="ui-calendar">
+        {{ value | formatDate('YYYY-MM-DD') }}
+    </div>
+    `,
 
     initData() {
         return {
