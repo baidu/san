@@ -485,7 +485,11 @@ declare namespace san {
     }
 
     interface ComponentDefineOptionComputed<T> {
-        [k: string]: (this: { data: Data<T> }) => unknown;
+        [k: string]: (this: { 
+            data: {
+                get<TPath extends string>(name: TPath): Get<T, TPath>;
+            } 
+        }) => unknown;
     }
 
     interface ComponentDefineOptionMessages {
