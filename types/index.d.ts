@@ -96,6 +96,7 @@ declare namespace san {
         nodeType: NodeType.CMPT;
         lifeCycle: LifeCycleStage;
     
+        fire(eventName: string):void;
         fire<TEventArg>(eventName: string, eventArg: TEventArg): void;
         on(eventName: string, listener: () => void): void;
         on<TEventArg>(eventName: string, listener: (eventArg: TEventArg) => void): void;
