@@ -850,6 +850,9 @@ describe("Form TwoWay Binding", function () {
                 function doneSpec2() {
                     var saChecked2 = myComponent.data.get('saChecked');
                     expect(saChecked2).toEqual(['2', 1]);
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
                     done();
                 }
                 triggerEvent(inputs[0], 'click');
