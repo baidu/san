@@ -20,7 +20,6 @@
     "@types/jquery": "^3.5.9",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
-    "http-server": "^14.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
