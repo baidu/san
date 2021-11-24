@@ -1,0 +1,79 @@
+
+.form {
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin: 50px auto;
+    width: 90%;
+    max-width: 800px;
+    background: #555;
+    padding: 10px;
+    color: #999;
+}
+
+.form-op {
+    text-align: center;
+}
+
+.form-title,
+.form-desc {
+    display: block;
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: #fff;
+}
+
+.form-title:hover,
+.form-desc:hover,
+.form-title:focus,
+.form-desc:focus {
+    background: #444;
+}
+
+.form-title {
+    font-size: 18px;
+    height: 30px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+}
+
+.form-desc {
+    resize: none;
+    height: 40px;
+}
+
+.form-ok,
+.form-cancel {
+    box-sizing: border-box;
+    border: 0;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.form-ok {
+    color: #60a917;
+}
+
+.form-cancel {
+    color: #e51400;
+}
+
+
+.add-category-layer .form-title,
+.add-category-layer .form-title:hover,
+.add-category-layer .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.edit-category-layer .fa-times-circle-o {
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}

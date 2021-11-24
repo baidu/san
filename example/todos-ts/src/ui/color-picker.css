@@ -1,0 +1,16 @@
+
+.ui-colorpicker {
+    list-style: none;
+    display: inline-block;
+}
+
+.ui-colorpicker li {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.ui-colorpicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}

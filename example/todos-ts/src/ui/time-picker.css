@@ -1,0 +1,29 @@
+.ui-timepicker {
+    width: 70px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-timepicker:hover {
+    background: #444;
+}
+
+.ui-timepicker-layer {
+    font-size: 12px;
+    border: 1px solid #ddd;
+    width: 70px;
+}
+
+.ui-timepicker-layer li {
+    text-align: center;
+    cursor: pointer;
+}
+
+.ui-timepicker-layer li:hover {
+    background: #eee;
+}
+
+.ui-timepicker-layer li.selected {
+    background: #eee;
+}
