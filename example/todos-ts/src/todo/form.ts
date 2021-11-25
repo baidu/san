@@ -5,7 +5,7 @@ import CategoryPicker from '../ui/category-picker'
 import TimePicker from '../ui/time-picker'
 import Calendar from '../ui/calendar'
 
-import san from 'san'
+import san, {Component} from 'san'
 
 import './form.css'
 import Todo from './model'
@@ -46,16 +46,16 @@ const AddCategoryDialog = san.defineComponent({
     }
 });
 
-const EditCategoryDialog = san.defineComponent({
-    template: `
+class EditCategoryDialog extends Component {
+    static template = `
     <div class="ui-layer edit-category-layer" style="width: {{width}}px; top: {{top}}px; left: {{left}}px;">
         <i class="fa fa-times-circle-o" on-click="hide"></i>
         <ui-editcategory on-rm="edited" on-edit="edited" />
-    </div>`,
+    </div>`;
 
-    components: {
+    static components = {
         'ui-editcategory': EditCategory
-    },
+    };
 
     initData() {
         return {
@@ -63,20 +63,20 @@ const EditCategoryDialog = san.defineComponent({
             top: 100,
             left: -1000
         };
-    },
+    }
 
     show() {
         this.data.set('left', document.body.clientWidth / 2 - 100);
-    },
+    }
 
     hide() {
         this.data.set('left', -1000);
-    },
+    }
 
     edited() {
         this.fire('edited');
     }
-});
+}
 
 
 const template = `
@@ -128,12 +128,21 @@ export default san.defineComponent<FormData, IForm>({
 
     computed: {
         endTimeHour() {
-            let endTime = new Date(this.data.get('todo').endTime);
-            return endTime.getHours();
+            let todo = this.data.get('todo');
+            if (todo) {
+                return (new Date(todo.endTime)).getHours();
+            }
+
+            return (new Date()).getHours();
         },
 
         endTimeDate() {
-            let endTime = new Date(this.data.get('todo.endTime'));
+            let todo = this.data.get('todo');
+            let endTime = new Date();
+            if (todo) {
+                endTime = new Date(todo.endTime);
+            }
+            
             return new Date(
                 endTime.getFullYear(),
                 endTime.getMonth(),
