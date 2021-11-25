@@ -22,10 +22,10 @@ $ npm start
 本示例项目中，使用了不同的写法，以演示可以如何使用 typescript 编写组件。
 
 - [defineComponent](src/todo/form.ts#L16)
-- [defineComponent<DataT>](src/ui/calendar.ts#L12)
-- [defineComponent<DataT, ICmpt>](src/todo/list.ts#L56)
+- [defineComponent&lt;DataT>](src/ui/calendar.ts#L12)
+- [defineComponent&lt;DataT, ICmpt>](src/todo/list.ts#L56)
 - [extends Component](src/todo/form.ts#L49)
-- [extends Component<DataT>](src/category/add.ts#L9)
+- [extends Component&lt;DataT>](src/category/add.ts#L9)
 
 san 的类型支持允许在 typescript 中不定义任何类型就定义组件，但这不意味着我们认为这样做就很好。明确的类型对开发时有很大的帮助，这也是使用 typescript 而不是 anyscript 的理由。因此，我们推荐：
 
