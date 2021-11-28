@@ -918,6 +918,53 @@ describe("Form TwoWay Binding", function () {
 
     });
 
+    it("radio value is number", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div>'
+                + '<b>{{online}}</b>'
+                + '<label><input type="radio" value="{{1}}" checked="{=online=}" name="onliner">number1</label>'
+                + '<label><input type="radio" value="2" checked="{=online=}" name="onliner">string2</label>'
+                + '<label><input type="radio" value="{{3}}" checked="{=online=}" name="onliner">number3</label>'
+                + '</div>',
+
+            initData: function () {
+                return {
+                    online: 1
+                };
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var inputs = wrap.getElementsByTagName('input');
+        expect(inputs[0].checked).toBe(true);
+        expect(inputs[1].checked).toBe(false);
+        expect(inputs[2].checked).toBe(false);
+
+        function doneSpec() {
+            var online = myComponent.data.get('online');
+            expect(online).toBe('2');
+
+            function doneSpec1() {
+                var online1 = myComponent.data.get('online');
+                expect(online1).toBe(3);
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            }
+
+            triggerEvent(inputs[2], 'click');
+            setTimeout(doneSpec1, 500);
+        }
+
+        triggerEvent(inputs[1], 'click');
+        setTimeout(doneSpec, 500);
+    });
+
     it("select", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'

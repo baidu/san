@@ -100,7 +100,7 @@ function xPropOutput(element, bindInfo, data) {
                     return;
 
                 case 'radio':
-                    el.checked && data.set(bindInfo.expr, el.value, {
+                    el.checked && data.set(bindInfo.expr, evalExpr(bindValue.expr, data), {
                         target: {
                             node: element,
                             prop: bindInfo.name
