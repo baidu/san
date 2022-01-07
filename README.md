@@ -110,8 +110,8 @@ CDN:
 | [san-xui](https://ecomfe.github.io/san-xui/) | 百度云控制台风格的组件库 | A Set of UI Components that widely used on Baidu Cloud Console |
 | [sanny](https://github.com/searchfe/sanny) | VSCode 插件 - VSCode extension for SAN |
 | [san-cli](https://github.com/ecomfe/san-cli) | 帮助快速搭建应用的命令行工具 | A CLI tooling for rapid development |
-| [san-loader](https://github.com/ecomfe/san-cli/tree/master/packages/san-loader) | 支持 sfc 的 Webpack loader - Webpack loader for single-file components |
-| [san-factory](https://github.com/baidu/san-factory) - 组件工厂能帮助你在不同环境下更灵活的装配组件 | Component register and instantiation |
+| [san-loader](https://github.com/ecomfe/san-cli/tree/master/packages/san-loader) | 支持 sfc 的 Webpack loader | Webpack loader for single-file components |
+| [san-factory](https://github.com/baidu/san-factory) | 组件工厂能帮助你在不同环境下更灵活的装配组件 | Component register and instantiation |
 | [san-anode-utils](https://github.com/ecomfe/san-anode-utils) | [ANode](https://github.com/baidu/san/blob/master/doc/anode.md) 处理工具库 | Util Functions for [ANode](https://github.com/baidu/san/blob/master/doc/anode.md) |
 | [san-test-utils](https://github.com/ecomfe/san-test-utils) | 单元测试工具库 | The unit testing utility library |
 
