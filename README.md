@@ -7,6 +7,7 @@
 <h1 align="center">SAN</h1>
 
 <p align="center">
+一个快速、轻量、灵活的 JavaScript 组件框架
 A fast, portable, flexible JavaScript component framework.
 </p>
 
@@ -26,7 +27,7 @@ A fast, portable, flexible JavaScript component framework.
 
 
 
-## Download
+## 安装(Install)
 
 NPM:
 
@@ -40,10 +41,10 @@ CDN:
 <script src="https://unpkg.com/san@latest"></script>
 ```
 
-[Dist Files Information](https://github.com/baidu/san/tree/master/dist)
+[发布文件说明(Dist Files Information)](https://github.com/baidu/san/tree/master/dist)
 
 
-## Quick Start
+## 快速开始(Quick Start)
 
 ```html
 <!DOCTYPE html>
@@ -77,17 +78,17 @@ CDN:
 </html>
 ```
 
-## Examples
+## 示例(Examples)
 
 - [Online Examples](https://baidu.github.io/san/example/)
 - [Todos(AMD)](https://github.com/baidu/san/tree/master/example/todos-amd)
 - [Todos(ESNext)](https://github.com/baidu/san/tree/master/example/todos-esnext)
 - [RealWorld App(with store)](https://github.com/ecomfe/san-realworld-app)
 
-## Document
+## 文档(Document)
 
-- [Start](https://baidu.github.io/san/tutorial/start/)
-- [Tutorial](https://baidu.github.io/san/tutorial/setup/)
+- [开始(Start)](https://baidu.github.io/san/tutorial/start/)
+- [教程(Tutorial)](https://baidu.github.io/san/tutorial/setup/)
 - [API](https://baidu.github.io/san/doc/api/)
 - [ANode](https://github.com/baidu/san/blob/master/doc/anode.md)
 - [APack](https://github.com/baidu/san/blob/master/doc/anode-pack.md)
@@ -111,7 +112,7 @@ CDN:
 - [san-anode-utils](https://github.com/ecomfe/san-anode-utils) - Util Functions for [ANode](https://github.com/baidu/san/blob/master/doc/anode.md)
 - [san-test-utils](https://github.com/ecomfe/san-test-utils) - The unit testing utility library
 
-## ChangeLog
+## 变更历史(ChangeLog)
 
 Please visit document [ChangeLog](https://github.com/baidu/san/blob/master/CHANGELOG.md)
 
