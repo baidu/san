@@ -95,6 +95,9 @@ declare namespace san {
     
         nodeType: NodeType.CMPT;
         lifeCycle: LifeCycleStage;
+
+        listeners: ComponentListener<T>;
+        messages: ComponentDefineOptionMessages;
     
         fire(eventName: string):void;
         fire<TEventArg>(eventName: string, eventArg: TEventArg): void;
@@ -469,6 +472,13 @@ declare namespace san {
         nodeType: NodeType.SLOT;
     }
     
+    interface ComponentListener<T> {
+        [k: string]: {
+            fn: (this: Component<T>, event: any) => void;
+            declaration?: string;
+        }[]
+    }
+
     interface ComponentNewOptions<T extends {} = {}> {
         data?: Partial<T>;
         owner?: Component<{}>;
