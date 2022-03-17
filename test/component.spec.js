@@ -756,6 +756,36 @@ describe("Component", function () {
         document.body.removeChild(wrap);
     });
 
+    it("components with pascal tagName allowed", function () {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'Label': Label,
+            },
+            template: '<div><Label/></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
     it("components use s-is", function () {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>',
@@ -3248,7 +3278,7 @@ describe("Component", function () {
             expect(e.oldValue.email).toBe(oldEmail);
             expect(e.newValue).toBe(value);
             expect(this.data.get('projects[0].author.email')).toBe(value.email);
-            
+
             watchTriggerTimes++;
         });
 

@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
+        "noEmit": true,
         "target": "es5",
         "lib": [
             "dom",
             "es2015"
         ],
         "baseUrl": ".",
+        "strict": true,
         "paths": {
             "san": [
                 "../index.d.ts"
@@ -13,9 +15,9 @@
         },
         "esModuleInterop": true
     },
-    "files": [
+    "include": [
         "../index.d.ts",
-        "./san-test.ts"
+        "./*.ts"
     ],
     "compileOnSave": false
 }

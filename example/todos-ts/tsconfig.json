@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "strict": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "compileOnSave": false
+}

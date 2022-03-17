@@ -850,6 +850,9 @@ describe("Form TwoWay Binding", function () {
                 function doneSpec2() {
                     var saChecked2 = myComponent.data.get('saChecked');
                     expect(saChecked2).toEqual(['2', 1]);
+
+                    myComponent.dispose();
+                    document.body.removeChild(wrap);
                     done();
                 }
                 triggerEvent(inputs[0], 'click');
@@ -918,18 +921,19 @@ describe("Form TwoWay Binding", function () {
 
     });
 
-    it("radio value is number", function (done) {
+    it("radio, number valued", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div>'
                 + '<b>{{online}}</b>'
-                + '<label><input type="radio" value="{{1}}" checked="{=online=}" name="onliner">number1</label>'
-                + '<label><input type="radio" value="2" checked="{=online=}" name="onliner">string2</label>'
-                + '<label><input type="radio" value="{{3}}" checked="{=online=}" name="onliner">number3</label>'
+                + '<label><input type="radio" value="{{values[0]}}" checked="{=online=}" name="onliner">errorrik</label>'
+                + '<label><input type="radio" value="{{values[1]}}" checked="{=online=}" name="onliner">varsha</label>'
+                + '<label><input type="radio" value="{{values[2]}}" checked="{=online=}" name="onliner">firede</label>'
                 + '</div>',
 
             initData: function () {
                 return {
-                    online: 1
+                    values: [1, 2, 3],
+                    online: 2
                 };
             }
         });
@@ -940,29 +944,39 @@ describe("Form TwoWay Binding", function () {
         myComponent.attach(wrap);
 
         var inputs = wrap.getElementsByTagName('input');
-        expect(inputs[0].checked).toBe(true);
-        expect(inputs[1].checked).toBe(false);
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
         expect(inputs[2].checked).toBe(false);
+        expect(wrap.getElementsByTagName('b')[0].innerHTML.indexOf('2')).toBe(0);
+
 
         function doneSpec() {
             var online = myComponent.data.get('online');
-            expect(online).toBe('2');
+            if (online !== 2) {
+                var bEl = wrap.getElementsByTagName('b')[0];
+                expect(bEl.innerHTML.indexOf(online) >= 0).toBe(true);
+                expect(typeof online).toBe('number');
 
-            function doneSpec1() {
-                var online1 = myComponent.data.get('online');
-                expect(online1).toBe(3);
 
+                var inputs = wrap.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    var input = inputs[i];
+                    expect(input.checked).toBe(online == input.value);
+                }
+
+                done();
                 myComponent.dispose();
                 document.body.removeChild(wrap);
-                done();
+                return;
             }
 
-            triggerEvent(inputs[2], 'click');
-            setTimeout(doneSpec1, 500);
+            setTimeout(doneSpec, 500);
         }
 
-        triggerEvent(inputs[1], 'click');
+        triggerEvent(inputs[0], 'click');
+
         setTimeout(doneSpec, 500);
+
     });
 
     it("select", function (done) {

@@ -94,7 +94,7 @@ function xPropOutput(element, bindInfo, data) {
         var bindType = getANodeProp(element.aNode, 'type');
 
         if (bindValue && bindType) {
-            switch (el.type.toLowerCase()) {
+            switch (el.type) {
                 case 'checkbox':
                     data[el.checked ? 'push' : 'remove'](bindInfo.expr, evalExpr(bindValue.expr, data));
                     return;

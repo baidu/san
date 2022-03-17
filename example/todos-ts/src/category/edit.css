@@ -1,0 +1,34 @@
+.edit-category {
+    cursor: pointer;
+}
+
+.edit-category-list input {
+    display: block;
+}
+
+.edit-category-list .ui-colorpicker {
+    display: block;
+    margin-top: 3px;
+}
+
+.edit-category-list > li {
+    margin: 10px;
+}
+
+.edit-category-list .fa-check {
+    cursor: pointer;
+    color: green;
+}
+
+.edit-category-list .fa-trash {
+    cursor: pointer;
+    color: red;
+}
+
+.edit-category-list .form-title,
+.edit-category-list .form-title:hover,
+.edit-category-list .form-title:focus {
+    background: #eee;
+    border: 1px solid #ddd;
+    color: #333;
+}

@@ -71,9 +71,6 @@ function parseTemplate(source, options) {
         var tagMatchStart = walker.index - tagMatch[0].length;
         var tagEnd = tagMatch[1];
         var tagName = tagMatch[2];
-        if (!svgTags[tagName]) {
-            tagName = tagName.toLowerCase();
-        }
 
         // 62: >
         // 47: /

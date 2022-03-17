@@ -1,0 +1,22 @@
+ 
+.ui-categorypicker {
+    display: inline-block;
+}
+
+.ui-categorypicker li {
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.ui-categorypicker li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.ui-categorypicker .selected {
+    box-shadow: 0 0 0 2px #ddd inset;
+}

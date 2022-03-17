@@ -86,9 +86,9 @@ declare namespace san {
         remove(expr: string | AccessorExpr, value: any, option?: DataChangeOption): void;
     }
 
-    class Component<T extends {} = {}> {
-        constructor(option?: ComponentNewOptions<T>);
-        
+
+    interface Component<T extends {} = {}> {
+
         el?: Element;
         data: Data<T>;
         parentComponent?: Component<{}>;
@@ -96,6 +96,7 @@ declare namespace san {
         nodeType: NodeType.CMPT;
         lifeCycle: LifeCycleStage;
     
+        fire(eventName: string):void;
         fire<TEventArg>(eventName: string, eventArg: TEventArg): void;
         on(eventName: string, listener: () => void): void;
         on<TEventArg>(eventName: string, listener: (eventArg: TEventArg) => void): void;
@@ -103,7 +104,6 @@ declare namespace san {
     
         dispatch<TMsg>(messageName: string, message: TMsg): void;
     
-        // TODO: any? unknown?
         watch(
             propName: string, 
             watcher: (value: any, arg: {oldValue?: any, newValue?: any}) => void
@@ -119,7 +119,24 @@ declare namespace san {
         dispose(): void;
     
         nextTick(handler: () => void): void;
+
+
+        initData?(): Partial<T>;
+        construct?(options?: ComponentNewOptions<T>): void;
+        compiled?(): void;
+        inited?(): void;
+        created?(): void;
+        attached?(): void;
+        detached?(): void;
+        disposed?(): void;
+        updated?(): void;
+        error?(e: Error, instance: Component<{}>, info: string): void;
     }
+
+    class Component<T extends {} = {}> {
+        constructor(option?: ComponentNewOptions<T>);
+    }
+
 
     enum ExprType {
         STRING = 1,
@@ -460,16 +477,19 @@ declare namespace san {
     }
 
     interface ComponentDefineOptionFilters {
-        // TODO: any?unknown?
         [k: string]: (value: any, ...filterOption: any[]) => any;
     }
 
     interface ComponentDefineOptionComponents {
-        [k: string]: Component<{}> | ComponentDefineOptions<{}> | ComponentLoader<{}> | 'self';
+        [k: string]: Component<{}> | ComponentDefineOptions<{}> | ComponentLoader | 'self';
     }
 
     interface ComponentDefineOptionComputed<T> {
-        [k: string]: (this: { data: Data<T> }) => unknown;
+        [k: string]: (this: { 
+            data: {
+                get<TPath extends string>(name: TPath): Get<T, TPath>;
+            } 
+        }) => unknown;
     }
 
     interface ComponentDefineOptionMessages {
@@ -490,14 +510,14 @@ declare namespace san {
         autoFillStyleAndId?: boolean;
         
         initData?(): Partial<T>;
-        construct?(this: Component<T>, options?: ComponentNewOptions<T>): void;
-        compiled?(this: Component<T>): void;
-        inited?(this: Component<T>): void;
-        created?(this: Component<T>): void;
-        attached?(this: Component<T>): void;
-        detached?(this: Component<T>): void;
-        disposed?(this: Component<T>): void;
-        updated?(this: Component<T>): void;
+        construct?(options?: ComponentNewOptions<T>): void;
+        compiled?(): void;
+        inited?(): void;
+        created?(): void;
+        attached?(): void;
+        detached?(): void;
+        disposed?(): void;
+        updated?(): void;
         error?(e: Error, instance: Component<{}>, info: string): void;
 
         dataTypes?: {
@@ -508,25 +528,15 @@ declare namespace san {
         [key: string]: any;
     }
 
-    type ComponentLoaderOptionsLoad<
-        DataT extends {} = {},
-        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
-    > = Promise<DefinedComponentClass<DataT, OptionsT>>;
 
-    interface ComponentLoaderOptions<
-        DataT extends {} = {},
-        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
-    > {
-        load(): ComponentLoaderOptionsLoad<DataT, OptionsT>;
+    interface ComponentLoaderOptions {
+        load(): Promise<DefinedComponentClass<{}, {}>>;
         placeholder?: DefinedComponentClass<{}, {}>;
         fallback?: DefinedComponentClass<{}, {}>;
     }
     
-    interface ComponentLoader<
-        DataT extends {} = {},
-        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
-    > {
-        new(option?: ComponentLoaderOptions<DataT, OptionsT>): ComponentLoader<DataT, OptionsT>;
+    interface ComponentLoader {
+        new(option?: ComponentLoaderOptions): ComponentLoader;
     
         start(onload: (componentClass: DefinedComponentClass<{}, {}>) => void): void;
         done(componentClass: DefinedComponentClass<{}, {}>): void;
@@ -536,15 +546,16 @@ declare namespace san {
         new(option?: ComponentNewOptions<T>): Component<T> & M;
     }
     
-    function defineComponent<
-        DataT extends {} = {}, 
-        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
-    >(options: OptionsT): DefinedComponentClass<DataT, OptionsT>;
+    type ComponentDefineOptionsWithThis<DataT, OptionsT> = ComponentDefineOptions<DataT> & OptionsT 
+        & ThisType<Component<DataT> & ComponentDefineOptions<DataT> & OptionsT>;
 
-    function createComponentLoader<
-        DataT extends {}, 
-        OptionsT extends ComponentDefineOptions<DataT> = ComponentDefineOptions<DataT>
-    >(options: ComponentLoaderOptions<DataT, OptionsT> | ComponentLoaderOptionsLoad<DataT, OptionsT>): ComponentLoader<DataT, OptionsT>;
+    function defineComponent<DataT extends {} = {}, OptionsT extends {} = {}>(
+        options: ComponentDefineOptionsWithThis<DataT, OptionsT>
+    ): DefinedComponentClass<DataT, OptionsT>;
+
+    function createComponentLoader(
+        options: ComponentLoaderOptions | ComponentLoaderOptions["load"]
+    ): ComponentLoader;
     
     function parseTemplate(
         template: string, 
