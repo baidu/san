@@ -177,7 +177,6 @@ function preheatANode(aNode, componentInstance) {
                         _b: aNode._b,
                         _ce: aNode._ce
                     };
-                    aNode.hasRootNode = true;
                     aNode.Clazz = IfNode;
                     aNode = aNode.ifRinsed;
                 }
@@ -199,7 +198,6 @@ function preheatANode(aNode, componentInstance) {
                         _b: aNode._b,
                         _ce: aNode._ce
                     };
-                    aNode.hasRootNode = true;
                     aNode.Clazz = ForNode;
                     aNode = aNode.forRinsed;
                 }
@@ -221,7 +219,6 @@ function preheatANode(aNode, componentInstance) {
                         _b: aNode._b,
                         _ce: aNode._ce
                     };
-                    aNode.hasRootNode = true;
                     aNode.Clazz = IsNode;
                     aNode = aNode.isRinsed;
                 }
@@ -233,7 +230,6 @@ function preheatANode(aNode, componentInstance) {
 
                     case 'template':
                     case 'fragment':
-                        aNode.hasRootNode = true;
                         aNode.Clazz = TemplateNode;
                         break;
 
