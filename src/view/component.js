@@ -48,6 +48,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
 var handleError = require('../util/handle-error');
+var DOMChildrenWalker = require('./dom-children-walker');
 
 
 
@@ -299,6 +300,11 @@ function Component(options) { // eslint-disable-line
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
         var RootComponentType = this.components[this.aNode.tagName];
+
+        // 入口根节点为多个组件
+        if (!reverseWalker && this.aNode.directives['if']) {
+            reverseWalker = new DOMChildrenWalker(this.el.parentNode);
+        }
 
         if (reverseWalker && (this.aNode.hasRootNode || RootComponentType)) {
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
