@@ -299,7 +299,6 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-
         if (this.aNode.Clazz || this.components[this.aNode.tagName]) {
             if (!reverseWalker) {
                 reverseWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
