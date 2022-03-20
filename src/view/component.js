@@ -299,14 +299,6 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        // var RootComponentType = this.components[this.aNode.tagName];
-
-        // // 入口根节点为多个组件
-        // if (!reverseWalker && this.aNode.directives['if']) {
-        //     reverseWalker = new DOMChildrenWalker(this.el.parentNode);
-        // }
-
-        // if (reverseWalker && (this.aNode.hasRootNode || RootComponentType)) {
         if (this.aNode.Clazz || this.components[this.aNode.tagName]) {
             if (!reverseWalker) {
                 reverseWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
@@ -314,15 +306,6 @@ function Component(options) { // eslint-disable-line
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
-        // else if (this.el && RootComponentType) {
-        //     this._rootNode = new RootComponentType({
-        //         source: this.aNode,
-        //         owner: this,
-        //         scope: this.data,
-        //         parent: this,
-        //         el: this.el
-        //     });
-        // }
         else {
             if (reverseWalker) {
                 var currentNode = reverseWalker.current;
@@ -1011,7 +994,6 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
         var aNode = this.aNode;
 
-        // if (aNode.hasRootNode || this.components[aNode.tagName]) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
