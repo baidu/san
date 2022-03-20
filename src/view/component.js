@@ -303,7 +303,6 @@ function Component(options) { // eslint-disable-line
             if (!reverseWalker) {
                 reverseWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             }
-            
             this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
