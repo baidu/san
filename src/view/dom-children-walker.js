@@ -16,37 +16,45 @@ var removeEl = require('../browser/remove-el');
  * @inner
  * @class
  * @param {HTMLElement} el 要遍历的元素
+ * @param {HTMLElement} onlyCurrent 当作为根时使用
  */
-function DOMChildrenWalker(el) {
-    this.children = [];
+function DOMChildrenWalker(el, onlyCurrent) {
     this.index = 0;
     this.target = el;
+    
+    if (onlyCurrent) {
+        this.children = [onlyCurrent, onlyCurrent.nextSibling];
+        this.current = onlyCurrent;
+        this.next = this.children[1];
+    }
+    else {
+        this.children = [];
+        var child = el.firstChild;
+        var next;
+        while (child) {
+            next = child.nextSibling;
 
-    var child = el.firstChild;
-    var next;
-    while (child) {
-        next = child.nextSibling;
+            switch (child.nodeType) {
+                case 3:
+                    if (/^\s*$/.test(child.data || child.textContent)) {
+                        removeEl(child);
+                    }
+                    else {
+                        this.children.push(child);
+                    }
+                    break;
 
-        switch (child.nodeType) {
-            case 3:
-                if (/^\s*$/.test(child.data || child.textContent)) {
-                    removeEl(child);
-                }
-                else {
+                case 1:
+                case 8:
                     this.children.push(child);
-                }
-                break;
+            }
 
-            case 1:
-            case 8:
-                this.children.push(child);
+            child = next;
         }
 
-        child = next;
+        this.current = this.children[0];
+        this.next = this.children[1];
     }
-
-    this.current = this.children[this.index];
-    this.next = this.children[this.index + 1];
 }
 
 /**
