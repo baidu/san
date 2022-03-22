@@ -54,7 +54,7 @@
     "mustache": "^3.0.1",
     "opener": "^1.5.1",
     "san-anode-cases": "^3.10.1",
-    "san-html-cases": "^3.10.24",
+    "san-html-cases": "^3.10.25",
     "source-map": "^0.7.3",
     "swig-templates": "^2.0.3",
     "typescript": "^4.3.5",
