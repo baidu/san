@@ -8,7 +8,6 @@
  */
 
 
-var each = require('../util/each');
 var DOMChildrenWalker = require('./dom-children-walker');
 var createReverseNode = require('./create-reverse-node');
 
