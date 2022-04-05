@@ -14,7 +14,6 @@
     // require('./util/extend');
     // require('./util/inherits');
     // require('./util/each');
-    // require('./util/contains');
     // require('./util/bind');
     // require('./browser/on');
     // require('./browser/un');

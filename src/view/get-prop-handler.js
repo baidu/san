@@ -7,7 +7,6 @@
  * @file 获取属性处理对象
  */
 
-var contains = require('../util/contains');
 var empty = require('../util/empty');
 var nextTick = require('../util/next-tick');
 var svgTags = require('../browser/svg-tags');
@@ -125,59 +124,57 @@ var defaultElementPropHandlers = {
 /* eslint-enable fecs-properties-quote */
 
 var analInputChecker = {
-    checkbox: contains,
+    checkbox: function (array, value) {
+        if (array instanceof Array) {
+            var len = array.length;
+            while (len--) {
+                if (array[len] === value) {
+                    return true;
+                }
+            }
+        }
+    },
     radio: function (a, b) {
         return a === b;
     }
 };
 
-function analInputCheckedState(element, value) {
-    var bindValue = getANodeProp(element.aNode, 'value');
-    var bindType = getANodeProp(element.aNode, 'type');
-
-    if (bindValue && bindType) {
-        var type = evalExpr(bindType.expr, element.scope, element.owner);
-
-        if (analInputChecker[type]) {
-            var bindChecked = getANodeProp(element.aNode, 'checked');
-            if (bindChecked != null && !bindChecked.hintExpr) {
-                bindChecked.hintExpr = bindValue.expr;
-            }
-
-            return !!analInputChecker[type](
-                value,
-                element.data
-                    ? evalExpr(bindValue.expr, element.data, element)
-                    : evalExpr(bindValue.expr, element.scope, element.owner)
-            );
-        }
-    }
-}
 
 var elementPropHandlers = {
     input: {
         multiple: boolPropHandler,
         checked: function (el, value, name, element) {
-            var state = analInputCheckedState(element, value);
+            var state = value;
 
-            boolPropHandler(
-                el,
-                state != null ? state : value,
-                'checked',
-                element
-            );
+            var bindValue = getANodeProp(element.aNode, 'value');
+            var bindType = getANodeProp(element.aNode, 'type');
+
+            if (bindValue && bindType) {
+                var type = evalExpr(bindType.expr, element.scope, element.owner);
+
+                if (analInputChecker[type]) {
+                    var bindChecked = getANodeProp(element.aNode, 'checked');
+                    if (bindChecked != null && !bindChecked.hintExpr) {
+                        bindChecked.hintExpr = bindValue.expr;
+                    }
+
+                    state = !!analInputChecker[type](
+                        value,
+                        element.data
+                            ? evalExpr(bindValue.expr, element.data, element)
+                            : evalExpr(bindValue.expr, element.scope, element.owner)
+                    );
+                }
+            }
+
+            boolPropHandler(el, state, 'checked', element);
 
             // #[begin] allua
             // 代码不用抽出来防重复，allua内的代码在现代浏览器版本会被编译时干掉，gzip也会处理重复问题
             // see: #378
             /* istanbul ignore if */
             if (ie && ie < 8 && !element.lifeCycle.attached) {
-                boolPropHandler(
-                    el,
-                    state != null ? state : value,
-                    'defaultChecked',
-                    element
-                );
+                boolPropHandler(el, state, 'defaultChecked', element);
             }
             // #[end]
         },
