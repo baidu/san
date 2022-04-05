@@ -551,7 +551,7 @@ declare namespace san {
 
     function defineComponent<DataT extends {} = {}, OptionsT extends {} = {}>(
         options: ComponentDefineOptionsWithThis<DataT, OptionsT>,
-        superClass?: Component<{}>
+        superClass?: DefinedComponentClass<{}, {}>
     ): DefinedComponentClass<DataT, OptionsT>;
 
     function createComponentLoader(
