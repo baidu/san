@@ -7,7 +7,6 @@
  * @file 解析抽象节点属性
  */
 
-var each = require('../util/each');
 var kebab2camel = require('../util/kebab2camel');
 var boolAttrs = require('../browser/bool-attrs');
 var ExprType = require('./expr-type');
