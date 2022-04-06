@@ -7,7 +7,6 @@
  * @file if 指令节点类
  */
 
-var each = require('../util/each');
 var guid = require('../util/guid');
 var insertBefore = require('../browser/insert-before');
 var evalExpr = require('../runtime/eval-expr');
