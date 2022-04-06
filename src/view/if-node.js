@@ -52,22 +52,25 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
             );
         }
         else {
-            var me = this;
-            each(aNode.elses, function (elseANode, index) {
-                var elif = elseANode.directives.elif;
+            var elses = aNode.elses;
+            if (elses) {
+                for (var i = 0, l = elses.length; i < l; i++) {
+                    var elseANode = elses[i];
+                    var elif = elseANode.directives.elif;
 
-                if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
-                    me.elseIndex = index;
-                    me.children[0] = createReverseNode(
-                        elseANode,
-                        me,
-                        me.scope,
-                        me.owner,
-                        reverseWalker
-                    );
-                    return false;
+                    if (!elif || elif && evalExpr(elif.value, this.scope, this.owner)) {
+                        this.elseIndex = i;
+                        this.children[0] = createReverseNode(
+                            elseANode,
+                            this,
+                            this.scope,
+                            this.owner,
+                            reverseWalker
+                        );
+                        break;
+                    }
                 }
-            });
+            }
         }
 
         this._create();
@@ -88,7 +91,7 @@ IfNode.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 IfNode.prototype.attach = function (parentEl, beforeEl) {
-    var me = this;
+    var elses = this.aNode.elses;
     var elseIndex;
     var child;
 
@@ -96,16 +99,17 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
         child = createNode(this.aNode.ifRinsed, this, this.scope, this.owner);
         elseIndex = -1;
     }
-    else {
-        each(this.aNode.elses, function (elseANode, index) {
+    else if (elses) {
+        for (var i = 0, l = elses.length; i < l; i++) {
+            var elseANode = elses[i];
             var elif = elseANode.directives.elif;
 
-            if (!elif || elif && evalExpr(elif.value, me.scope, me.owner)) {
-                child = createNode(elseANode, me, me.scope, me.owner);
-                elseIndex = index;
-                return false;
+            if (!elif || elif && evalExpr(elif.value, this.scope, this.owner)) {
+                child = createNode(elseANode, this, this.scope, this.owner);
+                elseIndex = i;
+                break;
             }
-        });
+        }
     }
 
     if (child) {
@@ -128,21 +132,23 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
 IfNode.prototype._update = function (changes) {
     var me = this;
     var childANode = this.aNode.ifRinsed;
+    var elses = this.aNode.elses;
     var elseIndex;
 
     if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
         elseIndex = -1;
     }
-    else {
-        each(this.aNode.elses, function (elseANode, index) {
+    else if (elses) {
+        for (var i = 0, l = elses.length; i < l; i++) {
+            var elseANode = elses[i];
             var elif = elseANode.directives.elif;
 
-            if (elif && evalExpr(elif.value, me.scope, me.owner) || !elif) {
-                elseIndex = index;
+            if (elif && evalExpr(elif.value, this.scope, this.owner) || !elif) {
+                elseIndex = i;
                 childANode = elseANode;
-                return false;
+                break;
             }
-        });
+        }
     }
 
     var child = this.children[0];
