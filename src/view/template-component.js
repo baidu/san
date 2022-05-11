@@ -142,13 +142,15 @@ function TemplateComponent(options) { // eslint-disable-line
     }
 
     // init data
-    var initData = {};
-    if (options.data) {
-        initData = extend(initData, options.data);
+    var initData;
+    try {
+        initData = typeof this.initData === 'function' && this.initData();
     }
-    if (this._srcSbindData) {
-        initData = extend(initData, this._srcSbindData);
+    catch (e) {
+        handleError(e, this, 'initData');
     }
+    initData = extend(initData || {}, options.data || this._srcSbindData);
+
     if (this.binds && this.scope) {
         for (var i = 0, l = this.binds.length; i < l; i++) {
             var bindInfo = this.binds[i];
@@ -175,6 +177,26 @@ function TemplateComponent(options) { // eslint-disable-line
     this._initDataChanger();
     this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
     this.lifeCycle = LifeCycle.inited;
+
+    // #[begin] reverse
+    var reverseWalker = options.reverseWalker;
+    if (reverseWalker) {
+        if (this.aNode.Clazz) {
+            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+            this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
+        }
+        else {
+            this.el = currentNode;
+            reverseWalker.goNext();
+
+            reverseElementChildren(this, this.scope, this.owner);
+        }
+
+        this.lifeCycle = LifeCycle.created;
+        this._attached();
+        this.lifeCycle = LifeCycle.attached;
+    }
+    // #[end]
 }
 
 
