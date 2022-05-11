@@ -199,7 +199,7 @@ function elementOwnAttached() {
         );
     }
 
-    if (isComponent) {
+    if (isComponent && this.nativeEvents) {
         for (var i = 0, l = this.nativeEvents.length; i < l; i++) {
             var eventBind = this.nativeEvents[i];
 

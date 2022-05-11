@@ -53,6 +53,7 @@
     var Component = require('./view/component');
     var parseComponentTemplate = require('./view/parse-component-template');
     var defineComponent = require('./view/define-component');
+    var defineTemplateComponent = require('./view/define-template-component');
     var createComponentLoader = require('./view/create-component-loader');
     var emitDevtool = require('./util/emit-devtool');
     var Data = require('./runtime/data');
@@ -91,6 +92,7 @@
          * @return {Function}
          */
         defineComponent: defineComponent,
+        defineTemplateComponent: defineTemplateComponent,
 
         /**
          * 创建组件Loader
