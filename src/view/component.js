@@ -918,7 +918,7 @@ Component.prototype._repaintChildren = function () {
  * @private
  * @param {Object} change 数据变化信息
  */
-Component.prototype._initDataChanger = function (change) {
+Component.prototype._initDataChanger = function () {
     var me = this;
 
     this._dataChanger = function (change) {
