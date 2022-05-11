@@ -20,7 +20,7 @@ var NodeType = {
     ELEM: 4,
     CMPT: 5,
     SLOT: 6,
-    TPL: 7,
+    FRAG: 7,
     LOADER: 8,
     IS: 9
 };

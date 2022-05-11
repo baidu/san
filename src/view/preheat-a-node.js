@@ -20,7 +20,7 @@ var SlotNode = require('./slot-node');
 var ForNode = require('./for-node');
 var IfNode = require('./if-node');
 var IsNode = require('./is-node');
-var TemplateNode = require('./template-node');
+var FragmentNode = require('./fragment-node');
 var Element = require('./element');
 
 /**
@@ -230,7 +230,7 @@ function preheatANode(aNode, componentInstance) {
 
                     case 'template':
                     case 'fragment':
-                        aNode.Clazz = TemplateNode;
+                        aNode.Clazz = FragmentNode;
                         break;
 
                     default:

@@ -8,7 +8,7 @@
  */
 
 var Element = require('./element');
-var TemplateNode = require('./template-node');
+var FragmentNode = require('./fragment-node');
 var AsyncComponent = require('./async-component');
 
 
@@ -52,7 +52,7 @@ function createNode(aNode, parent, scope, owner, componentName) {
         switch (componentName) {
             case 'fragment':
             case 'template':
-                    return new TemplateNode(aNode, parent, scope, owner);
+                    return new FragmentNode(aNode, parent, scope, owner);
         }
     }
     else {

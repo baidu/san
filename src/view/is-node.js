@@ -13,7 +13,7 @@ var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createReverseNode = require('./create-reverse-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
-var TemplateNode = require('./template-node');
+
 
 /**
  * is 指令节点类

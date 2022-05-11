@@ -8,7 +8,7 @@
  */
 
 var Element = require('./element');
-var TemplateNode = require('./template-node');
+var FragmentNode = require('./fragment-node');
 var AsyncComponent = require('./async-component');
 
 // #[begin] reverse
@@ -55,7 +55,7 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker, component
         switch (componentName) {
             case 'fragment':
             case 'template':
-                    return new TemplateNode(aNode, parent, scope, owner, reverseWalker);
+                    return new FragmentNode(aNode, parent, scope, owner, reverseWalker);
         }
     }
     else {

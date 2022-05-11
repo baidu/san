@@ -39,8 +39,8 @@ function getNodePath(node) {
                 nodePaths.unshift('slot[' + (nodeParent.name || 'default') + ']');
                 break;
 
-            case NodeType.TPL:
-                nodePaths.unshift('template');
+            case NodeType.FRAG:
+                nodePaths.unshift('fragment');
                 break;
 
             case NodeType.CMPT:

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file template 节点类
+ * @file fragment 节点类
  */
 
 var guid = require('../util/guid');
@@ -17,7 +17,7 @@ var elementDisposeChildren = require('./element-dispose-children');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
 /**
- * template 节点类
+ * fragment 节点类
  *
  * @class
  * @param {Object} aNode 抽象节点
@@ -26,7 +26,7 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {Component} owner 所属组件环境
  * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
  */
-function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
+function FragmentNode(aNode, parent, scope, owner, reverseWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -79,9 +79,9 @@ function TemplateNode(aNode, parent, scope, owner, reverseWalker) {
 
 
 
-TemplateNode.prototype.nodeType = NodeType.TPL;
+FragmentNode.prototype.nodeType = NodeType.FRAG;
 
-TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
+FragmentNode.prototype.attach = nodeOwnOnlyChildrenAttach;
 
 /**
  * 销毁释放
@@ -89,7 +89,7 @@ TemplateNode.prototype.attach = nodeOwnOnlyChildrenAttach;
  * @param {boolean=} noDetach 是否不要把节点从dom移除
  * @param {boolean=} noTransition 是否不显示过渡动画效果
  */
-TemplateNode.prototype.dispose = function (noDetach, noTransition) {
+FragmentNode.prototype.dispose = function (noDetach, noTransition) {
     elementDisposeChildren(this.children, noDetach, noTransition);
 
     if (!noDetach) {
@@ -115,14 +115,14 @@ TemplateNode.prototype.dispose = function (noDetach, noTransition) {
  *
  * @param {Array} changes 数据变化信息
  */
-TemplateNode.prototype._update = function (changes) {
+FragmentNode.prototype._update = function (changes) {
     for (var i = 0; i < this.children.length; i++) {
         this.children[i]._update(changes);
     }
 };
 
-TemplateNode.prototype._getElAsRootNode = function () {
+FragmentNode.prototype._getElAsRootNode = function () {
     return this.sel;
 };
 
-exports = module.exports = TemplateNode;
+exports = module.exports = FragmentNode;
