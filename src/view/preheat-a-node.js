@@ -29,7 +29,7 @@ var Element = require('./element');
  * @param {Object} aNode 要预热的ANode
  */
 function preheatANode(aNode, componentInstance) {
-    var stack = [];
+    var stack;
 
     function recordHotspotData(expr, notContentData) {
         var refs = analyseExprDataHotspot(expr);
@@ -235,12 +235,13 @@ function preheatANode(aNode, componentInstance) {
 
                     default:
                         if (!aNode.directives.is && hotTags[aNode.tagName]) {
-                            if (!componentInstance || !componentInstance.components[aNode.tagName]) {
+                            var components = componentInstance && componentInstance.components;
+                            if (!components || !components[aNode.tagName]) {
                                 aNode.elem = true;
                             }
 
                             // #[begin] error
-                            if (componentInstance && componentInstance.components[aNode.tagName]) {
+                            if (components && components[aNode.tagName]) {
                                 warn('\`' + aNode.tagName + '\` as sub-component tag is a bad practice.');
                             }
                             // #[end]
@@ -253,7 +254,8 @@ function preheatANode(aNode, componentInstance) {
         }
     }
 
-    if (aNode) {
+    if (aNode && !aNode._ht) {
+        stack = [];
         analyseANodeHotspot(aNode);
     }
 }
