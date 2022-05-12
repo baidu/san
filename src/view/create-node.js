@@ -30,7 +30,7 @@ function createNode(aNode, parent, scope, owner, componentName) {
         return new aNode.Clazz(aNode, parent, scope, owner);
     }
 
-    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
     if (ComponentOrLoader) {
         return typeof ComponentOrLoader === 'function'

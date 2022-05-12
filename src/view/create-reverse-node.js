@@ -31,7 +31,7 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker, component
         return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
     }
 
-    var ComponentOrLoader = owner.components[componentName || aNode.tagName];
+    var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
 
     if (ComponentOrLoader) {
         return typeof ComponentOrLoader === 'function'
