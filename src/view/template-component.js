@@ -186,10 +186,10 @@ function TemplateComponent(options) { // eslint-disable-line
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
-            this.el = currentNode;
+            this.el = reverseWalker.current;
             reverseWalker.goNext();
 
-            reverseElementChildren(this, this.scope, this.owner);
+            reverseElementChildren(this, this.data, this);
         }
 
         this.lifeCycle = LifeCycle.created;
