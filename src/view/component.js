@@ -197,8 +197,6 @@ function Component(options) { // eslint-disable-line
     }
     // #[end]
 
-    // native事件数组
-    this.nativeEvents = [];
 
     if (this.source) {
         // 组件运行时传入的结构，做slot解析
@@ -208,6 +206,8 @@ function Component(options) { // eslint-disable-line
             var eventBind = this.source.events[i];
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
+                // native事件数组
+                this.nativeEvents = this.nativeEvents || [];
                 this.nativeEvents.push(eventBind);
             }
             else {
