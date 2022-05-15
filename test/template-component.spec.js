@@ -359,4 +359,51 @@ describe("TemplateComponent", function () {
         });
 
     });
+
+    it("native bind click", function (done) {
+        var clicked = 0;
+        var ChildComponent = san.defineTemplateComponent({
+            template: '<h2>child</h2>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template:
+            '<div>' +
+                '<child-component on-click="native:clicker"></child-component>' +
+                '<child-component></child-component>' +
+            '</div>',
+            components: {
+                'child-component': ChildComponent
+            },
+            clicker: function (event) {
+                expect(event.target || event.srcElement).toBe(nativeChildEl);
+                clicked += 1;
+            }
+        });
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var h2s = wrap.getElementsByTagName('h2');
+        var nativeChildEl = h2s[0];
+        var childEl = h2s[1];
+
+        function doneSpec() {
+            if (clicked === 1) {
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+
+                return;
+            }
+            setTimeout(doneSpec, 500);
+        }
+
+        // 两次点击，期望只有第一次nativeEvent的点击生效
+        triggerEvent(nativeChildEl, 'click');
+        triggerEvent(childEl, 'click');
+        doneSpec();
+    });
 });

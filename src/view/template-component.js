@@ -23,7 +23,6 @@ var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
 var insertBefore = require('../browser/insert-before');
-var un = require('../browser/un');
 var createNode = require('./create-node');
 var preheatEl = require('./preheat-el');
 var parseComponentTemplate = require('./parse-component-template');
@@ -31,7 +30,6 @@ var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var getEventListener = require('./get-event-listener');
 var reverseElementChildren = require('./reverse-element-children');
 var NodeType = require('./node-type');
 var styleProps = require('./style-props');
@@ -41,12 +39,8 @@ var elementOwnAttached = require('./element-own-attached');
 var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
-var warnEventListenMethod = require('./warn-event-listen-method');
 var elementDisposeChildren = require('./element-dispose-children');
-var createDataTypesChecker = require('../util/create-data-types-checker');
-var warn = require('../util/warn');
 var handleError = require('../util/handle-error');
-var DOMChildrenWalker = require('./dom-children-walker');
  
  
  
@@ -62,6 +56,7 @@ function TemplateComponent(options) { // eslint-disable-line
     this.id = guid++;
 
     this.children = [];
+    this._elFns = [];
     this.slotChildren = [];
     this.implicitChildren = [];
 
@@ -119,18 +114,9 @@ function TemplateComponent(options) { // eslint-disable-line
             var eventBind = this.source.events[i];
             // 保存当前实例的native事件，下面创建aNode时候做合并
             if (eventBind.modifier.native) {
+                // native事件数组
+                this.nativeEvents = this.nativeEvents || [];
                 this.nativeEvents.push(eventBind);
-            }
-            else {
-                // #[begin] error
-                warnEventListenMethod(eventBind, options.owner);
-                // #[end]
-
-                this.on(
-                    eventBind.name,
-                    getEventListener(eventBind, options.owner, this.scope, 1),
-                    eventBind
-                );
             }
         }
 
@@ -728,5 +714,6 @@ TemplateComponent.prototype._leave = function () {
 TemplateComponent.prototype.detach = elementOwnDetach;
 TemplateComponent.prototype.dispose = elementOwnDispose;
 TemplateComponent.prototype._attached = elementOwnAttached;
+TemplateComponent.prototype._onEl = elementOwnOnEl;
 
 exports = module.exports = TemplateComponent;
