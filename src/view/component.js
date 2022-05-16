@@ -40,7 +40,6 @@ var styleProps = require('./style-props');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementOwnAttached = require('./element-own-attached');
-var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var warnEventListenMethod = require('./warn-event-listen-method');
@@ -79,7 +78,6 @@ function Component(options) { // eslint-disable-line
     }
 
     this.children = [];
-    this._elFns = [];
     this.listeners = {};
     this.slotChildren = [];
     this.implicitChildren = [];
@@ -1086,7 +1084,6 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
 Component.prototype.detach = elementOwnDetach;
 Component.prototype.dispose = elementOwnDispose;
-Component.prototype._onEl = elementOwnOnEl;
 Component.prototype._attached = elementOwnAttached;
 Component.prototype._leave = function () {
     if (this.leaveDispose) {
@@ -1123,12 +1120,14 @@ Component.prototype._leave = function () {
                     this.children[len].dispose(1, 1);
                 }
 
-                len = this._elFns.length;
-                while (len--) {
-                    var fn = this._elFns[len];
-                    un(this.el, fn[0], fn[1], fn[2]);
+                if (this._elFns) {
+                    len = this._elFns.length;
+                    while (len--) {
+                        var fn = this._elFns[len];
+                        un(this.el, fn[0], fn[1], fn[2]);
+                    }
+                    this._elFns = null;
                 }
-                this._elFns = null;
 
                 // #[begin] allua
                 /* istanbul ignore if */

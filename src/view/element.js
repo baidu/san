@@ -22,7 +22,6 @@ var createNode = require('./create-node');
 var preheatEl = require('./preheat-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
-var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnAttached = require('./element-own-attached');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
@@ -48,7 +47,6 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
 
     this.lifeCycle = LifeCycle.start;
     this.children = [];
-    this._elFns = [];
     this.parentComponent = parent.nodeType === NodeType.CMPT
         ? parent
         : parent.parentComponent;
@@ -187,7 +185,6 @@ Element.prototype.attach = function (parentEl, beforeEl) {
 
 Element.prototype.detach = elementOwnDetach;
 Element.prototype.dispose = elementOwnDispose;
-Element.prototype._onEl = elementOwnOnEl;
 Element.prototype._leave = function () {
     if (this.leaveDispose) {
         if (!this.lifeCycle.disposed) {
@@ -196,12 +193,14 @@ Element.prototype._leave = function () {
                 this.children[len].dispose(1, 1);
             }
 
-            len = this._elFns.length;
-            while (len--) {
-                var fn = this._elFns[len];
-                un(this.el, fn[0], fn[1], fn[2]);
+            if (this._elFns) {
+                len = this._elFns.length;
+                while (len--) {
+                    var fn = this._elFns[len];
+                    un(this.el, fn[0], fn[1], fn[2]);
+                }
+                this._elFns = null;
             }
-            this._elFns = null;
 
             // #[begin] allua
             /* istanbul ignore if */

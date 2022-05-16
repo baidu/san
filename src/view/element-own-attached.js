@@ -120,6 +120,20 @@ function xPropOutput(element, bindInfo, data) {
 }
 
 /**
+ * 为元素的 el 绑定事件
+ *
+ * @param {string} name 事件名
+ * @param {Function} listener 监听器
+ * @param {boolean} capture 是否是捕获阶段触发
+ */
+ function elementOnEl(element, name, listener, capture) {
+    capture = !!capture;
+    element._elFns = element._elFns || [];
+    element._elFns.push([name, listener, capture]);
+    on(element.el, name, listener, capture);
+}
+
+/**
  * 完成元素 attached 后的行为
  *
  * @param {Object} element 元素节点
@@ -145,28 +159,28 @@ function elementOwnAttached() {
                     case 'input':
                     case 'textarea':
                         if (isBrowser && window.CompositionEvent) {
-                            this._onEl('change', inputOnCompositionEnd);
-                            this._onEl('compositionstart', inputOnCompositionStart);
-                            this._onEl('compositionend', inputOnCompositionEnd);
+                            elementOnEl(this, 'change', inputOnCompositionEnd);
+                            elementOnEl(this, 'compositionstart', inputOnCompositionStart);
+                            elementOnEl(this, 'compositionend', inputOnCompositionEnd);
                         }
 
                         // #[begin] allua
                         /* istanbul ignore else */
                         if ('oninput' in this.el) {
                         // #[end]
-                            this._onEl('input', getInputXPropOutputer(this, xProp, data));
+                            elementOnEl(this, 'input', getInputXPropOutputer(this, xProp, data));
                         // #[begin] allua
                         }
                         else {
-                            this._onEl('focusin', getInputFocusXPropHandler(this, xProp, data));
-                            this._onEl('focusout', getInputBlurXPropHandler(this));
+                            elementOnEl(this, 'focusin', getInputFocusXPropHandler(this, xProp, data));
+                            elementOnEl(this, 'focusout', getInputBlurXPropHandler(this));
                         }
                         // #[end]
 
                         break;
 
                     case 'select':
-                        this._onEl('change', getXPropOutputer(this, xProp, data));
+                        elementOnEl(this, 'change', getXPropOutputer(this, xProp, data));
                         break;
                 }
                 break;
@@ -177,7 +191,7 @@ function elementOwnAttached() {
                         switch (this.el.type) {
                             case 'checkbox':
                             case 'radio':
-                                this._onEl('click', getXPropOutputer(this, xProp, data));
+                                elementOnEl(this, 'click', getXPropOutputer(this, xProp, data));
                         }
                 }
                 break;
@@ -192,7 +206,8 @@ function elementOwnAttached() {
         warnEventListenMethod(eventBind, owner);
         // #[end]
 
-        this._onEl(
+        elementOnEl(
+            this, 
             eventBind.name,
             getEventListener(eventBind, owner, data, eventBind.modifier),
             eventBind.modifier.capture
@@ -207,7 +222,8 @@ function elementOwnAttached() {
             warnEventListenMethod(eventBind, this.owner);
             // #[end]
 
-            this._onEl(
+            elementOnEl(
+                this, 
                 eventBind.name,
                 getEventListener(eventBind, this.owner, this.scope),
                 eventBind.modifier.capture

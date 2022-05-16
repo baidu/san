@@ -36,7 +36,6 @@ var styleProps = require('./style-props');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
 var elementOwnAttached = require('./element-own-attached');
-var elementOwnOnEl = require('./element-own-on-el');
 var elementOwnDetach = require('./element-own-detach');
 var elementOwnDispose = require('./element-own-dispose');
 var elementDisposeChildren = require('./element-dispose-children');
@@ -56,7 +55,6 @@ function TemplateComponent(options) { // eslint-disable-line
     this.id = guid++;
 
     this.children = [];
-    this._elFns = [];
     this.slotChildren = [];
     this.implicitChildren = [];
 
@@ -714,6 +712,5 @@ TemplateComponent.prototype._leave = function () {
 TemplateComponent.prototype.detach = elementOwnDetach;
 TemplateComponent.prototype.dispose = elementOwnDispose;
 TemplateComponent.prototype._attached = elementOwnAttached;
-TemplateComponent.prototype._onEl = elementOwnOnEl;
 
 exports = module.exports = TemplateComponent;
