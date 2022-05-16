@@ -62,7 +62,6 @@ function TemplateComponent(options) { // eslint-disable-line
 
     this.owner = options.owner;
     this.scope = options.scope;
-    this.el = options.el;
     var parent = options.parent;
     if (parent) {
         this.parent = parent;
