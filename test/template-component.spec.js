@@ -360,6 +360,132 @@ describe("TemplateComponent", function () {
 
     });
 
+    it("initData", function (done) {
+        var MyTplComponent = san.defineTemplateComponent({
+            template: '<span class="{{c}}">test</span>',
+
+            initData: function () {
+                return {
+                    c: ['c', 'd']
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-tpl': MyTplComponent
+            },
+            template: '<a><x-tpl class="{{clz}}"/></a>'
+        });
+
+        
+        var myComponent = new MyComponent({
+            data: {
+                'clz': 'a b'
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.className).toContain('a');
+        expect(span.className).toContain('b');
+        expect(span.className).toContain('c');
+        expect(span.className).toContain('d');
+
+        myComponent.data.set('clz', ['e']);
+
+        myComponent.nextTick(function () {
+            expect(span.className).toContain('e');
+            expect(span.className).not.toContain('b');
+            expect(span.className).toContain('c');
+            expect(span.className).toContain('d');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("root element with if, has data when inited", function (done) {
+        var MyTplComponent = san.defineTemplateComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-tpl': MyTplComponent
+            },
+            template: '<x-tpl person="{{person}}"/>'
+        })
+
+        var myComponent = new MyComponent({
+            data: {
+                person: {
+                    name: 'errorrik'
+                }
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.innerHTML).toBe('errorrik');
+
+
+        myComponent.data.set('person', null);
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("root element with if, no data when inited", function (done) {
+        var MyTplComponent = san.defineTemplateComponent({
+            template: '<b s-if="person">{{person.name}}</b>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-tpl': MyTplComponent
+            },
+            template: '<x-tpl person="{{person}}"/>'
+        })
+
+        var myComponent = new MyComponent({});
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(wrap.getElementsByTagName('b').length).toBe(0);
+
+        myComponent.data.set('person', {
+            name: 'errorrik'
+        });
+        myComponent.nextTick(function () {
+            expect(wrap.getElementsByTagName('b').length).toBe(1);
+
+            var b = wrap.getElementsByTagName('b')[0];
+            expect(b.innerHTML).toBe('errorrik');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("native bind click", function (done) {
         var clicked = 0;
         var ChildComponent = san.defineTemplateComponent({
