@@ -137,6 +137,21 @@ declare namespace san {
         constructor(option?: ComponentNewOptions<T>);
     }
 
+    interface TemplateComponent<T extends {} = {}> {
+        el?: Element;
+        data: Data<T>;
+        parentComponent?: Component<{}>;
+    
+        nodeType: NodeType.CMPT;
+        lifeCycle: LifeCycleStage;
+    
+    
+        attach(parentEl: Element, beforeEl?: Element): void;
+        detach(): void;
+        dispose(): void;
+
+        initData?(): Partial<T>;
+    }
 
     enum ExprType {
         STRING = 1,
@@ -476,6 +491,12 @@ declare namespace san {
         el?: Element;
     }
 
+    interface TemplateComponentNewOptions<T extends {} = {}> {
+        data?: Partial<T>;
+        owner?: Component<{}>;
+        source?: string | ANode;
+    }
+
     interface ComponentDefineOptionFilters {
         [k: string]: (value: any, ...filterOption: any[]) => any;
     }
@@ -528,18 +549,27 @@ declare namespace san {
         [key: string]: any;
     }
 
+    interface TemplateComponentDefineOptions<T extends {} = {}> {
+        template?: string;
+        trimWhitespace?: TemplateParseOptionTrimWhitespace;
+        delimiters?: TemplateParseOptionDelimiters;
+        autoFillStyleAndId?: boolean;
+        
+        initData?(): Partial<T>;
+    }
+
 
     interface ComponentLoaderOptions {
-        load(): Promise<DefinedComponentClass<{}, {}>>;
-        placeholder?: DefinedComponentClass<{}, {}>;
-        fallback?: DefinedComponentClass<{}, {}>;
+        load(): Promise<DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>>;
+        placeholder?: DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>;
+        fallback?: DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>;
     }
     
     interface ComponentLoader {
         new(option?: ComponentLoaderOptions): ComponentLoader;
     
-        start(onload: (componentClass: DefinedComponentClass<{}, {}>) => void): void;
-        done(componentClass: DefinedComponentClass<{}, {}>): void;
+        start(onload: (componentClass: DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>) => void): void;
+        done(componentClass: DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>): void;
     }
 
     interface DefinedComponentClass<T extends {}, M> {
@@ -553,6 +583,14 @@ declare namespace san {
         options: ComponentDefineOptionsWithThis<DataT, OptionsT>,
         superClass?: DefinedComponentClass<{}, {}>
     ): DefinedComponentClass<DataT, OptionsT>;
+
+    interface DefinedTemplateComponentClass<T extends {}> {
+        new(option?: TemplateComponentNewOptions<T>): TemplateComponent<T>;
+    }
+
+    function defineTemplateComponent<DataT extends {} = {}>(
+        options: TemplateComponentDefineOptions<DataT>
+    ): DefinedTemplateComponentClass<DataT>;
 
     function createComponentLoader(
         options: ComponentLoaderOptions | ComponentLoaderOptions["load"]
