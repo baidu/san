@@ -40,7 +40,7 @@
     "art-template": "^4.10.2",
     "colors": "^1.0.3",
     "coveralls": "^3.0.1",
-    "ejs": "^2.6.1",
+    "ejs": "^3.1.7",
     "etpl": "^3.2.0",
     "handlebars": "^4.0.12",
     "http-server": "^0.11.1",
