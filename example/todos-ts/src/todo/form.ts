@@ -119,7 +119,7 @@ interface IForm {
 
 export default san.defineComponent<FormData, IForm>({
     template,
-    
+
     components: {
         'ui-categorypicker': CategoryPicker,
         'ui-timepicker': TimePicker,
@@ -142,7 +142,7 @@ export default san.defineComponent<FormData, IForm>({
             if (todo) {
                 endTime = new Date(todo.endTime);
             }
-            
+
             return new Date(
                 endTime.getFullYear(),
                 endTime.getMonth(),
@@ -170,8 +170,12 @@ export default san.defineComponent<FormData, IForm>({
                 categoryId: 1
             }
         }
-
+        this.setTodo(todo);
         this.updateCategories();
+    },
+
+    setTodo(todo: Todo) {
+      this.data.set("todo", todo);
     },
 
     joinEndTime() {
