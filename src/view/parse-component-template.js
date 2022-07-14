@@ -51,11 +51,27 @@ function parseComponentTemplate(ComponentClass) {
     }
 
     if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false) {
+        fillPropExtra(aNode.props);
+        var elses = aNode.elses;
+        if (elses) {
+            for (var i = 0, l = elses.length; i < l; i++) {
+                fillPropExtra(aNode.elses[i].props);
+            }
+        }
+    }
+
+    return aNode;
+
+    /**
+     * 为组件填充 props：class、style、id
+     * @param {Array} props ANode.props
+     */
+    function fillPropExtra(props) {
         var extraPropExists = {};
 
-        var len = aNode.props.length;
+        var len = props.length;
         while (len--) {
-            var prop = aNode.props[len];
+            var prop = props[len];
             switch (prop.name) {
                 case 'class':
                 case 'style':
@@ -83,12 +99,12 @@ function parseComponentTemplate(ComponentClass) {
 
                 case 'id':
                     extraPropExists[prop.name] = true;
-                
+
             }
         }
 
         if (!extraPropExists['class']) {
-            aNode.props.push({
+            props.push({
                 name: 'class',
                 expr: {
                     type: ExprType.INTERP,
@@ -113,7 +129,7 @@ function parseComponentTemplate(ComponentClass) {
         }
 
         if (!extraPropExists.style) {
-            aNode.props.push({
+            props.push({
                 name: 'style',
                 expr: {
                     type: ExprType.INTERP,
@@ -138,8 +154,8 @@ function parseComponentTemplate(ComponentClass) {
         }
 
         if (!extraPropExists.id) {
-            aNode.props.push({ 
-                name: 'id', 
+            props.push({
+                name: 'id',
                 expr: {
                     type: ExprType.ACCESSOR,
                     paths: [
@@ -149,8 +165,6 @@ function parseComponentTemplate(ComponentClass) {
             });
         }
     }
-
-    return aNode;
 }
 
 exports = module.exports = parseComponentTemplate;

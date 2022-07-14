@@ -360,6 +360,55 @@ describe("TemplateComponent", function () {
 
     });
 
+    it("element with if, merge root element id & class & style literal", function (done) {
+        var MyTplComponent = san.defineTemplateComponent({
+            template: `
+                <span s-if="isShow" class="a" style="color:blue">test</span>
+                <span s-else class="b" style="color:red">test</span>
+            `
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-tpl': MyTplComponent
+            },
+            template: '<a><x-tpl id="id" class="c" style="height:10px" isShow="{{isShow}}"/></a>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                isShow: true
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.id).toBe('id');
+        expect(span.className).toContain('a');
+        expect(span.className).toContain('c');
+        expect(/color:\s*blue($|;)/i.test(span.style.cssText)).toBeTruthy();
+        expect(/height:\s*10px($|;)/i.test(span.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('isShow', false);
+        myComponent.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.id).toBe('id');
+            expect(span.className).toContain('b');
+            expect(span.className).toContain('c');
+            expect(/color:\s*red($|;)/i.test(span.style.cssText)).toBeTruthy();
+            expect(/height:\s*10px($|;)/i.test(span.style.cssText)).toBeTruthy();
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("initData", function (done) {
         var MyTplComponent = san.defineTemplateComponent({
             template: '<span class="{{c}}">test</span>',
