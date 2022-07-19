@@ -2,10 +2,11 @@
 ChangeLog
 ========
 
-3.12.1  (2022-7-17)
+3.12.1  (2022-7-20)
 -------
 
-+ 【bug修复】- s-else/s-else-if 指令节点缺失父组件传递来的 id / style / class props
++ 【bug修复】- 组件根节点包含 s-else / s-elif 指令时，父组件传递的 id / style / class 可能丢失
+
 
 3.12.0  (2022-5-17)
 -------
