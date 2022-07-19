@@ -3659,6 +3659,66 @@ describe("Component", function () {
         })
     });
 
+    it("root with if-else, merge id & class & style prop", function (done) {
+        var Child = san.defineComponent({
+            template: 
+                '<b s-if="num === 10000" class="a" style="color:blue">test</b>'
+                + '<u s-elif="num === 1000" class="b" style="color:red">test</u>'
+                + '<span s-else class="c" style="color:green">test</span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-c': Child
+            },
+            template: '<a><x-c id="id{{num}}" class="d" style="height:10px" num="{{num}}"/></a>'
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                num: 10000
+            }
+        });
+
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.id).toBe('id10000');
+        expect(b.className).toContain('a');
+        expect(b.className).toContain('d');
+        expect(/color:\s*blue($|;)/i.test(b.style.cssText)).toBeTruthy();
+        expect(/height:\s*10px($|;)/i.test(b.style.cssText)).toBeTruthy();
+
+        myComponent.data.set('num', 1000);
+        myComponent.nextTick(function () {
+            var u = wrap.getElementsByTagName('u')[0];
+            expect(u.id).toBe('id1000');
+            expect(u.className).toContain('b');
+            expect(u.className).toContain('d');
+            expect(/color:\s*red($|;)/i.test(u.style.cssText)).toBeTruthy();
+            expect(/height:\s*10px($|;)/i.test(u.style.cssText)).toBeTruthy();
+
+
+            myComponent.data.set('num', 1);
+            myComponent.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.id).toBe('id1');
+                expect(span.className).toContain('c');
+                expect(span.className).toContain('d');
+                expect(/color:\s*green($|;)/i.test(span.style.cssText)).toBeTruthy();
+                expect(/height:\s*10px($|;)/i.test(span.style.cssText)).toBeTruthy();
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
     it("main element default style prop", function (done) {
         var MyComponent = san.defineComponent({
             computed: {

@@ -360,19 +360,18 @@ describe("TemplateComponent", function () {
 
     });
 
-    it("element with if, merge root element id & class & style literal", function (done) {
+    it("root with if-else, merge id & class & style prop", function (done) {
         var MyTplComponent = san.defineTemplateComponent({
-            template: `
-                <span s-if="isShow" class="a" style="color:blue">test</span>
-                <span s-else class="b" style="color:red">test</span>
-            `
+            template: 
+                '<b s-if="isShow" class="a" style="color:blue">test</b>'
+                + '<u s-else class="b" style="color:red">test</u>'
         });
 
         var MyComponent = san.defineComponent({
             components: {
                 'x-tpl': MyTplComponent
             },
-            template: '<a><x-tpl id="id" class="c" style="height:10px" isShow="{{isShow}}"/></a>'
+            template: '<a><x-tpl id="outerId" class="c" style="height:10px" isShow="{{isShow}}"/></a>'
         });
 
         var myComponent = new MyComponent({
@@ -386,21 +385,21 @@ describe("TemplateComponent", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        var span = wrap.getElementsByTagName('span')[0];
-        expect(span.id).toBe('id');
-        expect(span.className).toContain('a');
-        expect(span.className).toContain('c');
-        expect(/color:\s*blue($|;)/i.test(span.style.cssText)).toBeTruthy();
-        expect(/height:\s*10px($|;)/i.test(span.style.cssText)).toBeTruthy();
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.id).toBe('outerId');
+        expect(b.className).toContain('a');
+        expect(b.className).toContain('c');
+        expect(/color:\s*blue($|;)/i.test(b.style.cssText)).toBeTruthy();
+        expect(/height:\s*10px($|;)/i.test(b.style.cssText)).toBeTruthy();
 
         myComponent.data.set('isShow', false);
         myComponent.nextTick(function () {
-            var span = wrap.getElementsByTagName('span')[0];
-            expect(span.id).toBe('id');
-            expect(span.className).toContain('b');
-            expect(span.className).toContain('c');
-            expect(/color:\s*red($|;)/i.test(span.style.cssText)).toBeTruthy();
-            expect(/height:\s*10px($|;)/i.test(span.style.cssText)).toBeTruthy();
+            var u = wrap.getElementsByTagName('u')[0];
+            expect(u.id).toBe('outerId');
+            expect(u.className).toContain('b');
+            expect(u.className).toContain('c');
+            expect(/color:\s*red($|;)/i.test(u.style.cssText)).toBeTruthy();
+            expect(/height:\s*10px($|;)/i.test(u.style.cssText)).toBeTruthy();
 
             myComponent.dispose();
             document.body.removeChild(wrap);
