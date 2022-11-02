@@ -118,6 +118,15 @@ function Component(options) { // eslint-disable-line
 
     var proto = clazz.prototype;
 
+    if (options.trimWhitespace) {
+        proto.trimWhitespace = options.trimWhitespace;
+    }
+    if (options.delimiters) {
+        proto.delimiters = options.delimiters;
+    }
+    if (options.autoFillStyleAndId) {
+        proto.autoFillStyleAndId = options.autoFillStyleAndId;
+    }
     // pre define components class
     /* istanbul ignore else  */
     if (!proto.hasOwnProperty('_cmptReady')) {
@@ -153,7 +162,7 @@ function Component(options) { // eslint-disable-line
 
     this.tagName = proto.aNode.tagName;
     this.source = typeof options.source === 'string'
-        ? parseTemplate(options.source).children[0]
+        ? parseTemplate(options.source, options).children[0]
         : options.source;
 
     preheatANode(this.source);

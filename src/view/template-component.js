@@ -97,7 +97,7 @@ function TemplateComponent(options) { // eslint-disable-line
 
     this.tagName = proto.aNode.tagName;
     this.source = typeof options.source === 'string'
-        ? parseTemplate(options.source).children[0]
+        ? parseTemplate(options.source, options).children[0]
         : options.source;
 
     preheatANode(this.source);
