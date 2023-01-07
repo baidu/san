@@ -83,9 +83,10 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
         }
 
         /* istanbul ignore if */
-        if (currentNode.tagName.toLowerCase() !== this.tagName) {
+        if (currentNode.tagName !== this.tagName.toUpperCase()
+            && currentNode.tagName !== this.tagName) {
             throw new Error('[SAN REVERSE ERROR] Element tagName not match, expect '
-                + this.tagName + ' but meet ' + currentNode.tagName.toLowerCase() + '.\nPaths: '
+                + this.tagName + ' but meet ' + currentNode.tagName + '.\nPaths: '
                 + getNodePath(this).join(' > '));
         }
 
