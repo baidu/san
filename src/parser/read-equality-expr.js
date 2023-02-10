@@ -34,7 +34,7 @@ function readEqualityExpr(walker) {
                 return {
                     type: ExprType.BINARY,
                     operator: code,
-                    segs: [expr, readRelationalExpr(walker)]
+                    segs: [expr, readEqualityExpr(walker)]
                 };
             }
 
