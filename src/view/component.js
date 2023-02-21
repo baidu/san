@@ -87,6 +87,7 @@ function Component(options) { // eslint-disable-line
     this.filters = this.filters || clazz.filters || {};
     this.computed = this.computed || clazz.computed || {};
     this.messages = this.messages || clazz.messages || {};
+    this.ssr = this.ssr || clazz.ssr;
 
     if (options.transition) {
         this.transition = options.transition;
@@ -297,12 +298,13 @@ function Component(options) { // eslint-disable-line
     // #[begin] reverse
     var reverseWalker = options.reverseWalker;
     if (this.el || reverseWalker) {
-        if (this.aNode.Clazz || this.components[this.aNode.tagName]) {
+        var aNode = this.aNode;
+        if (aNode.Clazz || this.components[aNode.tagName]) {
             if (!reverseWalker) {
                 reverseWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             }
             
-            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+            this._rootNode = createReverseNode(aNode, this, this.data, this, reverseWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
@@ -314,7 +316,53 @@ function Component(options) { // eslint-disable-line
                 }
             }
 
-            reverseElementChildren(this, this.data, this);
+            if (this.ssr === 'client-render') {
+                // 这里的实现采用了复制粘贴小冠军的做法，从 attach 方法实现里摘抄
+                // 为不支持反解环境的版本代码更干净，以及减少函数调用
+                if (this._sbindData) {
+                    for (var key in this._sbindData) {
+                        if (this._sbindData.hasOwnProperty(key)) {
+                            getPropHandler(this.tagName, key)(
+                                this.el,
+                                this._sbindData[key],
+                                key,
+                                this
+                            );
+                        }
+                    }
+                }
+
+                var props = aNode.props;
+                for (var i = 0, l = props.length; i < l; i++) {
+                    var prop = props[i];
+                    var value = evalExpr(prop.expr, this.data, this);
+
+                    if (value || !styleProps[prop.name]) {
+                        prop.handler(this.el, value, prop.name, this);
+                    }
+                }
+
+                var htmlDirective = aNode.directives.html;
+
+                if (htmlDirective) {
+                    this.el.innerHTML = evalExpr(htmlDirective.value, this.data, this);
+                }
+                else {
+                    for (var i = 0, l = aNode.children.length; i < l; i++) {
+                        var childANode = aNode.children[i];
+                        var child = childANode.Clazz
+                            ? new childANode.Clazz(childANode, this, this.data, this)
+                            : createNode(childANode, this, this.data, this);
+                        this.children.push(child);
+                        child.attach(this.el);
+                    }
+                }
+
+                this._contentReady = 1;
+            }
+            else {
+                reverseElementChildren(this, this.data, this);
+            }
         }
 
         this._toPhase('created');
