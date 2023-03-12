@@ -15,27 +15,33 @@ let specTpls = '';
 function genContent({ componentClass, componentSource, compontentData, componentDataLiteral, specTpl, dirName, result}) {
     let id = dirName;
     let noDataOutput = /-ndo$/.test(dirName);
+    let noInject = false;
 
     // if no inject mark, add it
     if (!/\/\/\s*\[inject\]/.test(specTpl)) {
         specTpl = specTpl.replace(/function\s*\([a-z0-9_,$\s]*\)\s*\{/, function ($0) {
             return $0 + '\n// [inject] init';
         });
+        noInject = true;
     }
 
     html += `<div id="${id}">${result}</div>\n\n`;
 
     let preCode = `
         ${componentSource}
+    `;
+    if (!noInject) {
+        preCode += `        
         var wrap = document.getElementById('${id}');
         var myComponent = new MyComponent({
             el: wrap.firstChild
-    `;
-
-    if (noDataOutput) {
-        preCode += ',data:' + componentDataLiteral
+            `;
+        if (noDataOutput) {
+            preCode += ',data:' + componentDataLiteral
+        }
+        preCode += '        });'
     }
-    preCode += '        });'
+
     specTpl = specTpl.replace(/\/\/\s*\[inject\]\s* init/, preCode);
     specTpls += specTpl;
 };
