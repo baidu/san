@@ -95,6 +95,17 @@
         defineComponent: defineComponent,
         defineTemplateComponent: defineTemplateComponent,
 
+        // #[begin] reverse
+        /**
+         * 组件反解
+         * 
+         * @param {Function} ComponentClass 组件类
+         * @param {Object} options 反解选项
+         * @param {HTMLElement} options.el 挂载元素
+         */
+        hydrateComponent: hydrateComponent,
+        // #[end]
+
         /**
          * 创建组件Loader
          *
@@ -199,16 +210,7 @@
          *
          * @type {Object}
          */
-        DataTypes: DataTypes,
-
-        /**
-         * 组件反解
-         * 
-         * @param {Function} ComponentClass 组件类
-         * @param {Object} options 反解选项
-         * @param {HTMLElement} options.el 挂载元素
-         */
-        hydrateComponent: hydrateComponent
+        DataTypes: DataTypes
     };
 
     // export
