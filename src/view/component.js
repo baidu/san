@@ -24,8 +24,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
 var insertBefore = require('../browser/insert-before');
 var un = require('../browser/un');
-var defineComponent = require('./define-component');
-var ComponentLoader = require('./component-loader');
+var preprocessComponents = require('./preprocess-components');
 var createNode = require('./create-node');
 var preheatEl = require('./preheat-el');
 var parseComponentTemplate = require('./parse-component-template');
@@ -122,20 +121,7 @@ function Component(options) { // eslint-disable-line
     // pre define components class
     /* istanbul ignore else  */
     if (!proto.hasOwnProperty('_cmptReady')) {
-        proto.components = clazz.components || proto.components || {};
-        var components = proto.components;
-
-        for (var key in components) { // eslint-disable-line
-            var cmptClass = components[key];
-            if (typeof cmptClass === 'object' && !(cmptClass instanceof ComponentLoader)) {
-                components[key] = defineComponent(cmptClass);
-            }
-            else if (cmptClass === 'self') {
-                components[key] = clazz;
-            }
-        }
-
-        proto._cmptReady = 1;
+        preprocessComponents(clazz);
     }
 
     // compile

@@ -7,15 +7,8 @@
  * @file 反解
  */
 
-function getTargetComponentClass(path, rootComponentClass) {
-    var pathArr = path.split('/');
-    var componentClass = rootComponentClass;
-    for (var index = 0; index < pathArr.length; index++) {
-        var key = pathArr[index];
-        componentClass = componentClass.prototype.components[key];
-    }
-    return componentClass;
-}
+var preprocessComponents = require('./preprocess-components');
+
 
 function hydrateComponent(ComponentClass, options) {
     var el = options.el;
@@ -67,23 +60,33 @@ function hydrateComponent(ComponentClass, options) {
         }
     }
 
-    var index;
-    var instances = {};
-    for (index = 0; index < hydrateRootEls.length; index++) {
-        var cmptEl = hydrateRootEls[index];
+    var components = {};
+    for (var i = 0, l = hydrateRootEls.length; i < l; i++) {
+        var cmptEl = hydrateRootEls[i];
         var cmptPath = cmptEl.getAttribute('data-sanssr-cmpt');
-        var cmptClass = getTargetComponentClass(cmptPath, ComponentClass);
-        var cmpt = new cmptClass({
-            el: cmptEl
-        });
 
-        if (!instances[cmptPath]) {
-            instances[cmptPath] = [];
+        var cmptPathSegs = cmptPath.split('/');
+        var TargetComponent = ComponentClass;
+        for (var j = 0, sl = cmptPathSegs.length; j < sl; j++) {
+            var cmptProto = TargetComponent.prototype;
+            if (!cmptProto.hasOwnProperty('_cmptReady')) {
+                preprocessComponents(TargetComponent);
+            }
+
+            TargetComponent = cmptProto.components[cmptPathSegs[j]];
         }
-        instances[cmptPath].push(cmpt);
+        
+        var componentsBucket = components[cmptPath];
+        if (!componentsBucket) {
+            componentsBucket = components[cmptPath] = [];
+        }
+        componentsBucket.push(new TargetComponent({
+            el: cmptEl
+        }));
     }
 
-    return instances;
+    return components;
 }
+
 
 exports = module.exports = hydrateComponent;
