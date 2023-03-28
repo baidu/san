@@ -21,7 +21,9 @@ function hydrateComponent(ComponentClass, options) {
     }
 
     if (el.getAttribute('data-sanssr') !== 'render-only') {
-        return new ComponentClass(options);
+        return {
+            instance: new ComponentClass(options)
+        };
     }
 
     var stack = [];
@@ -85,7 +87,10 @@ function hydrateComponent(ComponentClass, options) {
         }));
     }
 
-    return components;
+    return {
+        renderOnly: true,
+        components: components
+    };
 }
 
 
