@@ -11,7 +11,7 @@ Reloaded before every execution run.
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </head>
 <body>
-  <!-- for reverse test -->
+  <!-- for hydrate test -->
   ##rendered-elements##
 
   <!-- The scripts need to be in the body DOM element, as some test running frameworks need the body

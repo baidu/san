@@ -11,7 +11,7 @@ var guid = require('../util/guid');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 
@@ -23,9 +23,9 @@ var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function IsNode(aNode, parent, scope, owner, reverseWalker) {
+function IsNode(aNode, parent, scope, owner, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -37,15 +37,15 @@ function IsNode(aNode, parent, scope, owner, reverseWalker) {
     this.id = guid++;
     this.children = [];
     this.tagName = this.aNode.tagName;
-    // #[begin] reverse
-    if (reverseWalker) {
+    // #[begin] hydrate
+    if (hydrateWalker) {
         this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
-        this.children[0] = createReverseNode(
+        this.children[0] = createHydrateNode(
             this.aNode.isRinsed,
             this,
             this.scope,
             this.owner,
-            reverseWalker,
+            hydrateWalker,
             this.cmpt
         );
     }

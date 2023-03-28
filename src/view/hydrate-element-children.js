@@ -9,29 +9,29 @@
 
 
 var DOMChildrenWalker = require('./dom-children-walker');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 
-// #[begin] reverse
+// #[begin] hydrate
 
 /**
  * 对元素的子节点进行反解
  *
  * @param {Object} element 元素
  */
-function reverseElementChildren(element, scope, owner) {
+function hydrateElementChildren(element, scope, owner) {
     var htmlDirective = element.aNode.directives.html;
 
     if (!htmlDirective) {
-        var reverseWalker = new DOMChildrenWalker(element.el);
+        var walker = new DOMChildrenWalker(element.el);
         var aNodeChildren = element.aNode.children;
         
         for (var i = 0, l = aNodeChildren.length; i < l; i++) {
             element.children.push(
-                createReverseNode(aNodeChildren[i], element, scope, owner, reverseWalker)
+                createHydrateNode(aNodeChildren[i], element, scope, owner, walker)
             );
         }
     }
 }
 // #[end]
 
-exports = module.exports = reverseElementChildren;
+exports = module.exports = hydrateElementChildren;

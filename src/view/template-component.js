@@ -30,7 +30,7 @@ var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
-var reverseElementChildren = require('./reverse-element-children');
+var hydrateElementChildren = require('./hydrate-element-children');
 var NodeType = require('./node-type');
 var styleProps = require('./style-props');
 var nodeSBindInit = require('./node-s-bind-init');
@@ -161,18 +161,18 @@ function TemplateComponent(options) { // eslint-disable-line
     this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
     this.lifeCycle = LifeCycle.inited;
 
-    // #[begin] reverse
-    var reverseWalker = options.reverseWalker;
-    if (reverseWalker) {
+    // #[begin] hydrate
+    var hydrateWalker = options.hydrateWalker;
+    if (hydrateWalker) {
         if (this.aNode.Clazz) {
-            this._rootNode = createReverseNode(this.aNode, this, this.data, this, reverseWalker);
+            this._rootNode = createHydrateNode(this.aNode, this, this.data, this, hydrateWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
-            this.el = reverseWalker.current;
-            reverseWalker.goNext();
+            this.el = hydrateWalker.current;
+            hydrateWalker.goNext();
 
-            reverseElementChildren(this, this.data, this);
+            hydrateElementChildren(this, this.data, this);
         }
 
         this.lifeCycle = LifeCycle.created;

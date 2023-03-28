@@ -15,7 +15,7 @@ var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
 var styleProps = require('./style-props');
-var reverseElementChildren = require('./reverse-element-children');
+var hydrateElementChildren = require('./hydrate-element-children');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getPropHandler = require('./get-prop-handler');
 var createNode = require('./create-node');
@@ -37,9 +37,9 @@ var getNodePath = require('./get-node-path');
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
  * @param {string} tagName 元素标签名
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
+function Element(aNode, parent, scope, owner, tagName, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -65,19 +65,19 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
     this._sbindData = nodeSBindInit(aNode.directives.bind, this.scope, this.owner);
     this.lifeCycle = LifeCycle.inited;
 
-    // #[begin] reverse
-    if (reverseWalker) {
-        var currentNode = reverseWalker.current;
+    // #[begin] hydrate
+    if (hydrateWalker) {
+        var currentNode = hydrateWalker.current;
 
         /* istanbul ignore if */
         if (!currentNode) {
-            throw new Error('[SAN REVERSE ERROR] Element not found. \nPaths: '
+            throw new Error('[SAN HYDRATE ERROR] Element not found. \nPaths: '
                 + getNodePath(this).join(' > '));
         }
 
         /* istanbul ignore if */
         if (currentNode.nodeType !== 1) {
-            throw new Error('[SAN REVERSE ERROR] Element type not match, expect 1 but '
+            throw new Error('[SAN HYDRATE ERROR] Element type not match, expect 1 but '
                 + currentNode.nodeType + '.\nPaths: '
                 + getNodePath(this).join(' > '));
         }
@@ -85,15 +85,15 @@ function Element(aNode, parent, scope, owner, tagName, reverseWalker) {
         /* istanbul ignore if */
         if (currentNode.tagName !== this.tagName.toUpperCase()
             && currentNode.tagName !== this.tagName) {
-            throw new Error('[SAN REVERSE ERROR] Element tagName not match, expect '
+            throw new Error('[SAN HYDRATE ERROR] Element tagName not match, expect '
                 + this.tagName + ' but meet ' + currentNode.tagName + '.\nPaths: '
                 + getNodePath(this).join(' > '));
         }
 
         this.el = currentNode;
-        reverseWalker.goNext();
+        hydrateWalker.goNext();
 
-        reverseElementChildren(this, this.scope, this.owner);
+        hydrateElementChildren(this, this.scope, this.owner);
 
         this.lifeCycle = LifeCycle.created;
         this._attached();

@@ -21,7 +21,7 @@ var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var nodeSBindInit = require('./node-s-bind-init');
 var nodeSBindUpdate = require('./node-s-bind-update');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
@@ -34,9 +34,9 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function SlotNode(aNode, parent, scope, owner, reverseWalker) {
+function SlotNode(aNode, parent, scope, owner, hydrateWalker) {
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
@@ -104,45 +104,45 @@ function SlotNode(aNode, parent, scope, owner, reverseWalker) {
 
     owner.slotChildren.push(this);
 
-    // #[begin] reverse
-    if (reverseWalker) {
-        var currentNode = reverseWalker.current;
+    // #[begin] hydrate
+    if (hydrateWalker) {
+        var currentNode = hydrateWalker.current;
         var hasFlagComment;
 
         // start flag
         if (currentNode && currentNode.nodeType === 8 && currentNode.data === 's-slot') {
-            this.sel = reverseWalker.current;
+            this.sel = hydrateWalker.current;
             hasFlagComment = 1;
-            reverseWalker.goNext();
+            hydrateWalker.goNext();
         }
         else {
             this.sel = document.createComment(this.id);
-            reverseWalker.current
-                ? reverseWalker.target.insertBefore(this.sel, reverseWalker.current)
-                : reverseWalker.target.appendChild(this.sel);
+            hydrateWalker.current
+                ? hydrateWalker.target.insertBefore(this.sel, hydrateWalker.current)
+                : hydrateWalker.target.appendChild(this.sel);
         }
 
         var aNodeChildren = this.aNode.children;
         for (var i = 0, l = aNodeChildren.length; i < l; i++) {
-            this.children.push(createReverseNode(
+            this.children.push(createHydrateNode(
                 aNodeChildren[i],
                 this,
                 this.childScope || this.scope,
                 this.childOwner || this.owner,
-                reverseWalker
+                hydrateWalker
             ));
         }
 
         // end flag
         if (hasFlagComment) {
-            this.el = reverseWalker.current;
-            reverseWalker.goNext();
+            this.el = hydrateWalker.current;
+            hydrateWalker.goNext();
         }
         else {
             this.el = document.createComment(this.id);
-            reverseWalker.current
-                ? reverseWalker.target.insertBefore(this.el, reverseWalker.current)
-                : reverseWalker.target.appendChild(this.el);
+            hydrateWalker.current
+                ? hydrateWalker.target.insertBefore(this.el, hydrateWalker.current)
+                : hydrateWalker.target.appendChild(this.el);
         }
 
         this.lifeCycle = LifeCycle.attached;

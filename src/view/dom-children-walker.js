@@ -9,7 +9,7 @@
 
 var removeEl = require('../browser/remove-el');
 
-// #[begin] reverse
+// #[begin] hydrate
 /**
  * 元素子节点遍历操作类
  *

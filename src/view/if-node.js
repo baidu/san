@@ -12,7 +12,7 @@ var insertBefore = require('../browser/insert-before');
 var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
@@ -24,9 +24,9 @@ var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function IfNode(aNode, parent, scope, owner, reverseWalker) {
+function IfNode(aNode, parent, scope, owner, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -38,16 +38,16 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
     this.id = guid++;
     this.children = [];
 
-    // #[begin] reverse
-    if (reverseWalker) {
+    // #[begin] hydrate
+    if (hydrateWalker) {
         if (evalExpr(this.aNode.directives['if'].value, this.scope, this.owner)) { // eslint-disable-line dot-notation
             this.elseIndex = -1;
-            this.children[0] = createReverseNode(
+            this.children[0] = createHydrateNode(
                 this.aNode.ifRinsed,
                 this,
                 this.scope,
                 this.owner,
-                reverseWalker
+                hydrateWalker
             );
         }
         else {
@@ -59,12 +59,12 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
 
                     if (!elif || elif && evalExpr(elif.value, this.scope, this.owner)) {
                         this.elseIndex = i;
-                        this.children[0] = createReverseNode(
+                        this.children[0] = createHydrateNode(
                             elseANode,
                             this,
                             this.scope,
                             this.owner,
-                            reverseWalker
+                            hydrateWalker
                         );
                         break;
                     }
@@ -73,7 +73,7 @@ function IfNode(aNode, parent, scope, owner, reverseWalker) {
         }
 
         this._create();
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
     }
     // #[end]
 }

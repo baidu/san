@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-let htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index-reverse.html.tpl'), 'UTF-8');
+let htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index-hydrate.html.tpl'), 'UTF-8');
 let html = '';
 let specTpls = '';
 
@@ -118,7 +118,7 @@ function buildFile(filePath) {
 
         // iterate
         if (isDir) {
-            console.log(`[Build Reverse Spec] ${filename}`);
+            console.log(`[Build Hydrate Spec] ${filename}`);
             buildFile(abFilePath);
         }
     });
@@ -149,20 +149,20 @@ function writeIn({htmlTpl, html, specTpls}) {
     );
 
     fs.writeFileSync(
-        path.resolve(__dirname, 'index-reverse.html'),
+        path.resolve(__dirname, 'index-hydrate.html'),
         htmlTpl.replace('##rendered-elements##', html),
         'UTF-8'
     );
 
     fs.writeFileSync(
-        path.resolve(__dirname, 'reverse.spec.js'),
+        path.resolve(__dirname, 'hydrate.spec.js'),
         specTpls,
         'UTF-8'
     );
 };
 
 console.log();
-console.log('----- Build Reverse Specs -----');
+console.log('----- Build Hydrate Specs -----');
 
 
 buildFile(path.join(__dirname, '../node_modules/san-html-cases/src'));

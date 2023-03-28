@@ -20,7 +20,7 @@ var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var insertBefore = require('../browser/insert-before');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
 
@@ -132,9 +132,9 @@ each(
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function ForNode(aNode, parent, scope, owner, reverseWalker) {
+function ForNode(aNode, parent, scope, owner, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -172,36 +172,36 @@ function ForNode(aNode, parent, scope, owner, reverseWalker) {
     }
 
 
-    // #[begin] reverse
-    if (reverseWalker) {
+    // #[begin] hydrate
+    if (hydrateWalker) {
         this.listData = evalExpr(this.param.value, this.scope, this.owner);
         if (this.listData instanceof Array) {
             for (var i = 0; i < this.listData.length; i++) {
-                this.children.push(createReverseNode(
+                this.children.push(createHydrateNode(
                     this.aNode.forRinsed,
                     this,
                     new ForItemData(this, this.listData[i], i),
                     this.owner,
-                    reverseWalker
+                    hydrateWalker
                 ));
             }
         }
         else if (this.listData && typeof this.listData === 'object') {
             for (var i in this.listData) {
                 if (this.listData.hasOwnProperty(i) && this.listData[i] != null) {
-                    this.children.push(createReverseNode(
+                    this.children.push(createHydrateNode(
                         this.aNode.forRinsed,
                         this,
                         new ForItemData(this, this.listData[i], i),
                         this.owner,
-                        reverseWalker
+                        hydrateWalker
                     ));
                 }
             }
         }
 
         this._create();
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
     }
     // #[end]
 }

@@ -12,7 +12,7 @@ var insertBefore = require('../browser/insert-before');
 var removeEl = require('../browser/remove-el');
 var NodeType = require('./node-type');
 var LifeCycle = require('./life-cycle');
-var createReverseNode = require('./create-reverse-node');
+var createHydrateNode = require('./create-hydrate-node');
 var elementDisposeChildren = require('./element-dispose-children');
 var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
 
@@ -24,9 +24,9 @@ var nodeOwnOnlyChildrenAttach = require('./node-own-only-children-attach');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function FragmentNode(aNode, parent, scope, owner, reverseWalker) {
+function FragmentNode(aNode, parent, scope, owner, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
@@ -39,37 +39,37 @@ function FragmentNode(aNode, parent, scope, owner, reverseWalker) {
     this.lifeCycle = LifeCycle.start;
     this.children = [];
 
-    // #[begin] reverse
-    if (reverseWalker) {
+    // #[begin] hydrate
+    if (hydrateWalker) {
         var hasFlagComment;
 
         // start flag
-        if (reverseWalker.current && reverseWalker.current.nodeType === 8) {
-            this.sel = reverseWalker.current;
+        if (hydrateWalker.current && hydrateWalker.current.nodeType === 8) {
+            this.sel = hydrateWalker.current;
             hasFlagComment = 1;
-            reverseWalker.goNext();
+            hydrateWalker.goNext();
         }
         else {
             this.sel = document.createComment(this.id);
-            insertBefore(this.sel, reverseWalker.target, reverseWalker.current);
+            insertBefore(this.sel, hydrateWalker.target, hydrateWalker.current);
         }
 
         // content
         var aNodeChildren = this.aNode.children;
         for (var i = 0, l = aNodeChildren.length; i < l; i++) {
             this.children.push(
-                createReverseNode(aNodeChildren[i], this, this.scope, this.owner, reverseWalker)
+                createHydrateNode(aNodeChildren[i], this, this.scope, this.owner, hydrateWalker)
             );
         }
 
         // end flag
         if (hasFlagComment) {
-            this.el = reverseWalker.current;
-            reverseWalker.goNext();
+            this.el = hydrateWalker.current;
+            hydrateWalker.goNext();
         }
         else {
             this.el = document.createComment(this.id);
-            insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+            insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
         }
 
         this.lifeCycle = LifeCycle.attached;

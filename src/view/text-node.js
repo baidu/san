@@ -27,17 +27,17 @@ var getNodePath = require('./get-node-path');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker?} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker?} hydrateWalker 子元素遍历对象
  */
-function TextNode(aNode, parent, scope, owner, reverseWalker) {
+function TextNode(aNode, parent, scope, owner, hydrateWalker) {
     this.aNode = aNode;
     this.owner = owner;
     this.scope = scope;
     this.parent = parent;
 
-    // #[begin] reverse
-    if (reverseWalker) {
-        var currentNode = reverseWalker.current;
+    // #[begin] hydrate
+    if (hydrateWalker) {
+        var currentNode = hydrateWalker.current;
         if (currentNode) {
             switch (currentNode.nodeType) {
                 case 8:
@@ -45,30 +45,30 @@ function TextNode(aNode, parent, scope, owner, reverseWalker) {
                         this.id = this.id || guid++;
                         this.sel = currentNode;
                         currentNode.data = this.id;
-                        reverseWalker.goNext();
+                        hydrateWalker.goNext();
 
                         while (1) { // eslint-disable-line
-                            currentNode = reverseWalker.current;
+                            currentNode = hydrateWalker.current;
                             /* istanbul ignore if */
                             if (!currentNode) {
-                                throw new Error('[SAN REVERSE ERROR] Text end flag not found. \nPaths: '
+                                throw new Error('[SAN HYDRATE ERROR] Text end flag not found. \nPaths: '
                                     + getNodePath(this).join(' > '));
                             }
 
                             if (isEndStump(currentNode, 'text')) {
                                 this.el = currentNode;
-                                reverseWalker.goNext();
+                                hydrateWalker.goNext();
                                 currentNode.data = this.id;
                                 break;
                             }
 
-                            reverseWalker.goNext();
+                            hydrateWalker.goNext();
                         }
                     }
                     break;
 
                 case 3:
-                    reverseWalker.goNext();
+                    hydrateWalker.goNext();
                     if (!this.aNode.textExpr.original) {
                         this.el = currentNode;
                     }
@@ -77,7 +77,7 @@ function TextNode(aNode, parent, scope, owner, reverseWalker) {
         }
         else {
             this.el = document.createTextNode('');
-            insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+            insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
         }
     }
     // #[end]

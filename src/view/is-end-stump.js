@@ -7,7 +7,7 @@
  * @file 判断是否结束桩
  */
 
-// #[begin] reverse
+// #[begin] hydrate
 /**
  * 判断是否结束桩
  *

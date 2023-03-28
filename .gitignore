@@ -17,6 +17,8 @@ errorShots/
 /test/karma-context.html
 /test/index-reverse.html
 /test/reverse.spec.js
+/test/index-hydrate.html
+/test/hydrate.spec.js
 /test/unpack-anode.spec.js
 /test/pref/tti.html
 *.vscode

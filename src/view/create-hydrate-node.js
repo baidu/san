@@ -11,7 +11,7 @@ var Element = require('./element');
 var FragmentNode = require('./fragment-node');
 var AsyncComponent = require('./async-component');
 
-// #[begin] reverse
+// #[begin] hydrate
 /**
  * 通过组件反解创建节点
  *
@@ -19,16 +19,16 @@ var AsyncComponent = require('./async-component');
  * @param {Node} parent 父亲节点
  * @param {Model} scope 所属数据环境
  * @param {Component} owner 所属组件环境
- * @param {DOMChildrenWalker} reverseWalker 子元素遍历对象
+ * @param {DOMChildrenWalker} hydrateWalker 子元素遍历对象
  * @return {Node}
  */
-function createReverseNode(aNode, parent, scope, owner, reverseWalker, componentName) {
+function createHydrateNode(aNode, parent, scope, owner, hydrateWalker, componentName) {
     if (aNode.elem) {
-        return new Element(aNode, parent, scope, owner, componentName, reverseWalker);
+        return new Element(aNode, parent, scope, owner, componentName, hydrateWalker);
     }
 
     if (aNode.Clazz) {
-        return new aNode.Clazz(aNode, parent, scope, owner, reverseWalker);
+        return new aNode.Clazz(aNode, parent, scope, owner, hydrateWalker);
     }
 
     var ComponentOrLoader = owner.components && owner.components[componentName || aNode.tagName];
@@ -40,14 +40,14 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker, component
                 owner: owner,
                 scope: scope,
                 parent: parent,
-                reverseWalker: reverseWalker
+                hydrateWalker: hydrateWalker
             })
             : new AsyncComponent({
                 source: aNode,
                 owner: owner,
                 scope: scope,
                 parent: parent,
-                reverseWalker: reverseWalker
+                hydrateWalker: hydrateWalker
             }, ComponentOrLoader);
     }
 
@@ -55,14 +55,14 @@ function createReverseNode(aNode, parent, scope, owner, reverseWalker, component
         switch (componentName) {
             case 'fragment':
             case 'template':
-                    return new FragmentNode(aNode, parent, scope, owner, reverseWalker);
+                    return new FragmentNode(aNode, parent, scope, owner, hydrateWalker);
         }
     }
     else {
         aNode.elem = true;
     }
-    return new Element(aNode, parent, scope, owner, componentName, reverseWalker);
+    return new Element(aNode, parent, scope, owner, componentName, hydrateWalker);
 }
 // #[end]
 
-exports = module.exports = createReverseNode;
+exports = module.exports = createHydrateNode;

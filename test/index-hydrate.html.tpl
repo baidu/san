@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>san-core Spec Runner</title>
+    <title>san-core hydrate Spec Runner</title>
 
     <link rel="shortcut icon" type="image/png" href="../node_modules/jasmine-core/images/jasmine_favicon.png">
     <link rel="stylesheet" href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
@@ -19,7 +19,7 @@
     <script src="../dist/san.dev.js"></script>
 
     <!-- include spec files here... -->
-    <script src="reverse.spec.js"></script>
+    <script src="hydrate.spec.js"></script>
 </head>
 
 <body>

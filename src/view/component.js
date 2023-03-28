@@ -33,7 +33,7 @@ var LifeCycle = require('./life-cycle');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
-var reverseElementChildren = require('./reverse-element-children');
+var hydrateElementChildren = require('./hydrate-element-children');
 var NodeType = require('./node-type');
 var styleProps = require('./style-props');
 var nodeSBindInit = require('./node-s-bind-init');
@@ -147,7 +147,7 @@ function Component(options) { // eslint-disable-line
     proto.aNode._i++;
 
 
-    // #[begin] reverse
+    // #[begin] hydrate
     // 组件反解，读取注入的组件数据
     if (this.el) {
         var firstCommentNode = this.el.firstChild;
@@ -281,26 +281,26 @@ function Component(options) { // eslint-disable-line
     this._sbindData = nodeSBindInit(this.aNode.directives.bind, this.data, this);
     this._toPhase('inited');
 
-    // #[begin] reverse
-    var reverseWalker = options.reverseWalker;
+    // #[begin] hydrate
+    var hydrateWalker = options.hydrateWalker;
     var aNode = this.aNode;
-    if (reverseWalker) {
+    if (hydrateWalker) {
         if (this.ssr === 'client-render') {
-            this.attach(reverseWalker.target, reverseWalker.current);
+            this.attach(hydrateWalker.target, hydrateWalker.current);
         }
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
-                this._rootNode = createReverseNode(aNode, this, this.data, this, reverseWalker);
+                this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
                 this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
             }
             else {
-                var currentNode = reverseWalker.current;
+                var currentNode = hydrateWalker.current;
                 if (currentNode && currentNode.nodeType === 1) {
                     this.el = currentNode;
-                    reverseWalker.goNext();
+                    hydrateWalker.goNext();
                 }
 
-                reverseElementChildren(this, this.data, this);
+                hydrateElementChildren(this, this.data, this);
             }
 
             this._toPhase('created');
@@ -310,12 +310,12 @@ function Component(options) { // eslint-disable-line
     }
     else if (this.el) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
-            reverseWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
-            this._rootNode = createReverseNode(aNode, this, this.data, this, reverseWalker);
+            hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
+            this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
         }
         else {
-            reverseElementChildren(this, this.data, this);
+            hydrateElementChildren(this, this.data, this);
         }
 
         this._toPhase('created');

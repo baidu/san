@@ -34,29 +34,29 @@ let editions = {
     },
 
     spa: {
-        ignoreFeatures: ['devtool', 'reverse', 'error']
+        ignoreFeatures: ['devtool', 'hydrate', 'error']
     },
 
     'spa.min': {
-        ignoreFeatures: ['devtool', 'reverse', 'error'],
+        ignoreFeatures: ['devtool', 'hydrate', 'error'],
         compress: 1
     },
 
     'spa.dev': {
-        ignoreFeatures: ['reverse']
+        ignoreFeatures: ['hydrate']
     },
 
     'spa.modern': {
-        ignoreFeatures: ['devtool', 'reverse', 'error', 'allua']
+        ignoreFeatures: ['devtool', 'hydrate', 'error', 'allua']
     },
 
     'spa.modern.min': {
-        ignoreFeatures: ['devtool', 'reverse', 'error', 'allua'],
+        ignoreFeatures: ['devtool', 'hydrate', 'error', 'allua'],
         compress: 1
     },
 
     'spa.modern.dev': {
-        ignoreFeatures: ['reverse', 'allua']
+        ignoreFeatures: ['hydrate', 'allua']
     }
 };
 

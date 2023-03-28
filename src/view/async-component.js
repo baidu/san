@@ -27,23 +27,23 @@ function AsyncComponent(options, loader) {
     this.id = guid++;
     this.children = [];
 
-    // #[begin] reverse
-    var reverseWalker = options.reverseWalker;
-    if (reverseWalker) {
+    // #[begin] hydrate
+    var hydrateWalker = options.hydrateWalker;
+    if (hydrateWalker) {
         var PlaceholderComponent = this.loader.placeholder;
         if (PlaceholderComponent) {
             this.children[0] = new PlaceholderComponent(options);
         }
 
         this._create();
-        insertBefore(this.el, reverseWalker.target, reverseWalker.current);
+        insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
 
         var me = this;
         this.loader.start(function (ComponentClass) {
             me.onload(ComponentClass);
         });
     }
-    options.reverseWalker = null;
+    options.hydrateWalker = null;
     // #[end]
 }
 
