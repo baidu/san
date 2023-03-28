@@ -572,7 +572,7 @@ declare namespace san {
         done(componentClass: DefinedComponentClass<{}, {}> | DefinedTemplateComponentClass<{}>): void;
     }
 
-    interface DefinedComponentClass<T extends {}, M> {
+    interface DefinedComponentClass<T extends {} = {}, M extends {} = {}> {
         new(option?: ComponentNewOptions<T>): Component<T> & M;
     }
     
@@ -596,6 +596,24 @@ declare namespace san {
         options: ComponentLoaderOptions | ComponentLoaderOptions["load"]
     ): ComponentLoader;
     
+    interface HydrateComponentRenderOnlyResult {
+        renderOnly: true;
+        components: {
+            [key: string]: DefinedComponentClass<{}, {}>[];
+        }
+    }
+
+    interface HydrateComponentNormalResult {
+        renderOnly?: false|undefined;
+        instance: DefinedComponentClass<{}, {}>;
+    }
+
+    type HydrateComponentResult = HydrateComponentRenderOnlyResult | HydrateComponentNormalResult;
+    function hydrateComponent(
+        ComponentClass: DefinedComponentClass, 
+        options: ComponentNewOptions
+    ): HydrateComponentResult;
+
     function parseTemplate(
         template: string, 
         options?: {
