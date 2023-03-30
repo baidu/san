@@ -35,7 +35,7 @@
   "devDependencies": {
     "@wdio/cli": "^6.6.6",
     "@wdio/jasmine-framework": "^6.6.6",
-    "@wdio/sauce-service": "^6.6.6",
+    "@wdio/sauce-service": "^8.3.10",
     "@wdio/spec-reporter": "^6.6.6",
     "art-template": "^4.10.2",
     "colors": "^1.0.3",
