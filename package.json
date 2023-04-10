@@ -1,7 +1,7 @@
 {
   "name": "san",
   "description": "A fast, portable, flexible JavaScript component framework",
-  "version": "3.13.0-beta.1",
+  "version": "3.13.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/baidu/san.git"
@@ -19,6 +19,7 @@
     "test:sauce": "npm run test:e2e -- modern && npm run test:e2e -- ie_family && npm run test:e2e -- mobile",
     "test:types": "rm -f ./types/test/*.js && tsc -p ./types/test/tsconfig.json",
     "build": "node ./tool/build.js",
+    "dev-server": "npx http-server",
     "report-cov": "cat ./coverage/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "types": "types",
