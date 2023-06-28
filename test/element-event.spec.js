@@ -53,7 +53,7 @@ describe("Element-Event", function () {
 
     it("bind click to noexists method, dont throw error", function (done) {
         var MyComponent = san.defineComponent({
-            template: '<a><span title="{{name}}" on-click="nothingclicker(name, email, $event)">{{name}}, please click here!</span></a>',
+            template: '<a><span title="{{name}}" on-click="nothingclicker(name, email, $event)">{{name}}, please click here!</span></a>'
         });
         var myComponent = new MyComponent();
         myComponent.data.set('name', 'errorrik');

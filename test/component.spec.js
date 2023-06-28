@@ -768,7 +768,7 @@ describe("Component", function () {
 
         var MyComponent = san.defineComponent({
             components: {
-                'Label': Label,
+                'Label': Label
             },
             template: '<div><Label/></div>'
         });
@@ -798,7 +798,7 @@ describe("Component", function () {
 
         var MyComponent = san.defineComponent({
             components: {
-                'x-label': Label,
+                'x-label': Label
             },
             initData: function () {
                 return {
@@ -5251,7 +5251,7 @@ describe("Component", function () {
 
         var myComponent = new MyComponent({
             data: {
-                isOlder: true,
+                isOlder: true
             }
         });
         var wrap = document.createElement('div');

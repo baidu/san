@@ -196,7 +196,7 @@ describe('error', function () {
                 return {
                     msg: 'test'
                 };
-            },
+            }
         });
         var MyComponent = san.defineComponent({
             template: '<div><x-child /></div>',
