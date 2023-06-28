@@ -36,14 +36,6 @@ function DOMChildrenWalker(el, onlyCurrent) {
 
             switch (child.nodeType) {
                 case 3:
-                    if (/^\s*$/.test(child.data || child.textContent)) {
-                        removeEl(child);
-                    }
-                    else {
-                        this.children.push(child);
-                    }
-                    break;
-
                 case 1:
                 case 8:
                     this.children.push(child);
