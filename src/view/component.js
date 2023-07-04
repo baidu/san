@@ -287,6 +287,7 @@ function Component(options) { // eslint-disable-line
     if (hydrateWalker) {
         if (this.ssr === 'client-render') {
             this.attach(hydrateWalker.target, hydrateWalker.current);
+            hydrateWalker.current && hydrateWalker.current.remove();
         }
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
