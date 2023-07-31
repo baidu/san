@@ -18,7 +18,7 @@ var extend = require('./extend');
 function inherits(subClass, superClass) {
     /* jshint -W054 */
     var subClassProto = subClass.prototype;
-    var F = function fn() {};
+    var F = function () {};
     F.prototype = superClass.prototype;
     subClass.prototype = new F();
     subClass.prototype.constructor = subClass;
