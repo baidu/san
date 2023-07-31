@@ -161,8 +161,7 @@ function Component(options) { // eslint-disable-line
                 var stumpText = stumpMatch[1];
 
                 // fill component data
-                options.data = (new Function('return '
-                    + stumpText
+                options.data = JSON.parse(stumpText
                         .replace(/^[\s\n]*/, '')
                         .replace(
                             /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"/g,
@@ -171,7 +170,7 @@ function Component(options) { // eslint-disable-line
                                     + ',' + (+h) + ',' + (+m) + ',' + (+s) + ')';
                             }
                         )
-                ))();
+                );
 
                 if (firstCommentNode.previousSibling) {
                     removeEl(firstCommentNode.previousSibling);
