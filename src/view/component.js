@@ -159,24 +159,35 @@ function Component(options) { // eslint-disable-line
             var stumpMatch = firstCommentNode.data.match(/^\s*s-data:([\s\S]+)?$/);
             if (stumpMatch) {
                 var stumpText = stumpMatch[1];
-
+                
                 // fill component data
-                stumpText = stumpText
-                    .replace(/^[\s\n]*/, '')
-                    .replace(/\\(.)/g, function ($0, $1) { // 去掉转移符
-                        return $1;
-                    });
-
-                options.data = JSON.parse(stumpText, function (key, value) {
-                    var matched = [];
-                    if (typeof value === 'string') {
-                        var matched = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z/g.exec(value) || [];
-                        return matched.length === 7
-                            ? new Date(matched[1], matched[2], matched[3], matched[4], matched[5], matched[6])
-                            : value;
+                // #[begin] allua
+                options.data = (new Function('return '
+                    + stumpText
+                        .replace(/^[\s\n]*/, '')
+                        .replace(
+                            /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"/g,
+                            function (match, y, mon, d, h, m, s) {
+                                return 'new Date(' + (+y) + ',' + (+mon) + ',' + (+d)
+                                    + ',' + (+h) + ',' + (+m) + ',' + (+s) + ')';
+                            }
+                        )
+                ))();
+                // #[end]
+                // #[begin] modern
+                options.data = JSON.parse(
+                    stumpText.replace(/\\([^\\\/"bfnrtu])/g, "$1"), 
+                    function (key, value) {
+                        if (typeof value === 'string') {
+                            var ma = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z/g.exec(value);
+                            if (ma) {
+                                return new Date(ma[1], ma[2], ma[3], ma[4], ma[5], ma[6]);
+                            }
+                        }
+                        return value;
                     }
-                    return value;
-                });
+                );
+                // #[end]
 
                 if (firstCommentNode.previousSibling) {
                     removeEl(firstCommentNode.previousSibling);
