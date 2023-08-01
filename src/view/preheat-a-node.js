@@ -11,7 +11,6 @@ var ExprType = require('../parser/expr-type');
 var each = require('../util/each');
 var kebab2camel = require('../util/kebab2camel');
 var hotTags = require('../browser/hot-tags');
-var createEl = require('../browser/create-el');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
 var isBrowser = require('../browser/is-browser');
@@ -21,7 +20,6 @@ var ForNode = require('./for-node');
 var IfNode = require('./if-node');
 var IsNode = require('./is-node');
 var FragmentNode = require('./fragment-node');
-var Element = require('./element');
 
 /**
  * ANode预热，分析的数据引用等信息
@@ -111,17 +109,8 @@ function preheatANode(aNode, componentInstance) {
                                 && trackBy.type === ExprType.ACCESSOR
                                 && trackBy.paths[0].value === directive.item
                             ) {
-                                aNode._gfk = function (data) { // hotspot: getForKey
-                                    var paths = this.directives.for.trackBy.paths || [];
-                                    var pathsLen = paths.length;
-                                    var value = data;
-                                    var key = '';
-                                    for (var i = 1; i < pathsLen; i++) {
-                                        key = paths[i].value;
-                                        value = value[key];
-                                    }
-                                    return value;
-                                }
+                                // hotspot: getForKey
+                                aNode._gfk = genItemKeyGetter(trackBy.paths);
                             }
                         }
                     }
@@ -336,6 +325,16 @@ function analyseExprDataHotspot(expr, accessorMeanDynamic) {
 
     isDynamic && (expr.dynamic = true);
     return refs;
+}
+
+function genItemKeyGetter(paths) {
+    var pathsLen = paths.length;
+    return function (data) {
+        for (var i = 1; i < pathsLen && data; i++) {
+            data = data[paths[i].value];
+        }
+        return data;
+    };
 }
 
 exports = module.exports = preheatANode;
