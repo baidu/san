@@ -161,16 +161,22 @@ function Component(options) { // eslint-disable-line
                 var stumpText = stumpMatch[1];
 
                 // fill component data
-                options.data = JSON.parse(stumpText
-                        .replace(/^[\s\n]*/, '')
-                        .replace(
-                            /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"/g,
-                            function (match, y, mon, d, h, m, s) {
-                                return 'new Date(' + (+y) + ',' + (+mon) + ',' + (+d)
-                                    + ',' + (+h) + ',' + (+m) + ',' + (+s) + ')';
-                            }
-                        )
-                );
+                stumpText = stumpText
+                    .replace(/^[\s\n]*/, '')
+                    .replace(/\\(.)/g, function ($0, $1) { // 去掉转移符
+                        return $1;
+                    });
+
+                options.data = JSON.parse(stumpText, function (key, value) {
+                    var matched = [];
+                    if (typeof value === 'string') {
+                        var matched = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z/g.exec(value) || [];
+                        return matched.length === 7
+                            ? new Date(matched[1], matched[2], matched[3], matched[4], matched[5], matched[6])
+                            : value;
+                    }
+                    return value;
+                });
 
                 if (firstCommentNode.previousSibling) {
                     removeEl(firstCommentNode.previousSibling);
