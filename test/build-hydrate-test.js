@@ -7,7 +7,6 @@
 const fs = require('fs');
 const path = require('path');
 
-let htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index-hydrate.html.tpl'), 'UTF-8');
 let html = '';
 let specTpls = '';
 
@@ -140,7 +139,7 @@ function buildFile(filePath) {
     }
 };
 
-function writeIn({htmlTpl, html, specTpls}) {
+function writeIn({html, specTpls}) {
     let karmaHtml = fs.readFileSync(path.resolve(__dirname, 'karma-context.html.tpl'), 'UTF-8');
     fs.writeFileSync(
         path.resolve(__dirname, 'karma-context.html'),
@@ -148,6 +147,14 @@ function writeIn({htmlTpl, html, specTpls}) {
         'UTF-8'
     );
 
+    let alluaHtml = fs.readFileSync(path.resolve(__dirname, 'index-hydrate-allua.html.tpl'), 'UTF-8');
+    fs.writeFileSync(
+        path.resolve(__dirname, 'index-hydrate-allua.html'),
+        alluaHtml.replace('##rendered-elements##', html),
+        'UTF-8'
+    );
+
+    let htmlTpl = fs.readFileSync(path.resolve(__dirname, 'index-hydrate.html.tpl'), 'UTF-8');
     fs.writeFileSync(
         path.resolve(__dirname, 'index-hydrate.html'),
         htmlTpl.replace('##rendered-elements##', html),
@@ -167,6 +174,6 @@ console.log('----- Build Hydrate Specs -----');
 
 buildFile(path.join(__dirname, '../node_modules/san-html-cases/src'));
 // write into file
-writeIn({htmlTpl, html, specTpls});
+writeIn({html, specTpls});
 
 console.log();

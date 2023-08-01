@@ -16,7 +16,7 @@
     <script src="lib/triggerEvent.js"></script>
 
     <!-- include source files here... -->
-    <script src="../dist/san.modern.dev.js"></script>
+    <script src="../dist/san.dev.js"></script>
 
     <!-- include spec files here... -->
     <script src="hydrate.spec.js"></script>

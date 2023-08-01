@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>san-core hydrate Spec Runner</title>
+
+    <link rel="shortcut icon" type="image/png" href="../node_modules/jasmine-core/images/jasmine_favicon.png">
+    <link rel="stylesheet" href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css">
+
+    <script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+    <script src="../node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+    <script src="../node_modules/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+    <!-- include triggerEvent  -->
+    <script src="e2e/wdio-bridge.js"></script>
+    <script src="lib/triggerEvent.js"></script>
+
+    <!-- include source files here... -->
+    <script src="../dist/san.dev.js"></script>
+
+    <!-- include spec files here... -->
+    <script src="hydrate.spec.js"></script>
+</head>
+
+<body>
+<div id="array-literal"><div><!--s-data:{"ext2":[],"ext":[]}--><ul><li>1. 1</li><li>2. true</li><li>3. erik</li></ul></div></div>
+
+<div id="bool-attr-bindings-false"><div><!--s-data:{}--><button>button</button></div></div>
+
+<div id="bool-attr-bindings-true"><div><!--s-data:{"distate":true}--><button disabled>button</button></div></div>
+
+<div id="bool-attr-init-false"><div><!--s-data:{}--><button>button</button></div></div>
+
+<div id="bool-attr-init-true"><div><!--s-data:{"distate":true}--><button disabled>button</button></div></div>
+
+<div id="bool-attr-no-binding"><div><!--s-data:{}--><button disabled>button</button></div></div>
+
+<div id="call-expr"><u><!--s-data:{"num":2,"base":3}-->result 28</u></div>
+
+<div id="call-expr-dynamic"><u><!--s-data:{"isUp":true,"num1":5,"num2":3}-->result 8</u></div>
+
+<div id="call-expr-if"><div><!--s-data:{"time":8}--><b>rest</b></div></div>
+
+<div id="checkbox-checked"><div><!--s-data:{"cValue":["2","3"],"list":["1","2","3"]}--><input type="checkbox" value="1"><input type="checkbox" value="2" checked><input type="checkbox" value="3" checked></div></div>
+
+<div id="class-merge"><div><!--s-data:{"clazz":"outer"}--><b class="outer"></b></div></div>
+
+<div id="cmpt-cmpt-root"><div><!--s-data:{"link":"https://baidu.github.io/san/","framework":"San","linkText":"HomePage"}--><h3>see <a href="https://baidu.github.io/san/">HomePage</a> to start <b>San</b> framework</h3></div></div>
+
+<div id="cmpt-cmpt-root-direct"><span title="erik"><!--s-data:{"name":"erik"}-->erik</span></div>
+
+<div id="cmpt-cmpt-root-multi-cmpt"><div><!--s-data:{"num":0}--><a><b>0</b></a></div></div>
+
+<div id="cmpt-cmpt-root-nlevel"><span title="erik"><!--s-data:{"name":"erik"}-->erik</span></div>
+
+<div id="cmpt-event"><div><!--s-data:{"title":"1","text":"one"}--><a><span title="1">one</span></a></div></div>
+
+<div id="cmpt-fill-slot"><div><!--s-data:{"searchValue":"er"}--><b title="er">er</b><a><div><input type="text" value="er"><button>search</button></div></a></div></div>
+
+<div id="cmpt-fragment"><div><!--s-data:{"link":"https://baidu.github.io/san/","name":"San","linkText":"HomePage"}--><!--s-frag-->see <a href="https://baidu.github.io/san/">HomePage</a> to start <b>San</b> framework<!--/s-frag--></div></div>
+
+<div id="cmpt-if-init-false"><div><!--s-data:{"cond":false,"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="cmpt-if-init-true"><div><!--s-data:{"cond":true,"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><a><span title="errorrik">airike</span></a></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="cmpt-if-true-shake"><div><!--s-data:{"cond":true,"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><a><span title="errorrik">airike</span></a></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="cmpt-literal"><div><!--s-data:{"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><a><span title="errorrik">airike</span></a></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="cmpt-render-if-update"><div><!--s-data:{"cond":true,"persons":[{"name":"erik","tels":["12345678","123456789"]},{"name":"firede","tels":["2345678","23456789"]}]}--><div><dl><dt title="erik">erik</dt><dd><ul><li title="12345678">12345678</li><li title="123456789">123456789</li></ul></dd></dl><dl><dt title="firede">firede</dt><dd><ul><li title="2345678">2345678</li><li title="23456789">23456789</li></ul></dd></dl></div></div></div>
+
+<div id="cmpt-root-multi-cmpt"><a><!--s-data:{"num":0}--><b>0</b></a></div>
+
+<div id="cmpt-ssr-client-render"><div><!--s-data:{"name":"erik"}--><span title="erik"><u>erik</u></span></div></div>
+
+<div id="cmpt-ssr-client-render-cmptasfrag"><div><!--s-data:{"name":"erik"}--><span title="erik"><u>erik</u></span><span title="erik"><b>erik</b></span></div></div>
+
+<div id="cmpt-ssr-client-render-cmptasif-false"><div><!--s-data:{"name":"erik","show":false}--><span title="erik"><u>erik</u></span><span title="erik"><b>erik</b></span></div></div>
+
+<div id="cmpt-ssr-client-render-cmptasif-true"><div><!--s-data:{"name":"erik","show":true}--><span title="erik"><u>erik</u></span><span title="erik"><b>erik</b></span></div></div>
+
+<div id="cmpt-ssr-client-render-cmptasroot"><div><!--s-data:{"name":"erik"}--><span title="erik"><u>erik</u></span></div></div>
+
+<div id="cmpt-ssr-render-only"><div data-sanssr="render-only"><p><i data-sanssr-cmpt="ui-c/ui-sub"><!--s-data:{"text":"erik"}-->erik</i></p><a><u data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></a></div></div>
+
+<div id="cmpt-ssr-render-only-cmptasroot"><p data-sanssr="render-only"><i data-sanssr-cmpt="ui-c/ui-sub"><!--s-data:{"text":"erik"}-->erik</i></p></div>
+
+<div id="cmpt-ssr-render-only-cmptasroot2"><p data-sanssr="render-only" data-sanssr-cmpt="ui-c"><!--s-data:{"dt":"erik","class":""}--><i>erik</i></p></div>
+
+<div id="cmpt-ssr-render-only-cmptifasroot-false"><u data-sanssr="render-only" data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></div>
+
+<div id="cmpt-ssr-render-only-fragment-hydrate"><div data-sanssr="render-only"><p><i>erik</i><i>erik</i></p><a><u data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></a></div></div>
+
+<div id="cmpt-ssr-render-only-nesting"><div data-sanssr="render-only"><p><i data-sanssr-cmpt="ui-c/ui-sub"><!--s-data:{"text":"erik"}-->erik</i></p><a><div data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}--><div class="label-child"><i>errorrik@gmail.com</i></div></div></a></div></div>
+
+<div id="cmpt-ssr-render-only-objcmpt"><div data-sanssr="render-only"><p><i data-sanssr-cmpt="ui-c/ui-sub"><!--s-data:{"text":"erik"}-->erik</i></p><a><u data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></a></div></div>
+
+<div id="cmpt-ssr-render-only-slot"><p data-sanssr="render-only"><i data-sanssr-cmpt="ui-c/ui-sub"><!--s-data:{"text":"erik"}-->erik</i><a><u data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></a></p></div>
+
+<div id="cmpt-ssr-render-only-slot2"><p data-sanssr="render-only" data-sanssr-cmpt="ui-c"><!--s-data:{"dt":"erik","class":""}--><i>erik</i><a><u data-sanssr-cmpt="ui-u"><!--s-data:{"text":"errorrik@gmail.com"}-->errorrik@gmail.com</u></a></p></div>
+
+<div id="cmpt-with-for-push"><div><!--s-data:{"list":[{"title":"1","text":"one"},{"title":"2","text":"two"}]}--><a><span title="1">one</span></a><a><span title="2">two</span></a></div></div>
+
+<div id="cmpt-with-for-set"><div><!--s-data:{"list":[{"title":"1","text":"one"},{"title":"2","text":"two"}]}--><a><span title="1">one</span></a><a><span title="2">two</span></a></div></div>
+
+<div id="complex-struct-in-textnode"><a><!--s-data:{"name":"er<u>erik</u>ik"}--><span>aaa</span><!--s-text-->hello er<u>erik</u>ik!<!--/s-text--><b>bbb</b></a></div>
+
+<div id="computed-after-inited"><div><!--s-data:{"title":"2","realTitle":"real2"}--><b title="real2">real2</b></div></div>
+
+<div id="computed-data"><div><!--s-data:{"title":"1","realTitle":"real1"}--><b title="real1">real1</b></div></div>
+
+<div id="computed-dep"><div><!--s-data:{"num":10,"less":9,"more":11,"normal":10}--><a>9</a><u>10</u><b>11</b></div></div>
+
+<div id="content-attr"><div falsy="false" truth="true" estr="" zero="0"><!--s-data:{"nul":null,"falsy":false,"truth":true,"estr":""}-->test</div></div>
+
+<div id="content-attr-sbind"><div falsy="false" truth="true" estr="" zero="0"><!--s-data:{"sb":{"nul":null,"falsy":false,"truth":true,"estr":"","zero":0}}-->test</div></div>
+
+<div id="custom-tag-name"><div><!--s-data:{"text":"hello san"}--><x-p><!--s-slot-->hello san<!--/s-slot--></x-p></div></div>
+
+<div id="data-binding-camel-named"><div><!--s-data:{"title":"1","text":"one"}--><a><span title="1">one</span></a></div></div>
+
+<div id="data-binding-no-expr"><div><!--s-data:{}--><a><u></u></a></div></div>
+
+<div id="data-escape"><div><!--s-data:{"obj":{"-\->":"-\->"},"num":-0.1,"arr":["-\-\-"]}--></div></div>
+
+<div id="date-data"><div><!--s-data:{"date":"1983-09-02T16:00:00.000Z"}--><b title="1983">1983</b></div></div>
+
+<div id="date-data-init-data"><div><!--s-data:{"date":"1983-09-02T16:00:00.000Z"}--><b title="1983">1983</b></div></div>
+
+<div id="deep-slot"><div><!--s-data:{"title":"contributor","name":"errorrik","closeText":"X"}--><div><h3><b>contributor</b></h3><div><u>errorrik</u><div><a><!--s-slot-->X<!--/s-slot--></a></div></div></div></div></div>
+
+<div id="default-content-inner-data"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"},"tip":"tip"}--><div><p>errorrik,male,errorrik@gmail.com - tip</p></div></div></div>
+
+<div id="dynamic-component-fragment"><span><!--s-data:{"cmpt":"","text":"cxtom"}--><!--s-frag-->cxtom<!--/s-frag--></span></div>
+
+<div id="dynamic-component-type"><div><!--s-data:{"name":"erik","company":"baidu","cmpt":"label"}--><span title="erik">erik<i>baidu</i></span></div></div>
+
+<div id="elif-update-all-false"><div><!--s-data:{}--></div></div>
+
+<div id="elif-update-all-true"><div><!--s-data:{"cond1":true,"cond2":true}--><span title="errorrik">errorrik</span></div></div>
+
+<div id="else-update-init-false"><u><!--s-data:{"cond":false,"name":"errorrik","name2":"otakustay"}--><a>nimei</a><span title="otakustay">otakustay</span></u></div>
+
+<div id="else-update-init-true"><u><!--s-data:{"cond":true,"name":"errorrik","name2":"otakustay"}--><span title="errorrik">errorrik</span></u></div>
+
+<div id="for-array-literal"><ul><!--s-data:{"three":3,"other":[]}--><li>1</li><li>2</li><li>3</li></ul></div>
+
+<div id="for-object"><ul><!--s-data:{"persons":{"erik":"errorrik@gmail.com","otakustay":"otakustay@gmail.com"}}--><li title="errorrik@gmail.com">erik-errorrik@gmail.com</li><li title="otakustay@gmail.com">otakustay-otakustay@gmail.com</li></ul></div>
+
+<div id="for-push-many-data"><ul><!--s-data:{"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"otakustay","email":"otakustay@gmail.com"}]}--><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
+
+<div id="for-push-many-data-ndo"><ul><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
+
+<div id="for-rm-many-data"><ul><!--s-data:{"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"otakustay","email":"otakustay@gmail.com"}]}--><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
+
+<div id="for-set-many-data"><ul><!--s-data:{"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"otakustay","email":"otakustay@gmail.com"}]}--><li>name - email</li><li title="errorrik">errorrik - errorrik@gmail.com</li><li title="otakustay">otakustay - otakustay@gmail.com</li><li>name - email</li></ul></div>
+
+<div id="for-update-empty-data"><ul><!--s-data:{"persons":[]}--><li>name - email</li><li>name - email</li></ul></div>
+
+<div id="fragment-elements"><div><!--s-data:{"name":"San"}--><b>Hello</b><span>Hello</span><b>San</b></div></div>
+
+<div id="fragment-in-slot"><div><!--s-data:{"lists":[1,2]}-->  <a class="container">    <!--s-frag-->      <b>1</b>          <!--/s-frag--><!--s-frag-->            <b>2</b>    <!--/s-frag-->  </a></div></div>
+
+<div id="fragment-sibling"><div><!--s-data:{"name":"San","type":"Framework","start":"learn","docURL":"https://baidu.github.io/san/"}--><!--s-frag-->Hello <b>San</b> Framework and <!--/s-frag--><!--s-frag-->learn from <a href="https://baidu.github.io/san/">doc</a>.<!--/s-frag--></div></div>
+
+<div id="given-content-owner-data"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"},"desc":"tip"}--><div><h3>errorrik</h3><b>male</b><u>errorrik@gmail.com</u><a>tip</a></div></div></div>
+
+<div id="given-undefined-dont-reset"><div><!--s-data:{"formData":{}}--><u>foo</u></div></div>
+
+<div id="html-entity"><u><!--s-data:{}-->&#39;!&emsp;&ensp;&thinsp;&copy;&lt;p&gt;&reg;&lt;/p&gt;&reg;&zwnj;&zwj;&lt;&nbsp;&gt;&quot;</u></div>
+
+<div id="if-update-init-false"><u><!--s-data:{"cond":false,"name":"errorrik"}--><a>nimei</a></u></div>
+
+<div id="if-update-init-true"><u><!--s-data:{"cond":true,"name":"errorrik"}--><span title="errorrik">errorrik</span></u></div>
+
+<div id="listTpl-alone-pop-unshift"><div><!--s-data:{"persons":[{"name":"otakustay","email":"otakustay@gmail.com"},{"name":"errorrik","email":"errorrik@gmail.com"}]}-->  <h4>otakustay</h4><p>otakustay@gmail.com</p>  <h4>errorrik</h4><p>errorrik@gmail.com</p>  </div></div>
+
+<div id="listTpl-alone-set-data"><div><!--s-data:{"persons":[]}-->  </div></div>
+
+<div id="listTpl-update-data"><div><!--s-data:{"cond":false,"persons":[{"name":"errorrik","email":"errorrik@gmail.com"},{"name":"varsha","email":"wangshuonpu@163.com"}]}--></div></div>
+
+<div id="load-fallback-promise"><div><!--s-data:{"text":"Hello San"}--><b>Hello San</b></div></div>
+
+<div id="load-fallback-prop"><div><!--s-data:{"text":"Hello San"}--><b>Hello San</b></div></div>
+
+<div id="load-for"><ul><!--s-data:{"list":["yi","er","san"]}--><li><!--s-slot-->Hello yi<!--/s-slot--></li><li><!--s-slot-->Hello er<!--/s-slot--></li><li><!--s-slot-->Hello san<!--/s-slot--></li></ul></div>
+
+<div id="load-if"><div><!--s-data:{"text":"Hello San"}--></div></div>
+
+<div id="load-loading"><div><!--s-data:{"text":"Hello San"}--><b>Hello San</b></div></div>
+
+<div id="load-slot"><div><!--s-data:{"text":"San"}--><a><b><!--s-slot-->Hello San<!--/s-slot--></b></a></div></div>
+
+<div id="load-success"><div><!--s-data:{"text":"Hello San"}--></div></div>
+
+<div id="multi-elif-tpl"><div><!--s-data:{"num":300}--><h4>big</h4><p>300</p></div></div>
+
+<div id="multi-elif-update-first"><div><!--s-data:{"num":30000}--><span title="biiig">biiig</span></div></div>
+
+<div id="multi-elif-update-last"><div><!--s-data:{"num":30}--><b title="small">small</b></div></div>
+
+<div id="multi-elif-update-mid"><div><!--s-data:{"num":300}--><span title="big">big</span></div></div>
+
+<div id="negated-unary"><div><!--s-data:{"num1":11,"num2":-12}--><u>1</u></div></div>
+
+<div id="nest-for"><form><!--s-data:{"cates":["foo","bar"],"forms":{"foo":[1,2,3],"bar":[4,5,6]}}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
+
+<div id="nest-for-computed"><form><!--s-data:{"cates":["foo","bar"],"formLen":3,"forms":{"foo":[1,2,3],"bar":[4,5,6]}}--><fieldset><label>1</label><label>2</label><label>3</label></fieldset><fieldset><label>4</label><label>5</label><label>6</label></fieldset></form></div>
+
+<div id="null-expr"><a><!--s-data:{"nullValue":null}--><b>b</b></a></div>
+
+<div id="object-literal"><div><!--s-data:{"article":{"title":"san","content":"framework"},"aAuthor":{"name":"erik","email":"errorrik@gmail.com"},"from":"hk"}--><div><h3>san</h3><h4>hk</h4><div><u>erik</u><a>errorrik@gmail.com</a></div><p>framework</p></div></div></div>
+
+<div id="option-selected"><div><!--s-data:{"persons":["errorrik","firede","otakustay"],"online":"firede"}--><b title="firede">firede</b><select><option value="errorrik">errorrik</option><option value="firede" selected>firede</option><option value="otakustay">otakustay</option></select></div></div>
+
+<div id="output-data"><div id="output-data-outer"><!--s-data:{"title":"The Last of the Mohicans"}--><b>The Last of the Mohicans</b><div><p>The Last of the Mohicans is a 1992 American epic historical drama film set in 1757 during the French and Indian War. </p><p>It was directed by Michael Mann and was based on the 1826 novel The Last of the Mohicans: A Narrative of 1757 by James Fenimore Cooper and the 1936 film adaptation, owing more to the film than the novel. The film stars Daniel Day-Lewis and Madeleine Stowe, with Jodhi May, Russell Means, Wes Studi, Eric Schweig, and Steven Waddington in supporting roles.</p></div></div></div>
+
+<div id="output-data-function"><div id="output-data-outer"><!--s-data:{"title":"The Last of the Mohicans"}--><b>The Last of the Mohicans</b><div><p>The Last of the Mohicans is a 1992 American epic historical drama film set in 1757 during the French and Indian War. </p><p>It was directed by Michael Mann and was based on the 1826 novel The Last of the Mohicans: A Narrative of 1757 by James Fenimore Cooper and the 1936 film adaptation, owing more to the film than the novel. The film stars Daniel Day-Lewis and Madeleine Stowe, with Jodhi May, Russell Means, Wes Studi, Eric Schweig, and Steven Waddington in supporting roles.</p></div></div></div>
+
+<div id="radio-checked"><div><!--s-data:{"cValue":"2","list":["1","2","3"]}--><input type="radio" value="1"><input type="radio" value="2" checked><input type="radio" value="3"></div></div>
+
+<div id="root-with-if"><div><!--s-data:{}--></div></div>
+
+<div id="s-bind"><div><!--s-data:{"aProps":{"title":"link","href":"http://www.baidu.com/","target":"_top","data-test":"test"},"target":"_blank","article":{"title":"Hello","subtitle":"San","content":"framework"},"title":"Hey"}--><div><h3>Hey</h3><h4>San</h4><p>framework</p></div><div><h3>Hey</h3><p></p></div><a target="_blank" title="link" href="http://www.baidu.com/" target="_top" data-test="test">link</a><a target="_blank">link</a></div></div>
+
+<div id="s-html"><div><!--s-data:{"html":"aa<a>bbb</a>cc"}--><b>aa<a>bbb</a>cc</b></div></div>
+
+<div id="scoped-slot-default-filter"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"}}--><div><p>Errorrik,Male,Errorrik@gmail.com</p></div></div></div>
+
+<div id="scoped-slot-default-listened"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"}}--><div><p>errorrik,male,errorrik@gmail.com</p></div></div></div>
+
+<div id="scoped-slot-given-filter"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"}}--><div><h3>ERRORRIK</h3><b>MALE</b><u>ERRORRIK@GMAIL.COM</u></div></div></div>
+
+<div id="scoped-slot-given-listened"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"}}--><div><h3>errorrik</h3><b>male</b><u>errorrik@gmail.com</u></div></div></div>
+
+<div id="scoped-slot-sbind-var"><div><!--s-data:{"man":{"name":"errorrik","sex":1,"email":"errorrik@gmail.com"}}--><div><h3>errorrik</h3><b>male</b><u>errorrik@gmail.com</u></div></div></div>
+
+<div id="select-empty-option-valued"><div><!--s-data:{"online":"firede","persons":["errorrik","firede"]}--><b title="firede">firede</b><select><option value="errorrik">errorrik</option><option value="firede" selected>firede</option><option value="">empty</option><option></option></select></div></div>
+
+<div id="select-empty-undefined"><div><!--s-data:{"persons":["errorrik","firede"]}--><b></b><select><option value="errorrik">errorrik</option><option value="firede">firede</option><option value="" selected>empty</option></select></div></div>
+
+<div id="self-component"><div id="root"><!--s-data:{"root":{"name":"root","children":[{"name":"child1","children":[{"name":"child1-1"},{"name":"child1-2"}]},{"name":"child2"}]}}--><div id="child1"><div id="child1-1"></div><div id="child1-2"></div></div><div id="child2"></div></div></div>
+
+<div id="slot-default-and-named"><div><!--s-data:{"tabText":"tab","text":"one","title":"1"}--><div><div class="head"><h3 title="1">1</h3></div><div><p title="one">one</p></div><u title="tab"></u></div></div></div>
+
+<div id="slot-desc-for-true"><div><!--s-data:{"desc":"MVVM component framework","name":"San"}--><div><h3><b>San</b></h3><p>MVVM component framework</p><p>MVVM component framework</p></div></div></div>
+
+<div id="slot-desc-if-true"><div><!--s-data:{"desc":"MVVM component framework","name":"San"}--><div><h3><b>San</b></h3><p>MVVM component framework</p></div></div></div>
+
+<div id="slot-insert-ele-for"><div><!--s-data:{"desc":"MVVM component framework","name":"San","persons":[{"name":"otakustay","email":"otakustay@gmail.com"},{"name":"errorrik","email":"errorrik@gmail.com"}]}--><div><h3><b>San</b></h3>  <h4>otakustay</h4><p>otakustay@gmail.com</p>    <h4>errorrik</h4><p>errorrik@gmail.com</p>  </div></div></div>
+
+<div id="slot-insert-ele-if"><div><!--s-data:{"desc":"MVVM component framework","name":"San","num":300}--><div><h1><b>San</b></h1><h4>big</h4><p>300</p></div></div></div>
+
+<div id="slot-named-content-default"><div><!--s-data:{"tabText":"tab","text":"one","title":"1","tTitle":"5","tText":"five"}--><div><div class="head"><h3 title="5">5</h3></div><div><p title="five">five</p></div></div></div></div>
+
+<div id="slot-shake-desc-ele-name"><div><!--s-data:{"deps":[{"strong":"name","columns":[{"name":"name","label":"名"},{"name":"email","label":"邮"}],"members":[{"name":"Justineo","email":"justineo@gmail.com"},{"name":"errorrik","email":"errorrik@gmail.com"}]},{"strong":"email","columns":[{"name":"name","label":"名"},{"name":"email","label":"邮"}],"members":[{"name":"otakustay","email":"otakustay@gmail.com"},{"name":"leeight","email":"leeight@gmail.com"}]}]}--><div>    <h3>名</h3><h3>邮</h3>    <ul>      <li><b>Justineo</b></li><li><!--s-slot-->justineo@gmail.com<!--/s-slot--></li>    </ul><ul>      <li><b>errorrik</b></li><li><!--s-slot-->errorrik@gmail.com<!--/s-slot--></li>    </ul></div><div>    <h3>名</h3><h3>邮</h3>    <ul>      <li><!--s-slot-->otakustay<!--/s-slot--></li><li><b>otakustay@gmail.com</b></li>    </ul><ul>      <li><!--s-slot-->leeight<!--/s-slot--></li><li><b>leeight@gmail.com</b></li>    </ul></div></div></div>
+
+<div id="slot-text-node"><p><!--s-data:{"name":"world"}-->Hello<!--s-slot-->aaaworld<span></span><!--/s-slot-->!</p></div>
+
+<div id="style-and-class-autoexpand"><a class="app main" style="width:50px;height:50px;"><!--s-data:{"styles":{"main":{"width":"50px","height":"50px"},"title":{"width":"50px","height":"20px"}},"classes":{"main":["app","main"],"title":["app-title","main-title"]}}--><h3 class="app-title main-title" style="width:50px;height:20px;"></h3><span class="ui ui-label" style="position:fixed;display:block;">label</span></a></div>
+
+<div id="text-value-binding"><div><!--s-data:{"name":"errorrik"}--><span title="errorrik">errorrik</span> <input value="errorrik"></div></div>
+
+<div id="textarea-value-binding"><div><!--s-data:{"name":"errorrik"}--><span title="errorrik">errorrik</span> <textarea>errorrik</textarea></div></div>
+
+<div id="tplcmpt"><div><!--s-data:{"link":"https://baidu.github.io/san/","framework":"San","linkText":"HomePage"}--><h3>see <a href="https://baidu.github.io/san/">HomePage</a> to start <b>San</b> framework</h3></div></div>
+
+<div id="tplcmpt-class-merge"><div><!--s-data:{"clazz":["outer1", "outer2"],"clz": "in1"}--><b class="in1 outer1 outer2"></b></div></div>
+
+<div id="tplcmpt-init-data"><div><!--s-data:{"link":"https://baidu.github.io/san/","framework":"San","linkText":"HomePage"}--><h3>tom, see <a href="https://baidu.github.io/san/">HomePage</a> to start <b>San</b> framework</h3></div></div>
+
+<div id="tplcmpt-slot-def-and-named"><div><!--s-data:{"tabText":"tab","text":"one","title":"1"}--><div><div class="head"><h3 title="1">1</h3></div><div><p title="one">one</p></div><u title="tab"></u></div></div></div>
+
+<div id="tplcmpt-slot-insert-ele-for"><div><!--s-data:{"desc":"MVVM component framework","name":"San","persons":[{"name":"otakustay","email":"otakustay@gmail.com"},{"name":"errorrik","email":"errorrik@gmail.com"}]}--><div><h3><b>San</b></h3>  <h4>otakustay</h4><p>otakustay@gmail.com</p>    <h4>errorrik</h4><p>errorrik@gmail.com</p>  </div></div></div>
+
+<div id="tplcmpt-slot-text-node"><p><!--s-data:{"name":"world"}-->Hello<!--s-slot-->aaaworld<span></span><!--/s-slot-->!</p></div>
+
+<div id="tplcmpt-style-merge"><div><!--s-data:{"sty":{"display":"block","height":"10px"},"styi":"width:30px"}--><b style="width:30px;display:block;height:10px;"></b></div></div>
+
+<div id="trim-whitespaces-default"><div><!--s-data:{}-->    <a>Foo</a>    <span>bar</span>
+    </div></div>
+
+<div id="update-attribute"><a><!--s-data:{"email":"errorrik@gmail.com","name":"errorrik"}--><span title="errorrik@gmail.com">errorrik</span></a></div>
+
+<div id="update-cmpt"><div><!--s-data:{"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><a><span title="errorrik">airike</span></a></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="update-cmpt-has-attr"><div><!--s-data:{"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><span class="label  my-label" title="airike">airike</span></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+<div id="update-cmpt-merge-data"><div><!--s-data:{"company":"bidu","jokeName":"airike","school":"none"}--><h5><span class="label  my-label" title="title">airike</span></h5><p><a title="none">none</a><u title="bidu">bidu</u></p></div></div>
+
+<div id="update-text"><a><!--s-data:{"email":"errorrik@gmail.com","name":"errorrik"}--><span title="errorrik@gmail.com">errorrik</span></a></div>
+
+<div id="use-hydrate-api"><div><!--s-data:{"jokeName":"airike","name":"errorrik","school":"none","company":"bidu"}--><h5><a><span title="errorrik">airike</span></a></h5><p><a>none</a><u>bidu</u></p></div></div>
+
+
+</body>
+</html>
+
