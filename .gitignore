@@ -18,6 +18,7 @@ errorShots/
 /test/index-reverse.html
 /test/reverse.spec.js
 /test/index-hydrate.html
+/test/index-hydrate-allua.html
 /test/hydrate.spec.js
 /test/unpack-anode.spec.js
 /test/pref/tti.html
