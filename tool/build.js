@@ -8,16 +8,16 @@ const MOZ_SourceMap = require('source-map');
 
 let editions = {
     '__': {
-        ignoreFeatures: ['devtool', 'error']
+        ignoreFeatures: ['devtool', 'error', 'modern']
     },
 
     min: {
-        ignoreFeatures: ['devtool', 'error'],
+        ignoreFeatures: ['devtool', 'error', 'modern'],
         compress: 1
     },
 
     dev: {
-        ignoreFeatures: []
+        ignoreFeatures: ['modern']
     },
 
     'modern': {
@@ -34,16 +34,16 @@ let editions = {
     },
 
     spa: {
-        ignoreFeatures: ['devtool', 'hydrate', 'error']
+        ignoreFeatures: ['devtool', 'hydrate', 'error', 'modern']
     },
 
     'spa.min': {
-        ignoreFeatures: ['devtool', 'hydrate', 'error'],
+        ignoreFeatures: ['devtool', 'hydrate', 'error', 'modern'],
         compress: 1
     },
 
     'spa.dev': {
-        ignoreFeatures: ['hydrate']
+        ignoreFeatures: ['hydrate', 'modern']
     },
 
     'spa.modern': {
@@ -142,28 +142,29 @@ function clearFeatureCode(source, ignoreFeatures) {
     let endRule = /^\s*\/\/\s*#\[end\]\s*$/;
 
     let featureRule = new RegExp('(' + ignoreFeatures.join('|') + ')');
+    let states = [];
     let state = 0;
     return source.split('\n')
         .map(line => {
-            switch (state) {
-                case 1:
-                case 2:
-                    if (endRule.test(line)) {
-                        state = 0;
-                    }
-                    else if (state === 2) {
-                        return '// ' + line;
-                    }
-                    break;
-
-                case 0:
-                    let match;
-                    if ((match = beginRule.exec(line))) {
-                        state = featureRule.test(match[1]) ? 2 : 1;
-                    }
-                    break;
+            let match;
+            if ((match = beginRule.exec(line))) {
+                if (featureRule.test(match[1])) {
+                    states.push(match[1]);
+                    state++;
+                }
+                else {
+                    states.push(0);
+                }
             }
-
+            else if (endRule.test(line)) {
+                if (states.pop()) {
+                    state--;
+                }
+            }
+            else if (state) {
+                return '// ' + line;
+            }
+            
             return line;
         })
         .join('\n');
