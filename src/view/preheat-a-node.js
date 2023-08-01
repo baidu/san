@@ -111,10 +111,17 @@ function preheatANode(aNode, componentInstance) {
                                 && trackBy.type === ExprType.ACCESSOR
                                 && trackBy.paths[0].value === directive.item
                             ) {
-                                aNode._gfk = new Function( // hotspot: getForKey
-                                    directive.item,
-                                    'return ' + directive.trackByRaw
-                                );
+                                aNode._gfk = function (data) { // hotspot: getForKey
+                                    var paths = this.directives.for.trackBy.paths || [];
+                                    var pathsLen = paths.length;
+                                    var value = data;
+                                    var key = '';
+                                    for (var i = 1; i < pathsLen; i++) {
+                                        key = paths[i].value;
+                                        value = value[key];
+                                    }
+                                    return value;
+                                }
                             }
                         }
                     }

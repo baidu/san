@@ -23,6 +23,7 @@ var createNode = require('./create-node');
 var createHydrateNode = require('./create-hydrate-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 var nodeOwnCreateStump = require('./node-own-create-stump');
+var bind = require('../util/bind');
 
 
 /**
@@ -88,7 +89,7 @@ ForItemData.prototype.exprResolve = function (expr) {
                         )
                     };
                     break;
-                   
+
                 case this.indexName:
                     pathSeg = {
                         type: ExprType.NUMBER,
@@ -404,7 +405,7 @@ ForNode.prototype._updateArray = function (changes, newList) {
     var childrenNeedUpdate = {};
 
     var newLen = newList.length;
-    var getItemKey = this.aNode._gfk;
+    var getItemKey = bind(this.aNode._gfk, this.aNode);
 
     /* eslint-disable no-redeclare */
     for (var cIndex = 0; cIndex < changes.length; cIndex++) {
