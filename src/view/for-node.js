@@ -405,7 +405,9 @@ ForNode.prototype._updateArray = function (changes, newList) {
     var childrenNeedUpdate = {};
 
     var newLen = newList.length;
-    var getItemKey = bind(this.aNode._gfk, this.aNode);
+    var getItemKey = this.aNode._gfk
+        ? bind(this.aNode._gfk, this.aNode)
+        : this.aNode._gfk;
 
     /* eslint-disable no-redeclare */
     for (var cIndex = 0; cIndex < changes.length; cIndex++) {
