@@ -158,7 +158,7 @@ function elementOwnAttached() {
                 switch (this.tagName) {
                     case 'input':
                     case 'textarea':
-                        if (isBrowser && window.CompositionEvent) {
+                        if (isBrowser) {
                             elementOnEl(this, 'change', inputOnCompositionEnd);
                             elementOnEl(this, 'compositionstart', inputOnCompositionStart);
                             elementOnEl(this, 'compositionend', inputOnCompositionEnd);
