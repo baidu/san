@@ -11,6 +11,7 @@
 var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
+var svgTags = require('../browser/svg-tags');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
@@ -125,7 +126,9 @@ Element.prototype.attach = function (parentEl, beforeEl) {
             }
             else {
                 props = aNode.props;
-                this.el = createEl(this.tagName);
+                this.el = svgTags[this.tagName] && document.createElementNS
+                    ? document.createElementNS('http://www.w3.org/2000/svg', this.tagName)
+                    : document.createElement(this.tagName);
             }
 
             if (this._sbindData) {

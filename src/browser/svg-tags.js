@@ -7,7 +7,6 @@
  * @file SVG标签表
  */
 
-var splitStr2Obj = require('../util/split-str-2-obj');
 
 /**
  * svgTags
@@ -15,34 +14,62 @@ var splitStr2Obj = require('../util/split-str-2-obj');
  * @see https://www.w3.org/TR/SVG/svgdtd.html 只取常用
  * @type {Object}
  */
-var svgTags = splitStr2Obj(''
+var svgTags = {
     // Animation elements
-    + 'animate,animateMotion,animateTransform,'
+    animate: 1,
+    animateMotion: 1,
+    animateTransform: 1,
 
     // Basic shapes
-    + 'circle,ellipse,line,polygon,polyline,rect,'
+    circle: 1,
+    ellipse: 1,
+    line: 1,
+    polygon: 1,
+    polyline: 1,
+    rect: 1,
 
     // Container elements
-    + 'defs,g,marker,mask,missing-glyph,pattern,svg,symbol,'
+    defs: 1,
+    g: 1,
+    marker: 1,
+    mask: 1,
+    'missing-glyph': 1,
+    pattern: 1,
+    svg: 1,
+    'symbol': 1,
 
     // Descriptive elements
-    + 'desc,metadata,'
+    desc: 1,
+    metadata: 1,
 
     // Font elements
-    + 'font,font-face,'
+    font: 1,
+    'font-face': 1,
 
     // Gradient elements
-    + 'linearGradient,radialGradient,stop,'
+    linearGradient: 1,
+    radialGradient: 1,
+    stop: 1,
 
     // Graphics elements
-    + 'image,path,use,'
+    image: 1,
+    path: 1,
+    use: 1,
 
     // Text elements
-    + 'glyph,textPath,text,tref,tspan,'
+    glyph: 1,
+    textPath: 1,
+    text: 1,
+    tref: 1,
+    tspan: 1,
 
     // Others
-    + 'clipPath,cursor,filter,foreignObject,view'
-);
+    clipPath: 1,
+    cursor: 1,
+    filter: 1,
+    foreignObject: 1,
+    view: 1
+};
 
 
 exports = module.exports = svgTags;

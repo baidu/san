@@ -7,6 +7,8 @@
  * @file ANode预热
  */
 
+var svgTags = require('../browser/svg-tags');
+
 /**
  * ANode预热HTML元素，用于循环创建时clone
  *
@@ -14,7 +16,9 @@
  * @return {HTMLElement}
  */
 function preheatEl(aNode) {
-    var el = createEl(aNode.tagName);
+    var el = svgTags[aNode.tagName] && document.createElementNS
+        ? document.createElementNS('http://www.w3.org/2000/svg', aNode.tagName)
+        : document.createElement(aNode.tagName);
     aNode._el = el;
 
     for (var i = 0, l = aNode.props.length; i < l; i++) {

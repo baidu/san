@@ -18,7 +18,6 @@
     // require('./browser/on');
     // require('./browser/un');
     // require('./browser/svg-tags');
-    // require('./browser/create-el');
     // require('./browser/remove-el');
     // require('./util/next-tick');
     // require('./browser/ie');

@@ -7,17 +7,44 @@
  * @file 常用标签表，用于 element 创建优化
  */
 
-var splitStr2Obj = require('../util/split-str-2-obj');
-
 /**
  * 常用标签表
  *
  * @type {Object}
  */
-var hotTags = splitStr2Obj(
-    'div,span,img,ul,ol,li,dl,dt,dd,a,b,u,hr,'
-    + 'form,input,textarea,button,label,select,option,'
-    + 'table,tbody,th,tr,td,thead,main,aside,header,footer,nav'
-);
+var hotTags = {
+    div: 1,
+    span: 1,
+    img: 1,
+    ul: 1,
+    ol: 1,
+    li: 1,
+    dl: 1,
+    dt: 1,
+    dd: 1,
+    a: 1,
+    b: 1,
+    u: 1,
+    hr: 1,
+    form: 1,
+    input: 1,
+    textarea: 1,
+    button: 1,
+    label: 1,
+    select: 1,
+    option: 1,
+    table: 1,
+    tbody: 1,
+    th: 1,
+    tr: 1,
+    td: 1,
+    thead: 1,
+    main: 1,
+    aside: 1,
+    header: 1,
+    footer: 1,
+    nav: 1
+
+};
 
 exports = module.exports = hotTags;

@@ -7,19 +7,36 @@
  * @file bool属性表
  */
 
-
-var splitStr2Obj = require('../util/split-str-2-obj');
-
 /**
  * bool属性表
  *
  * @type {Object}
  */
-var boolAttrs = splitStr2Obj(
-    'allowpaymentrequest,async,autofocus,autoplay,'
-    + 'checked,controls,default,defer,disabled,formnovalidate,'
-    + 'hidden,ismap,itemscope,loop,multiple,muted,nomodule,novalidate,'
-    + 'open,readonly,required,reversed,selected,typemustmatch'
-);
+var boolAttrs = {
+    allowpaymentrequest: 1,
+    async: 1,
+    autofocus: 1,
+    autoplay: 1,
+    checked: 1,
+    controls: 1,
+    default: 1,
+    defer: 1,
+    disabled: 1,
+    formnovalidate: 1,
+    hidden: 1,
+    ismap: 1,
+    itemscope: 1,
+    loop: 1,
+    multiple: 1,
+    muted: 1,
+    nomodule: 1,
+    novalidate: 1,
+    open: 1,
+    readonly: 1,
+    required: 1,
+    reversed: 1,
+    selected: 1,
+    typemustmatch: 1
+};
 
 exports = module.exports = boolAttrs;

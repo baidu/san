@@ -7,13 +7,14 @@
  * @file 样式的基本属性
  */
 
-var splitStr2Obj = require('../util/split-str-2-obj');
-
 /**
  * 元素的基本属性
  *
  * @type {Object}
  */
-var styleProps = splitStr2Obj('class,style');
+var styleProps = {
+    'class': 1,
+    style: 1
+};
 
 exports = module.exports = styleProps;
