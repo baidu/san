@@ -7,7 +7,6 @@
  * @file  获取节点 stump 的 comment
  */
 
-var noSetHTML = require('../browser/no-set-html');
 var warn = require('../util/warn');
 
 // #[begin] error
@@ -25,7 +24,8 @@ function warnSetHTML(el) {
 
     // some html elements cannot set innerHTML in old ie
     // see: https://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
-    if (noSetHTML(el)) {
+    
+    if (/^(col|colgroup|frameset|style|table|tbody|tfoot|thead|tr|select)$/i.test(el.tagName)) {
         warn('set html for element "' + el.tagName + '" may cause an error in old IE');
     }
 }
