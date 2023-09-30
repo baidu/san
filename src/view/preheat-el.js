@@ -8,6 +8,7 @@
  */
 
 var svgTags = require('../browser/svg-tags');
+const nextTick = require('../util/next-tick');
 
 /**
  * ANode预热HTML元素，用于循环创建时clone
@@ -28,6 +29,11 @@ function preheatEl(aNode, doc) {
         }
     }
 
+    nextTick(function () {
+        aNode._el = null;
+        aNode._i = 0;
+    });
+    
     return el;
 }
 
