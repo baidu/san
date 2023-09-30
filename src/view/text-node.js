@@ -132,7 +132,13 @@ TextNode.prototype.dispose = function (noDetach) {
     this.sel = null;
 };
 
-var textUpdateProp = ie && ie < 9 ? 'data' : 'textContent';
+
+var textUpdateProp = 
+// #[begin] allua
+    ie && ie < 9 ? 'data' : 
+ // #[end]
+    'textContent';
+
 
 /**
  * 更新 text 节点的视图
