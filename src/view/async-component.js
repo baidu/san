@@ -10,7 +10,6 @@
 var guid = require('../util/guid');
 var each = require('../util/each');
 var insertBefore = require('../browser/insert-before');
-var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 
@@ -35,7 +34,7 @@ function AsyncComponent(options, loader) {
             this.children[0] = new PlaceholderComponent(options);
         }
 
-        this._create();
+        this.el = hydrateWalker.doc.createComment(this.id);
         insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
 
         var me = this;
@@ -47,7 +46,6 @@ function AsyncComponent(options, loader) {
     // #[end]
 }
 
-AsyncComponent.prototype._create = nodeOwnCreateStump;
 AsyncComponent.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
@@ -64,7 +62,7 @@ AsyncComponent.prototype.attach = function (parentEl, beforeEl) {
         component.attach(parentEl, beforeEl);
     }
 
-    this._create();
+    this.el = parentEl.ownerDocument.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
 
     var me = this;

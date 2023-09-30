@@ -21,6 +21,7 @@ var removeEl = require('../browser/remove-el');
 function DOMChildrenWalker(el, onlyCurrent) {
     this.index = 0;
     this.target = el;
+    this.doc = el.ownerDocument;
     
     if (onlyCurrent) {
         this.children = [onlyCurrent, onlyCurrent.nextSibling];
