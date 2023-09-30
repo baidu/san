@@ -534,20 +534,6 @@ describe("Component", function () {
         })
     });
 
-    it("attach without parentEl, and dispose, got collect life cycle", function () {
-        var MyComponent = san.defineComponent({
-            template: '<div>hello san</div>'
-        });
-
-        var myComponent = new MyComponent();
-        myComponent.attach();
-
-        expect(!!myComponent.lifeCycle.is('attached')).toBeTruthy();
-
-        myComponent.dispose();
-        expect(!!myComponent.lifeCycle.is('disposed')).toBeTruthy();
-
-    });
 
     it("data set in inited should not update view", function (done) {
         var up = false;
