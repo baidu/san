@@ -133,11 +133,10 @@ TextNode.prototype.dispose = function (noDetach) {
 };
 
 
-var textUpdateProp = 
 // #[begin] allua
-    ie && ie < 9 ? 'data' : 
- // #[end]
-    'textContent';
+var textUpdateProp = ie && ie < 9 ? 'data' : 'textContent';
+// #[end]
+    
 
 
 /**
@@ -181,7 +180,12 @@ TextNode.prototype._update = function (changes) {
                     parentEl.removeChild(tempFlag);
                 }
                 else {
+                    // #[begin] allua
                     this.el[textUpdateProp] = text;
+                    // #[end]
+                    // #[begin] modern
+                    this.el.textContent = text;
+                    // #[end]
                 }
             }
 
