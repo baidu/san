@@ -19,7 +19,7 @@ var boolAttrs = {
     autoplay: 1,
     checked: 1,
     controls: 1,
-    default: 1,
+    'default': 1,
     defer: 1,
     disabled: 1,
     formnovalidate: 1,
