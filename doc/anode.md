@@ -5,35 +5,35 @@ ANode 参考
 ANode 全名抽象节点，是 San 组件框架 template 解析的返回结果。本文档对 ANode 进行说明。
 
 
-[template 简述](#user-content-template-简述)  
-　　[插值语法](#user-content-插值语法)  
-　　[普通属性语法](#user-content-普通属性)  
-　　[双向绑定语法](#user-content-双向绑定)  
-　　[指令语法](#user-content-指令)  
-[表达式](#user-content-表达式)  
-　　[表达式类型](#user-content-表达式类型)  
-　　[STRING](#user-content-string)  
-　　[NUMBER](#user-content-number)  
-　　[BOOL](#user-content-bool)  
-　　[ACCESSOR](#user-content-accessor)  
-　　[INTERP](#user-content-interp)  
-　　[CALL](#user-content-call)  
-　　[TEXT](#user-content-text)  
-　　[BINARY](#user-content-binary)  
-　　[UNARY](#user-content-unary)  
-　　[TERTIARY](#user-content-tertiary)  
-　　[ARRAY LITERAL](#user-content-array-literal)  
-　　[OBJECT LITERAL](#user-content-object-literal)  
-　　[PARENTHESIZED](#user-content-parenthesized)  
-[ANode 的结构](#user-content-anode-的结构)  
-[模板解析结果](#user-content-模板解析结果)  
-　　[文本](#user-content-文本)  
-　　[属性](#user-content-属性)  
-　　[双向绑定](#user-content-双向绑定)  
-　　[复杂的插值](#user-content-复杂的插值)  
-　　[事件绑定](#user-content-事件绑定)  
-　　[条件指令](#user-content-条件指令)  
-　　[循环指令](#user-content-循环指令)  
+[template 简述](#user-content-template-简述)
+　　[插值语法](#user-content-插值语法)
+　　[普通属性语法](#user-content-普通属性)
+　　[双向绑定语法](#user-content-双向绑定)
+　　[指令语法](#user-content-指令)
+[表达式](#user-content-表达式)
+　　[表达式类型](#user-content-表达式类型)
+　　[STRING](#user-content-string)
+　　[NUMBER](#user-content-number)
+　　[BOOL](#user-content-bool)
+　　[ACCESSOR](#user-content-accessor)
+　　[INTERP](#user-content-interp)
+　　[CALL](#user-content-call)
+　　[TEXT](#user-content-text)
+　　[BINARY](#user-content-binary)
+　　[UNARY](#user-content-unary)
+　　[TERTIARY](#user-content-tertiary)
+　　[ARRAY LITERAL](#user-content-array-literal)
+　　[OBJECT LITERAL](#user-content-object-literal)
+　　[PARENTHESIZED](#user-content-parenthesized)
+[ANode 的结构](#user-content-anode-的结构)
+[模板解析结果](#user-content-模板解析结果)
+　　[文本](#user-content-文本)
+　　[属性](#user-content-属性)
+　　[双向绑定](#user-content-双向绑定)
+　　[复杂的插值](#user-content-复杂的插值)
+　　[事件绑定](#user-content-事件绑定)
+　　[条件指令](#user-content-条件指令)
+　　[循环指令](#user-content-循环指令)
 
 
 
@@ -512,15 +512,15 @@ ANode 的结构
 template 的 parse 直接返回一个 ANode 对象。ANode 是一个 JSON Object，不包含任何方法，只有属性。
 
 
-#### {Object?} textExpr
+#### `{Object?}` textExpr
 
 文本的表达式对象。当前节点为文本节点时该属性存在。
 
-#### {Array.<ANode>} children
+#### `{Array.<ANode>}` children
 
 ANode 的结构与 HTML 一样，是一个树状结构。children 是当前节点的子节点列表。文本节点该属性无效
 
-#### {Array.<Object>} props
+#### `{Array.<Object>}` props
 
 节点的属性绑定信息。文本节点该属性无效
 
@@ -531,7 +531,7 @@ aNode.props.forEach(function (prop) {
 ```
 
 
-#### {Array.<Object>} events
+#### `{Array.<Object>}` events
 
 节点的事件绑定信息。文本节点该属性无效
 
@@ -541,7 +541,7 @@ aNode.events.forEach(function (event) {
 });
 ```
 
-#### {Object} directives
+#### `{Object}` directives
 
 节点的指令绑定信息。文本节点该属性无效
 
@@ -550,11 +550,11 @@ aNode.events.forEach(function (event) {
 aNode.directives['if'];
 ```
 
-#### {string} tagName
+#### `{string}` tagName
 
 节点的标签名。文本节点该属性无效
 
-#### {Array.<ANode>?} elses
+#### `{Array.<ANode>?}` elses
 
 当节点包含 `if` directive 时，其对应的 `else` 和 `elif` 节点
 
@@ -1130,4 +1130,3 @@ aNode = {
     "tagName": "ul"
 }
 ```
-
