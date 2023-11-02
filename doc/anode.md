@@ -512,15 +512,15 @@ ANode 的结构
 template 的 parse 直接返回一个 ANode 对象。ANode 是一个 JSON Object，不包含任何方法，只有属性。
 
 
-#### {Object?} textExpr
+#### `{Object?}` textExpr
 
 文本的表达式对象。当前节点为文本节点时该属性存在。
 
-#### {Array.<ANode>} children
+#### `{Array.<ANode>}` children
 
 ANode 的结构与 HTML 一样，是一个树状结构。children 是当前节点的子节点列表。文本节点该属性无效
 
-#### {Array.<Object>} props
+#### `{Array.<Object>}` props
 
 节点的属性绑定信息。文本节点该属性无效
 
@@ -531,7 +531,7 @@ aNode.props.forEach(function (prop) {
 ```
 
 
-#### {Array.<Object>} events
+#### `{Array.<Object>}` events
 
 节点的事件绑定信息。文本节点该属性无效
 
@@ -541,7 +541,7 @@ aNode.events.forEach(function (event) {
 });
 ```
 
-#### {Object} directives
+#### `{Object}` directives
 
 节点的指令绑定信息。文本节点该属性无效
 
@@ -550,11 +550,11 @@ aNode.events.forEach(function (event) {
 aNode.directives['if'];
 ```
 
-#### {string} tagName
+#### `{string}` tagName
 
 节点的标签名。文本节点该属性无效
 
-#### {Array.<ANode>?} elses
+#### `{Array.<ANode>?}` elses
 
 当节点包含 `if` directive 时，其对应的 `else` 和 `elif` 节点
 
@@ -1130,4 +1130,3 @@ aNode = {
     "tagName": "ul"
 }
 ```
-
