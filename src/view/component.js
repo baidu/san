@@ -1060,44 +1060,46 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             this._toPhase('beforeCreate');
             // #[end]
 
-            aNode = {
-                directives: aNode.directives,
-                props: aNode.props,
-                events: aNode.events,
-                children: aNode.children,
-                tagName: aNode.tagName,
-                attrs: aNode.attrs,
-                vars: aNode.vars,
-                _ht: aNode._ht,
-                _i: aNode._i,
-                _dp: aNode._dp,
-                _xp: aNode._xp,
-                _pi: aNode._pi,
-                _ai: aNode._ai,
-                _b: aNode._b,
-                _ce: aNode._ce
-            };
+            if (this.components[aNode.tagName]) {
+                aNode = {
+                    directives: aNode.directives,
+                    props: aNode.props,
+                    events: aNode.events,
+                    children: aNode.children,
+                    tagName: aNode.tagName,
+                    attrs: aNode.attrs,
+                    vars: aNode.vars,
+                    _ht: aNode._ht,
+                    _i: aNode._i,
+                    _dp: aNode._dp,
+                    _xp: aNode._xp,
+                    _pi: aNode._pi,
+                    _ai: aNode._ai,
+                    _b: aNode._b,
+                    _ce: aNode._ce
+                };
 
-            if (this.attrs) {
-                aNode.attrs = aNode.attrs || [];
-                for (var i = 0; i < this.attrs.length; i++) {
-                    var attr = this.attrs[i];
-                    if (aNode._ai[attr.name] == null) { 
-                        aNode.attrs.push({
-                            name: attr.name,
-                            expr: {
-                                type: ExprType.ACCESSOR,
-                                paths: [
-                                    {type: ExprType.STRING, value: '$attrs'},
-                                    {type: ExprType.STRING, value: attr.name}
-                                ]
-                            },
-                            handler: attr.handler
-                        });
+                if (this.attrs) {
+                    aNode.attrs = aNode.attrs || [];
+                    for (var i = 0; i < this.attrs.length; i++) {
+                        var attr = this.attrs[i];
+                        if (aNode._ai[attr.name] == null) { 
+                            aNode.attrs.push({
+                                name: attr.name,
+                                expr: {
+                                    type: ExprType.ACCESSOR,
+                                    paths: [
+                                        {type: ExprType.STRING, value: '$attrs'},
+                                        {type: ExprType.STRING, value: attr.name}
+                                    ]
+                                },
+                                handler: attr.handler
+                            });
+                        }
                     }
-                }
-            } 
-            debugger
+                } 
+            }
+
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -1143,7 +1145,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                         prop.handler(this.el, value, prop.name, this);
                     }
                 }
-debugger
+
                 if (this.attrs) {
                     var attrsData = this.data.get('$attrs');
                     for (var i = 0; i < this.attrs.length; i++) {
