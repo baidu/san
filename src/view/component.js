@@ -84,6 +84,7 @@ function Component(options) { // eslint-disable-line
 
     var clazz = this.constructor;
 
+    this.inheritAttrs = !(this.inheritAttrs === false || clazz.inheritAttrs === false);
     this.filters = this.filters || clazz.filters || {};
     this.computed = this.computed || clazz.computed || {};
     this.messages = this.messages || clazz.messages || {};
@@ -228,6 +229,10 @@ function Component(options) { // eslint-disable-line
         this.tagName = this.tagName || this.source.tagName;
         this.binds = this.source._b;
 
+        if (this.inheritAttrs) {
+            this.attrs = this.source.attrs;
+        }
+
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
     }
@@ -257,6 +262,19 @@ function Component(options) { // eslint-disable-line
             if (typeof value !== 'undefined') {
                 // See: https://github.com/ecomfe/san/issues/191
                 initData[bindInfo.name] = value;
+            }
+        }
+
+        if (this.attrs) {
+            initData.$attrs = {};
+            for (var i = 0, l = this.attrs.length; i < l; i++) {
+                var attrInfo = this.attrs[i];
+    
+                var value = evalExpr(attrInfo.expr, this.scope, this.owner);
+                if (typeof value !== 'undefined') {
+                    // See: https://github.com/ecomfe/san/issues/191
+                    initData.$attrs[attrInfo.name] = value;
+                }
             }
         }
     }
@@ -750,6 +768,16 @@ Component.prototype._update = function (changes) {
                 }
             });
 
+            each(me.attrs, function (attrItem) {
+                var updateExpr = attrItem.expr;
+                if (changeExprCompare(changeExpr, updateExpr, me.scope)) {
+                    me.data.set(
+                        '$attrs["' + attrItem.name + '"]', 
+                        evalExpr(updateExpr, me.scope, me.owner)
+                    );
+                }
+            });
+
             each(me.sourceSlotNameProps, function (bindItem) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
                 return !needReloadForSlot;
@@ -829,6 +857,22 @@ Component.prototype._update = function (changes) {
                     ) {
                         prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
                         break;
+                    }
+                }
+            }
+
+            if (this.attrs) {
+                var attrsData = this.data.get('$attrs');
+                for (var i = 0; i < this.attrs.length; i++) {
+                    var attr = this.attrs[i];
+                    if (this.aNode._pi[attr.name] == null) {
+                        for (var j = 0; j < dataChanges.length; j++) {
+                            var changePaths = dataChanges[j].expr.paths;
+                            if (changePaths[0].value === '$attrs' && changePaths[1].value === attr.name) {
+                                attr.handler(this.el, attrsData[attr.name], attr.name, this);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -1015,6 +1059,45 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
             // #[end]
+
+            aNode = {
+                directives: aNode.directives,
+                props: aNode.props,
+                events: aNode.events,
+                children: aNode.children,
+                tagName: aNode.tagName,
+                attrs: aNode.attrs,
+                vars: aNode.vars,
+                _ht: aNode._ht,
+                _i: aNode._i,
+                _dp: aNode._dp,
+                _xp: aNode._xp,
+                _pi: aNode._pi,
+                _ai: aNode._ai,
+                _b: aNode._b,
+                _ce: aNode._ce
+            };
+
+            if (this.attrs) {
+                aNode.attrs = aNode.attrs || [];
+                for (var i = 0; i < this.attrs.length; i++) {
+                    var attr = this.attrs[i];
+                    if (aNode._ai[attr.name] == null) { 
+                        aNode.attrs.push({
+                            name: attr.name,
+                            expr: {
+                                type: ExprType.ACCESSOR,
+                                paths: [
+                                    {type: ExprType.STRING, value: '$attrs'},
+                                    {type: ExprType.STRING, value: attr.name}
+                                ]
+                            },
+                            handler: attr.handler
+                        });
+                    }
+                }
+            } 
+            debugger
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -1058,6 +1141,16 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                     if (value || !styleProps[prop.name]) {
                         prop.handler(this.el, value, prop.name, this);
+                    }
+                }
+debugger
+                if (this.attrs) {
+                    var attrsData = this.data.get('$attrs');
+                    for (var i = 0; i < this.attrs.length; i++) {
+                        var attr = this.attrs[i];
+                        if (this.aNode._pi[attr.name] == null) {
+                            attr.handler(this.el, attrsData[attr.name], attr.name, this);
+                        }
                     }
                 }
 

@@ -50,7 +50,8 @@ function parseComponentTemplate(ComponentClass) {
         delete aNode.tagName;
     }
 
-    if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false) {
+    if (proto.autoFillStyleAndId !== false && ComponentClass.autoFillStyleAndId !== false
+        && proto.inheritAttrs !== false && ComponentClass.inheritAttrs !== false) {
         fillStyleAndId(aNode.props);
 
         if (aNode.elses) {

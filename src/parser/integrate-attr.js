@@ -80,21 +80,29 @@ function integrateAttr(aNode, name, value, options) {
                 aNode.vars = [];
             }
 
-            realName = kebab2camel(realName);
             aNode.vars.push({
-                name: realName,
+                name: kebab2camel(realName),
                 expr: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
             });
             break;
 
         default:
+            var propsArray = aNode.props;
             if (prefix === 'prop') {
                 name = realName;
             }
 
+            if (prefix === 'attr') {
+                name = realName;
+                if (!aNode.attrs) {
+                    aNode.attrs = [];
+                }
+                propsArray = aNode.attrs;
+            }
+
             // parse two way binding, e.g. value="{=ident=}"
             if (value && value.indexOf('{=') === 0 && value.slice(-2) === '=}') {
-                aNode.props.push({
+                propsArray.push({
                     name: name,
                     expr: parseExpr(value.slice(2, -2)),
                     x: 1
@@ -170,7 +178,7 @@ function integrateAttr(aNode, name, value, options) {
 
             }
 
-            aNode.props.push(
+            propsArray.push(
                 value != null
                     ? {name: name, expr: expr}
                     : {name: name, expr: expr, noValue: 1}
