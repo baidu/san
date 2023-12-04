@@ -86,23 +86,30 @@ function integrateAttr(aNode, name, value, options) {
             });
             break;
 
+        case 'attr':
+            if (!aNode.attrs) {
+                aNode.attrs = [];
+            }
+
+            aNode.attrs.push({
+                name: realName,
+                expr: value
+                    ? parseText(value, options.delimiters)
+                    : boolAttrs[realName]
+                        ? {type: ExprType.BOOL, value: true}
+                        : {type: ExprType.STRING, value: ''}
+            });
+            
+            break;
+
         default:
-            var propsArray = aNode.props;
             if (prefix === 'prop') {
                 name = realName;
             }
 
-            if (prefix === 'attr') {
-                name = realName;
-                if (!aNode.attrs) {
-                    aNode.attrs = [];
-                }
-                propsArray = aNode.attrs;
-            }
-
             // parse two way binding, e.g. value="{=ident=}"
             if (value && value.indexOf('{=') === 0 && value.slice(-2) === '=}') {
-                propsArray.push({
+                aNode.props.push({
                     name: name,
                     expr: parseExpr(value.slice(2, -2)),
                     x: 1
@@ -175,10 +182,9 @@ function integrateAttr(aNode, name, value, options) {
                                 }
                         }
                 }
-
             }
 
-            propsArray.push(
+            aNode.props.push(
                 value != null
                     ? {name: name, expr: expr}
                     : {name: name, expr: expr, noValue: 1}
