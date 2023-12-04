@@ -42,21 +42,14 @@ describe("Component Attribute Inherit", function () {
         });
     });
 
-    it("multi level", function (done) {
-        var DeepInner = san.defineComponent({
-            template: '<span><slot/></span>'
-        });
-
+    it("bool value and bool attr", function (done) {
         var Inner = san.defineComponent({
-            template: '<ui-inner><slot/></ui-inner>',
+            template: '<button><slot/></button>'
 
-            components: {
-                'ui-inner': DeepInner
-            }
         });
 
         var MyComponent = san.defineComponent({
-            template: '<div><ui-inner attr-title="{{text}}" attr-data-t="state:{{text}}">{{text}}</ui-inner></div>',
+            template: '<div><ui-inner attr-title="{{text}}" attr-disabled attr-data-disabled="{{ed}}">{{text}}</ui-inner></div>',
 
             components: {
                 'ui-inner': Inner
@@ -65,7 +58,57 @@ describe("Component Attribute Inherit", function () {
 
         var myComponent = new MyComponent({
             data: {
-                text: 'Hahaha'
+                text: 'Hahaha',
+                ed: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var btn = wrap.getElementsByTagName('button')[0];
+        expect(btn.getAttribute('title')).toBe('Hahaha');
+        expect(btn.disabled).toBeTruthy();
+        expect(btn.getAttribute('data-disabled')).toBe('true');
+
+        myComponent.data.set('ed', 'false');
+
+        myComponent.nextTick(function () {
+            expect(btn.disabled).toBeTruthy();
+            expect(btn.getAttribute('data-disabled')).toBe('false');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("multi level", function (done) {
+        var DeepInner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var Inner = san.defineComponent({
+            template: '<ui-inner attr-data-c="cover"><slot/></ui-inner>',
+
+            components: {
+                'ui-inner': DeepInner
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><ui-inner class="{{clz}}" attr-title="{{text}}" attr-data-t="state:{{text}}" attr-data-c="cover:{{text}}">{{text}}</ui-inner></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hahaha',
+                clz: 'out-cls'
             }
         });
 
@@ -75,8 +118,10 @@ describe("Component Attribute Inherit", function () {
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML).toContain('Hahaha');
+        expect(span.className).toContain('out-cls');
         expect(span.getAttribute('title')).toBe('Hahaha');
         expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+        expect(span.getAttribute('data-c')).toBe('cover');
 
         myComponent.data.set('text', 'Wuwuwu');
 
@@ -84,9 +129,10 @@ describe("Component Attribute Inherit", function () {
             expect(span.innerHTML).toContain('Wuwuwu');
             expect(span.getAttribute('title')).toBe('Wuwuwu');
             expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+            expect(span.getAttribute('data-c')).toBe('cover')
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
+            // myComponent.dispose();
+            // document.body.removeChild(wrap);
             done();
         });
     });
