@@ -49,7 +49,7 @@ describe("Component Attribute Inherit", function () {
         });
 
         var MyComponent = san.defineComponent({
-            template: '<div><ui-inner attr-title="{{text}}" attr-disabled attr-data-disabled="{{ed}}">{{text}}</ui-inner></div>',
+            template: '<div><ui-inner attr-title="{{text}}" attr-disabled attr-data-d attr-data-disabled="{{ed}}">{{text}}</ui-inner></div>',
 
             components: {
                 'ui-inner': Inner
@@ -69,6 +69,7 @@ describe("Component Attribute Inherit", function () {
 
         var btn = wrap.getElementsByTagName('button')[0];
         expect(btn.getAttribute('title')).toBe('Hahaha');
+        expect(btn.getAttribute('data-d')).toBe('');
         expect(btn.disabled).toBeTruthy();
         expect(btn.getAttribute('data-disabled')).toBe('true');
 
@@ -131,8 +132,8 @@ describe("Component Attribute Inherit", function () {
             expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
             expect(span.getAttribute('data-c')).toBe('cover')
 
-            // myComponent.dispose();
-            // document.body.removeChild(wrap);
+            myComponent.dispose();
+            document.body.removeChild(wrap);
             done();
         });
     });
