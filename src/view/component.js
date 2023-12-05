@@ -228,10 +228,7 @@ function Component(options) { // eslint-disable-line
 
         this.tagName = this.tagName || this.source.tagName;
         this.binds = this.source._b;
-
-        if (this.inheritAttrs) {
-            this.attrs = this.source.attrs;
-        }
+        this.attrs = this.source.attrs;
 
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
@@ -325,7 +322,7 @@ function Component(options) { // eslint-disable-line
         }
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
-                if (!aNode.Clazz && this.attrs) {
+                if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
                     aNode = aNodeAttrsTransform(aNode, this.attrs);
                 }
                 this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
@@ -348,7 +345,7 @@ function Component(options) { // eslint-disable-line
     }
     else if (this.el) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
-            if (!aNode.Clazz && this.attrs) {
+            if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
                 aNode = aNodeAttrsTransform(aNode, this.attrs);
             }
             hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
@@ -867,7 +864,7 @@ Component.prototype._update = function (changes) {
                 }
             }
 
-            if (this.attrs) {
+            if (this.attrs && this.inheritAttrs) {
                 var attrsData = this.data.get('$attrs');
                 for (var i = 0; i < this.attrs.length; i++) {
                     var attr = this.attrs[i];
@@ -1120,7 +1117,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
             // aNode.Clazz 在 preheat 阶段为 if/else/for/fragment 等特殊标签或指令预热生成
             // 这里不能用 this.components[aNode.tagName] 判断，因为可能特殊指令和组件在同一个节点上并存
-            if (!aNode.Clazz && this.attrs) {
+            if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
                 aNode = aNodeAttrsTransform(aNode, this.attrs);
             }
             
@@ -1170,7 +1167,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                     }
                 }
 
-                if (this.attrs) {
+                if (this.attrs && this.inheritAttrs) {
                     var attrsData = this.data.get('$attrs');
                     for (var i = 0; i < this.attrs.length; i++) {
                         var attr = this.attrs[i];

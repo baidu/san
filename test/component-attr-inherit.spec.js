@@ -163,7 +163,8 @@ describe("Component Attribute Inherit", function () {
         myComponent.attach(wrap);
 
         var innerComponent = myComponent.ref('inner');
-        expect(innerComponent.data.get('$attrs')).toBeUndefined();
+        expect(innerComponent.data.get('$attrs').title).toContain('Hahaha');
+        expect(innerComponent.data.get('$attrs')['data-t']).toContain('state:Hahaha');
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML).toContain('Hahaha');
@@ -282,7 +283,7 @@ describe("Component Attribute Inherit", function () {
 
     it("inner component has $attrs data, not has attrXxx data", function (done) {
         var Inner = san.defineComponent({
-            template: '<p><span s-bind="$attrs"><slot/></span></p>'
+            template: '<p><span><slot/></span></p>'
         });
 
         var MyComponent = san.defineComponent({
@@ -309,17 +310,22 @@ describe("Component Attribute Inherit", function () {
         expect(innAttrs['data-t']).toBe('state:Hahaha');
         expect(innComponent.data.get('attrTitle')).toBeUndefined();
 
+
+        var p = wrap.getElementsByTagName('p')[0];
+        expect(p.getAttribute('title')).toBe('Hahaha');
+        expect(p.getAttribute('data-t')).toBe('state:Hahaha');
+
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML).toContain('Hahaha');
-        expect(span.getAttribute('title')).toBe('Hahaha');
-        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+        expect(span.hasAttribute('title')).toBeFalsy();
+        expect(span.hasAttribute('data-t')).toBeFalsy();
 
         myComponent.data.set('text', 'Wuwuwu');
 
         myComponent.nextTick(function () {
             expect(span.innerHTML).toContain('Wuwuwu');
-            expect(span.getAttribute('title')).toBe('Wuwuwu');
-            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+            expect(p.getAttribute('title')).toBe('Wuwuwu');
+            expect(p.getAttribute('data-t')).toBe('state:Wuwuwu');
 
 
             var innAttrs = innComponent.data.get('$attrs');
@@ -336,7 +342,8 @@ describe("Component Attribute Inherit", function () {
 
     it("spread inherit attrs to other element", function (done) {
         var Inner = san.defineComponent({
-            template: '<p><span s-bind="$attrs"><slot/></span></p>'
+            template: '<p><span s-bind="$attrs"><slot/></span></p>',
+            inheritAttrs: false
         });
 
         var MyComponent = san.defineComponent({
@@ -361,6 +368,10 @@ describe("Component Attribute Inherit", function () {
         expect(span.innerHTML).toContain('Hahaha');
         expect(span.getAttribute('title')).toBe('Hahaha');
         expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        var p = wrap.getElementsByTagName('p')[0];
+        expect(p.hasAttribute('title')).toBeFalsy();
+        expect(p.hasAttribute('data-t')).toBeFalsy();
 
         myComponent.data.set('text', 'Wuwuwu');
 
