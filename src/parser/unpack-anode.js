@@ -293,6 +293,11 @@ function unpackANode(packed) {
                                 current.vars.push(node);
                                 break;
 
+                            case 46:
+                                current.attrs = current.attrs || [];
+                                current.attrs.push(node);
+                                break;
+
                             case 37:
                                 current.directives['for'] = node;
                                 break;
@@ -390,12 +395,14 @@ function unpackANode(packed) {
                 // Expr: UNARY
                 // Prop
                 // var
+                // attr
                 // Object Spread Item, Array Item
                 case 11:
                 case 2:
                 case 33:
                 case 34:
                 case 36:
+                case 46:
                 case 15:
                 case 17:
                 case 18:

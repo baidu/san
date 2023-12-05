@@ -1171,3 +1171,49 @@ aPack = [1,"u",1,45,6,1,3,"cmpt"]
 }
 */
 ```
+
+
+### var
+
+- head: 46
+- 编码序: `{string}name, {Node}expr`
+
+```js
+aPack = [1,"my-ui",1,46,"title",9,,2,3,"Hello ",7,,6,1,3,"name",]
+/*
+{
+    "directives": {},
+    "props": [],
+    "events": [],
+    "children": [],
+    "tagName": "my-ui",
+    "attrs": [
+        {
+            "name": "title",
+            "expr": {
+                "type": 7,
+                "segs": [
+                    {
+                        "type": 1,
+                        "value": "Hello "
+                    },
+                    {
+                        "type": 5,
+                        "expr": {
+                            "type": 4,
+                            "paths": [
+                                {
+                                    "type": 1,
+                                    "value": "name"
+                                }
+                            ]
+                        },
+                        "filters": []
+                    }
+                ]
+            }
+        }
+    ]
+}
+*/
+```
