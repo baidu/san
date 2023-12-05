@@ -325,6 +325,9 @@ function Component(options) { // eslint-disable-line
         }
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
+                if (!aNode.Clazz && this.attrs) {
+                    aNode = aNodeAttrsTransform(aNode, this.attrs);
+                }
                 this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
                 this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
             }
@@ -345,6 +348,9 @@ function Component(options) { // eslint-disable-line
     }
     else if (this.el) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
+            if (!aNode.Clazz && this.attrs) {
+                aNode = aNodeAttrsTransform(aNode, this.attrs);
+            }
             hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -1041,6 +1047,58 @@ Component.prototype._getElAsRootNode = function () {
     return this.el;
 };
 
+function aNodeAttrsTransform(aNode, attrs) {
+    var aNodeAttrs = aNode.attrs;
+    var aNodeAttrsIndex = aNode._ai;
+    var startIndex = 0;
+
+    aNode = {
+        directives: aNode.directives,
+        props: aNode.props,
+        events: aNode.events,
+        children: aNode.children,
+        tagName: aNode.tagName,
+        attrs: aNodeAttrs ? aNodeAttrs.slice(0) : [],
+        vars: aNode.vars,
+        _ht: aNode._ht,
+        _i: aNode._i,
+        _dp: aNode._dp,
+        _xp: aNode._xp,
+        _pi: aNode._pi,
+        _ai: {},
+        _b: aNode._b,
+        _ce: aNode._ce
+    };
+
+    if (aNodeAttrs) {
+        startIndex = aNodeAttrs.length;
+        for (var i = 0; i < startIndex; i++) {
+            aNode._ai[aNodeAttrs[i].name] = i;
+        }
+    }
+
+    for (var i = 0; i < attrs.length; i++) {
+        var attr = attrs[i];
+
+        if (aNodeAttrsIndex[attr.name] == null) {
+            aNode._ai[attr.name] = startIndex++;
+            aNode.attrs.push({
+                name: attr.name,
+                expr: {
+                    type: ExprType.ACCESSOR,
+                    paths: [
+                        {type: ExprType.STRING, value: '$attrs'},
+                        {type: ExprType.STRING, value: attr.name}
+                    ]
+                },
+                handler: attr.handler
+            });
+        }
+    }
+
+    return aNode;
+}
+
 /**
  * 将组件attach到页面
  *
@@ -1060,46 +1118,12 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             this._toPhase('beforeCreate');
             // #[end]
 
-            if (this.components[aNode.tagName]) {
-                aNode = {
-                    directives: aNode.directives,
-                    props: aNode.props,
-                    events: aNode.events,
-                    children: aNode.children,
-                    tagName: aNode.tagName,
-                    attrs: aNode.attrs,
-                    vars: aNode.vars,
-                    _ht: aNode._ht,
-                    _i: aNode._i,
-                    _dp: aNode._dp,
-                    _xp: aNode._xp,
-                    _pi: aNode._pi,
-                    _ai: aNode._ai,
-                    _b: aNode._b,
-                    _ce: aNode._ce
-                };
-
-                if (this.attrs) {
-                    aNode.attrs = aNode.attrs || [];
-                    for (var i = 0; i < this.attrs.length; i++) {
-                        var attr = this.attrs[i];
-                        if (aNode._ai[attr.name] == null) { 
-                            aNode.attrs.push({
-                                name: attr.name,
-                                expr: {
-                                    type: ExprType.ACCESSOR,
-                                    paths: [
-                                        {type: ExprType.STRING, value: '$attrs'},
-                                        {type: ExprType.STRING, value: attr.name}
-                                    ]
-                                },
-                                handler: attr.handler
-                            });
-                        }
-                    }
-                } 
+            // aNode.Clazz 在 preheat 阶段为 if/else/for/fragment 等特殊标签或指令预热生成
+            // 这里不能用 this.components[aNode.tagName] 判断，因为可能特殊指令和组件在同一个节点上并存
+            if (!aNode.Clazz && this.attrs) {
+                aNode = aNodeAttrsTransform(aNode, this.attrs);
             }
-
+            
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
