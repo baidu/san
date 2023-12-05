@@ -211,6 +211,7 @@ function unpackANode(packed) {
                 break;
 
             case 36:
+            case 46:
                 node = {
                     name: packed[++i]
                 };
