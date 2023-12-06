@@ -84,6 +84,7 @@ function Component(options) { // eslint-disable-line
 
     var clazz = this.constructor;
 
+    this.inheritAttrs = !(this.inheritAttrs === false || clazz.inheritAttrs === false);
     this.filters = this.filters || clazz.filters || {};
     this.computed = this.computed || clazz.computed || {};
     this.messages = this.messages || clazz.messages || {};
@@ -227,6 +228,7 @@ function Component(options) { // eslint-disable-line
 
         this.tagName = this.tagName || this.source.tagName;
         this.binds = this.source._b;
+        this.attrs = this.source.attrs;
 
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
@@ -257,6 +259,19 @@ function Component(options) { // eslint-disable-line
             if (typeof value !== 'undefined') {
                 // See: https://github.com/ecomfe/san/issues/191
                 initData[bindInfo.name] = value;
+            }
+        }
+
+        if (this.attrs) {
+            initData.$attrs = {};
+            for (var i = 0, l = this.attrs.length; i < l; i++) {
+                var attr = this.attrs[i];
+    
+                var value = evalExpr(attr.expr, this.scope, this.owner);
+                if (typeof value !== 'undefined') {
+                    // See: https://github.com/ecomfe/san/issues/191
+                    initData.$attrs[attr.name] = value;
+                }
             }
         }
     }
@@ -307,6 +322,9 @@ function Component(options) { // eslint-disable-line
         }
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
+                if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
+                    aNode = aNodeMergeSourceAttrs(aNode, this.source);
+                }
                 this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
                 this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
             }
@@ -327,6 +345,9 @@ function Component(options) { // eslint-disable-line
     }
     else if (this.el) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
+            if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
+                aNode = aNodeMergeSourceAttrs(aNode, this.source);
+            }
             hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -749,6 +770,15 @@ Component.prototype._update = function (changes) {
                     }
                 }
             });
+debugger
+            each(me.attrs, function (bindItem) {
+                if (changeExprCompare(changeExpr, bindItem.expr, me.scope)) {
+                    me.data.set(
+                        bindItem._data,
+                        evalExpr(bindItem.expr, me.scope, me.owner)
+                    );
+                }
+            });
 
             each(me.sourceSlotNameProps, function (bindItem) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
@@ -833,6 +863,25 @@ Component.prototype._update = function (changes) {
                 }
             }
 
+            if (this.attrs && this.inheritAttrs) {
+                var attrsData = this.data.get('$attrs');
+
+                for (var i = 0; i < this.attrs.length; i++) {
+                    var attr = this.attrs[i];
+
+                    if (this.aNode._pi[attr.name] == null) {
+                        for (var j = 0; j < dataChanges.length; j++) {
+                            var changePaths = dataChanges[j].expr.paths;
+
+                            if (changePaths[0].value === '$attrs' && changePaths[1].value === attr.name) {
+                                getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             for (var i = 0; i < this.children.length; i++) {
                 this.children[i]._update(dataChanges);
             }
@@ -910,7 +959,12 @@ Component.prototype._repaintChildren = function () {
         this._rootNode.dispose(0, 1);
         this.slotChildren = [];
 
-        this._rootNode = createNode(this.aNode, this, this.data, this);
+        var aNode = this.aNode;
+        if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
+            aNode = aNodeMergeSourceAttrs(aNode, this.source);
+        }
+
+        this._rootNode = createNode(aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
         this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
     }
@@ -997,6 +1051,52 @@ Component.prototype._getElAsRootNode = function () {
     return this.el;
 };
 
+function aNodeMergeSourceAttrs(aNode, source) {
+    var startIndex = 0;
+
+    var mergedANode = {
+        directives: aNode.directives,
+        props: aNode.props,
+        events: aNode.events,
+        children: aNode.children,
+        tagName: aNode.tagName,
+        attrs: [],
+        vars: aNode.vars,
+        _ht: aNode._ht,
+        _i: aNode._i,
+        _dp: aNode._dp,
+        _xp: aNode._xp,
+        _pi: aNode._pi,
+        _b: aNode._b,
+        _ce: aNode._ce
+    };
+
+    var aNodeAttrIndex = {};
+    if (aNode.attrs) {
+        startIndex = aNode.attrs.length;
+        for (var i = 0; i < startIndex; i++) {
+            var attr = aNode.attrs[i];
+            aNodeAttrIndex[attr.name] = i;
+            mergedANode.attrs[i] = attr;
+        }
+    }
+
+    for (var i = 0; i < source.attrs.length; i++) {
+        var attr = source.attrs[i];
+
+        if (aNodeAttrIndex[attr.name] == null) {
+            mergedANode.attrs[startIndex] = {
+                name: attr.name,
+                expr: attr._data,
+                _data: attr._data
+            };
+            startIndex++;
+        }
+    }
+
+    return mergedANode;
+}
+
 /**
  * 将组件attach到页面
  *
@@ -1015,6 +1115,13 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             // #[begin] devtool
             this._toPhase('beforeCreate');
             // #[end]
+
+            // aNode.Clazz 在 preheat 阶段为 if/else/for/fragment 等特殊标签或指令预热生成
+            // 这里不能用 this.components[aNode.tagName] 判断，因为可能特殊指令和组件在同一个节点上并存
+            if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
+                aNode = aNodeMergeSourceAttrs(aNode, this.source);
+            }
+
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -1027,16 +1134,16 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                 // #[end]
 
                 var props;
-
+                var doc = parentEl.ownerDocument;
                 if (aNode._ce && aNode._i > 2) {
                     props = aNode._dp;
-                    this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
+                    this.el = (aNode._el || preheatEl(aNode, doc)).cloneNode(false);
                 }
                 else {
                     props = aNode.props;
-                    this.el = svgTags[this.tagName] && document.createElementNS
-                        ? document.createElementNS('http://www.w3.org/2000/svg', this.tagName)
-                        : document.createElement(this.tagName);
+                    this.el = svgTags[this.tagName] && doc.createElementNS
+                        ? doc.createElementNS('http://www.w3.org/2000/svg', this.tagName)
+                        : doc.createElement(this.tagName);
                 }
 
                 if (this._sbindData) {
@@ -1058,6 +1165,16 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                     if (value || !styleProps[prop.name]) {
                         prop.handler(this.el, value, prop.name, this);
+                    }
+                }
+
+                if (this.attrs && this.inheritAttrs) {
+                    var attrsData = this.data.get('$attrs');
+                    for (var i = 0; i < this.attrs.length; i++) {
+                        var attr = this.attrs[i];
+                        if (this.aNode._pi[attr.name] == null) {
+                            getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
+                        }
                     }
                 }
 

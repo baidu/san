@@ -22,7 +22,6 @@ var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createHydrateNode = require('./create-hydrate-node');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
-var nodeOwnCreateStump = require('./node-own-create-stump');
 
 
 /**
@@ -200,7 +199,7 @@ function ForNode(aNode, parent, scope, owner, hydrateWalker) {
             }
         }
 
-        this._create();
+        this.el = hydrateWalker.doc.createComment(this.id);
         insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
     }
     // #[end]
@@ -208,7 +207,6 @@ function ForNode(aNode, parent, scope, owner, hydrateWalker) {
 
 
 ForNode.prototype.nodeType = NodeType.FOR;
-ForNode.prototype._create = nodeOwnCreateStump;
 ForNode.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
@@ -218,7 +216,7 @@ ForNode.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 ForNode.prototype.attach = function (parentEl, beforeEl) {
-    this._create();
+    this.el = parentEl.ownerDocument.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
     this.listData = evalExpr(this.param.value, this.scope, this.owner);
 
@@ -359,7 +357,7 @@ ForNode.prototype._disposeChildren = function (children, callback) {
         }
         // #[end]
 
-        this.el = document.createComment(this.id);
+        this.el = parentEl.ownerDocument.createComment(this.id);
         parentEl.appendChild(this.el);
         callback && callback();
     }

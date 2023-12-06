@@ -8,7 +8,7 @@
  */
 
 var guid = require('../util/guid');
-var isBrowser = require('../browser/is-browser');
+var ie = require('../browser/ie');
 var removeEl = require('../browser/remove-el');
 var insertBefore = require('../browser/insert-before');
 var changeExprCompare = require('../runtime/change-expr-compare');
@@ -76,7 +76,7 @@ function TextNode(aNode, parent, scope, owner, hydrateWalker) {
             }
         }
         else {
-            this.el = document.createTextNode('');
+            this.el = hydrateWalker.doc.createTextNode('');
             insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
         }
     }
@@ -97,21 +97,22 @@ TextNode.prototype.attach = function (parentEl, beforeEl) {
         this.content = '';
     }
 
+    var doc = parentEl.ownerDocument;
     if (this.aNode.textExpr.original) {
         this.id = this.id || guid++;
-        this.sel = document.createComment(this.id);
+        this.sel = doc.createComment(this.id);
         insertBefore(this.sel, parentEl, beforeEl);
 
-        this.el = document.createComment(this.id);
+        this.el = doc.createComment(this.id);
         insertBefore(this.el, parentEl, beforeEl);
 
-        var tempFlag = document.createElement('script');
+        var tempFlag = doc.createElement('script');
         parentEl.insertBefore(tempFlag, this.el);
         tempFlag.insertAdjacentHTML('beforebegin', this.content);
         parentEl.removeChild(tempFlag);
     }
     else {
-        this.el = document.createTextNode(this.content);
+        this.el = doc.createTextNode(this.content);
         insertBefore(this.el, parentEl, beforeEl);
     }
 };
@@ -131,10 +132,12 @@ TextNode.prototype.dispose = function (noDetach) {
     this.sel = null;
 };
 
-var textUpdateProp = isBrowser
-    && (typeof document.createTextNode('').textContent === 'string'
-        ? 'textContent'
-        : 'data');
+
+// #[begin] allua
+var textUpdateProp = ie && ie < 9 ? 'data' : 'textContent';
+// #[end]
+    
+
 
 /**
  * 更新 text 节点的视图
@@ -171,13 +174,18 @@ TextNode.prototype._update = function (changes) {
                     warnSetHTML(parentEl);
                     // #[end]
 
-                    var tempFlag = document.createElement('script');
+                    var tempFlag = parentEl.ownerDocument.createElement('script');
                     parentEl.insertBefore(tempFlag, this.el);
                     tempFlag.insertAdjacentHTML('beforebegin', text);
                     parentEl.removeChild(tempFlag);
                 }
                 else {
+                    // #[begin] allua
                     this.el[textUpdateProp] = text;
+                    // #[end]
+                    // #[begin] modern
+                    this.el.textContent = text;
+                    // #[end]
                 }
             }
 

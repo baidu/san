@@ -116,7 +116,7 @@ function SlotNode(aNode, parent, scope, owner, hydrateWalker) {
             hydrateWalker.goNext();
         }
         else {
-            this.sel = document.createComment(this.id);
+            this.sel = hydrateWalker.doc.createComment(this.id);
             hydrateWalker.current
                 ? hydrateWalker.target.insertBefore(this.sel, hydrateWalker.current)
                 : hydrateWalker.target.appendChild(this.sel);
@@ -139,7 +139,7 @@ function SlotNode(aNode, parent, scope, owner, hydrateWalker) {
             hydrateWalker.goNext();
         }
         else {
-            this.el = document.createComment(this.id);
+            this.el = hydrateWalker.doc.createComment(this.id);
             hydrateWalker.current
                 ? hydrateWalker.target.insertBefore(this.el, hydrateWalker.current)
                 : hydrateWalker.target.appendChild(this.el);

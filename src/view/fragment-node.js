@@ -50,7 +50,7 @@ function FragmentNode(aNode, parent, scope, owner, hydrateWalker) {
             hydrateWalker.goNext();
         }
         else {
-            this.sel = document.createComment(this.id);
+            this.sel = hydrateWalker.doc.createComment(this.id);
             insertBefore(this.sel, hydrateWalker.target, hydrateWalker.current);
         }
 
@@ -68,7 +68,7 @@ function FragmentNode(aNode, parent, scope, owner, hydrateWalker) {
             hydrateWalker.goNext();
         }
         else {
-            this.el = document.createComment(this.id);
+            this.el = hydrateWalker.doc.createComment(this.id);
             insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
         }
 

@@ -116,19 +116,20 @@ Element.prototype.nodeType = NodeType.ELEM;
 Element.prototype.attach = function (parentEl, beforeEl) {
     if (!this.lifeCycle.attached) {
         var aNode = this.aNode;
+        var doc = parentEl.ownerDocument;
 
         if (!this.el) {
             var props;
 
             if (aNode._ce && aNode._i > 2) {
                 props = aNode._dp;
-                this.el = (aNode._el || preheatEl(aNode)).cloneNode(false);
+                this.el = (aNode._el || preheatEl(aNode, doc)).cloneNode(false);
             }
             else {
                 props = aNode.props;
-                this.el = svgTags[this.tagName] && document.createElementNS
-                    ? document.createElementNS('http://www.w3.org/2000/svg', this.tagName)
-                    : document.createElement(this.tagName);
+                this.el = svgTags[this.tagName] && doc.createElementNS
+                    ? doc.createElementNS('http://www.w3.org/2000/svg', this.tagName)
+                    : doc.createElement(this.tagName);
             }
 
             if (this._sbindData) {

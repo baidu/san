@@ -13,7 +13,6 @@ var evalExpr = require('../runtime/eval-expr');
 var NodeType = require('./node-type');
 var createNode = require('./create-node');
 var createHydrateNode = require('./create-hydrate-node');
-var nodeOwnCreateStump = require('./node-own-create-stump');
 var nodeOwnSimpleDispose = require('./node-own-simple-dispose');
 
 /**
@@ -72,7 +71,7 @@ function IfNode(aNode, parent, scope, owner, hydrateWalker) {
             }
         }
 
-        this._create();
+        this.el = hydrateWalker.doc.createComment(this.id);
         insertBefore(this.el, hydrateWalker.target, hydrateWalker.current);
     }
     // #[end]
@@ -80,7 +79,6 @@ function IfNode(aNode, parent, scope, owner, hydrateWalker) {
 
 IfNode.prototype.nodeType = NodeType.IF;
 
-IfNode.prototype._create = nodeOwnCreateStump;
 IfNode.prototype.dispose = nodeOwnSimpleDispose;
 
 /**
@@ -118,7 +116,7 @@ IfNode.prototype.attach = function (parentEl, beforeEl) {
     }
 
 
-    this._create();
+    this.el = parentEl.ownerDocument.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
 };
 

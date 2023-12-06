@@ -11,6 +11,8 @@
 var empty = require('../util/empty');
 var isBrowser = require('../browser/is-browser');
 var trigger = require('../browser/trigger');
+var ie = require('../browser/ie');
+var on = require('../browser/on');
 var NodeType = require('./node-type');
 var elementGetTransition = require('./element-get-transition');
 var getEventListener = require('./get-event-listener');
@@ -133,6 +135,17 @@ function xPropOutput(element, bindInfo, data) {
     on(element.el, name, listener, capture);
 }
 
+// #[begin] allua
+function ie9InputEventCompatible(doc) {
+    on(doc, 'selectionchange', function () {
+        var el = doc.activeElement;
+        if (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') {
+            trigger(el, 'input');
+        }
+    });
+}
+// #[end]
+
 /**
  * 完成元素 attached 后的行为
  *
@@ -158,6 +171,16 @@ function elementOwnAttached() {
                 switch (this.tagName) {
                     case 'input':
                     case 'textarea':
+                        // #[begin] allua
+                        if (ie === 9) {
+                            var doc = this.el.ownerDocument;
+                            if (!doc.__sanInputEventCompatible) {
+                                doc.__sanInputEventCompatible = true;
+                                ie9InputEventCompatible(doc);
+                            }
+                        }
+                        // #[end]
+
                         if (isBrowser) {
                             elementOnEl(this, 'change', inputOnCompositionEnd);
                             elementOnEl(this, 'compositionstart', inputOnCompositionStart);

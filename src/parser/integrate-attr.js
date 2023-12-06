@@ -80,11 +80,26 @@ function integrateAttr(aNode, name, value, options) {
                 aNode.vars = [];
             }
 
-            realName = kebab2camel(realName);
             aNode.vars.push({
-                name: realName,
+                name: kebab2camel(realName),
                 expr: parseExpr(value.replace(/(^\{\{|\}\}$)/g, ''))
             });
+            break;
+
+        case 'attr':
+            if (!aNode.attrs) {
+                aNode.attrs = [];
+            }
+
+            aNode.attrs.push({
+                name: realName,
+                expr: value
+                    ? parseText(value, options.delimiters)
+                    : boolAttrs[realName]
+                        ? {type: ExprType.BOOL, value: true}
+                        : {type: ExprType.STRING, value: ''}
+            });
+            
             break;
 
         default:
@@ -167,7 +182,6 @@ function integrateAttr(aNode, name, value, options) {
                                 }
                         }
                 }
-
             }
 
             aNode.props.push(

@@ -20,7 +20,8 @@ var createNode = require('./create-node');
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
-    this.sel = document.createComment(this.id);
+    var doc = parentEl.ownerDocument;
+    this.sel = doc.createComment(this.id);
     insertBefore(this.sel, parentEl, beforeEl);
 
     for (var i = 0; i < this.aNode.children.length; i++) {
@@ -34,7 +35,7 @@ function nodeOwnOnlyChildrenAttach(parentEl, beforeEl) {
         child.attach(parentEl, beforeEl);
     }
 
-    this.el = document.createComment(this.id);
+    this.el = doc.createComment(this.id);
     insertBefore(this.el, parentEl, beforeEl);
 
     this.lifeCycle = LifeCycle.attached;
