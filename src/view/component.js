@@ -321,6 +321,8 @@ function Component(options) { // eslint-disable-line
             this.attach(hydrateWalker.target, hydrateWalker.current);
         }
         else {
+            this._toPhase('created');
+
             if (aNode.Clazz || this.components[aNode.tagName]) {
                 if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
                     aNode = aNodeMergeSourceAttrs(aNode, this.source);
@@ -338,12 +340,13 @@ function Component(options) { // eslint-disable-line
                 hydrateElementChildren(this, this.data, this);
             }
 
-            this._toPhase('created');
             this._attached();
             this._toPhase('attached');
         }
     }
     else if (this.el) {
+        this._toPhase('created');
+        
         if (aNode.Clazz || this.components[aNode.tagName]) {
             if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
                 aNode = aNodeMergeSourceAttrs(aNode, this.source);
@@ -356,7 +359,6 @@ function Component(options) { // eslint-disable-line
             hydrateElementChildren(this, this.data, this);
         }
 
-        this._toPhase('created');
         this._attached();
         this._toPhase('attached');
     }
