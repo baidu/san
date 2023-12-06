@@ -265,12 +265,12 @@ function Component(options) { // eslint-disable-line
         if (this.attrs) {
             initData.$attrs = {};
             for (var i = 0, l = this.attrs.length; i < l; i++) {
-                var attrInfo = this.attrs[i];
+                var attr = this.attrs[i];
     
-                var value = evalExpr(attrInfo.expr, this.scope, this.owner);
+                var value = evalExpr(attr.expr, this.scope, this.owner);
                 if (typeof value !== 'undefined') {
                     // See: https://github.com/ecomfe/san/issues/191
-                    initData.$attrs[attrInfo.name] = value;
+                    initData.$attrs[attr.name] = value;
                 }
             }
         }
@@ -323,7 +323,7 @@ function Component(options) { // eslint-disable-line
         else {
             if (aNode.Clazz || this.components[aNode.tagName]) {
                 if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                    aNode = aNodeAttrsTransform(aNode, this.attrs);
+                    aNode = aNodeMergeSourceAttrs(aNode, this.source);
                 }
                 this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
                 this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -346,7 +346,7 @@ function Component(options) { // eslint-disable-line
     else if (this.el) {
         if (aNode.Clazz || this.components[aNode.tagName]) {
             if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                aNode = aNodeAttrsTransform(aNode, this.attrs);
+                aNode = aNodeMergeSourceAttrs(aNode, this.source);
             }
             hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
@@ -770,13 +770,12 @@ Component.prototype._update = function (changes) {
                     }
                 }
             });
-
-            each(me.attrs, function (attrItem) {
-                var updateExpr = attrItem.expr;
-                if (changeExprCompare(changeExpr, updateExpr, me.scope)) {
+debugger
+            each(me.attrs, function (bindItem) {
+                if (changeExprCompare(changeExpr, bindItem.expr, me.scope)) {
                     me.data.set(
-                        '$attrs["' + attrItem.name + '"]', 
-                        evalExpr(updateExpr, me.scope, me.owner)
+                        bindItem._data,
+                        evalExpr(bindItem.expr, me.scope, me.owner)
                     );
                 }
             });
@@ -866,13 +865,16 @@ Component.prototype._update = function (changes) {
 
             if (this.attrs && this.inheritAttrs) {
                 var attrsData = this.data.get('$attrs');
+
                 for (var i = 0; i < this.attrs.length; i++) {
                     var attr = this.attrs[i];
+
                     if (this.aNode._pi[attr.name] == null) {
                         for (var j = 0; j < dataChanges.length; j++) {
                             var changePaths = dataChanges[j].expr.paths;
+
                             if (changePaths[0].value === '$attrs' && changePaths[1].value === attr.name) {
-                                attr.handler(this.el, attrsData[attr.name], attr.name, this);
+                                getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
                                 break;
                             }
                         }
@@ -957,7 +959,12 @@ Component.prototype._repaintChildren = function () {
         this._rootNode.dispose(0, 1);
         this.slotChildren = [];
 
-        this._rootNode = createNode(this.aNode, this, this.data, this);
+        var aNode = this.aNode;
+        if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
+            aNode = aNodeMergeSourceAttrs(aNode, this.source);
+        }
+
+        this._rootNode = createNode(aNode, this, this.data, this);
         this._rootNode.attach(parentEl, beforeEl);
         this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
     }
@@ -1044,56 +1051,50 @@ Component.prototype._getElAsRootNode = function () {
     return this.el;
 };
 
-function aNodeAttrsTransform(aNode, attrs) {
-    var aNodeAttrs = aNode.attrs;
-    var aNodeAttrsIndex = aNode._ai;
+function aNodeMergeSourceAttrs(aNode, source) {
     var startIndex = 0;
 
-    aNode = {
+    var mergedANode = {
         directives: aNode.directives,
         props: aNode.props,
         events: aNode.events,
         children: aNode.children,
         tagName: aNode.tagName,
-        attrs: aNodeAttrs ? aNodeAttrs.slice(0) : [],
+        attrs: [],
         vars: aNode.vars,
         _ht: aNode._ht,
         _i: aNode._i,
         _dp: aNode._dp,
         _xp: aNode._xp,
         _pi: aNode._pi,
-        _ai: {},
         _b: aNode._b,
         _ce: aNode._ce
     };
 
-    if (aNodeAttrs) {
-        startIndex = aNodeAttrs.length;
+    var aNodeAttrIndex = {};
+    if (aNode.attrs) {
+        startIndex = aNode.attrs.length;
         for (var i = 0; i < startIndex; i++) {
-            aNode._ai[aNodeAttrs[i].name] = i;
+            var attr = aNode.attrs[i];
+            aNodeAttrIndex[attr.name] = i;
+            mergedANode.attrs[i] = attr;
         }
     }
 
-    for (var i = 0; i < attrs.length; i++) {
-        var attr = attrs[i];
+    for (var i = 0; i < source.attrs.length; i++) {
+        var attr = source.attrs[i];
 
-        if (aNodeAttrsIndex[attr.name] == null) {
-            aNode._ai[attr.name] = startIndex++;
-            aNode.attrs.push({
+        if (aNodeAttrIndex[attr.name] == null) {
+            mergedANode.attrs[startIndex] = {
                 name: attr.name,
-                expr: {
-                    type: ExprType.ACCESSOR,
-                    paths: [
-                        {type: ExprType.STRING, value: '$attrs'},
-                        {type: ExprType.STRING, value: attr.name}
-                    ]
-                },
-                handler: attr.handler
-            });
+                expr: attr._data,
+                _data: attr._data
+            };
+            startIndex++;
         }
     }
 
-    return aNode;
+    return mergedANode;
 }
 
 /**
@@ -1118,9 +1119,9 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             // aNode.Clazz 在 preheat 阶段为 if/else/for/fragment 等特殊标签或指令预热生成
             // 这里不能用 this.components[aNode.tagName] 判断，因为可能特殊指令和组件在同一个节点上并存
             if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                aNode = aNodeAttrsTransform(aNode, this.attrs);
+                aNode = aNodeMergeSourceAttrs(aNode, this.source);
             }
-            
+
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
             this._rootNode.attach(parentEl, beforeEl);
             this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -1172,7 +1173,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
                     for (var i = 0; i < this.attrs.length; i++) {
                         var attr = this.attrs[i];
                         if (this.aNode._pi[attr.name] == null) {
-                            attr.handler(this.el, attrsData[attr.name], attr.name, this);
+                            getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
                         }
                     }
                 }

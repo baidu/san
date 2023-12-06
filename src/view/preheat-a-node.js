@@ -66,8 +66,9 @@ function preheatANode(aNode, componentInstance) {
                 aNode._dp = []; // hotspot: dynamic props
                 aNode._xp = []; // hotspot: x props
                 aNode._pi = {}; // hotspot: props index
-                aNode._ai = {}; // hotspot: attrs index
                 aNode._b = []; // hotspot: binds
+                aNode._ab = []; // hotspot: attr binds
+                aNode._ap = []; // hotspot: attr props
                 aNode._ce = !aNode.directives.is // cache element
                     && aNode.tagName && aNode.tagName.indexOf('-') < 0
                     && !/^(template|select|input|option|button|video|audio|canvas|img|embed|object|iframe)$/i.test(aNode.tagName);
@@ -79,8 +80,13 @@ function preheatANode(aNode, componentInstance) {
                 });
 
                 each(aNode.attrs, function (attr, i) {
-                    aNode._ai[attr.name] = i;
-                    attr.handler = getPropHandler(aNode.tagName, attr.name);
+                    attr._data = {
+                        type: ExprType.ACCESSOR,
+                        paths: [
+                            {type: ExprType.STRING, value: '$attrs'},
+                            {type: ExprType.STRING, value: attr.name}
+                        ]
+                    };
                     recordHotspotData(attr.expr);
                 });
 
