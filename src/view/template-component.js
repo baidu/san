@@ -61,6 +61,7 @@ function TemplateComponent(options) { // eslint-disable-line
 
     var clazz = this.constructor;
 
+    this.inheritAttrs = !(this.inheritAttrs === false || clazz.inheritAttrs === false);
     this.owner = options.owner;
     this.scope = options.scope;
     var parent = options.parent;
@@ -120,6 +121,7 @@ function TemplateComponent(options) { // eslint-disable-line
 
         this.tagName = this.tagName || this.source.tagName;
         this.binds = this.source._b;
+        this.attrs = this.source.attrs;
 
         // init s-bind data
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
@@ -143,6 +145,19 @@ function TemplateComponent(options) { // eslint-disable-line
             if (typeof value !== 'undefined') {
                 // See: https://github.com/ecomfe/san/issues/191
                 initData[bindInfo.name] = value;
+            }
+        }
+
+        if (this.attrs) {
+            initData.$attrs = {};
+            for (var i = 0, l = this.attrs.length; i < l; i++) {
+                var attr = this.attrs[i];
+    
+                var value = evalExpr(attr.expr, this.scope, this.owner);
+                if (typeof value !== 'undefined') {
+                    // See: https://github.com/ecomfe/san/issues/191
+                    initData.$attrs[attr.name] = value;
+                }
             }
         }
     }
@@ -281,6 +296,16 @@ TemplateComponent.prototype.attach = function (parentEl, beforeEl) {
                     }
                 }
 
+                if (this.attrs && this.inheritAttrs) {
+                    var attrsData = this.data.get('$attrs');
+                    for (var i = 0; i < this.attrs.length; i++) {
+                        var attr = this.attrs[i];
+                        if (this.aNode._pi[attr.name] == null) {
+                            getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
+                        }
+                    }
+                }
+
                 this.lifeCycle = LifeCycle.created;
                 // #[begin] devtool
                 emitDevtool('comp-create', this);
@@ -415,6 +440,15 @@ TemplateComponent.prototype._update = function (changes) {
                 }
             });
 
+            each(me.attrs, function (bindItem) {
+                if (changeExprCompare(changeExpr, bindItem.expr, me.scope)) {
+                    me.data.set(
+                        bindItem._data,
+                        evalExpr(bindItem.expr, me.scope, me.owner)
+                    );
+                }
+            });
+
             each(me.sourceSlotNameProps, function (bindItem) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
                 return !needReloadForSlot;
@@ -494,6 +528,25 @@ TemplateComponent.prototype._update = function (changes) {
                     ) {
                         prop.handler(this.el, evalExpr(prop.expr, this.data, this), prop.name, this);
                         break;
+                    }
+                }
+            }
+
+            if (this.attrs && this.inheritAttrs) {
+                var attrsData = this.data.get('$attrs');
+
+                for (var i = 0; i < this.attrs.length; i++) {
+                    var attr = this.attrs[i];
+
+                    if (this.aNode._pi[attr.name] == null) {
+                        for (var j = 0; j < dataChanges.length; j++) {
+                            var changePaths = dataChanges[j].expr.paths;
+
+                            if (changePaths[0].value === '$attrs' && changePaths[1].value === attr.name) {
+                                getPropHandler(this.tagName, attr.name)(this.el, attrsData[attr.name], attr.name, this);
+                                break;
+                            }
+                        }
                     }
                 }
             }
