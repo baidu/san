@@ -31,6 +31,7 @@ var preheatEl = require('./preheat-el');
 var parseComponentTemplate = require('./parse-component-template');
 var preheatANode = require('./preheat-a-node');
 var LifeCycle = require('./life-cycle');
+var mergeANodeSourceAttrs = require('./merge-a-node-source-attrs');
 var getANodeProp = require('./get-a-node-prop');
 var isDataChangeByElement = require('./is-data-change-by-element');
 var getEventListener = require('./get-event-listener');
@@ -325,7 +326,7 @@ function Component(options) { // eslint-disable-line
 
             if (aNode.Clazz || this.components[aNode.tagName]) {
                 if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                    aNode = aNodeMergeSourceAttrs(aNode, this.source);
+                    aNode = mergeANodeSourceAttrs(aNode, this.source);
                 }
                 this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
                 this._rootNode._getElAsRootNode && (this.el = this._rootNode._getElAsRootNode());
@@ -349,7 +350,7 @@ function Component(options) { // eslint-disable-line
         
         if (aNode.Clazz || this.components[aNode.tagName]) {
             if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                aNode = aNodeMergeSourceAttrs(aNode, this.source);
+                aNode = mergeANodeSourceAttrs(aNode, this.source);
             }
             hydrateWalker = new DOMChildrenWalker(this.el.parentNode, this.el);
             this._rootNode = createHydrateNode(aNode, this, this.data, this, hydrateWalker);
@@ -772,7 +773,7 @@ Component.prototype._update = function (changes) {
                     }
                 }
             });
-debugger
+
             each(me.attrs, function (bindItem) {
                 if (changeExprCompare(changeExpr, bindItem.expr, me.scope)) {
                     me.data.set(
@@ -963,7 +964,7 @@ Component.prototype._repaintChildren = function () {
 
         var aNode = this.aNode;
         if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-            aNode = aNodeMergeSourceAttrs(aNode, this.source);
+            aNode = mergeANodeSourceAttrs(aNode, this.source);
         }
 
         this._rootNode = createNode(aNode, this, this.data, this);
@@ -1053,52 +1054,6 @@ Component.prototype._getElAsRootNode = function () {
     return this.el;
 };
 
-function aNodeMergeSourceAttrs(aNode, source) {
-    var startIndex = 0;
-
-    var mergedANode = {
-        directives: aNode.directives,
-        props: aNode.props,
-        events: aNode.events,
-        children: aNode.children,
-        tagName: aNode.tagName,
-        attrs: [],
-        vars: aNode.vars,
-        _ht: aNode._ht,
-        _i: aNode._i,
-        _dp: aNode._dp,
-        _xp: aNode._xp,
-        _pi: aNode._pi,
-        _b: aNode._b,
-        _ce: aNode._ce
-    };
-
-    var aNodeAttrIndex = {};
-    if (aNode.attrs) {
-        startIndex = aNode.attrs.length;
-        for (var i = 0; i < startIndex; i++) {
-            var attr = aNode.attrs[i];
-            aNodeAttrIndex[attr.name] = i;
-            mergedANode.attrs[i] = attr;
-        }
-    }
-
-    for (var i = 0; i < source.attrs.length; i++) {
-        var attr = source.attrs[i];
-
-        if (aNodeAttrIndex[attr.name] == null) {
-            mergedANode.attrs[startIndex] = {
-                name: attr.name,
-                expr: attr._data,
-                _data: attr._data
-            };
-            startIndex++;
-        }
-    }
-
-    return mergedANode;
-}
-
 /**
  * 将组件attach到页面
  *
@@ -1121,7 +1076,7 @@ Component.prototype.attach = function (parentEl, beforeEl) {
             // aNode.Clazz 在 preheat 阶段为 if/else/for/fragment 等特殊标签或指令预热生成
             // 这里不能用 this.components[aNode.tagName] 判断，因为可能特殊指令和组件在同一个节点上并存
             if (!aNode.Clazz && this.attrs && this.inheritAttrs) {
-                aNode = aNodeMergeSourceAttrs(aNode, this.source);
+                aNode = mergeANodeSourceAttrs(aNode, this.source);
             }
 
             this._rootNode = this._rootNode || createNode(aNode, this, this.data, this);
