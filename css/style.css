@@ -205,8 +205,8 @@ footer {
 
 .recommend dt {
     font-size: 1.7rem;
-    margin-top: 3.5rem;
-    margin-bottom: 1.25rem;
+    margin-top: 2.6rem;
+    margin-bottom: .8rem;
     font-weight:  500;
     color: #2da2f8;
 }
@@ -215,7 +215,7 @@ footer {
 {
     color: #818688;
     text-decoration: none;
-    line-height: 2.2em;
+    line-height: 2em;
     font-weight: 300;
     font-size:1.05em;
     transition-timing-function: ease;

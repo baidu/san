@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>How to Update Child Components? | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/practice/parent-to-child/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="propsPass parent data to a child component with props, the child component will automatically get updated upon data changes. 1234567891011121314151617181920212223242526class Son extends san.Component">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.114Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.114Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.114Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="How to Update Child Components?">
-<meta name="twitter:description" content="propsPass parent data to a child component with props, the child component will automatically get updated upon data changes. 1234567891011121314151617181920212223242526class Son extends san.Component">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -170,18 +191,21 @@ var _hmt = _hmt || [];
     <div class="article-entry" itemprop="articleBody">
       
         <h4 id="props"><a href="#props" class="headerlink" title="props"></a>props</h4><p>Pass parent data to a child component with <strong>props</strong>, the child component will automatically get updated upon data changes.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son's name: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Parent</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">             &lt;input value="&#123;= firstName =&#125;" placeholder="please input"&gt;</span></span><br><span class="line"><span class="string">             &lt;ui-son firstName="&#123;&#123;firstName&#125;&#125;"/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">'ui-son'</span>: Son</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            firstName: <span class="string">'trump'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p></p><p data-height="365" data-theme-id="dark" data-slug-hash="qXPRxR" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-prop" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/qXPRxR/" target="_blank" rel="noopener">san-parent-to-child-prop</a> by liuchaofan (<a href="https://codepen.io/asd123freedom" target="_blank" rel="noopener">@asd123freedom</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Son</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son&#x27;s name: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Parent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">             &lt;input value=&quot;&#123;= firstName =&#125;&quot; placeholder=&quot;please input&quot;&gt;</span></span><br><span class="line"><span class="string">             &lt;ui-son firstName=&quot;&#123;&#123;firstName&#125;&#125;&quot;/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">&#x27;ui-son&#x27;</span>: <span class="title class_">Son</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">firstName</span>: <span class="string">&#x27;trump&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p data-height="365" data-theme-id="dark" data-slug-hash="qXPRxR" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-prop" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/qXPRxR/">san-parent-to-child-prop</a> by liuchaofan (<a href="https://codepen.io/asd123freedom">@asd123freedom</a>) on <a href="https://codepen.io">CodePen</a>.</p>
 <script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
 
 <h4 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h4><p>Actually the reference to the child component can be obtained by the <code>.ref()</code> method. Having this reference, we can call <code>ref.data.set()</code> or its member methods to update the child component’s data.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son's: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Parent</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;input value="&#123;= firstName =&#125;" placeholder="please input"&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click='onClick'&gt;Pass to the Child&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;ui-son san-ref="son"/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">      <span class="string">'ui-son'</span>: Son</span><br><span class="line">    &#125;;</span><br><span class="line">    onClick() &#123;</span><br><span class="line">      <span class="keyword">this</span>.ref(<span class="string">'son'</span>).data.set(<span class="string">'firstName'</span>, <span class="keyword">this</span>.data.get(<span class="string">'firstName'</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p></p><p data-height="365" data-theme-id="dark" data-slug-hash="wqrgGj" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-ref" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/wqrgGj/" target="_blank" rel="noopener">san-parent-to-child-ref</a> by liuchaofan (<a href="https://codepen.io/asd123freedom" target="_blank" rel="noopener">@asd123freedom</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Son</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son&#x27;s: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Parent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;input value=&quot;&#123;= firstName =&#125;&quot; placeholder=&quot;please input&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&#x27;onClick&#x27;&gt;Pass to the Child&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;ui-son san-ref=&quot;son&quot;/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">      <span class="string">&#x27;ui-son&#x27;</span>: <span class="title class_">Son</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="title function_">onClick</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="title function_">ref</span>(<span class="string">&#x27;son&#x27;</span>).<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;firstName&#x27;</span>, <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;firstName&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p data-height="365" data-theme-id="dark" data-slug-hash="wqrgGj" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-ref" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/wqrgGj/">san-parent-to-child-ref</a> by liuchaofan (<a href="https://codepen.io/asd123freedom">@asd123freedom</a>) on <a href="https://codepen.io">CodePen</a>.</p>
 <script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
 
 <h4 id="message"><a href="#message" class="headerlink" title="message"></a>message</h4><p>Apart from the <code>.ref()</code> method, child component’s reference can also be found in the event object which is dispatched from the child.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son's name: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click='onClick'&gt;I want a name&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    onClick() &#123;</span><br><span class="line">        <span class="keyword">this</span>.dispatch(<span class="string">'son-clicked'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Parent</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">             &lt;input value="&#123;= firstName =&#125;" placeholder="please input"&gt;</span></span><br><span class="line"><span class="string">             &lt;ui-son/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// declare the expected message names</span></span><br><span class="line">    <span class="keyword">static</span> messages = &#123;</span><br><span class="line">        <span class="string">'son-clicked'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">arg</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">let</span> son = arg.target;</span><br><span class="line">            <span class="keyword">let</span> firstName = <span class="keyword">this</span>.data.get(<span class="string">'firstName'</span>);</span><br><span class="line">            son.data.set(<span class="string">'firstName'</span>, firstName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">'ui-son'</span>: Son</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            firstName: <span class="string">'trump'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p></p><p data-height="365" data-theme-id="dark" data-slug-hash="ZJXLGZ" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-prop" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/ZJXLGZ/" target="_blank" rel="noopener">san-parent-to-child-prop</a> by liuchaofan (<a href="https://codepen.io/asd123freedom" target="_blank" rel="noopener">@asd123freedom</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Son</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;p&gt;Son&#x27;s name: &#123;&#123;firstName&#125;&#125;&lt;/p&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&#x27;onClick&#x27;&gt;I want a name&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">onClick</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">dispatch</span>(<span class="string">&#x27;son-clicked&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Parent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">             &lt;input value=&quot;&#123;= firstName =&#125;&quot; placeholder=&quot;please input&quot;&gt;</span></span><br><span class="line"><span class="string">             &lt;ui-son/&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// declare the expected message names</span></span><br><span class="line">    <span class="keyword">static</span> messages = &#123;</span><br><span class="line">        <span class="string">&#x27;son-clicked&#x27;</span>: <span class="keyword">function</span> (<span class="params">arg</span>) &#123;</span><br><span class="line">            <span class="keyword">let</span> son = arg.<span class="property">target</span>;</span><br><span class="line">            <span class="keyword">let</span> firstName = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;firstName&#x27;</span>);</span><br><span class="line">            son.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;firstName&#x27;</span>, firstName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">&#x27;ui-son&#x27;</span>: <span class="title class_">Son</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">firstName</span>: <span class="string">&#x27;trump&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p data-height="365" data-theme-id="dark" data-slug-hash="ZJXLGZ" data-default-tab="js,result" data-user="asd123freedom" data-embed-version="2" data-pen-title="san-parent-to-child-prop" class="codepen">See the Pen <a href="https://codepen.io/asd123freedom/pen/ZJXLGZ/">san-parent-to-child-prop</a> by liuchaofan (<a href="https://codepen.io/asd123freedom">@asd123freedom</a>) on <a href="https://codepen.io">CodePen</a>.</p>
 <script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
 
       
@@ -214,7 +238,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -226,19 +249,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

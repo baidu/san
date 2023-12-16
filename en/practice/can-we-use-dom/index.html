@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>Can we do DOM manipulation? | San</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below: 12345678910111213var MyApp = san.defineComponent(&amp;#123;">
+  <meta name="description" content="When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below: 12345678910111213var MyApp &#x3D; san.defineComponent(&#123;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Can we do DOM manipulation?">
 <meta property="og:url" content="http://baidu.github.io/en/practice/can-we-use-dom/index.html">
 <meta property="og:site_name" content="San">
-<meta property="og:description" content="When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below: 12345678910111213var MyApp = san.defineComponent(&amp;#123;">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.113Z">
+<meta property="og:description" content="When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below: 12345678910111213var MyApp &#x3D; san.defineComponent(&#123;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.113Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.113Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Can we do DOM manipulation?">
-<meta name="twitter:description" content="When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below: 12345678910111213var MyApp = san.defineComponent(&amp;#123;">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -170,17 +191,19 @@ var _hmt = _hmt || [];
     <div class="article-entry" itemprop="articleBody">
       
         <p>When san is introduced to some developers, especially those new to MVVM frameworks, may lead to jQuery style imperative implements like below:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: &apos;&lt;input value=&quot;noClick&quot; class=&quot;ipt&quot;/&gt;&lt;button class=&quot;btn&quot;&gt;&lt;/button&gt;&apos;,</span><br><span class="line">    attached: function () &#123;</span><br><span class="line">        this.bindSomeEvents();</span><br><span class="line">    &#125;,</span><br><span class="line">    bindSomeEvents: function () &#123;</span><br><span class="line">        $(&apos;.btn&apos;).click(()=&gt;&#123;</span><br><span class="line">            $(&apos;.ipt&apos;).val(&apos;clicked&apos;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">var myApp = new MyApp();</span><br><span class="line">myApp.attach(document.querySelector(&apos;#app&apos;));</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: &#x27;&lt;input value=&quot;noClick&quot; class=&quot;ipt&quot;/&gt;&lt;button class=&quot;btn&quot;&gt;&lt;/button&gt;&#x27;,</span><br><span class="line">    attached: function () &#123;</span><br><span class="line">        this.bindSomeEvents();</span><br><span class="line">    &#125;,</span><br><span class="line">    bindSomeEvents: function () &#123;</span><br><span class="line">        $(&#x27;.btn&#x27;).click(()=&gt;&#123;</span><br><span class="line">            $(&#x27;.ipt&#x27;).val(&#x27;clicked&#x27;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">var myApp = new MyApp();</span><br><span class="line">myApp.attach(document.querySelector(&#x27;#app&#x27;));</span><br></pre></td></tr></table></figure>
+
 <p>Then run this program in the browser, the results are completely in line with expectations, perfect.</p>
 <p>However, as we become more familiar with the san should be used, we will write such code for the above functions.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: &apos;&lt;div&gt;&lt;input value=&quot;&#123;&#123;value&#125;&#125;&quot;/&gt;&lt;button on-click=&quot;clickHandler&quot;&gt;click me&lt;/button&gt;&lt;/div&gt;&apos;,</span><br><span class="line">    initData: function () &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            value: &apos;no click&apos;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    clickHandler: function () &#123;</span><br><span class="line">        this.data.set(&apos;value&apos;, &apos;clicked&apos;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">var myApp = new MyApp();</span><br><span class="line">myApp.attach(document.querySelector(&apos;#app&apos;));</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var MyApp = san.defineComponent(&#123;</span><br><span class="line">    template: &#x27;&lt;div&gt;&lt;input value=&quot;&#123;&#123;value&#125;&#125;&quot;/&gt;&lt;button on-click=&quot;clickHandler&quot;&gt;click me&lt;/button&gt;&lt;/div&gt;&#x27;,</span><br><span class="line">    initData: function () &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            value: &#x27;no click&#x27;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    clickHandler: function () &#123;</span><br><span class="line">        this.data.set(&#x27;value&#x27;, &#x27;clicked&#x27;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">var myApp = new MyApp();</span><br><span class="line">myApp.attach(document.querySelector(&#x27;#app&#x27;));</span><br></pre></td></tr></table></figure>
+
 <p>One question may be raised up after we carefully compared these two pieces of code</p>
 <p>Intuitively, in San’s code, we directly call this.data.set to modify the value of an attribute. It automatically renders the modified content to the DOM. It seems to be very magical, but it is still fundamentally the operation of the DOM. This operation is done by the San framework. Since this is the case, why can’t we directly modify it directly like the first piece of code, and do these operations to San to complete? If you give it to San for performance reasons, it needs to complete the relationship binding from Model to view. It also needs some performance loss, so it seems to be quite costly. So why do we still have to do this?</p>
 <p>Follow this question, we can consider these aspects.</p>
 <h3 id="What-was-the-original-intention-of-using-San"><a href="#What-was-the-original-intention-of-using-San" class="headerlink" title="What was the original intention of using San?"></a>What was the original intention of using San?</h3><p>San is a component framework of MVVM (Model-View-ViewModel). With the MVVM framework, we only need to complete the view template containing the <strong>declaration binding</strong>, write the business data change logic in the ViewModel, and the View layer is fully automated. This will greatly reduce the operational complexity of the front-end application and greatly improve the development efficiency of the application. The most iconic feature of MVVM is <strong>data binding</strong>. The core idea of MVVM is to realize the separation of View layer and other layers through <strong>declarative data binding</strong>, completely decoupling the concept of View layer. It also makes it easier to write unit test cases for the web front end.</p>
 <p>To put it simply: the operational data is the operational view, which is the operation of the DOM.</p>
-<h3 id="This-DOM-is-not-a-DOM"><a href="#This-DOM-is-not-a-DOM" class="headerlink" title="This DOM is not a DOM"></a>This DOM is not a DOM</h3><p>The template attribute in the code we wrote, called the <strong>content template</strong> in San, is a string that conforms to the HTML syntax rules, which is parsed by San, returning an [ANode] (https:// Github.com/baidu/san/blob/master/doc/anode.md) Object.</p>
-<p>That is to say, what we write in the template is not actually placed on the DOM. It is used by San. The actual generated DOM is actually San. According to the parsing result of your template, it is [ANode] (https ://github.com/baidu/san/blob/master/doc/anode.md) Build, there is actually a layer of San between your code and the DOM.</p>
+<h3 id="This-DOM-is-not-a-DOM"><a href="#This-DOM-is-not-a-DOM" class="headerlink" title="This DOM is not a DOM"></a>This DOM is not a DOM</h3><p>The template attribute in the code we wrote, called the <strong>content template</strong> in San, is a string that conforms to the HTML syntax rules, which is parsed by San, returning an [ANode] (https:&#x2F;&#x2F; Github.com&#x2F;baidu&#x2F;san&#x2F;blob&#x2F;master&#x2F;doc&#x2F;anode.md) Object.</p>
+<p>That is to say, what we write in the template is not actually placed on the DOM. It is used by San. The actual generated DOM is actually San. According to the parsing result of your template, it is [ANode] (https :&#x2F;&#x2F;github.com&#x2F;baidu&#x2F;san&#x2F;blob&#x2F;master&#x2F;doc&#x2F;anode.md) Build, there is actually a layer of San between your code and the DOM.</p>
 <p>If we directly use the native api or jQuery to directly manipulate the San generated DOM, this is unreasonable, because those DOM are not written by us at all, but we have to try to modify it, obviously we should not do so.</p>
 <p>Not directly operating DOM This is actually in line with the basic principles of hierarchical architecture design in the computer field. Each layer performs independent functions, and then the upper layer uses the underlying api to call the exposed functions of the underlying layer, but prohibits cross-layer calls.</p>
 <h3 id="Sometimes-we-overestimate-the-problem-of-performance"><a href="#Sometimes-we-overestimate-the-problem-of-performance" class="headerlink" title="Sometimes we overestimate the problem of performance"></a>Sometimes we overestimate the problem of performance</h3><p>The San framework greatly improves the development efficiency of the application. It helps us to shield the cumbersome DOM operations and helps us deal with the relationship between Model and View. This looks really good, but all the good things always cost a lot. If San does this, it will bring performance overhead, so it is worse than using DOM directly. It is undoubted that the world is not likely to have better performance than direct DOM. If you want to change the display state of a page, DOM is its only API, and no framework can be bypassed.</p>
@@ -217,7 +240,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -229,19 +251,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

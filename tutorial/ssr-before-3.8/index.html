@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
   
   <title>服务器端渲染（3.8.0 之前） | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/tutorial/ssr-before-3.8/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.122Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-06-28T16:28:28.122Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.122Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="服务器端渲染（3.8.0 之前）">
-<meta name="twitter:description" content="San 的服务端渲染支持是基于 组件反解 的：  服务端输出的 HTML 中带有对视图无影响，能帮助组件了解数据与视图结构的标记片段 浏览器端，组件初始化时从标记片段理解组件结构，在后续用户操作时组件能正确响应，发挥作用  提示：由于组件运行环境需要考虑浏览器各版本和NodeJS，示例代码为保证简单无需transform，全部采用ES5编写。 是否需要SSR服务端渲染，视图 HTML 直出有一些显">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../manifest.json">
 
-  <link rel="stylesheet" href="../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../css/style.css">
-  <link rel="stylesheet" href="../../css/site.css">
-  <link rel="stylesheet" href="../../css/article.css">
-  <link rel="stylesheet" href="../../css/code.css">
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>教程</dt>
         <dd><a href="../setup/">安装</a></dd>
-        <dd><a href="../background/">背景</a></dd>
         <dd><a href="../start/">开始</a></dd>
         <dd><a href="../template/">模板</a></dd>
         <dd><a href="../data-method/">数据操作</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">表单</a></dd>
         <dd><a href="../slot/">插槽</a></dd>
         <dd><a href="../transition/">过渡</a></dd>
-        <dd><a href="../component/">组件</a></dd>
-        <dd><a href="../reverse/">组件反解</a></dd>
-        <dd><a href="../ssr/">服务端渲染</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">组件 API</a></dd>
         <dd><a href="../../doc/main-members/">主模块 API</a></dd>
 
         <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
 
         <dt>周边</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -192,11 +213,14 @@ var _hmt = _hmt || [];
 <li>仅在 App 的 WebView 中展现，不作为开放 Web 存在的页面，不需要使用 SSR</li>
 <li>偏重内容型页面，可以使用 SSR。但是组件是管理行为交互的，对内容部分无需进行组件渲染，只需要在有交互的部分进行组件反解渲染</li>
 </ul>
-<h2 id="输出HTML"><a href="#输出HTML" class="headerlink" title="输出HTML"></a>输出HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.compileToRenderer(MyComponent);</span><br><span class="line">render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="输出HTML"><a href="#输出HTML" class="headerlink" title="输出HTML"></a>输出HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.<span class="title function_">compileToRenderer</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line"><span class="title function_">render</span>(&#123;</span><br><span class="line">    <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>,</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+
+
 <p>San 在主包下提供了 <strong>compileToRenderer</strong> 方法。该方法接收组件的类作为参数，编译返回一个 <strong>{string}render({Object} data)</strong> 方法。 <strong>render</strong> 方法接收数据，返回组件渲染后的 HTML 字符串。</p>
 <h2 id="编译NodeJS模块"><a href="#编译NodeJS模块" class="headerlink" title="编译NodeJS模块"></a>编译NodeJS模块</h2><p>有时候，我们希望组件编译的 render 方法是一个单独的 NodeJS Module，以便于其他模块引用它。通过 San 主包下提供的 <strong>compileToSource</strong> 方法我们可以编译 NodeJS Module。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.compileToSource(MyComponent);</span><br><span class="line">fs.writeFileSync(<span class="string">'your-module.js'</span>, <span class="string">'exports = module.exports = '</span> + renderSource, <span class="string">'UTF-8'</span>);</span><br></pre></td></tr></table></figure>
-<p><strong>compileToSource</strong> 方法接收组件的类作为参数，编译返回组件 render 的 source code，具体为 <code>function (data) {...}</code> 形式的字符串。我们只需要在前面增加 <code>exports = module.exports =</code>，并写入 <strong>.js</strong> 文件中，就能得到一个符合 CommonJS 标准的 NodeJS Module。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">&#x27;san&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.<span class="title function_">compileToSource</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line">fs.<span class="title function_">writeFileSync</span>(<span class="string">&#x27;your-module.js&#x27;</span>, <span class="string">&#x27;exports = module.exports = &#x27;</span> + renderSource, <span class="string">&#x27;UTF-8&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>compileToSource</strong> 方法接收组件的类作为参数，编译返回组件 render 的 source code，具体为 <code>function (data) &#123;...&#125;</code> 形式的字符串。我们只需要在前面增加 <code>exports = module.exports = </code>，并写入 <strong>.js</strong> 文件中，就能得到一个符合 CommonJS 标准的 NodeJS Module。</p>
 
       
     </div>
@@ -204,7 +228,7 @@ var _hmt = _hmt || [];
 </article>
 
 <aside class="toc-wrap">
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#是否需要SSR"><span class="toc-text">是否需要SSR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#输出HTML"><span class="toc-text">输出HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译NodeJS模块"><span class="toc-text">编译NodeJS模块</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81SSR"><span class="toc-text">是否需要SSR</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%87%BAHTML"><span class="toc-text">输出HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91NodeJS%E6%A8%A1%E5%9D%97"><span class="toc-text">编译NodeJS模块</span></a></li></ol>
   <a href="#" class="toc-top">回到顶部</a>
 </aside>
 
@@ -228,7 +252,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>教程</dt>
         <dd><a href="../setup/">安装</a></dd>
-        <dd><a href="../background/">背景</a></dd>
         <dd><a href="../start/">开始</a></dd>
         <dd><a href="../template/">模板</a></dd>
         <dd><a href="../data-method/">数据操作</a></dd>
@@ -240,19 +263,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">表单</a></dd>
         <dd><a href="../slot/">插槽</a></dd>
         <dd><a href="../transition/">过渡</a></dd>
-        <dd><a href="../component/">组件</a></dd>
-        <dd><a href="../reverse/">组件反解</a></dd>
-        <dd><a href="../ssr/">服务端渲染</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">组件 API</a></dd>
         <dd><a href="../../doc/main-members/">主模块 API</a></dd>
 
         <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
 
         <dt>周边</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

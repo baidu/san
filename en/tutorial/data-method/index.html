@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>Data Manipulation | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/tutorial/data-method/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="San provides a number of methods on components’ data. You can retrieve data via .get() method and modify data via .set(), .splice() methods, views will be updated automatically. Note: You may ask why">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-07-02T14:37:50.247Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-07-02T14:37:50.247Z">
+<meta property="article:modified_time" content="2020-07-02T14:37:50.247Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Data Manipulation">
-<meta name="twitter:description" content="San provides a number of methods on components’ data. You can retrieve data via .get() method and modify data via .set(), .splice() methods, views will be updated automatically. Note: You may ask why">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -170,82 +191,113 @@ var _hmt = _hmt || [];
     <div class="article-entry" itemprop="articleBody">
       
         <p>San provides a number of methods on components’ data. You can retrieve data via <code>.get()</code> method and modify data via <code>.set()</code>, <code>.splice()</code> methods, views will be updated automatically.</p>
-<p><code>Note</code>: You may ask why do we have to use these methods instead of manipulating data directly? That’s because the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty" target="_blank" rel="noopener">defineProperty</a> API is still not fully supported by major browsers in China and we prefer non-invasive ways to implement data binding. As a result, you have to use the methods provided by San in order to get the views updated automatically.</p>
+<p><code>Note</code>: You may ask why do we have to use these methods instead of manipulating data directly? That’s because the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">defineProperty</a> API is still not fully supported by major browsers in China and we prefer non-invasive ways to implement data binding. As a result, you have to use the methods provided by San in order to get the views updated automatically.</p>
 <h2 id="Initialization"><a href="#Initialization" class="headerlink" title="Initialization"></a>Initialization</h2><p>By defining an <code>initData</code> method, you can specify the data used to initialize the component. The return value of <code>initData</code> method will be used as the initialization data.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            width: <span class="number">200</span>,</span><br><span class="line">            top: <span class="number">100</span>,</span><br><span class="line">            left: <span class="number">-1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="get"><a href="#get" class="headerlink" title="get"></a>get</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; get(&#123;string|Object?&#125;expr)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="get"><a href="#get" class="headerlink" title="get"></a>get</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; get(&#123;string|Object?&#125;expr)</span><br></pre></td></tr></table></figure>
+
+
 <p><code>Explanation</code>:</p>
 <p>Use <code>.get()</code> method to retrieve data.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            width: <span class="number">200</span>,</span><br><span class="line">            top: <span class="number">100</span>,</span><br><span class="line">            left: <span class="number">-1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.get(<span class="string">'width'</span>); <span class="comment">// 200</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;width&#x27;</span>); <span class="comment">// 200</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <p>The entire data object will be returned if the <code>expr</code> argument is not provided. The no argument function overload is provided for ESNext destructuring to retrieve multiple data items with a single expression.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            width: <span class="number">200</span>,</span><br><span class="line">            top: <span class="number">100</span>,</span><br><span class="line">            left: <span class="number">-1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.get().width; <span class="comment">// 200</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// top: 100</span></span><br><span class="line">        <span class="comment">// left: -1000</span></span><br><span class="line">        <span class="keyword">let</span> &#123;top, left&#125; = <span class="keyword">this</span>.data.get();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>().<span class="property">width</span>; <span class="comment">// 200</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// top: 100</span></span><br><span class="line">        <span class="comment">// left: -1000</span></span><br><span class="line">        <span class="keyword">let</span> &#123;top, left&#125; = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <p><code>Note</code>: The data retrieved via <strong>get</strong> method is not expected to be modified, which will lead to inconsistent state. Use the following <strong>set</strong>, <strong>splice</strong> methods to modify any data.</p>
-<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+
 <p><code>Explanation</code>:</p>
-<p>The <code>.set()</code> method should be used in most cases, which is equivalent to the JavaScript assignment operator (=).</p>
+<p>The <code>.set()</code> method should be used in most cases, which is equivalent to the JavaScript assignment operator (&#x3D;).</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        requestUser().then(<span class="keyword">this</span>.userReceived.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    userReceived: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user'</span>, data);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    changeEmail: <span class="function"><span class="keyword">function</span> (<span class="params">email</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'user.email'</span>, email);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">assign(&#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
-<p><code>Version</code>: &gt;= 3.9.0</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title function_">requestUser</span>().<span class="title function_">then</span>(<span class="variable language_">this</span>.<span class="property">userReceived</span>.<span class="title function_">bind</span>(<span class="variable language_">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">userReceived</span>: <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;user&#x27;</span>, data);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">changeEmail</span>: <span class="keyword">function</span> (<span class="params">email</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;user.email&#x27;</span>, email);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">assign(&#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>Version</code>: &gt;&#x3D; 3.9.0</p>
 <p><code>Explanation</code>:</p>
 <p><code>assign</code> method merges <code>source</code> object into component’s data, which is similar to <code>Object.assign</code> in JavaScript, this makes a batch update to view.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            title: <span class="string">'ER'</span>,</span><br><span class="line">            type: <span class="string">'MVC'</span>,</span><br><span class="line">            author: <span class="string">'Someone'</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.assign(&#123;</span><br><span class="line">            title: <span class="string">'San'</span>,</span><br><span class="line">            type: <span class="string">'MVVM'</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">merge(&#123;string|Object&#125;expr, &#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
-<p><code>Version</code>: &gt;= 3.4.0</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;ER&#x27;</span>,</span><br><span class="line">            <span class="attr">type</span>: <span class="string">&#x27;MVC&#x27;</span>,</span><br><span class="line">            <span class="attr">author</span>: <span class="string">&#x27;Someone&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;San&#x27;</span>,</span><br><span class="line">            <span class="attr">type</span>: <span class="string">&#x27;MVVM&#x27;</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">merge(&#123;string|Object&#125;expr, &#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>Version</code>: &gt;&#x3D; 3.4.0</p>
 <p><code>Explanation</code>:</p>
 <p>The <code>.merge()</code> method merges <code>source</code> into the data item specified by <code>expr</code>.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        requestUser().then(<span class="keyword">this</span>.updateUserInfo.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    updateUserInfo: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.merge(<span class="string">'user'</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply(&#123;string|Object&#125;expr, &#123;function(&#123;*&#125;):&#123;*&#125;&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
-<p><code>Version</code>: &gt;= 3.4.0</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title function_">requestUser</span>().<span class="title function_">then</span>(<span class="variable language_">this</span>.<span class="property">updateUserInfo</span>.<span class="title function_">bind</span>(<span class="variable language_">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">updateUserInfo</span>: <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">merge</span>(<span class="string">&#x27;user&#x27;</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply(&#123;string|Object&#125;expr, &#123;function(&#123;*&#125;):&#123;*&#125;&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>Version</code>: &gt;&#x3D; 3.4.0</p>
 <p><code>Explanation</code>:</p>
 <p><code>.apply()</code> method accepts a function argument, which takes the data’s current value as its input, and returns the updated value. The behavior of <code>.apply()</code> is like the JavaScript <code>Array.prototype.map</code> method.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            number: <span class="number">1</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// increment</span></span><br><span class="line">        <span class="keyword">this</span>.data.apply(<span class="string">'number'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> n + <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">number</span>: <span class="number">1</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// increment</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">apply</span>(<span class="string">&#x27;number&#x27;</span>, <span class="keyword">function</span> (<span class="params">n</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> n + <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <h2 id="Array-Methods"><a href="#Array-Methods" class="headerlink" title="Array Methods"></a>Array Methods</h2><p>We provide a number of methods for array manipulation. All of them take the same name as the <code>Array.prototype</code> except <strong>remove</strong>. Hope it helps to memorize!</p>
 <p><code>Note</code>: Use <code>.set()</code> method to modify an Array element. Actually whenever you want a JavaScript <code>=</code> assignment, you’ll need the <code>.set()</code> method.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    flag: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'users[0].flag'</span>, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="push"><a href="#push" class="headerlink" title="push"></a>push</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; push(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">flag</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;users[0].flag&#x27;</span>, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="push"><a href="#push" class="headerlink" title="push"></a>push</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; push(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Append an element into an array.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    addUser: <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.push(<span class="string">'users'</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; pop(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">addUser</span>: <span class="keyword">function</span> (<span class="params">name</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">push</span>(<span class="string">&#x27;users&#x27;</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; pop(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Pop one element out of an array.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    rmLast: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.pop(<span class="string">'users'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="unshift"><a href="#unshift" class="headerlink" title="unshift"></a>unshift</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; unshift(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmLast</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">pop</span>(<span class="string">&#x27;users&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="unshift"><a href="#unshift" class="headerlink" title="unshift"></a>unshift</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; unshift(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Insert one element to the beginning of an array.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    addUser: <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.unshift(<span class="string">'users'</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="shift"><a href="#shift" class="headerlink" title="shift"></a>shift</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; shift(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">addUser</span>: <span class="keyword">function</span> (<span class="params">name</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">unshift</span>(<span class="string">&#x27;users&#x27;</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="shift"><a href="#shift" class="headerlink" title="shift"></a>shift</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; shift(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Remove one element from the beginning of an array.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    rmFirst: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.shift(<span class="string">'users'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remove(&#123;string|Object&#125;expr, &#123;*&#125;item, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmFirst</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">shift</span>(<span class="string">&#x27;users&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remove(&#123;string|Object&#125;expr, &#123;*&#125;item, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Remove the given item.</p>
-<p><code>.remove()</code> compares <code>item</code> to elements of the Array using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comparison_Operators#Using_the_Equality_Operators" target="_blank" rel="noopener">strict equality</a> (the same method used by the <code>===</code> operator).</p>
+<p><code>.remove()</code> compares <code>item</code> to elements of the Array using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comparison_Operators#Using_the_Equality_Operators">strict equality</a> (the same method used by the <code>===</code> operator).</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    rm: <span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.remove(<span class="string">'users'</span>, user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="removeAt"><a href="#removeAt" class="headerlink" title="removeAt"></a>removeAt</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">removeAt(&#123;string|Object&#125;expr, &#123;number&#125;index, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rm</span>: <span class="keyword">function</span> (<span class="params">user</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">remove</span>(<span class="string">&#x27;users&#x27;</span>, user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="removeAt"><a href="#removeAt" class="headerlink" title="removeAt"></a>removeAt</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">removeAt(&#123;string|Object&#125;expr, &#123;number&#125;index, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
 <p>Remove the element at the given index.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    rmAt: <span class="function"><span class="keyword">function</span> (<span class="params">index</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.removeAt(<span class="string">'users'</span>, index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="splice"><a href="#splice" class="headerlink" title="splice"></a>splice</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;Array&#125; splice(&#123;string|Object&#125;expr, &#123;Array&#125;spliceArgs, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmAt</span>: <span class="keyword">function</span> (<span class="params">index</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">removeAt</span>(<span class="string">&#x27;users&#x27;</span>, index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="splice"><a href="#splice" class="headerlink" title="splice"></a>splice</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;Array&#125; splice(&#123;string|Object&#125;expr, &#123;Array&#125;spliceArgs, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
 <p><code>Explanation</code>:</p>
-<p>The <code>.splice()</code> method changes the contents of an array by removing existing elements and/or adding new elements.</p>
+<p>The <code>.splice()</code> method changes the contents of an array by removing existing elements and&#x2F;or adding new elements.</p>
 <p><code>Usage</code>:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.defineComponent(&#123;</span><br><span class="line">    rm: <span class="function"><span class="keyword">function</span> (<span class="params">index, deleteCount</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data.splice(<span class="string">'users'</span>, [index, deleteCount]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rm</span>: <span class="keyword">function</span> (<span class="params">index, deleteCount</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">splice</span>(<span class="string">&#x27;users&#x27;</span>, [index, deleteCount]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <h2 id="option"><a href="#option" class="headerlink" title="option"></a>option</h2><p>Each of the above methods accepts an extra <code>option</code> argument, which is a plain object of key-value pairs to control how the views will be updated.</p>
 <h3 id="silent"><a href="#silent" class="headerlink" title="silent"></a>silent</h3><p><code>Explanation</code>:</p>
 <p>Update the data silently without updating the view.</p>
-<h3 id="force"><a href="#force" class="headerlink" title="force"></a>force</h3><p><code>Version</code>: &gt;= 3.5.5</p>
+<h3 id="force"><a href="#force" class="headerlink" title="force"></a>force</h3><p><code>Version</code>: &gt;&#x3D; 3.5.5</p>
 <p><code>Explanation</code>:</p>
 <p>Force update the view even if the data to be set is identical to the existing value. Available for <code>.set()</code> method only.</p>
 
@@ -279,7 +331,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="">Data Manipulation</a></dd>
@@ -291,19 +342,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>Server Side Rendering (before 3.8.0) | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/tutorial/ssr-before-3.8/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="San’s server-side rendering is based on component reversion.  The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.117Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.117Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.117Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Server Side Rendering (before 3.8.0)">
-<meta name="twitter:description" content="San’s server-side rendering is based on component reversion.  The HTML output from the server contains markup fragments which takes no effect on the view but helps components understand the structure">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="../data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -192,11 +213,14 @@ var _hmt = _hmt || [];
 <li>Appear only in the App’s WebView, not as an open web page, no need to use SSR.</li>
 <li>Focus on content pages, you can use SSR. But the component manages the behavioral interaction, and no component rendering is required for the content part. Only need to perform component de-rendering in the part with interaction.</li>
 </ul>
-<h2 id="Output-HTML"><a href="#Output-HTML" class="headerlink" title="Output HTML"></a>Output HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.compileToRenderer(MyComponent);</span><br><span class="line">render(&#123;</span><br><span class="line">    email: <span class="string">'errorrik@gmail.com'</span>,</span><br><span class="line">    name: <span class="string">'errorrik'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
-<p>San provides a <code>compileToRenderer</code> function in its main package. This function takes the component’s class as a parameter, compiles it and returns a <code>{string} render({Object} data)</code> method. <code>render</code> method receives the data and returns rendered HTML string of the component.</p>
+<h2 id="Output-HTML"><a href="#Output-HTML" class="headerlink" title="Output HTML"></a>Output HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.<span class="title function_">compileToRenderer</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line"><span class="title function_">render</span>(&#123;</span><br><span class="line">    <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>,</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// render html result:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;....&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p>San provides a <code>compileToRenderer</code> function in its main package. This function takes the component’s class as a parameter, compiles it and returns a <code>&#123;string&#125; render(&#123;Object&#125; data)</code> method. <code>render</code> method receives the data and returns rendered HTML string of the component.</p>
 <h2 id="Compile-the-NodeJS-module"><a href="#Compile-the-NodeJS-module" class="headerlink" title="Compile the NodeJS module"></a>Compile the NodeJS module</h2><p>Sometimes, we want the render function compiled by a component to be a separate NodeJS Module so that other modules can reference it. We can compile the NodeJS module via the <code>compileToSource</code> function provided by San main package.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">'san'</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> MyComponent = san.defineComponent(&#123;</span><br><span class="line">    template: <span class="string">'&lt;a&gt;&lt;span title="&#123;&#123;email&#125;&#125;"&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;'</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.compileToSource(MyComponent);</span><br><span class="line">fs.writeFileSync(<span class="string">'your-module.js'</span>, <span class="string">'exports = module.exports = '</span> + renderSource, <span class="string">'UTF-8'</span>);</span><br></pre></td></tr></table></figure>
-<p>The <code>compileToSource</code> function takes the component’s class as a parameter, then compiles, and returns the source code of the component rendered. Specifically it is <code>function (data) {...}</code> string. We only need to add <code>exports = module.exports =</code> to the front and write it to the <code>.js</code> file to get a NodeJS Module that conforms to the CommonJS standard.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> san = <span class="built_in">require</span>(<span class="string">&#x27;san&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.<span class="title function_">compileToSource</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line">fs.<span class="title function_">writeFileSync</span>(<span class="string">&#x27;your-module.js&#x27;</span>, <span class="string">&#x27;exports = module.exports = &#x27;</span> + renderSource, <span class="string">&#x27;UTF-8&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>The <code>compileToSource</code> function takes the component’s class as a parameter, then compiles, and returns the source code of the component rendered. Specifically it is <code>function (data) &#123;...&#125;</code> string. We only need to add <code>exports = module.exports = </code> to the front and write it to the <code>.js</code> file to get a NodeJS Module that conforms to the CommonJS standard.</p>
 
       
     </div>
@@ -228,7 +252,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="../data-method/">Data Manipulation</a></dd>
@@ -240,19 +263,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

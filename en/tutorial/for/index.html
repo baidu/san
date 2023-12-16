@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>loop | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/tutorial/for/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="It is a common scenario to render a list via loop. We can render a list by applying the s-for directive on the element. SyntaxThe syntax of the s-for directive is as follows: 1item-identifier[, index-">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.116Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.116Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.116Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="loop">
-<meta name="twitter:description" content="It is a common scenario to render a list via loop. We can render a list by applying the s-for directive on the element. SyntaxThe syntax of the s-for directive is as follows: 1item-identifier[, index-">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="../data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -171,22 +192,32 @@ var _hmt = _hmt || [];
       
         <p>It is a common scenario to render a list via loop. We can render a list by applying the <strong>s-for</strong> directive on the element.</p>
 <h2 id="Syntax"><a href="#Syntax" class="headerlink" title="Syntax"></a>Syntax</h2><p>The syntax of the <strong>s-for</strong> directive is as follows:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">item-identifier[, index-identifier] in expression[ trackBy accessor-expression]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">item-identifier[, index-identifier] in expression[ trackBy accessor-expression]</span><br></pre></td></tr></table></figure>
+
 <h2 id="List-Rendering"><a href="#List-Rendering" class="headerlink" title="List Rendering"></a>List Rendering</h2><p>The following code describes the use of the <strong>s-for</strong> directive on an element to render a list. Inside the elements rendered by the list, you can access other data on the owner component (dept in the example below).</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">"p in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            dept: <span class="string">'ssg'</span>,</span><br><span class="line">            persons: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">&quot;p in persons&quot;</span> <span class="attr">title</span>=<span class="string">&quot;&#123;&#123;p.name&#125;&#125;&quot;</span>&gt;</span>&#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">dept</span>: <span class="string">&#x27;ssg&#x27;</span>,</span><br><span class="line">            <span class="attr">persons</span>: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;otakustay&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;otakustay@gmail.com&#x27;</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
 <h2 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h2><p>The index variable name (index in the example below) can be specified in the <strong>s-for</strong> directive to get the index of the list element in the list rendering process.</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">"p, index in persons"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;index + 1&#125;&#125;. &#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            dept: <span class="string">'ssg'</span>,</span><br><span class="line">            persons: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="List-data-operation"><a href="#List-data-operation" class="headerlink" title="List data operation"></a>List data operation</h2><p>To manipulate list data such as inserting or deleting items, we use the array method provided by the component data. For details, please refer to the [Array Method] (../data-method/#Array-Method) document.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">&quot;p, index in persons&quot;</span> <span class="attr">title</span>=<span class="string">&quot;&#123;&#123;p.name&#125;&#125;&quot;</span>&gt;</span>&#123;&#123;index + 1&#125;&#125;. &#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">dept</span>: <span class="string">&#x27;ssg&#x27;</span>,</span><br><span class="line">            <span class="attr">persons</span>: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;otakustay&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;otakustay@gmail.com&#x27;</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="List-data-operation"><a href="#List-data-operation" class="headerlink" title="List data operation"></a>List data operation</h2><p>To manipulate list data such as inserting or deleting items, we use the array method provided by the component data. For details, please refer to the [Array Method] (..&#x2F;data-method&#x2F;#Array-Method) document.</p>
 <h2 id="Virtual-element"><a href="#Virtual-element" class="headerlink" title="Virtual element"></a>Virtual element</h2><p>Similar to the <code>if</code> directive, you can also use a <code>fragment</code> element with <code>for</code> directive to render a block of multiple elements. For example:</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fragment</span> <span class="attr">s-for</span>=<span class="string">"p in persons"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;&#123;p.name&#125;&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fragment</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fragment</span> <span class="attr">s-for</span>=<span class="string">&quot;p in persons&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;&#123;p.name&#125;&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fragment</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
 <p><code>Note</code>: <strong>fragment</strong> is supported since 3.8.3, for older versions please use <strong>template</strong> instead. The name <strong>fragment</strong> is more consistent with the HTML semantic so it’s recommended to upgrade san to the latest version.</p>
 <h2 id="trackBy"><a href="#trackBy" class="headerlink" title="trackBy"></a>trackBy</h2><p><code>&gt;= 3.6.1</code></p>
-<p>Specify <strong>trackBy</strong> in the <strong>s-for</strong> directive declaration. When the array is updated, San will automatically track the changes of the items and perform the corresponding insert/remove operations. <strong>trackBy</strong> can only declare attribute access to item-identifier.</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">"p in persons trackBy p.name"</span> <span class="attr">title</span>=<span class="string">"&#123;&#123;p.name&#125;&#125;"</span>&gt;</span>&#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.defineComponent(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    initData: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            dept: <span class="string">'ssg'</span>,</span><br><span class="line">            persons: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'errorrik'</span>, <span class="attr">email</span>: <span class="string">'errorrik@gmail.com'</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">'otakustay'</span>, <span class="attr">email</span>: <span class="string">'otakustay@gmail.com'</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>TrackBy is typically used when rendering JSON data returned by the backend. Because the two JSON parse cannot make a === comparison on the list elements, the track will track the changes internally through trackBy. When combined with transitions, the animation of the change process will be more reasonable.</p>
+<p>Specify <strong>trackBy</strong> in the <strong>s-for</strong> directive declaration. When the array is updated, San will automatically track the changes of the items and perform the corresponding insert&#x2F;remove operations. <strong>trackBy</strong> can only declare attribute access to item-identifier.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dt</span>&gt;</span>name - email<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dd</span> <span class="attr">s-for</span>=<span class="string">&quot;p in persons trackBy p.name&quot;</span> <span class="attr">title</span>=<span class="string">&quot;&#123;&#123;p.name&#125;&#125;&quot;</span>&gt;</span>&#123;&#123;p.name&#125;&#125;(&#123;&#123;dept&#125;&#125;) - &#123;&#123;p.email&#125;&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Component</span></span><br><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">dept</span>: <span class="string">&#x27;ssg&#x27;</span>,</span><br><span class="line">            <span class="attr">persons</span>: [</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>&#125;,</span><br><span class="line">                &#123;<span class="attr">name</span>: <span class="string">&#x27;otakustay&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;otakustay@gmail.com&#x27;</span>&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<p>TrackBy is typically used when rendering JSON data returned by the backend. Because the two JSON parse cannot make a &#x3D;&#x3D;&#x3D; comparison on the list elements, the track will track the changes internally through trackBy. When combined with transitions, the animation of the change process will be more reasonable.</p>
 <p>In the following scenario, the performance of using trackBy will be worse:</p>
 <ul>
 <li>All data items have changed</li>
@@ -223,7 +254,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../setup/">Setup</a></dd>
-        <dd><a href="../background/">Background</a></dd>
         <dd><a href="../start/">Start</a></dd>
         <dd><a href="../template/">Template</a></dd>
         <dd><a href="../data-method/">Data Manipulation</a></dd>
@@ -235,19 +265,29 @@ var _hmt = _hmt || [];
         <dd><a href="../form/">Form</a></dd>
         <dd><a href="../slot/">Slot</a></dd>
         <dd><a href="../transition/">Transition</a></dd>
-        <dd><a href="../component/">Component</a></dd>
-        <dd><a href="../reverse/">Component Reversion</a></dd>
-        <dd><a href="../ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

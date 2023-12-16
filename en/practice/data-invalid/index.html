@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>What Content is Not Suitable for the Data? | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/practice/data-invalid/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="As introduced before, the contents of data are expected to be view related. In this article we give a list of inproppriate uses of the data. FunctionsFunctions are not suitable to be stored in the dat">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.114Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.114Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.114Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="What Content is Not Suitable for the Data?">
-<meta name="twitter:description" content="As introduced before, the contents of data are expected to be view related. In this article we give a list of inproppriate uses of the data. FunctionsFunctions are not suitable to be stored in the dat">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -171,10 +192,12 @@ var _hmt = _hmt || [];
       
         <p>As introduced before, the contents of data are expected to be view related. In this article we give a list of inproppriate uses of the data.</p>
 <h4 id="Functions"><a href="#Functions" class="headerlink" title="Functions"></a>Functions</h4><p>Functions are not suitable to be stored in the data. Functions are expected to be separated from the data, and can be imported from other source files or implemented as component methods.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="keyword">this</span>.data.set(<span class="string">'camel2kebab'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">source</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> source.replace(<span class="regexp">/[A-Z]/g</span>, <span class="function"><span class="keyword">function</span> (<span class="params">match</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'-'</span> + match.toLowerCase();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h4 id="DOM-Objects"><a href="#DOM-Objects" class="headerlink" title="DOM Objects"></a>DOM Objects</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="keyword">this</span>.data.set(<span class="string">'sideEl'</span>, <span class="built_in">document</span>.querySelector(<span class="string">'sidebar'</span>));</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;camel2kebab&#x27;</span>, <span class="keyword">function</span> (<span class="params">source</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> source.<span class="title function_">replace</span>(<span class="regexp">/[A-Z]/g</span>, <span class="keyword">function</span> (<span class="params">match</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;-&#x27;</span> + match.<span class="title function_">toLowerCase</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="DOM-Objects"><a href="#DOM-Objects" class="headerlink" title="DOM Objects"></a>DOM Objects</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;sideEl&#x27;</span>, <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;sidebar&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
 <h4 id="Complex-Objects"><a href="#Complex-Objects" class="headerlink" title="Complex Objects"></a>Complex Objects</h4><p>Complex objects like components are not suitable to be stored in the data.<br>For example, using data to store dynamic child components is not recommended, use member properties instead.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> Layer();</span><br><span class="line">layer.attach(<span class="built_in">document</span>.body);</span><br><span class="line"><span class="keyword">this</span>.data.set(<span class="string">'layer'</span>, layer);</span><br><span class="line"></span><br><span class="line"><span class="comment">// good</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> Layer();</span><br><span class="line">layer.attach(<span class="built_in">document</span>.body);</span><br><span class="line"><span class="keyword">this</span>.layer = layer;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>();</span><br><span class="line">layer.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;layer&#x27;</span>, layer);</span><br><span class="line"></span><br><span class="line"><span class="comment">// good</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>();</span><br><span class="line">layer.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">layer</span> = layer;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -206,7 +229,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -218,19 +240,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   <meta name="description" content="San - A Flexible JavaScript Component Framework">
   <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
   
   <title>How does an array deep update trigger a view update? | San</title>
@@ -16,11 +16,11 @@
 <meta property="og:url" content="http://baidu.github.io/en/practice/array-deep-updates-trigger-view/index.html">
 <meta property="og:site_name" content="San">
 <meta property="og:description" content="In the San component, changes to the data need to be done by methods such as set or splice. San’s implementation uses the easiest way to solve compatibility problems, and in order to ensure that the d">
-<meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-28T16:28:28.113Z">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-06-28T16:28:28.113Z">
+<meta property="article:modified_time" content="2020-06-28T16:28:28.113Z">
+<meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="How does an array deep update trigger a view update?">
-<meta name="twitter:description" content="In the San component, changes to the data need to be done by methods such as set or splice. San’s implementation uses the easiest way to solve compatibility problems, and in order to ensure that the d">
   
     <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
   
@@ -29,12 +29,24 @@
   
   <link rel="manifest" href="../../../manifest.json">
 
-  <link rel="stylesheet" href="../../../css/font-awesome.min.css">
-  <link rel="stylesheet" href="../../../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../../../css/style.css">
-  <link rel="stylesheet" href="../../../css/site.css">
-  <link rel="stylesheet" href="../../../css/article.css">
-  <link rel="stylesheet" href="../../../css/code.css">
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
   
   <script>
 var _hmt = _hmt || [];
@@ -47,11 +59,11 @@ var _hmt = _hmt || [];
 </script>
 
   <!-- search -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
 
 
-</head>
-</html>
+<meta name="generator" content="Hexo 7.0.0"></head>
+
 <body style="background: #01222d;">
   <div class="body-inner">
   <header>
@@ -103,7 +115,6 @@ var _hmt = _hmt || [];
 <aside class="recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -115,19 +126,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
@@ -170,9 +191,20 @@ var _hmt = _hmt || [];
     <div class="article-entry" itemprop="articleBody">
       
         <p>In the San component, changes to the data need to be done by methods such as <code>set</code> or <code>splice</code>. San’s implementation uses the easiest way to solve compatibility problems, and in order to ensure that the data manipulation process is controllable, San’s data changes are internally Immutable. Therefore, when encountering data manipulation in a deep array, directly calling set to modify the data will find that the view does not trigger an update.</p>
-<h4 id="Scene-description"><a href="#Scene-description" class="headerlink" title="Scene description"></a>Scene description</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyApp</span> <span class="keyword">extends</span> <span class="title">san</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;div </span></span><br><span class="line"><span class="string">                style="cursor: pointer"</span></span><br><span class="line"><span class="string">                on-click="handlerClick($event)"&gt;Point me to exchange data&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul&gt;</span></span><br><span class="line"><span class="string">                &lt;li s-for="item in list"&gt;&#123;&#123;item.title&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">            &lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">    initData() &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            list: [</span><br><span class="line">                &#123;</span><br><span class="line">                    title: <span class="string">'test1'</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    title: <span class="string">'test2'</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    handlerClick() &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// want to exchange two values</span></span><br><span class="line">        <span class="keyword">let</span> firstNews = <span class="keyword">this</span>.data.get(<span class="string">'list'</span>);</span><br><span class="line">        <span class="keyword">let</span> firstData = firstNews[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">let</span> secondData = firstNews[<span class="number">1</span>];</span><br><span class="line">        firstNews[<span class="number">1</span>] = firstData;</span><br><span class="line">        firstNews[<span class="number">0</span>] = secondData;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The data set directly here does not trigger the update of the view.</span></span><br><span class="line">        <span class="keyword">this</span>.data.set(<span class="string">'list'</span>, firstNews);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myApp = <span class="keyword">new</span> MyApp();</span><br><span class="line">myApp.attach(<span class="built_in">document</span>.body);</span><br></pre></td></tr></table></figure>
+<h4 id="Scene-description"><a href="#Scene-description" class="headerlink" title="Scene description"></a>Scene description</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyApp</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;div </span></span><br><span class="line"><span class="string">                style=&quot;cursor: pointer&quot;</span></span><br><span class="line"><span class="string">                on-click=&quot;handlerClick($event)&quot;&gt;Point me to exchange data&lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul&gt;</span></span><br><span class="line"><span class="string">                &lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item.title&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">            &lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">title</span>: <span class="string">&#x27;test1&#x27;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">title</span>: <span class="string">&#x27;test2&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_">handlerClick</span>(<span class="params"></span>) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// want to exchange two values</span></span><br><span class="line">        <span class="keyword">let</span> firstNews = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;list&#x27;</span>);</span><br><span class="line">        <span class="keyword">let</span> firstData = firstNews[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">let</span> secondData = firstNews[<span class="number">1</span>];</span><br><span class="line">        firstNews[<span class="number">1</span>] = firstData;</span><br><span class="line">        firstNews[<span class="number">0</span>] = secondData;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The data set directly here does not trigger the update of the view.</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;list&#x27;</span>, firstNews);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>();</span><br><span class="line">myApp.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h4 id="Cause-Analysis"><a href="#Cause-Analysis" class="headerlink" title="Cause Analysis"></a>Cause Analysis</h4><p>The data of San is Immutable, so the reference to the variable does not change when set firstNews, and the diff is still equal and does not trigger an update.</p>
-<h4 id="Resolutions"><a href="#Resolutions" class="headerlink" title="Resolutions"></a>Resolutions</h4><p></p><p data-height="365" data-theme-id="0" data-slug-hash="eEyeYj" data-default-tab="js,result" data-user="sw811" data-embed-version="2" data-pen-title="Array deep update triggers view update" class="codepen">See the Pen<br>        <a href="https://codepen.io/sw811/pen/eEyeYj/" target="_blank" rel="noopener">Array deep update triggers view update</a><br>        by solvan(<a href="https://codepen.io/sw811" target="_blank" rel="noopener">@sw811</a>) on<br>        <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</p><p></p>
+<h4 id="Resolutions"><a href="#Resolutions" class="headerlink" title="Resolutions"></a>Resolutions</h4><p 
+    data-height="365" 
+    data-theme-id="0" 
+    data-slug-hash="eEyeYj" 
+    data-default-tab="js,result" 
+    data-user="sw811" 
+    data-embed-version="2" 
+    data-pen-title="Array deep update triggers view update" 
+    class="codepen">See the Pen 
+        <a href="https://codepen.io/sw811/pen/eEyeYj/">Array deep update triggers view update</a> 
+        by solvan(<a href="https://codepen.io/sw811">@sw811</a>) on 
+        <a href="https://codepen.io">CodePen</a>.</p>
 <script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
 
 
@@ -206,7 +238,6 @@ var _hmt = _hmt || [];
     <aside class="mobile-nav-recommend">    <dl>
         <dt>Tutorial</dt>
         <dd><a href="../../tutorial/setup/">Setup</a></dd>
-        <dd><a href="../../tutorial/background/">Background</a></dd>
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
@@ -218,19 +249,29 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
-        <dd><a href="../../tutorial/component/">Component</a></dd>
-        <dd><a href="../../tutorial/reverse/">Component Reversion</a></dd>
-        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
 
         <dt>API</dt>
         <dd><a href="../../doc/api/">Component API</a></dd>
         <dd><a href="../../doc/main-members/">San API</a></dd>
 
         <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
         <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
         <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
 
         <dt>Facilities</dt>
         <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>

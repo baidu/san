@@ -21,9 +21,8 @@
     display: inline-block;
     text-decoration: none;
     font-weight: 300;
-    font-size:1.05em;
-    line-height: 1;
-    margin: 9px 0;
+    line-height: 1.5rem;
+    margin: 7px 0;
     padding-left: 5px;
     transition-timing-function: ease;
     transition-duration: .2s;
