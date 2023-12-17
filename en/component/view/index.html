@@ -18,7 +18,7 @@
 <meta property="og:description" content="Component TemplateWhen defining a component, you can assign a component’s view template through the template. 12345678910111213san.defineComponent(&#123;    template: &#x27;&lt;div&gt;&#x27;        +">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-12-15T16:07:07.117Z">
-<meta property="article:modified_time" content="2023-12-16T15:51:51.924Z">
+<meta property="article:modified_time" content="2023-12-17T14:26:30.050Z">
 <meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
   
@@ -118,19 +118,19 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
-        <dd><a href="../../tutorial/data-checking/">Data Validation</a></dd>
         <dd><a href="../../tutorial/style/">Style</a></dd>
         <dd><a href="../../tutorial/if/">Conditional</a></dd>
         <dd><a href="../../tutorial/for/">Loop</a></dd>
         <dd><a href="../../tutorial/event/">Event</a></dd>
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
 
         <dt>Component</dt>
         <dd><a href="../define/">Define Component</a></dd>
         <dd><a href="../lifecycle/">Component Lifecycle</a></dd>
-        <dd><a href="">Component View</a></dd>
+        <dd><a href="" class="recommend-active">Component View</a></dd>
         <dd><a href="../data/">Component Data</a></dd>
         <dd><a href="../tree/">Component Tree</a></dd>
         <dd><a href="../template-component/">Template Component</a></dd>
@@ -220,7 +220,7 @@ var _hmt = _hmt || [];
 
 <p>The first parameter of the filter function is the data value corresponding to the expression. The parameters passed in the filter call are followed by the second parameter.</p>
 <p><code>tips</code>: Given the independence of components, San does not provide a way to register global filters. Defining the filters used by components must be in their own <strong>filters</strong>.</p>
-<h2 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h2><p>The position of a slot can be declared in the view template by slot, the content of which can be defined by the outer component. Refer to the <a href="../slot/">slot</a> document for more details.</p>
+<h2 id="slot"><a href="#slot" class="headerlink" title="slot"></a>slot</h2><p>The position of a slot can be declared in the view template by slot, the content of which can be defined by the outer component. Refer to the <a href="../../tutorial/slot/">slot</a> document for more details.</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Panel</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;div class=&quot;head&quot; on-click=&quot;toggle&quot;&gt;title&lt;/div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;p style=&quot;&#123;&#123;fold | yesToBe(\&#x27;display:none\&#x27;)&#125;&#125;&quot;&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/p&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">toggle</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;fold&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;fold&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;ui-panel&#x27;</span>: <span class="title class_">Panel</span></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;ui-panel&gt;Hello San&lt;/ui-panel&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*  MyComponent rendered</span></span><br><span class="line"><span class="comment">&lt;div&gt;</span></span><br><span class="line"><span class="comment">  &lt;div class=&quot;head&quot;&gt;title&lt;/div&gt;</span></span><br><span class="line"><span class="comment">  &lt;p style=&quot;display:none&quot;&gt;Hello San&lt;/p&gt;</span></span><br><span class="line"><span class="comment">&lt;/div&gt;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
 
 
@@ -267,19 +267,19 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
-        <dd><a href="../../tutorial/data-checking/">Data Validation</a></dd>
         <dd><a href="../../tutorial/style/">Style</a></dd>
         <dd><a href="../../tutorial/if/">Conditional</a></dd>
         <dd><a href="../../tutorial/for/">Loop</a></dd>
         <dd><a href="../../tutorial/event/">Event</a></dd>
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
 
         <dt>Component</dt>
         <dd><a href="../define/">Define Component</a></dd>
         <dd><a href="../lifecycle/">Component Lifecycle</a></dd>
-        <dd><a href="">Component View</a></dd>
+        <dd><a href="" class="recommend-active">Component View</a></dd>
         <dd><a href="../data/">Component Data</a></dd>
         <dd><a href="../tree/">Component Tree</a></dd>
         <dd><a href="../template-component/">Template Component</a></dd>

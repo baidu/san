@@ -18,7 +18,7 @@
 <meta property="og:description" content="Component InitializationdefineComponentDescription: defineComponent({Object}propertiesAndMethods) Explanation: Method. A shortcut to define components. Refer to Component Definition for details. Usage">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-07-02T14:37:50.247Z">
-<meta property="article:modified_time" content="2020-07-02T14:37:50.247Z">
+<meta property="article:modified_time" content="2023-12-17T14:20:25.331Z">
 <meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
   
@@ -118,13 +118,13 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
-        <dd><a href="../../tutorial/data-checking/">Data Validation</a></dd>
         <dd><a href="../../tutorial/style/">Style</a></dd>
         <dd><a href="../../tutorial/if/">Conditional</a></dd>
         <dd><a href="../../tutorial/for/">Loop</a></dd>
         <dd><a href="../../tutorial/event/">Event</a></dd>
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
 
         <dt>Component</dt>
@@ -140,7 +140,7 @@ var _hmt = _hmt || [];
 
         <dt>API</dt>
         <dd><a href="../api/">Component API</a></dd>
-        <dd><a href="">San API</a></dd>
+        <dd><a href="" class="recommend-active">San API</a></dd>
 
         <dt>More</dt>
         <dd><a href="../../tutorial/ssr/">SSR</a></dd>
@@ -192,7 +192,7 @@ var _hmt = _hmt || [];
       
         <h2 id="Component-Initialization"><a href="#Component-Initialization" class="headerlink" title="Component Initialization"></a>Component Initialization</h2><h3 id="defineComponent"><a href="#defineComponent" class="headerlink" title="defineComponent"></a>defineComponent</h3><p><code>Description</code>: defineComponent({Object}propertiesAndMethods)</p>
 <p><code>Explanation</code>:</p>
-<p><strong>Method</strong>. A shortcut to define components. Refer to <a href="../../tutorial/component/#component-definition">Component Definition</a> for details.</p>
+<p><strong>Method</strong>. A shortcut to define components. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
 <p><code>Usage</code>:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
@@ -208,7 +208,7 @@ var _hmt = _hmt || [];
 
 <h3 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h3><p><code>Type</code>: Function</p>
 <p><code>Explanation</code>:</p>
-<p><strong>Property</strong>. The component class, from which the newly defined components will inherit. For most cases the <strong>san.defineComponent</strong> method should be used instead. Refer to <a href="../../tutorial/component/#component-definition">Component Definition</a> for details.</p>
+<p><strong>Property</strong>. The component class, from which the newly defined components will inherit. For most cases the <strong>san.defineComponent</strong> method should be used instead. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
 <p><code>Usage</code>:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Component</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HelloComponent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Component</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">&#x27;&lt;p&gt;Hello &#123;&#123;name&#125;&#125;!&lt;/p&gt;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">&#x27;San&#x27;</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -216,7 +216,7 @@ var _hmt = _hmt || [];
 <h3 id="inherits"><a href="#inherits" class="headerlink" title="inherits"></a>inherits</h3><p><code>Description</code>: inherits({Function}SubClass, {Function}SuperClass)</p>
 <p><code>Explanation</code>:</p>
 <p><strong>Method</strong>. An util method to implement inheritance, which is the case when defining components (inherit from <strong>san.Component</strong>). Usually, to define a component we use <strong>san.defineComponent</strong> in ES5 and <strong>extends</strong> in ESNext.</p>
-<p>It is not recommended to use <code>.inherits()</code> in most cases. Refer to <a href="../../tutorial/component/#component-definition">Component Definition</a> for details.</p>
+<p>It is not recommended to use <code>.inherits()</code> in most cases. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
 <h2 id="Server-Side-Rendering"><a href="#Server-Side-Rendering" class="headerlink" title="Server-Side Rendering"></a>Server-Side Rendering</h2><h3 id="compileToRenderer"><a href="#compileToRenderer" class="headerlink" title="compileToRenderer"></a>compileToRenderer</h3><p><code>Version</code>:&gt;&#x3D; 3.1.0</p>
 <p><code>Description</code>: {function(Object):string} compileToRenderer({Function}ComponentClass)</p>
 <p><code>Explanation</code>:</p>
@@ -333,13 +333,13 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">Start</a></dd>
         <dd><a href="../../tutorial/template/">Template</a></dd>
         <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
-        <dd><a href="../../tutorial/data-checking/">Data Validation</a></dd>
         <dd><a href="../../tutorial/style/">Style</a></dd>
         <dd><a href="../../tutorial/if/">Conditional</a></dd>
         <dd><a href="../../tutorial/for/">Loop</a></dd>
         <dd><a href="../../tutorial/event/">Event</a></dd>
         <dd><a href="../../tutorial/form/">Form</a></dd>
         <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
         <dd><a href="../../tutorial/transition/">Transition</a></dd>
 
         <dt>Component</dt>
@@ -355,7 +355,7 @@ var _hmt = _hmt || [];
 
         <dt>API</dt>
         <dd><a href="../api/">Component API</a></dd>
-        <dd><a href="">San API</a></dd>
+        <dd><a href="" class="recommend-active">San API</a></dd>
 
         <dt>More</dt>
         <dd><a href="../../tutorial/ssr/">SSR</a></dd>

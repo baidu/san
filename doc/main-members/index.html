@@ -18,7 +18,7 @@
 <meta property="og:description" content="组件初始化defineComponent描述： {Function} defineComponent({Object}propertiesAndMethods) 解释： 方法 。定义组件的快捷方法。详细请参考 组件定义 文档。 用法： 123456789var MyApp &#x3D; san.defineComponent(&#123;    template: &#x27;&lt;ul&gt;&lt;l">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-06-28T16:28:28.112Z">
-<meta property="article:modified_time" content="2022-05-16T17:31:30.015Z">
+<meta property="article:modified_time" content="2023-12-17T14:19:34.246Z">
 <meta property="article:author" content="errorrik">
 <meta name="twitter:card" content="summary">
   
@@ -118,13 +118,13 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">开始</a></dd>
         <dd><a href="../../tutorial/template/">模板</a></dd>
         <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
-        <dd><a href="../../tutorial/data-checking/">数据校验</a></dd>
         <dd><a href="../../tutorial/style/">样式</a></dd>
         <dd><a href="../../tutorial/if/">条件</a></dd>
         <dd><a href="../../tutorial/for/">循环</a></dd>
         <dd><a href="../../tutorial/event/">事件处理</a></dd>
         <dd><a href="../../tutorial/form/">表单</a></dd>
         <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
         <dd><a href="../../tutorial/transition/">过渡</a></dd>
 
         <dt>组件</dt>
@@ -192,21 +192,21 @@ var _hmt = _hmt || [];
       
         <h2 id="组件初始化"><a href="#组件初始化" class="headerlink" title="组件初始化"></a>组件初始化</h2><h3 id="defineComponent"><a href="#defineComponent" class="headerlink" title="defineComponent"></a>defineComponent</h3><p><code>描述</code>： {Function} defineComponent({Object}propertiesAndMethods)</p>
 <p><code>解释</code>：</p>
-<p><strong>方法</strong> 。定义组件的快捷方法。详细请参考 <a href="../../tutorial/component/#%E7%BB%84%E4%BB%B6%E5%AE%9A%E4%B9%89">组件定义</a> 文档。</p>
+<p><strong>方法</strong> 。定义组件的快捷方法。详细请参考 <a href="../../component/define/">组件定义</a> 文档。</p>
 <p><code>用法</code>：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <h3 id="defineTemplateComponent"><a href="#defineTemplateComponent" class="headerlink" title="defineTemplateComponent"></a>defineTemplateComponent</h3><p><code>版本</code>：&gt;&#x3D; 3.12.0</p>
 <p><code>描述</code>： {Function} defineTemplateComponent({string|Object}templateOrOptions)</p>
 <p><code>解释</code>：</p>
-<p><strong>方法</strong> 。定义模板组件。详细请参考 <a href="../../tutorial/component/#%E6%A8%A1%E7%89%88%E7%BB%84%E4%BB%B6">模版组件</a> 文档。</p>
+<p><strong>方法</strong> 。定义模板组件。详细请参考 <a href="../../component/template-component/">模版组件</a> 文档。</p>
 <p><code>用法</code>：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">PanelWithHeader</span> = san.<span class="title function_">defineTemplateComponent</span>(</span><br><span class="line">    <span class="string">&#x27;&lt;dl&gt;&lt;dt&gt;&lt;slot name=&quot;header&quot;/&gt;&lt;/dt&gt;&lt;dd&gt;&lt;slot/&gt;&lt;/dd&gt;&lt;/dl&gt;&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <h3 id="createComponentLoader"><a href="#createComponentLoader" class="headerlink" title="createComponentLoader"></a>createComponentLoader</h3><p><code>版本</code>：&gt;&#x3D; 3.7.0</p>
 <p><code>描述</code>： {Object} createComponentLoader({Object|Function}options)</p>
 <p><code>解释</code>：</p>
-<p><strong>方法</strong> 。创建组件 Loader，主要应用于子组件的后加载与异步渲染，详细请参考 <a href="../../tutorial/component/#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6">异步组件</a> 文档。 options 参数为 Object 类型时，支持如下成员：</p>
+<p><strong>方法</strong> 。创建组件 Loader，主要应用于子组件的后加载与异步渲染，详细请参考 <a href="../../component/async/">异步组件</a> 文档。 options 参数为 Object 类型时，支持如下成员：</p>
 <ul>
 <li>{function():Promise}options.load : load 方法。该方法需要返回一个 Promise，load 完成时 reslove，由框架自动调用</li>
 <li>{Function&#x3D;}options.placeholder : loading 过程中渲染的占位组件</li>
@@ -230,7 +230,7 @@ var _hmt = _hmt || [];
 
 <h3 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h3><p><code>类型</code>： Function</p>
 <p><code>解释</code>：</p>
-<p><strong>属性</strong> 。组件类，定义组件时可以从此继承。通常通过 <strong>san.defineComponent</strong> 定义组件，不使用此方法。详细请参考<a href="../../tutorial/component/#%E7%BB%84%E4%BB%B6%E5%AE%9A%E4%B9%89">组件定义</a>文档。</p>
+<p><strong>属性</strong> 。组件类，定义组件时可以从此继承。通常通过 <strong>san.defineComponent</strong> 定义组件，不使用此方法。详细请参考<a href="../../component/define/">组件定义</a>文档。</p>
 <p><code>用法</code>：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Component</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HelloComponent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Component</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">&#x27;&lt;p&gt;Hello &#123;&#123;name&#125;&#125;!&lt;/p&gt;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123; </span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">&#x27;San&#x27;</span>&#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -238,7 +238,7 @@ var _hmt = _hmt || [];
 <h3 id="inherits"><a href="#inherits" class="headerlink" title="inherits"></a>inherits</h3><p><code>描述</code>： inherits({Function}SubClass, {Function}SuperClass)</p>
 <p><code>解释</code>：</p>
 <p><strong>方法</strong> 。一个通用的实现继承的方法，定义组件时可以使用此方法从 <strong>san.Component</strong> 继承。通常在 ES5 下通过 <strong>san.defineComponent</strong> 定义组件，在 ESNext 下使用 <strong>extends</strong> 定义组件。</p>
-<p>绝大多数情况不推荐使用此方法。详细请参考<a href="../../tutorial/component/#%E7%BB%84%E4%BB%B6%E5%AE%9A%E4%B9%89">组件定义</a>文档。</p>
+<p>绝大多数情况不推荐使用此方法。详细请参考<a href="../../component/define/">组件定义</a>文档。</p>
 <h2 id="服务端渲染"><a href="#服务端渲染" class="headerlink" title="服务端渲染"></a>服务端渲染</h2><h3 id="compileToRenderer"><a href="#compileToRenderer" class="headerlink" title="compileToRenderer"></a>compileToRenderer</h3><p><code>版本</code>：&gt;&#x3D; 3.1.0</p>
 <p><code>描述</code>： {function(Object):string} compileToRenderer({Function}ComponentClass)</p>
 <p><code>解释</code>：</p>
@@ -356,13 +356,13 @@ var _hmt = _hmt || [];
         <dd><a href="../../tutorial/start/">开始</a></dd>
         <dd><a href="../../tutorial/template/">模板</a></dd>
         <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
-        <dd><a href="../../tutorial/data-checking/">数据校验</a></dd>
         <dd><a href="../../tutorial/style/">样式</a></dd>
         <dd><a href="../../tutorial/if/">条件</a></dd>
         <dd><a href="../../tutorial/for/">循环</a></dd>
         <dd><a href="../../tutorial/event/">事件处理</a></dd>
         <dd><a href="../../tutorial/form/">表单</a></dd>
         <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
         <dd><a href="../../tutorial/transition/">过渡</a></dd>
 
         <dt>组件</dt>
