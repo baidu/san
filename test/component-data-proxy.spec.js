@@ -99,4 +99,38 @@ describe("Component Data Proxy", function () {
             done();
         });
     });
+
+    it("after data.set, get collect value", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<a><span title="{{p.org.name}}"></span></a>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.d.p = {
+            name: 'erik',
+            email: 'errorrik@gmail.com',
+            org: {
+                name: 'efe',
+                company: 'baidu'
+            }
+        };
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.firstChild.firstChild;
+        expect(span.title).toBe('efe');
+        expect(myComponent.d.p.org.name).toBe('efe');
+        myComponent.data.set('p.org.name', 'ssg');
+        expect(myComponent.d.p.org.name).toBe('ssg');
+
+        san.nextTick(function () {
+            expect(span.title).toBe('ssg');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+
+            done();
+        });
+    });
 });

@@ -19,18 +19,22 @@ function dataProxy(data) {
 
     function getPropProxy(data, basePaths, prop) {
         var proxyWrap = proxies;
-        if (basePaths) {
+
+        if (prop) {
             for (var i = 0; i < basePaths.length; i++) {
                 proxyWrap = proxyWrap.items[basePaths[i].value];
             }
-        }
 
-        if (prop) {
             if (!proxyWrap.items[prop]) {
                 proxyWrap.items[prop] = {items: {}};
             }
 
             proxyWrap = proxyWrap.items[prop];
+        }
+        else {
+            data.listen(function (e) {
+                proxies.items[e.expr.paths[0].value] = null;
+            });
         }
 
         if (proxyWrap.proxy == null) {
@@ -56,17 +60,14 @@ function dataProxy(data) {
                     },
     
                     set: function (obj, prop, value) {
-                        proxies.proxy && (proxies = {items: {}});
-                        data.set(
-                            {
-                                type: ExprType.ACCESSOR,
-                                paths: paths.concat({
-                                    type: ExprType.STRING,
-                                    value: prop
-                                })
-                            },
-                            value
-                        );
+                        var expr = {
+                            type: ExprType.ACCESSOR,
+                            paths: paths.concat({
+                                type: ExprType.STRING,
+                                value: prop
+                            })
+                        };
+                        data.set(expr, value);
                     }
                 })
                 : obj;
