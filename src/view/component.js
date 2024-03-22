@@ -19,6 +19,7 @@ var parseTemplate = require('../parser/parse-template');
 var unpackANode = require('../parser/unpack-anode');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
+var dataProxy = require('../runtime/data-proxy');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
 var DataChangeType = require('../runtime/data-change-type');
@@ -278,6 +279,7 @@ function Component(options) { // eslint-disable-line
     }
 
     this.data = new Data(initData);
+    this.d = dataProxy(this.data);
 
     this.tagName = this.tagName || 'div';
     // #[begin] allua
