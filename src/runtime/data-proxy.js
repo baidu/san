@@ -14,10 +14,11 @@ function dataProxy(data) {
     var proxies = {items: {}};
     return getPropProxy(data);
 
-    function getPropProxy(data, basePaths, prop) {
+    function getPropProxy(data, target, basePaths, prop) {
         var proxyWrap = proxies;
+        var paths;
 
-        if (prop) {
+        if (target) {
             for (var i = 0; i < basePaths.length; i++) {
                 proxyWrap = proxyWrap.items[basePaths[i].value];
             }
@@ -27,38 +28,32 @@ function dataProxy(data) {
             }
 
             proxyWrap = proxyWrap.items[prop];
+
+            if (proxyWrap.proxy != null) {
+                return proxyWrap.proxy;
+            }
+
+            paths = basePaths.concat({type: ExprType.STRING, value: prop});
         }
         else {
+            target = data.raw;
+            paths = [];
+
             data.listen(function (e) {
                 proxies.items[e.expr.paths[0].value] = null;
             });
         }
 
+        var handlers = {
+            set: function (obj, prop, value) {
+                var expr = {
+                    type: ExprType.ACCESSOR,
+                    paths: paths.concat({type: ExprType.STRING, value: prop})
+                };
+                data.set(expr, value);
+            },
 
-        if (proxyWrap.proxy != null) {
-            return proxyWrap.proxy;
-        }
-
-        var paths = basePaths 
-            ? basePaths.concat({type: ExprType.STRING, value: prop})
-            : [];
-
-        var obj = basePaths
-            ? data.get({type: ExprType.ACCESSOR, paths: paths})
-            : data.raw;
-
-        if (obj != null && typeof obj === 'object') {
-            var handlers = {
-                set: function (obj, prop, value) {
-                    var expr = {
-                        type: ExprType.ACCESSOR,
-                        paths: paths.concat({type: ExprType.STRING, value: prop})
-                    };
-                    data.set(expr, value);
-                }
-            };
-
-            handlers.get = obj instanceof Array
+            get: target instanceof Array
                 ? function (arr, prop) {
                     switch (prop) {
                         case 'push':
@@ -144,20 +139,25 @@ function dataProxy(data) {
                             return arr.length;
                     }
 
-                    return getPropProxy(data, paths, prop);
+                    var value = arr[prop];
+                    if (value && typeof value === 'object') {
+                        return getPropProxy(data, value, paths, prop);
+                    }
+
+                    return value;
                 }
                 : function (obj, prop) {
-                    return getPropProxy(data, paths, prop);
-                };
+                    var value = obj[prop];
+                    if (value && typeof value === 'object') {
+                        return getPropProxy(data, value, paths, prop);
+                    }
 
-            proxyWrap.proxy = new Proxy(obj, handlers);
-            return proxyWrap.proxy;
-        }
-        else {
-            proxyWrap.proxy = obj;
-            return obj;
-        }
+                    return value;
+                }
+        };
 
+        proxyWrap.proxy = new Proxy(target, handlers);
+        return proxyWrap.proxy;
     }
 }
 
