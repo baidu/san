@@ -542,4 +542,79 @@ describe("Component Data Proxy", function () {
             done();
         });
     });
+
+    it("set array item, index overflow", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li>name</li><li san-for="p,i in persons">{{i+1}}-{{p}}</li><li>name</li></ul>'
+        });
+        var myComponent = new MyComponent({
+            data: {
+                persons: ['errorrik', 'varsha']
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(4);
+        expect(lis[1].innerHTML).toBe('1-errorrik');
+        expect(lis[2].innerHTML).toBe('2-varsha');
+
+        myComponent.d.persons[0] = 'erik';
+        myComponent.d.persons[3] = 'otakustay';
+        
+        expect(myComponent.d.persons[2]).toBeUndefined();
+        expect(myComponent.d.persons[3]).toBe('otakustay');
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(6);
+            expect(lis[1].innerHTML).toBe('1-erik');
+            expect(lis[2].innerHTML).toBe('2-varsha');
+            expect(lis[3].innerHTML).toBe('3-');
+            expect(lis[4].innerHTML).toBe('4-otakustay');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("set array", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<ul><li san-for="p,i in persons" title="{{p.name}}">{{p.name}} - {{p.email}}</li><li>name - email</li></ul>'
+        });
+        var myComponent = new MyComponent();
+        myComponent.data.set('persons', [
+            {name: 'errorrik', email: 'errorrik@gmail.com'},
+            {name: 'any', email: 'anyone@163.com'}
+        ]);
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var lis = wrap.getElementsByTagName('li');
+        expect(lis.length).toBe(3);
+        expect(myComponent.d.persons.length).toBe(2);
+
+        myComponent.d.persons = [
+            {name: 'otakustay', email: 'otakustay@gmail.com'}
+        ];
+        expect(myComponent.d.persons.length).toBe(1);
+
+        san.nextTick(function () {
+            var lis = wrap.getElementsByTagName('li');
+            expect(lis.length).toBe(2);
+            expect(lis[0].getAttribute('title')).toBe('otakustay');
+            expect(lis[0].innerHTML.indexOf('otakustay - otakustay@gmail.com')).toBe(0);
+
+            expect(myComponent.d.persons[0].name).toBe('otakustay');
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });
