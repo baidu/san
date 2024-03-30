@@ -391,7 +391,9 @@ Data.prototype.splice = function (expr, args, option) {
         var newArray = target.slice(0);
         returnValue = newArray.splice.apply(newArray, args);
 
-        this.raw = immutableSet(this.raw, expr.paths, 0, expr.paths.length, newArray, this);
+        var prop = expr.paths[0].value;
+        this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, newArray, this);
+
 
         this.fire({
             expr: expr,
