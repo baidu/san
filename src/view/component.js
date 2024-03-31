@@ -527,32 +527,85 @@ Component.prototype._calcComputed = function (computedExpr) {
     }
 
     var me = this;
-    try {
-        var result = this.computed[computedExpr].call({
-            data: {
-                get: function (expr) {
-                    // #[begin] error
-                    if (!expr) {
-                        throw new Error('[SAN ERROR] call get method in computed need argument');
-                    }
-                    // #[end]
 
-                    if (!computedDeps[expr]) {
-                        computedDeps[expr] = 1;
+    var proxyAccessorPaths;
+    var proxyAccessorPathRaws;
+    function watchProxyAccessor() {
+        if (!proxyAccessorPathRaws) {
+            return;
+        }
 
-                        if (me.computed[expr] && !me.computedDeps[expr]) {
-                            me._calcComputed(expr);
-                        }
-
-                        me.watch(expr, function () {
-                            me._calcComputed(computedExpr);
-                        });
-                    }
-
-                    return me.data.get(expr);
+        var exprString = proxyAccessorPathRaws.join('.');
+        if (!computedDeps[exprString]) {
+            computedDeps[exprString] = 1;
+            me.watch(
+                {type: ExprType.ACCESSOR, paths: proxyAccessorPaths}, 
+                function () {
+                    me._calcComputed(computedExpr);
                 }
-            }
+            );
+        }
+    }
+
+    function proxyGetter(obj, prop) {
+        if (obj === me.data.raw && proxyAccessorPaths) {
+            watchProxyAccessor();
+            proxyAccessorPaths = [];
+            proxyAccessorPathRaws = [];
+        }
+
+        if (!proxyAccessorPaths) {
+            proxyAccessorPaths = [];
+            proxyAccessorPathRaws = [];
+        }
+
+        proxyAccessorPaths.push({type: ExprType.STRING, value: prop});
+        proxyAccessorPathRaws.push(prop);
+
+        var value = obj[prop];
+        if (value && typeof value === 'object') {
+            return getDataProxy(obj, prop);
+        }
+        return value;
+    }
+
+    function getDataProxy(target) {
+        return new Proxy(target, {
+            get: proxyGetter, 
+            set: function () {}
         });
+    }
+
+    var that = {
+        d: getDataProxy(me.data.raw),
+        data: {
+            get: function (expr) {
+                // #[begin] error
+                if (!expr) {
+                    throw new Error('[SAN ERROR] call get method in computed need argument');
+                }
+                // #[end]
+
+                if (!computedDeps[expr]) {
+                    computedDeps[expr] = 1;
+
+                    if (me.computed[expr] && !me.computedDeps[expr]) {
+                        me._calcComputed(expr);
+                    }
+
+                    me.watch(expr, function () {
+                        me._calcComputed(computedExpr);
+                    });
+                }
+
+                return me.data.get(expr);
+            }
+        }
+    };
+
+    try {
+        var result = this.computed[computedExpr].call(that);
+        watchProxyAccessor();
         this.data.set(computedExpr, result);
     }
     catch (e) {

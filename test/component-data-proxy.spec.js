@@ -617,4 +617,183 @@ describe("Component Data Proxy", function () {
             done();
         });
     });
+
+    it("computed", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{name}}</span></div>',
+
+            initData: function () {
+                return {
+                    'first': 'first',
+                    'last': 'last'
+                }
+            },
+
+            computed: {
+                name: function () {
+                    return this.d.first + ' ' + this.d.last;
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+
+        myComponent.d.last = 'xxx';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed has computed dependency, computed item change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{msg}}">{{msg}}</span></div>',
+
+            initData: function () {
+                return {
+                    first: 'first',
+                    last: 'last',
+                    email: 'name@name.com'
+                }
+            },
+
+            computed: {
+                msg: function () {
+                    return this.d.name + '(' + this.d.email + ')'
+                },
+
+                name: function () {
+                    return this.d.first + ' ' + this.d.last;
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last(name@name.com)');
+
+        myComponent.d.last = 'xxx';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx(name@name.com)');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed has computed dependency, normal data change", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{msg}}">{{msg}}</span></div>',
+
+            initData: function () {
+                return {
+                    first: 'first',
+                    last: 'last',
+                    email: 'name@name.com'
+                }
+            },
+
+            computed: {
+                msg: function () {
+                    return this.d.name + '(' + this.d.email + ')'
+                },
+
+                name: function () {
+                    return this.d.first + ' ' + this.d.last;
+                }
+            }
+        });
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last(name@name.com)');
+
+        myComponent.d.email = 'san@san.com';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first last(san@san.com)');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed item compute once when init", function () {
+        var nameCount = 0;
+        var welcomeCount = 0;
+        var MyComponent = san.defineComponent({
+            template: '<span>{{text}}</span>',
+
+            initData: function() {
+                return {
+                    realname: 'san',
+                    hello: 'hello'
+                };
+            },
+
+            computed: {
+                name: function () {
+                    nameCount++;
+                    return 'good' + this.d.realname;
+                },
+
+                text: function () {
+                    return this.d.welcome + this.d.name;
+                },
+
+                welcome: function () {
+                    welcomeCount++;
+                    return this.d.hello + ' ';
+                }
+            }
+        })
+
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toBe('hello goodsan');
+        expect(nameCount).toBe(1);
+        expect(welcomeCount).toBe(1);
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+
+    });
 });
