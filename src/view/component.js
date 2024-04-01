@@ -547,31 +547,24 @@ Component.prototype._calcComputed = function (computedExpr) {
         }
     }
 
-    function proxyGetter(obj, prop) {
-        if (obj === me.data.raw && proxyAccessorPaths) {
-            watchProxyAccessor();
-            proxyAccessorPaths = [];
-            proxyAccessorPathRaws = [];
-        }
-
-        if (!proxyAccessorPaths) {
-            proxyAccessorPaths = [];
-            proxyAccessorPathRaws = [];
-        }
-
-        proxyAccessorPaths.push({type: ExprType.STRING, value: prop});
-        proxyAccessorPathRaws.push(prop);
-
-        var value = obj[prop];
-        if (value && typeof value === 'object') {
-            return getDataProxy(obj, prop);
-        }
-        return value;
-    }
 
     function getDataProxy(target) {
         return new Proxy(target, {
-            get: proxyGetter, 
+            get: function (obj, prop) {
+                if (target === me.data.raw) {
+                    watchProxyAccessor();
+                    proxyAccessorPaths = [];
+                    proxyAccessorPathRaws = [];
+                }
+                proxyAccessorPaths.push({type: ExprType.STRING, value: prop});
+                proxyAccessorPathRaws.push(prop);
+
+                var value = obj[prop];
+                if (value && typeof value === 'object') {
+                    return getDataProxy(value);
+                }
+                return value;
+            }, 
             set: function () {}
         });
     }

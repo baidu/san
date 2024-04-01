@@ -658,6 +658,59 @@ describe("Component Data Proxy", function () {
 
     });
 
+    it("computed, deep prop", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    person: {
+                        name: {
+                            'first': 'first',
+                            'last': 'last'
+                        },
+
+                        cars: ['bmw', 'lexus', 'porsche']
+                    }
+                }
+            },
+
+            computed: {
+                name: function () {
+                    return this.d.person.name.first + ' ' + this.d.person.name.last;
+                },
+
+                text: function () {
+                    return this.d.name + ' has ' + this.d.person.cars[2];
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+        expect(span.innerHTML).toContain('first last has porsche');
+
+        myComponent.d.person.name.last = 'xxx';
+        myComponent.d.person.cars[2] = 'xiaomi';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx');
+            expect(span.innerHTML).toContain('first xxx has xiaomi');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     it("computed has computed dependency, computed item change", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{msg}}">{{msg}}</span></div>',
