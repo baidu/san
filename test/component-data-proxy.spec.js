@@ -711,6 +711,64 @@ describe("Component Data Proxy", function () {
 
     });
 
+    it("computed, compute once after 1 data set", function (done) {
+        var nameCalls = 0;
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    person: {
+                        name: {
+                            'first': 'first',
+                            'last': 'last'
+                        },
+
+                        cars: ['bmw', 'lexus', 'porsche']
+                    }
+                }
+            },
+
+            computed: {
+                name: function () {
+                    nameCalls++;
+                    return this.d.person.name.first + ' ' + this.d.person.name.last;
+                },
+
+                text: function () {
+                    return this.d.name + ' has ' + this.d.person.cars[2];
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+        expect(span.innerHTML).toContain('first last has porsche');
+        expect(nameCalls).toBe(1);
+
+        myComponent.d.person.name = {
+            first: 'one',
+            last: 'two'
+        };
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('one two');
+            expect(span.innerHTML).toContain('one two has porsche');
+            expect(nameCalls).toBe(2);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("computed, deep prop, read cracked", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{text}}</span></div>',
@@ -818,9 +876,15 @@ describe("Component Data Proxy", function () {
             var span = wrap.getElementsByTagName('span')[0];
             expect(span.title).toBe('first xxx(name@name.com)');
 
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
+            myComponent.d.email = 'whatever@gmail.com';
+            san.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.title).toBe('first xxx(whatever@gmail.com)');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
         });
 
     });
