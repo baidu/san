@@ -711,6 +711,74 @@ describe("Component Data Proxy", function () {
 
     });
 
+    it("computed, deep prop, read cracked", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    person: {
+                        name: {
+                            'first': 'first',
+                            'last': 'last'
+                        },
+                        age: 18,
+
+                        cars: ['bmw', 'lexus', 'porsche']
+                    }
+                }
+            },
+
+            computed: {
+                name: function () {
+                    let name = this.d.person.name;
+                    let first = name.first;
+                    let age = this.d.person.age;
+                    let last = name.last;
+
+                    return first + ' ' + last + ' is ' + age;
+                },
+
+                text: function () {
+                    return this.d.name + ' has ' + this.d.person.cars[2];
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last is 18');
+        expect(span.innerHTML).toContain('first last is 18 has porsche');
+
+        myComponent.d.person.name.last = 'xxx';
+        myComponent.d.person.cars[2] = 'xiaomi';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx is 18');
+            expect(span.innerHTML).toContain('first xxx is 18 has xiaomi');
+
+
+            myComponent.d.person.name.first = 'one';
+            myComponent.d.person.age = 20;
+
+            san.nextTick(function () {
+                var span = wrap.getElementsByTagName('span')[0];
+                expect(span.title).toBe('one xxx is 20');
+                expect(span.innerHTML).toContain('one xxx is 20 has xiaomi');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
     it("computed has computed dependency, computed item change", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{msg}}">{{msg}}</span></div>',
