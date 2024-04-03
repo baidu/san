@@ -2498,6 +2498,68 @@ describe("Component", function () {
 
     });
 
+    it("computed compute once after 1 data set", function (done) {
+        var nameCalls = 0;
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    person: {
+                        name: {
+                            'first': 'first',
+                            'last': 'last'
+                        },
+
+                        cars: ['bmw', 'lexus', 'porsche']
+                    }
+                }
+            },
+
+            computed: {
+                name: function () {
+                    nameCalls++;
+                    var first = this.data.get("person.name.first");
+                    var last = this.data.get("person.name.last");
+                    return first + ' ' + last;
+                },
+
+                text: function () {
+                    var name = this.data.get('name');
+                    var car = this.data.get("person.cars[2]");
+                    return name + ' has ' + car;
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+        expect(span.innerHTML).toContain('first last has porsche');
+        expect(nameCalls).toBe(1);
+
+        myComponent.data.set("person.name", {
+            first: 'one',
+            last: 'two'
+        });
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('one two');
+            expect(span.innerHTML).toContain('one two has porsche');
+            expect(nameCalls).toBe(2);
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     san.debug && it("computed method should throw Error when data.get called by empty expr", function () {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span></div>',
