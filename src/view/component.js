@@ -514,6 +514,20 @@ Component.prototype.fire = function (name, event) {
     });
 };
 
+function computedProxyPathsNotContain(beforePaths, currPaths) {
+    var beforeLen = beforePaths.length;
+    if (beforeLen >= currPaths.length) {
+        return true;
+    }
+
+    for (var i = 0; i < beforeLen; i++) {
+        if (beforePaths[i].value !== currPaths[i].value) {
+            return true;
+        }
+    }
+
+    return false;
+}
 /**
  * 计算 computed 属性的值
  *
@@ -522,31 +536,19 @@ Component.prototype.fire = function (name, event) {
  */
 Component.prototype._calcComputed = function (computedExpr) {
     var computedDeps = this.computedDeps[computedExpr];
+    var isFirstCalc = false;
     if (!computedDeps) {
-        computedDeps = this.computedDeps[computedExpr] = {};
+        isFirstCalc = true;
+        computedDeps = this.computedDeps[computedExpr] = {
+            exprs: [], 
+            literals: {}
+        };
     }
 
     var me = this;
 
     var proxyAccessorPaths;
     var proxyAccessorPathRaws;
-    function watchProxyAccessor() {
-        if (!proxyAccessorPathRaws) {
-            return;
-        }
-
-        var exprString = proxyAccessorPathRaws.join('.');
-        if (!computedDeps[exprString]) {
-            computedDeps[exprString] = 1;
-            me.watch(
-                {type: ExprType.ACCESSOR, paths: proxyAccessorPaths}, 
-                function () {
-                    me._calcComputed(computedExpr);
-                }
-            );
-        }
-    }
-
 
     function getDataProxy(target) {
         return new Proxy(target, {
@@ -568,27 +570,80 @@ Component.prototype._calcComputed = function (computedExpr) {
             set: function () {}
         });
     }
+    var proxyAccessorPaths;
+    var proxyAccessorLiteral;
+    var getDataProxy = isFirstCalc
+        ? function (target, basePaths, baseLiteral) {
+            return new Proxy(target, {
+                get: function (obj, prop) {
+                    var seg = {type: ExprType.STRING, value: prop};
+                    var paths = basePaths ? basePaths.concat(seg) : [seg];
+                    var literal = baseLiteral ? baseLiteral + '.' + prop : prop;
+                    if (!baseLiteral && me.computed[prop] && !me.computedDeps[prop]) {
+                        me._calcComputed(prop);
+                    }
+
+                    if (proxyAccessorPaths 
+                        && computedProxyPathsNotContain(proxyAccessorPaths, paths)
+                        && !computedDeps.literals[proxyAccessorLiteral]
+                    ) {
+                        var expr = {
+                            type: ExprType.ACCESSOR,
+                            paths: proxyAccessorPaths
+                        };
+
+                        computedDeps.exprs.push(expr);
+                        computedDeps.literals[proxyAccessorLiteral] = expr;
+                    }
+
+                    proxyAccessorPaths = paths;
+                    proxyAccessorLiteral = literal;
+                    
+
+                    var value = obj[prop];
+                    if (value && typeof value === 'object') {
+                        return getDataProxy(value, paths, literal);
+                    }
+                    return value;
+                }, 
+                set: function () {}
+            });
+        }
+        : function (target) {
+            return new Proxy(target, {
+                get: function (obj, prop) {
+                    var value = obj[prop];
+                    if (value && typeof value === 'object') {
+                        return getDataProxy(value);
+                    }
+                    return value;
+                }, 
+                set: function () {}
+            });
+        };
 
     var that = {
         d: getDataProxy(me.data.raw),
         data: {
-            get: function (expr) {
+            get: function (exprLiteral) {
                 // #[begin] error
-                if (!expr) {
+                if (!exprLiteral) {
                     throw new Error('[SAN ERROR] call get method in computed need argument');
                 }
                 // #[end]
 
-                if (!computedDeps[expr]) {
-                    computedDeps[expr] = 1;
+                var expr;
+                if (isFirstCalc && !computedDeps.literals[exprLiteral]) {
+                    expr = parseExpr(exprLiteral);
+                    computedDeps.literals[exprLiteral] = expr;
+                    computedDeps.exprs.push(expr);
 
-                    if (me.computed[expr] && !me.computedDeps[expr]) {
-                        me._calcComputed(expr);
+                    if (me.computed[exprLiteral] && !me.computedDeps[exprLiteral]) {
+                        me._calcComputed(exprLiteral);
                     }
-
-                    me.watch(expr, function () {
-                        me._calcComputed(computedExpr);
-                    });
+                }
+                else {
+                    expr = computedDeps.literals[exprLiteral];
                 }
 
                 return me.data.get(expr);
@@ -598,7 +653,30 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     try {
         var result = this.computed[computedExpr].call(that);
-        watchProxyAccessor();
+        if (isFirstCalc) {
+            if (proxyAccessorPaths 
+                && !computedDeps.literals[proxyAccessorLiteral]
+            ) {
+                var expr = {
+                    type: ExprType.ACCESSOR,
+                    paths: proxyAccessorPaths
+                };
+
+                computedDeps.exprs.push(expr);
+                computedDeps.literals[proxyAccessorLiteral] = expr;
+            }
+
+            this.data.listen(function (change) {
+                var len = computedDeps.exprs.length;
+                while (len--) {
+                    if (changeExprCompare(change.expr, computedDeps.exprs[len], me.data)) {
+                        me._calcComputed(computedExpr);
+                        break;
+                    }
+                }
+            });
+        }
+
         this.data.set(computedExpr, result);
     }
     catch (e) {
