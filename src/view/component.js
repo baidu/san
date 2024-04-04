@@ -548,29 +548,6 @@ Component.prototype._calcComputed = function (computedExpr) {
     var me = this;
 
     var proxyAccessorPaths;
-    var proxyAccessorPathRaws;
-
-    function getDataProxy(target) {
-        return new Proxy(target, {
-            get: function (obj, prop) {
-                if (target === me.data.raw) {
-                    watchProxyAccessor();
-                    proxyAccessorPaths = [];
-                    proxyAccessorPathRaws = [];
-                }
-                proxyAccessorPaths.push({type: ExprType.STRING, value: prop});
-                proxyAccessorPathRaws.push(prop);
-
-                var value = obj[prop];
-                if (value && typeof value === 'object') {
-                    return getDataProxy(value);
-                }
-                return value;
-            }, 
-            set: function () {}
-        });
-    }
-    var proxyAccessorPaths;
     var proxyAccessorLiteral;
     var getDataProxy = isFirstCalc
         ? function (target, basePaths, baseLiteral) {
