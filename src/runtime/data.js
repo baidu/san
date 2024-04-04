@@ -78,10 +78,6 @@ Data.prototype.unlisten = function (listener) {
  * @param {Object} change 变更信息对象
  */
 Data.prototype.fire = function (change) {
-    if (change.option.silent || change.option.silence || change.option.quiet) {
-        return;
-    }
-
     for (var i = 0; i < this.listeners.length; i++) {
         this.listeners[i].call(this, change);
     }
@@ -222,13 +218,15 @@ Data.prototype.set = function (expr, value, option) {
     var prop = expr.paths[0].value;
     this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, value, this);
 
-    this.fire({
-        type: DataChangeType.SET,
-        expr: expr,
-        value: value,
-        option: option
-    });
-
+    if (!(option.silent || option.silence || option.quiet)) {
+        this.fire({
+            type: DataChangeType.SET,
+            expr: expr,
+            value: value,
+            option: option
+        });
+    }
+    
     // #[begin] error
     this.checkDataTypes();
     // #[end]
@@ -395,15 +393,17 @@ Data.prototype.splice = function (expr, args, option) {
         this.raw[prop] = immutableSet(this.raw[prop], expr.paths, 1, expr.paths.length, newArray, this);
 
 
-        this.fire({
-            expr: expr,
-            type: DataChangeType.SPLICE,
-            index: index,
-            deleteCount: returnValue.length,
-            value: returnValue,
-            insertions: args.slice(2),
-            option: option
-        });
+        if (!(option.silent || option.silence || option.quiet)) {
+            this.fire({
+                expr: expr,
+                type: DataChangeType.SPLICE,
+                index: index,
+                deleteCount: returnValue.length,
+                value: returnValue,
+                insertions: args.slice(2),
+                option: option
+            });
+        }
     }
 
     // #[begin] error
