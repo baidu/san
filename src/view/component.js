@@ -236,6 +236,15 @@ function Component(options) { // eslint-disable-line
         this._srcSbindData = nodeSBindInit(this.source.directives.bind, this.scope, this.owner);
     }
 
+    this.tagName = this.tagName || 'div';
+    // #[begin] allua
+    // ie8- 不支持innerHTML输出自定义标签
+    /* istanbul ignore if */
+    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
+        this.tagName = 'div';
+    }
+    // #[end]
+
     this._toPhase('compiled');
 
 
@@ -280,16 +289,6 @@ function Component(options) { // eslint-disable-line
 
     this.data = new Data(initData);
     this.d = dataProxy(this.data);
-
-    this.tagName = this.tagName || 'div';
-    // #[begin] allua
-    // ie8- 不支持innerHTML输出自定义标签
-    /* istanbul ignore if */
-    if (ieOldThan9 && this.tagName.indexOf('-') > 0) {
-        this.tagName = 'div';
-    }
-    // #[end]
-
 
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
@@ -528,6 +527,10 @@ function computedProxyPathsNotContain(beforePaths, currPaths) {
 
     return false;
 }
+
+function emptySetter() {
+}
+
 /**
  * 计算 computed 属性的值
  *
@@ -576,14 +579,16 @@ Component.prototype._calcComputed = function (computedExpr) {
                     proxyAccessorPaths = paths;
                     proxyAccessorLiteral = literal;
                     
-
                     var value = obj[prop];
-                    if (value && typeof value === 'object') {
+                    if (value && typeof value === 'object' 
+                        // 数组访问可能会导致依赖项爆炸，所以简化为对数组本身的依赖
+                        && !(value instanceof Array) 
+                    ) {
                         return getDataProxy(value, paths, literal);
                     }
                     return value;
                 }, 
-                set: function () {}
+                set: emptySetter
             });
         }
         : function (target) {
@@ -595,7 +600,7 @@ Component.prototype._calcComputed = function (computedExpr) {
                     }
                     return value;
                 }, 
-                set: function () {}
+                set: emptySetter
             });
         };
 
@@ -652,9 +657,12 @@ Component.prototype._calcComputed = function (computedExpr) {
                     }
                 }
             });
-        }
 
-        this.data.set(computedExpr, result);
+            this.data.set(computedExpr, result, {silent: true});
+        }
+        else {
+            this.data.set(computedExpr, result);
+        }
     }
     catch (e) {
         handleError(e, this, 'computed:' + computedExpr);
