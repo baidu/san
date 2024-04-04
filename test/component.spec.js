@@ -2454,6 +2454,14 @@ describe("Component", function () {
     it("computed item compute once when init", function () {
         var nameCount = 0;
         var welcomeCount = 0;
+        var textCount = 0;
+
+        var dataChangeCount = 0;
+        var fire = san.Data.prototype.fire;
+        san.Data.prototype.fire = function (change) {
+            dataChangeCount++;
+            fire.call(this, change);
+        };
         var MyComponent = san.defineComponent({
             template: '<span>{{text}}</span>',
 
@@ -2471,6 +2479,7 @@ describe("Component", function () {
                 },
 
                 text: function () {
+                    textCount++;
                     return this.data.get('welcome') + this.data.get('name');
                 },
 
@@ -2478,6 +2487,10 @@ describe("Component", function () {
                     welcomeCount++;
                     return this.data.get('hello') + ' ';
                 }
+            },
+
+            inited: function () {
+                expect(dataChangeCount).toBe(0);
             }
         })
 
@@ -2492,10 +2505,12 @@ describe("Component", function () {
         expect(span.innerHTML).toBe('hello goodsan');
         expect(nameCount).toBe(1);
         expect(welcomeCount).toBe(1);
+        expect(textCount).toBe(1);
 
+        
         myComponent.dispose();
         document.body.removeChild(wrap);
-
+        san.Data.prototype.fire = fire;
     });
 
     it("computed compute once after 1 data set", function (done) {

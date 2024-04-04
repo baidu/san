@@ -938,6 +938,15 @@ describe("Component Data Proxy", function () {
     it("computed item compute once when init", function () {
         var nameCount = 0;
         var welcomeCount = 0;
+        var textCount = 0;
+
+        var dataChangeCount = 0;
+        var fire = san.Data.prototype.fire;
+        san.Data.prototype.fire = function (change) {
+            dataChangeCount++;
+            fire.call(this, change);
+        };
+
         var MyComponent = san.defineComponent({
             template: '<span>{{text}}</span>',
 
@@ -955,6 +964,7 @@ describe("Component Data Proxy", function () {
                 },
 
                 text: function () {
+                    textCount++;
                     return this.d.welcome + this.d.name;
                 },
 
@@ -962,6 +972,10 @@ describe("Component Data Proxy", function () {
                     welcomeCount++;
                     return this.d.hello + ' ';
                 }
+            },
+
+            inited: function () {
+                expect(dataChangeCount).toBe(0);
             }
         })
 
@@ -976,9 +990,71 @@ describe("Component Data Proxy", function () {
         expect(span.innerHTML).toBe('hello goodsan');
         expect(nameCount).toBe(1);
         expect(welcomeCount).toBe(1);
+        expect(textCount).toBe(1);
 
         myComponent.dispose();
         document.body.removeChild(wrap);
+        san.Data.prototype.fire = fire;
+    });
+
+    it("computed, array", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    person: {
+                        name: {
+                            'first': 'first',
+                            'last': 'last'
+                        },
+
+                        cars: ['bmw', 'lexus', 'porsche']
+                    }
+                }
+            },
+
+            computed: {
+                name: function () {
+                    return this.d.person.name.first + ' ' + this.d.person.name.last;
+                },
+
+                text: function () {
+                    return this.d.name + ' has ' + this.d.cars[2];
+                },
+
+                cars: function () {
+                    return this.d.person.cars.map(e => {
+                        return e.toUpperCase();
+                    });
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        expect(myComponent.computedDeps.cars.exprs.length < 2).toBeTruthy();
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first last');
+        expect(span.innerHTML).toContain('first last has PORSCHE');
+
+        myComponent.d.person.name.last = 'xxx';
+        myComponent.d.person.cars[2] = 'xiaomi';
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.title).toBe('first xxx');
+            expect(span.innerHTML).toContain('first xxx has XIAOMI');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
 
     });
 });
