@@ -598,13 +598,11 @@ Component.prototype._calcComputed = function (computedExpr) {
     };
 
     try {
-        var result = this.computed[computedExpr].call(that);
-        if (isFirstCalc) {
-            this.data.set(computedExpr, result, {silent: true});
-        }
-        else {
-            this.data.set(computedExpr, result);
-        }
+        this.data.set(
+            computedExpr, 
+            this.computed[computedExpr].call(that),
+            {silent: isFirstCalc}
+        );
     }
     catch (e) {
         handleError(e, this, 'computed:' + computedExpr);
