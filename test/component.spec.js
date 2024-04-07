@@ -2587,7 +2587,7 @@ describe("Component", function () {
         
             computed: {
                 text: function () {
-                    let age = this.data.get('age');
+                    var age = this.data.get('age');
                     if (age < 18) {
                         return this.data.get('childText');
                     }
