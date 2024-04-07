@@ -304,9 +304,10 @@ function Component(options) { // eslint-disable-line
     }
     // #[end]
 
-    this.computedDeps = {};
+    this._computedDeps = {};
+    this._computedDepsIndex = {};
     for (var expr in this.computed) {
-        if (this.computed.hasOwnProperty(expr) && !this.computedDeps[expr]) {
+        if (this.computed.hasOwnProperty(expr) && !this._computedDeps[expr]) {
             this._calcComputed(expr);
         }
     }
@@ -513,20 +514,6 @@ Component.prototype.fire = function (name, event) {
     });
 };
 
-function computedProxyPathsNotContain(beforePaths, currPaths) {
-    var beforeLen = beforePaths.length;
-    if (beforeLen >= currPaths.length) {
-        return true;
-    }
-
-    for (var i = 0; i < beforeLen; i++) {
-        if (beforePaths[i].value !== currPaths[i].value) {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 function emptySetter() {
 }
@@ -538,74 +525,51 @@ function emptySetter() {
  * @param {string} computedExpr computed表达式串
  */
 Component.prototype._calcComputed = function (computedExpr) {
-    var computedDeps = this.computedDeps[computedExpr];
+    var computedDeps = this._computedDeps[computedExpr];
     var isFirstCalc = false;
     if (!computedDeps) {
         isFirstCalc = true;
-        computedDeps = this.computedDeps[computedExpr] = {
-            exprs: [], 
-            literals: {}
-        };
+        computedDeps = this._computedDeps[computedExpr] = {};
     }
 
     var me = this;
 
-    var proxyAccessorPaths;
-    var proxyAccessorLiteral;
-    var getDataProxy = isFirstCalc
-        ? function (target, basePaths, baseLiteral) {
-            return new Proxy(target, {
-                get: function (obj, prop) {
-                    var seg = {type: ExprType.STRING, value: prop};
-                    var paths = basePaths ? basePaths.concat(seg) : [seg];
-                    var literal = baseLiteral ? baseLiteral + '.' + prop : prop;
-                    if (!baseLiteral && me.computed[prop] && !me.computedDeps[prop]) {
-                        me._calcComputed(prop);
-                    }
-
-                    if (proxyAccessorPaths 
-                        && computedProxyPathsNotContain(proxyAccessorPaths, paths)
-                        && !computedDeps.literals[proxyAccessorLiteral]
-                    ) {
-                        var expr = {
-                            type: ExprType.ACCESSOR,
-                            paths: proxyAccessorPaths
-                        };
-
-                        computedDeps.exprs.push(expr);
-                        computedDeps.literals[proxyAccessorLiteral] = expr;
-                    }
-
-                    proxyAccessorPaths = paths;
-                    proxyAccessorLiteral = literal;
-                    
-                    var value = obj[prop];
-                    if (value && typeof value === 'object' 
-                        // 数组访问可能会导致依赖项爆炸，所以简化为对数组本身的依赖
-                        && !(value instanceof Array) 
-                    ) {
-                        return getDataProxy(value, paths, literal);
-                    }
-                    return value;
-                }, 
-                set: emptySetter
-            });
-        }
-        : function (target) {
-            return new Proxy(target, {
-                get: function (obj, prop) {
-                    var value = obj[prop];
-                    if (value && typeof value === 'object') {
-                        return getDataProxy(value);
-                    }
-                    return value;
-                }, 
-                set: emptySetter
-            });
-        };
+    function getDataProxy(target) {
+        return new Proxy(target, {
+            get: function (obj, prop) {
+                var value = obj[prop];
+                if (value && typeof value === 'object') {
+                    return getDataProxy(value);
+                }
+                return value;
+            }, 
+            set: emptySetter
+        });
+    }
 
     var that = {
-        d: getDataProxy(me.data.raw),
+        d: new Proxy(me.data.raw, {
+            set: emptySetter,
+            get: function (obj, prop) {
+                if (!computedDeps[prop]) {
+                    computedDeps[prop] = 1;
+                    if (!me._computedDepsIndex[prop]) {
+                        me._computedDepsIndex[prop] = [];
+                    }
+                    me._computedDepsIndex[prop].push(computedExpr);
+
+                    if (me.computed[prop] && !me._computedDeps[prop]) {
+                        me._calcComputed(prop);
+                    }
+                }
+
+                var value = obj[prop];
+                if (value && typeof value === 'object') {
+                    return getDataProxy(value);
+                }
+                return value;
+            }
+        }),
         data: {
             get: function (exprLiteral) {
                 // #[begin] error
@@ -614,18 +578,19 @@ Component.prototype._calcComputed = function (computedExpr) {
                 }
                 // #[end]
 
-                var expr;
-                if (isFirstCalc && !computedDeps.literals[exprLiteral]) {
-                    expr = parseExpr(exprLiteral);
-                    computedDeps.literals[exprLiteral] = expr;
-                    computedDeps.exprs.push(expr);
+                var expr = parseExpr(exprLiteral);
+                var firstItem = expr.paths[0].value;
 
-                    if (me.computed[exprLiteral] && !me.computedDeps[exprLiteral]) {
-                        me._calcComputed(exprLiteral);
+                if (!computedDeps[firstItem]) {
+                    computedDeps[firstItem] = 1;
+                    if (!me._computedDepsIndex[firstItem]) {
+                        me._computedDepsIndex[firstItem] = [];
                     }
-                }
-                else {
-                    expr = computedDeps.literals[exprLiteral];
+                    me._computedDepsIndex[firstItem].push(computedExpr);
+
+                    if (me.computed[firstItem] && !me._computedDeps[firstItem]) {
+                        me._calcComputed(firstItem);
+                    }
                 }
 
                 return me.data.get(expr);
@@ -636,28 +601,6 @@ Component.prototype._calcComputed = function (computedExpr) {
     try {
         var result = this.computed[computedExpr].call(that);
         if (isFirstCalc) {
-            if (proxyAccessorPaths 
-                && !computedDeps.literals[proxyAccessorLiteral]
-            ) {
-                var expr = {
-                    type: ExprType.ACCESSOR,
-                    paths: proxyAccessorPaths
-                };
-
-                computedDeps.exprs.push(expr);
-                computedDeps.literals[proxyAccessorLiteral] = expr;
-            }
-
-            this.data.listen(function (change) {
-                var len = computedDeps.exprs.length;
-                while (len--) {
-                    if (changeExprCompare(change.expr, computedDeps.exprs[len], me.data)) {
-                        me._calcComputed(computedExpr);
-                        break;
-                    }
-                }
-            });
-
             this.data.set(computedExpr, result, {silent: true});
         }
         else {
@@ -1116,6 +1059,14 @@ Component.prototype._initDataChanger = function () {
         }
         else if (me.lifeCycle.inited && me.owner) {
             me._updateBindxOwner([change]);
+        }
+
+        var changeItem = change.expr.paths[0].value;
+        var depComputeds = me._computedDepsIndex[changeItem];
+        if (depComputeds) {
+            for (var i = 0; i < depComputeds.length; i++) {
+                me._calcComputed(depComputeds[i]);
+            }
         }
     };
 
