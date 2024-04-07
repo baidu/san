@@ -1236,4 +1236,54 @@ describe("Component Data Proxy", function () {
             });
         });
     });
+
+    it("computed cannot set data", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+        
+            initData: function () {
+                return {
+                    'childText': 'child',
+                    age: 16,
+                    adultText: 'adult'
+                }
+            },
+        
+            computed: {
+                text: function () {
+                    var age = this.d.age;
+                    this.d.age = 50;
+                    if (age < 18) {
+                        return this.d.childText;
+                    }
+                    return this.d.adultText;
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('child');
+        expect(myComponent.d.age).toBe(16);
+
+        myComponent.d.age = 19;
+        san.nextTick(function () {
+            expect(span.innerHTML).toContain('adult');
+            expect(myComponent.d.age).toBe(19);
+
+            myComponent.d.adultText = 'old';
+            san.nextTick(function () {
+                expect(span.innerHTML).toContain('old');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
 });
