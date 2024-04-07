@@ -2487,10 +2487,6 @@ describe("Component", function () {
                     welcomeCount++;
                     return this.data.get('hello') + ' ';
                 }
-            },
-
-            inited: function () {
-                expect(dataChangeCount).toBe(0);
             }
         })
 
@@ -2501,6 +2497,8 @@ describe("Component", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
+
+        expect(dataChangeCount).toBe(0);
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML).toBe('hello goodsan');
         expect(nameCount).toBe(1);

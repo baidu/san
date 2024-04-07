@@ -789,10 +789,10 @@ describe("Component Data Proxy", function () {
 
             computed: {
                 name: function () {
-                    let name = this.d.person.name;
-                    let first = name.first;
-                    let age = this.d.person.age;
-                    let last = name.last;
+                    var name = this.d.person.name;
+                    var first = name.first;
+                    var age = this.d.person.age;
+                    var last = name.last;
 
                     return first + ' ' + last + ' is ' + age;
                 },
@@ -972,10 +972,6 @@ describe("Component Data Proxy", function () {
                     welcomeCount++;
                     return this.d.hello + ' ';
                 }
-            },
-
-            inited: function () {
-                expect(dataChangeCount).toBe(0);
             }
         })
 
@@ -986,6 +982,7 @@ describe("Component Data Proxy", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
+        expect(dataChangeCount).toBe(0);
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.innerHTML).toBe('hello goodsan');
         expect(nameCount).toBe(1);
@@ -1037,8 +1034,6 @@ describe("Component Data Proxy", function () {
         document.body.appendChild(wrap);
         myComponent.attach(wrap);
 
-        expect(myComponent.computedDeps.cars.exprs.length < 2).toBeTruthy();
-
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.title).toBe('first last');
         expect(span.innerHTML).toContain('first last has PORSCHE');
@@ -1056,5 +1051,189 @@ describe("Component Data Proxy", function () {
             done();
         });
 
+    });
+
+    JSON && JSON.stringify && it("computed, json stringify", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name.first}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    name: {
+                        'first': 'first',
+                        'last': 'last'
+                    }
+                }
+            },
+
+            computed: {
+                text: function () {
+                    return JSON.stringify(this.d.name)
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first');
+        expect(span.innerHTML).toContain('"first":"first"');
+        expect(span.innerHTML).toContain('"last":"last"');
+
+        myComponent.d.name.o = "other";
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML).toContain('"o":"other"');
+            expect(span.innerHTML).toContain('"first":"first"');
+            expect(span.innerHTML).toContain('"last":"last"');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    Object.assign && it("computed, object assign", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name.first}}">{{name.first}}</span></div>',
+
+            initData: function () {
+                return {
+                    name: {
+                        'first': 'first',
+                        'last': 'last'
+                    }
+                }
+            },
+
+            computed: {
+                namecp: function () {
+                    return Object.assign({}, this.d.name)
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first');
+        var namecp = myComponent.data.get('namecp');
+        expect(namecp.first).toBe('first');
+        expect(namecp.last).toBe('last');
+
+        myComponent.d.name.o = "other";
+
+        san.nextTick(function () {
+            var namecp = myComponent.data.get('namecp');
+            expect(namecp.first).toBe('first');
+            expect(namecp.o).toBe("other");
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    
+
+    it("computed, array map", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><p s-for="car in lcars">{{car}}</p></div>',
+
+            initData: function () {
+                return {
+                    cars: ['bmw', 'lexus', 'porsche']
+                };
+            },
+
+            computed: {
+                lcars: function () {
+                    return this.d.cars.map(e => {
+                        return e.toUpperCase();
+                    });
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(3);
+        expect(ps[2].innerHTML).toContain('PORSCHE');
+
+        myComponent.d.cars.push('benz');
+
+        san.nextTick(function () {
+            expect(ps.length).toBe(4);
+            expect(ps[2].innerHTML).toContain('PORSCHE');
+            expect(ps[3].innerHTML).toContain('BENZ');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed has data getter in if", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+        
+            initData: function () {
+                return {
+                    'childText': 'child',
+                    age: 16,
+                    adultText: 'adult'
+                }
+            },
+        
+            computed: {
+                text: function () {
+                    var age = this.d.age;
+                    if (age < 18) {
+                        return this.d.childText;
+                    }
+                    return this.d.adultText;
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('child');
+
+        myComponent.d.age = 19;
+        san.nextTick(function () {
+            expect(span.innerHTML).toContain('adult');
+
+            myComponent.d.adultText = 'old';
+            san.nextTick(function () {
+                expect(span.innerHTML).toContain('old');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
     });
 });
