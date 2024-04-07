@@ -515,8 +515,20 @@ Component.prototype.fire = function (name, event) {
 };
 
 
-function emptySetter() {
+function componentComputedProxyEmptySetter() {
 }
+
+var componentComputedProxyHandler = {
+    get: function (obj, prop) {
+        var value = obj[prop];
+        if (value && typeof value === 'object') {
+            return new Proxy(value, componentComputedProxyHandler);
+        }
+        return value;
+    }, 
+    set: componentComputedProxyEmptySetter
+};
+
 
 /**
  * 计算 computed 属性的值
@@ -534,22 +546,9 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     var me = this;
 
-    function getDataProxy(target) {
-        return new Proxy(target, {
-            get: function (obj, prop) {
-                var value = obj[prop];
-                if (value && typeof value === 'object') {
-                    return getDataProxy(value);
-                }
-                return value;
-            }, 
-            set: emptySetter
-        });
-    }
-
     var that = {
         d: new Proxy(me.data.raw, {
-            set: emptySetter,
+            set: componentComputedProxyEmptySetter,
             get: function (obj, prop) {
                 if (!computedDeps[prop]) {
                     computedDeps[prop] = 1;
@@ -565,7 +564,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
                 var value = obj[prop];
                 if (value && typeof value === 'object') {
-                    return getDataProxy(value);
+                    return new Proxy(value, componentComputedProxyHandler);
                 }
                 return value;
             }
