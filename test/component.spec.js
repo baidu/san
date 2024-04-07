@@ -2575,6 +2575,143 @@ describe("Component", function () {
         });
     });
 
+    it("computed has data getter in if", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name}}">{{text}}</span></div>',
+        
+            initData: function () {
+                return {
+                    'childText': 'child',
+                    age: 16,
+                    adultText: 'adult'
+                }
+            },
+        
+            computed: {
+                text: function () {
+                    let age = this.data.get('age');
+                    debugger
+                    if (age < 18) {
+                        return this.data.get('childText');
+                    }
+                    return this.data.get('adultText');
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('child');
+
+        myComponent.data.set("age", 19);
+        san.nextTick(function () {
+            expect(span.innerHTML).toContain('adult');
+
+            myComponent.data.set("adultText", 'old');
+            san.nextTick(function () {
+                expect(span.innerHTML).toContain('old');
+
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+    });
+
+    JSON && JSON.stringify && it("computed, json stringify", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><span title="{{name.first}}">{{text}}</span></div>',
+
+            initData: function () {
+                return {
+                    name: {
+                        'first': 'first',
+                        'last': 'last'
+                    }
+                }
+            },
+
+            computed: {
+                text: function () {
+                    return JSON.stringify(this.data.get("name"));
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('first');
+        expect(span.innerHTML).toContain('"first":"first"');
+        expect(span.innerHTML).toContain('"last":"last"');
+
+        myComponent.data.set("name.o", "other");
+
+        san.nextTick(function () {
+            var span = wrap.getElementsByTagName('span')[0];
+            expect(span.innerHTML).toContain('"o":"other"');
+            expect(span.innerHTML).toContain('"first":"first"');
+            expect(span.innerHTML).toContain('"last":"last"');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
+    it("computed, array map", function (done) {
+        var MyComponent = san.defineComponent({
+            template: '<div><p s-for="car in lcars">{{car}}</p></div>',
+
+            initData: function () {
+                return {
+                    cars: ['bmw', 'lexus', 'porsche']
+                };
+            },
+
+            computed: {
+                lcars: function () {
+                    return this.data.get("cars").map(e => {
+                        return e.toUpperCase();
+                    });
+                }
+            }
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var ps = wrap.getElementsByTagName('p');
+        expect(ps.length).toBe(3);
+        expect(ps[2].innerHTML).toContain('PORSCHE');
+
+        myComponent.data.push("cars", 'benz');
+
+        san.nextTick(function () {
+            expect(ps.length).toBe(4);
+            expect(ps[2].innerHTML).toContain('PORSCHE');
+            expect(ps[3].innerHTML).toContain('BENZ');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+
+    });
+
     san.debug && it("computed method should throw Error when data.get called by empty expr", function () {
         var MyComponent = san.defineComponent({
             template: '<div><span title="{{name}}">{{name}}</span></div>',
