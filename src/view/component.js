@@ -7,8 +7,9 @@
  * @file 组件类
  */
 
-var bind = require('../util/bind');
+
 var each = require('../util/each');
+var empty = require('../util/empty');
 var guid = require('../util/guid');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
@@ -515,9 +516,6 @@ Component.prototype.fire = function (name, event) {
 };
 
 
-function componentComputedProxyEmptySetter() {
-}
-
 var componentComputedProxyHandler = {
     get: function (obj, prop) {
         var value = obj[prop];
@@ -526,7 +524,7 @@ var componentComputedProxyHandler = {
         }
         return value;
     }, 
-    set: componentComputedProxyEmptySetter
+    set: empty
 };
 
 
@@ -548,7 +546,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     var that = {
         d: new Proxy(me.data.raw, {
-            set: componentComputedProxyEmptySetter,
+            set: empty,
             get: function (obj, prop) {
                 if (!computedDeps[prop]) {
                     computedDeps[prop] = 1;
