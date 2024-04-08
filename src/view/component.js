@@ -53,6 +53,8 @@ var handleError = require('../util/handle-error');
 var DOMChildrenWalker = require('./dom-children-walker');
 
 
+var proxySupported = typeof Proxy !== 'undefined';
+
 
 /**
  * 组件类
@@ -289,7 +291,9 @@ function Component(options) { // eslint-disable-line
     }
 
     this.data = new Data(initData);
-    this.d = dataProxy(this.data);
+    if (proxySupported) {
+        this.d = dataProxy(this.data);
+    }
 
     // #[begin] error
     // 在初始化 + 数据绑定后，开始数据校验
@@ -545,28 +549,6 @@ Component.prototype._calcComputed = function (computedExpr) {
     var me = this;
 
     var that = {
-        d: new Proxy(me.data.raw, {
-            set: empty,
-            get: function (obj, prop) {
-                if (!computedDeps[prop]) {
-                    computedDeps[prop] = 1;
-                    if (!me._computedDepsIndex[prop]) {
-                        me._computedDepsIndex[prop] = [];
-                    }
-                    me._computedDepsIndex[prop].push(computedExpr);
-
-                    if (me.computed[prop] && !me._computedDeps[prop]) {
-                        me._calcComputed(prop);
-                    }
-                }
-
-                var value = obj[prop];
-                if (value && typeof value === 'object') {
-                    return new Proxy(value, componentComputedProxyHandler);
-                }
-                return value;
-            }
-        }),
         data: {
             get: function (exprLiteral) {
                 // #[begin] error
@@ -594,6 +576,31 @@ Component.prototype._calcComputed = function (computedExpr) {
             }
         }
     };
+
+    if (proxySupported) {
+        that.d = new Proxy(me.data.raw, {
+            set: empty,
+            get: function (obj, prop) {
+                if (!computedDeps[prop]) {
+                    computedDeps[prop] = 1;
+                    if (!me._computedDepsIndex[prop]) {
+                        me._computedDepsIndex[prop] = [];
+                    }
+                    me._computedDepsIndex[prop].push(computedExpr);
+
+                    if (me.computed[prop] && !me._computedDeps[prop]) {
+                        me._calcComputed(prop);
+                    }
+                }
+
+                var value = obj[prop];
+                if (value && typeof value === 'object') {
+                    return new Proxy(value, componentComputedProxyHandler);
+                }
+                return value;
+            }
+        });
+    }
 
     try {
         this.data.set(
