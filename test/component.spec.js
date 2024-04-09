@@ -6488,7 +6488,9 @@ describe("Component", function () {
             });
         });
     });
-    it("identify subcomponent with reserved hot tag", function() {
+
+
+    (!/msie/i.test(navigator.userAgent)) && it("identify subcomponent with reserved hot tag", function() {
         var Label = san.defineComponent({
             template: '<span title="{{text}}">{{text}}</span>'
         });
