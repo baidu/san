@@ -1,4 +1,4 @@
-describe("Component Data Proxy", function () {
+(typeof Proxy !== 'undefined') && describe("Component Data Proxy", function () {
     it("simple item", function (done) {
         var MyComponent = san.defineComponent({
             template: '<a><span title="{{name}}">{{name}}</span></a>'
@@ -1021,7 +1021,7 @@ describe("Component Data Proxy", function () {
                 },
 
                 cars: function () {
-                    return this.d.person.cars.map(e => {
+                    return this.d.person.cars.map(function (e) {
                         return e.toUpperCase();
                     });
                 }
@@ -1159,7 +1159,7 @@ describe("Component Data Proxy", function () {
 
             computed: {
                 lcars: function () {
-                    return this.d.cars.map(e => {
+                    return this.d.cars.map(function (e) {
                         return e.toUpperCase();
                     });
                 }

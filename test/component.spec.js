@@ -2666,7 +2666,7 @@ describe("Component", function () {
 
     });
 
-    it("computed, array map", function (done) {
+    Array.prototype.map && it("computed, array map", function (done) {
         var MyComponent = san.defineComponent({
             template: '<div><p s-for="car in lcars">{{car}}</p></div>',
 
@@ -2678,7 +2678,7 @@ describe("Component", function () {
 
             computed: {
                 lcars: function () {
-                    return this.data.get("cars").map(e => {
+                    return this.data.get("cars").map(function (e) {
                         return e.toUpperCase();
                     });
                 }
