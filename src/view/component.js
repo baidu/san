@@ -604,7 +604,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     try {
         this.data.set(
-            computedExpr, 
+            {type: ExprType.ACCESSOR, paths: [{type: ExprType.STRING, value: computedExpr}]}, 
             this.computed[computedExpr].call(that),
             {silent: isFirstCalc}
         );
