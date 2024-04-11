@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>如何实现元素的显示/隐藏？ | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="通过s-if指令，我们可以为元素指定条件。只有当条件成立时元素才会渲染，否则元素不会被加载。 但s-if无法实现这样的需求：我们需要在符合条件的情况下显示某元素，条件不满足时，元素在页面中隐藏，但依然被挂载到 DOM 。这个时候，元素的展现用 CSS 控制更为合适。 这一需求的本质可以归纳为：如何根据条件实现元素的显示&#x2F;隐藏。 如何处理 San 提供在视图模板中进行样式处理的方案，详见教">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何实现元素的显示&#x2F;隐藏？">
+<meta property="og:url" content="http://baidu.github.io/practice/how-to-show-or-hide-an-element/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="通过s-if指令，我们可以为元素指定条件。只有当条件成立时元素才会渲染，否则元素不会被加载。 但s-if无法实现这样的需求：我们需要在符合条件的情况下显示某元素，条件不满足时，元素在页面中隐藏，但依然被挂载到 DOM 。这个时候，元素的展现用 CSS 控制更为合适。 这一需求的本质可以归纳为：如何根据条件实现元素的显示&#x2F;隐藏。 如何处理 San 提供在视图模板中进行样式处理的方案，详见教">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.898Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.898Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">教程</a></li>
+                <li><a class="router" href="../">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/practice/how-to-show-or-hide-an-element/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/how-to-show-or-hide-an-element" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      如何实现元素的显示/隐藏？
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/how-to-show-or-hide-an-element.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>通过<code>s-if</code>指令，我们可以为元素指定条件。只有当条件成立时元素才会渲染，否则元素不会被加载。</p>
+<p>但<code>s-if</code>无法实现这样的需求：我们需要在符合条件的情况下显示某元素，条件不满足时，元素在页面中隐藏，但依然被挂载到 DOM 。这个时候，元素的展现用 CSS 控制更为合适。</p>
+<p>这一需求的本质可以归纳为：如何根据条件实现元素的显示&#x2F;隐藏。</p>
+<h3 id="如何处理"><a href="#如何处理" class="headerlink" title="如何处理"></a>如何处理</h3><p> San 提供在视图模板中进行样式处理的方案，<a href="https://baidu.github.io/san/tutorial/style/">详见教程</a>。你可以用不同的 class 控制样式，也可以用 inline 样式实现。</p>
+<h4 id="1-用-class-控制元素的显示与隐藏"><a href="#1-用-class-控制元素的显示与隐藏" class="headerlink" title="1. 用 class 控制元素的显示与隐藏"></a>1. 用 class 控制元素的显示与隐藏</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;list&#123;&#123;isHidden ? &#x27; list-hidden&#x27; : &#x27; list-visible&#x27;&#125;&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意， class 属性有多个类名时，需要为第一个以后的类名加上空格。</p>
+<p> codepen 演示如下：</p>
+<p
+    data-height="365"
+    data-theme-id="0"
+    data-slug-hash="ZaOajj"
+    data-default-tab="js,result"
+    data-user="Mona_"
+    data-embed-version="2"
+    data-pen-title="根据条件添加不同样式－用class控制"
+    class="codepen">See the Pen
+    <a href="https://codepen.io/Mona_/pen/ZaOajj/">根据条件添加不同样式－用class控制</a>
+     by MinZhou (<a href="https://codepen.io/Mona_">@Mona_</a>) on
+     <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p> CSS 控制着样式的展现，所以 DOM 始终都存在页面节点树中。你可以打开控制台看看。</p>
+<h4 id="2-用内联样式控制元素的隐藏与显示"><a href="#2-用内联样式控制元素的隐藏与显示" class="headerlink" title="2. 用内联样式控制元素的隐藏与显示"></a>2. 用内联样式控制元素的隐藏与显示</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">style</span>=<span class="string">&quot;display: &#123;&#123;isHidden ? &#x27;none&#x27; : &#x27;block&#x27;&#125;&#125;&quot;</span>&gt;</span>visible<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p
+    data-height="365"
+    data-theme-id="0"
+    data-slug-hash="gXMvBN"
+    data-default-tab="js,result"
+    data-user="Mona_"
+    data-embed-version="2"
+    data-pen-title="根据条件添加不同样式－用内联样式控制"
+    class="codepen">See the Pen
+    <a href="https://codepen.io/Mona_/pen/gXMvBN/">根据条件添加不同样式－用内联样式控制</a>
+     by MinZhou (<a href="https://codepen.io/Mona_">@Mona_</a>) on
+     <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>有时候数据可能并不存在，所以把样式名包含在插值中更为可靠。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">style</span>=<span class="string">&quot;&#123;&#123;isHidden === false ? &#x27;display: none&#x27; : &#x27;display: block&#x27;&#125;&#125;&quot;</span>&gt;</span>visible<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-使用计算属性"><a href="#3-使用计算属性" class="headerlink" title="3. 使用计算属性"></a>3. 使用计算属性</h4><p>前面的两种方案都可以通过使用计算属性，将判断逻辑从模板中解耦出来，以便更好的应对可能变得更为复杂的需求。下面是基于 class 的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul class=&quot;&#123;&#123;ulClass&#125;&#125;&quot;&gt;&lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="attr">computed</span>: &#123;</span><br><span class="line">        <span class="title function_">ulClass</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> isHidden = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;isHidden&#x27;</span>);</span><br><span class="line">            <span class="keyword">if</span> (isHidden) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&#x27;list list-hidden&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;list list-visible&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p> codepen 演示如下：</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="zPNvwz" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="基于 computed 的元素显示隐藏" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/zPNvwz/">基于 computed 的元素显示隐藏</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h4 id="4-使用-filter"><a href="#4-使用-filter" class="headerlink" title="4. 使用 filter"></a>4. 使用 filter</h4><p> filter 也可以用于对 class 和 style 进行处理，解耦的效果和 computed 类似，其特点是能够显式地声明属性值与数据的依赖关系。下面是基于 class 的例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul class=&quot;&#123;&#123;isHidden | handleHidden&#125;&#125;&quot;&gt;&lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">handleHidden</span>(<span class="params">isHidden</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (isHidden) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&#x27;list list-hidden&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;list list-visible&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p> codepen 演示如下：</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="ZaLbae" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="基于 filter 的元素显示隐藏" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/ZaLbae/">基于 filter 的元素显示隐藏</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>我们可以很明显地看出，class 是由 isHidden 控制的。</p>
+<p>这里要额外注意的是，如果和 class 关联的有多个 data ，用 filter 的方法可能会有一些问题，比如我在下面的例子中实现了一个tab组件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class=&quot;tab&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div</span></span><br><span class="line"><span class="string">                s-for=&quot;tab in tabs&quot;</span></span><br><span class="line"><span class="string">                class=&quot;&#123;&#123;tab.value | mapActive&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                on-click=&quot;tabChange(tab.value)&quot;</span></span><br><span class="line"><span class="string">                &gt;</span></span><br><span class="line"><span class="string">                &#123;&#123;tab.name&#125;&#125;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">active</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            <span class="attr">tabs</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;第一项&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;one&#x27;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;第二项&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;two&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">tabChange</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;active&#x27;</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">mapActive</span>(<span class="params">value</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> active = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">            <span class="keyword">const</span> classStr = <span class="string">&#x27;sm-tab-item&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (value === active) &#123;</span><br><span class="line">                <span class="keyword">return</span> classStr + <span class="string">&#x27; active&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> classStr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p> codepen 演示如下：</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="XzpmVa" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="没有显式声明依赖的tab bug演示" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/XzpmVa/">没有显式声明依赖的tab bug演示</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>此处当我在点击 tab 的时候，虽然 active 能够正常更新，但是视图不会引起变化，因为 San 的依赖收集机制不认为 active 的修改会影响到视图，因此需要我们在模板中显式声明对 active 的依赖，参考如下代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// 将下面的 mapActive 改成 mapActive(active)，显示声明视图对 active 的依赖</span></span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class=&quot;tab&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div</span></span><br><span class="line"><span class="string">                s-for=&quot;tab in tabs&quot;</span></span><br><span class="line"><span class="string">                class=&quot;&#123;&#123;tab.value | mapActive(active)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                on-click=&quot;tabChange(tab.value)&quot;</span></span><br><span class="line"><span class="string">                &gt;</span></span><br><span class="line"><span class="string">                &#123;&#123;tab.name&#125;&#125;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">active</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            <span class="attr">tabs</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;第一项&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;one&#x27;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;第二项&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;two&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">tabChange</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;active&#x27;</span>, value);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">fire</span>(<span class="string">&#x27;change&#x27;</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="comment">// 这里就不需要通过 this.data.get(&#x27;active&#x27;) 拿到 active 了</span></span><br><span class="line">        <span class="title function_">mapActive</span>(<span class="params">value, active</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> classStr = <span class="string">&#x27;sm-tab-item&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (value === active) &#123;</span><br><span class="line">                <span class="keyword">return</span> classStr + <span class="string">&#x27; active&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> classStr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p> codepen 演示如下：</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="mqReLg" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="显式声明依赖的tab演示" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/mqReLg/">显式声明依赖的tab演示</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>通过在模板中显示声明视图对 active 的依赖， San 就能正常更新视图了。这也是为什么我会在一开始说 filter 的特点是能够显式地声明属性值与数据的依赖关系。</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>隐藏和显示是开发中较为常见的需求，还有一些其他的<strong>样式切换</strong>需求，使用以上两种方法都可以轻松实现。</p>
+<p>总结一下，如果你要控制元素的渲染与否（是否添加到节点树），你需要使用<code>s-if</code>指令；如果你仅仅只想控制 DOM 节点的样式，比如元素的显示&#x2F;隐藏样式，请使用数据控制 class 或内联样式。</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86"><span class="toc-text">如何处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%94%A8-class-%E6%8E%A7%E5%88%B6%E5%85%83%E7%B4%A0%E7%9A%84%E6%98%BE%E7%A4%BA%E4%B8%8E%E9%9A%90%E8%97%8F"><span class="toc-text">1. 用 class 控制元素的显示与隐藏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%94%A8%E5%86%85%E8%81%94%E6%A0%B7%E5%BC%8F%E6%8E%A7%E5%88%B6%E5%85%83%E7%B4%A0%E7%9A%84%E9%9A%90%E8%97%8F%E4%B8%8E%E6%98%BE%E7%A4%BA"><span class="toc-text">2. 用内联样式控制元素的隐藏与显示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%BD%BF%E7%94%A8%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7"><span class="toc-text">3. 使用计算属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%BD%BF%E7%94%A8-filter"><span class="toc-text">4. 使用 filter</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-text">结语</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">教程</a>
+        <li><a href="../">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

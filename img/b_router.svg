@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128px" height="128px" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>b_router</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-Copy" transform="translate(-143.000000, -1664.000000)" fill="#FFFFFF">
+            <g id="Group-2-Copy" transform="translate(72.000000, 1565.000000)">
+                <g id="Group" transform="translate(0.000000, 73.000000)">
+                    <g id="Group-15" transform="translate(71.000000, 26.000000)">
+                        <path d="M116.914372,69.3604347 L99.3431669,31.6014234 C98.6047811,30.0146957 97.0134081,29 95.2632886,29 L95.2632886,29 L33.7363752,29 L33.7363752,29 C31.9862557,29 30.3948827,30.0146957 29.6564969,31.6014234 L29.6564969,31.6014234 L12.0849794,69.361107 C14.0854267,67.288807 16.8922048,66 20,66 L20,66 L109,66 C112.107459,66 114.913966,67.2885282 116.914372,69.3604347 Z" id="Combined-Shape" fill-opacity="0.5"></path>
+                        <path d="M19,71 L110,71 C112.209139,71 114,72.790861 114,75 L114,97 C114,99.209139 112.209139,101 110,101 L19,101 C16.790861,101 15,99.209139 15,97 L15,75 L15,75 C15,72.790861 16.790861,71 19,71 L19,71 Z M23,82 L23,92 L37,92 L37,82 L23,82 Z M27,80 L27,82 L33,82 L33,80 L27,80 Z M45,82 L45,92 L59,92 L59,82 L45,82 Z M49,80 L49,82 L55,82 L55,80 L49,80 Z M102,90 C104.209139,90 106,88.209139 106,86 C106,83.790861 104.209139,82 102,82 C99.790861,82 98,83.790861 98,86 C98,88.209139 99.790861,90 102,90 Z" id="Combined-Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

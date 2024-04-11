@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>如何使用 san-composition 按功能组织代码？ | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="引言随着业务的不断发展，前端项目往往变得越来越复杂，过去我们使用 options 定义组件的方式随着功能的迭代可读性可能会越来越差，当我们为组件添加额外功能时，通常需要修改（initData、attached、computed等）多个代码块；而在一些情况下，按功能来组织代码显然更有意义，也更方便细粒度的代码复用。 san-composition 提供一组与定义组件 options 的 key 对应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用 san-composition 按功能组织代码？">
+<meta property="og:url" content="http://baidu.github.io/practice/san-composition-api/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="引言随着业务的不断发展，前端项目往往变得越来越复杂，过去我们使用 options 定义组件的方式随着功能的迭代可读性可能会越来越差，当我们为组件添加额外功能时，通常需要修改（initData、attached、computed等）多个代码块；而在一些情况下，按功能来组织代码显然更有意义，也更方便细粒度的代码复用。 san-composition 提供一组与定义组件 options 的 key 对应">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.898Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.898Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">教程</a></li>
+                <li><a class="router" href="../">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/practice/san-composition-api/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/san-composition-api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      如何使用 san-composition 按功能组织代码？
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/san-composition-api.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>随着业务的不断发展，前端项目往往变得越来越复杂，过去我们使用 options 定义组件的方式随着功能的迭代可读性可能会越来越差，当我们为组件添加额外功能时，通常需要修改（initData、attached、computed等）多个代码块；而在一些情况下，按功能来组织代码显然更有意义，也更方便细粒度的代码复用。</p>
+<p>san-composition 提供一组与定义组件 options 的 key 对应的方法来定义组件的属性和方法，让开发者可以通过逻辑相关性来组织代码，从而提高代码的可读性和可维护性。</p>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>NPM</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i --save san-composition</span><br></pre></td></tr></table></figure>
+
+<h4 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h4><p>在定义一个组件的时候，我们通常需要定义模板、初始化数据、定义方法、添加生命周期钩子等。在使用组合式 API 定义组件时，我们不再使用一个 options 对象声明属性和方法，而是用各个 option 对应的方法来解决组件的各种属性、方法的定义。</p>
+<blockquote>
+<p>注意：所有的组合式 API 方法都只能在 defineComponent 方法的第一个函数参数运行过程中执行。</p>
+</blockquote>
+<h5 id="定义模板"><a href="#定义模板" class="headerlink" title="定义模板"></a>定义模板</h5><p>使用 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#template">template</a> 方法来定义组件的模板：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="定义数据"><a href="#定义数据" class="headerlink" title="定义数据"></a>定义数据</h5><p>使用 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#data">data</a> 方法来初始化组件的一个数据项：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template, data &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p><code>data</code> 的返回值是一个对象，包含get、set、merge、splice等方法。我们可以通过对象上的方法对数据进行获取和修改操作。</p>
+<h5 id="定义计算数据"><a href="#定义计算数据" class="headerlink" title="定义计算数据"></a>定义计算数据</h5><p>使用 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#computed">computed</a> 方法来定义一个计算数据项：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> name = <span class="title function_">data</span>(<span class="string">&#x27;name&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">first</span>: <span class="string">&#x27;Donald&#x27;</span>,</span><br><span class="line">        <span class="attr">last</span>: <span class="string">&#x27;Trump&#x27;</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> fullName = <span class="title function_">computed</span>(<span class="string">&#x27;fullName&#x27;</span>,  <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> name.<span class="title function_">get</span>(<span class="string">&#x27;first&#x27;</span>) + <span class="string">&#x27; &#x27;</span> + name.<span class="title function_">get</span>(<span class="string">&#x27;last&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="定义过滤器"><a href="#定义过滤器" class="headerlink" title="定义过滤器"></a>定义过滤器</h5><p>使用 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#filters">filters</a> 方法来为组件添加过滤器：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;&lt;div&gt; &#123;&#123; count|triple &#125;&#125; &lt;/div&gt;&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;triple&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> value * <span class="number">3</span>);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="定义方法"><a href="#定义方法" class="headerlink" title="定义方法"></a>定义方法</h5><p>使用 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#method">method</a> 来定义方法，我们强烈建议按照 <code>data</code> 和 <code>method</code> 根据业务逻辑就近定义：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template, data, method &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">	`</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">set</span>(count.<span class="title function_">get</span>() + <span class="number">1</span>));</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="生命周期钩子"><a href="#生命周期钩子" class="headerlink" title="生命周期钩子"></a>生命周期钩子</h5><p>下面的 <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#onAttached">onAttached</a> 方法，为组件添加 attached 生命周期钩子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;defineComponent, template, onAttached&#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p>生命周期钩子相关的 API 是通过在对应的钩子前面加上 on 命名的，所以它与组件的生命周期钩子一一对应。</p>
+<table>
+<thead>
+<tr>
+<th><strong>Option API</strong></th>
+<th><strong>组合式API中的Hook</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>construct</td>
+<td>onConstruct</td>
+</tr>
+<tr>
+<td>compiled</td>
+<td>onCompiled</td>
+</tr>
+<tr>
+<td>inited</td>
+<td>onInited</td>
+</tr>
+<tr>
+<td>created</td>
+<td>onCreated</td>
+</tr>
+<tr>
+<td>attached</td>
+<td>onAttached</td>
+</tr>
+<tr>
+<td>detached</td>
+<td>onDetached</td>
+</tr>
+<tr>
+<td>disposed</td>
+<td>onDisposed</td>
+</tr>
+<tr>
+<td>updated</td>
+<td>onUpdated</td>
+</tr>
+<tr>
+<td>error</td>
+<td>onError</td>
+</tr>
+</tbody></table>
+<p><strong>一个完整的例子</strong></p>
+<p>下面的例子展示了如何使用 San 组合式 API 定义组件：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">    defineComponent,</span><br><span class="line">    template,</span><br><span class="line">    data,</span><br><span class="line">    computed,</span><br><span class="line">    filters,</span><br><span class="line">    watch,</span><br><span class="line">    components,</span><br><span class="line">    method,</span><br><span class="line">    onCreated,</span><br><span class="line">    onAttached</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 定义模板</span></span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;input type=&quot;text&quot; value=&quot;&#123;= count =&#125;&quot; /&gt;</span></span><br><span class="line"><span class="string">            &lt;div&gt;double: &#123;&#123; double &#125;&#125; &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;div&gt;triple: &#123;&#123; count|triple &#125;&#125; &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;my-child&gt;&lt;/my-child&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化数据</span></span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加方法</span></span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">set</span>(count.<span class="title function_">get</span>() + <span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 监听数据变化</span></span><br><span class="line">    <span class="title function_">watch</span>(<span class="string">&#x27;count&#x27;</span>, <span class="function"><span class="params">newVal</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;count updated: &#x27;</span>, newVal);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加计算数据</span></span><br><span class="line">    <span class="title function_">computed</span>(<span class="string">&#x27;double&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">get</span>() * <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加过滤器</span></span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;triple&#x27;</span>, <span class="function"><span class="params">n</span> =&gt;</span> n * <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义子组件</span></span><br><span class="line">    <span class="title function_">components</span>(&#123; <span class="string">&#x27;my-child&#x27;</span>: <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> <span class="title function_">template</span>(<span class="string">&#x27;&lt;div&gt;My Child&lt;/div&gt;&#x27;</span>), san) &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生命周期钩子方法</span></span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;another onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">onCreated</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onCreated&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="进阶篇"><a href="#进阶篇" class="headerlink" title="进阶篇"></a>进阶篇</h4><p>组合式 API 使用的要点，在于 <strong>按功能</strong> 定义相应的数据、方法、生命周期运行逻辑等。如果在一个完整的定义函数里流水账般声明一整个组件，为用而用地使用组合式 API 是没有意义的。</p>
+<p>本篇以一个简单的例子，通过两小节对组合式 API 的使用给予一些指导：</p>
+<ul>
+<li><a href="#%E5%AE%9E%E7%8E%B0%E5%8F%AF%E7%BB%84%E5%90%88">实现可组合</a> 讲述如何将一个使用 class 声明的组件改造成使用组合式 API 实现</li>
+<li><a href="#%E5%AE%9E%E7%8E%B0%E5%8F%AF%E5%A4%8D%E7%94%A8">实现可复用</a> 在上节基础上，讲述如何 <strong>按功能</strong> 拆分成多个函数并实现复用</li>
+</ul>
+<h5 id="实现可组合"><a href="#实现可组合" class="headerlink" title="实现可组合"></a>实现可组合</h5><p>假设我们要开发一个联系人列表，从业务逻辑上看，该组件具备以下功能：</p>
+<ol>
+<li>联系人列表，以及查看、收藏操作；</li>
+<li>收藏列表，以及查看、取消收藏操作；</li>
+<li>通过表单筛选联系人</li>
+</ol>
+<p>首先，我们用 Class API 来实现：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ContactList</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">         &lt;div class=&quot;container&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div class=&quot;contact-list-filter&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;s-icon type=&quot;search&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;s-input on-change=&quot;changeKeyword&quot;&gt;&lt;/s-input&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            &lt;div class=&quot;favorite-list&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;h2&gt;个人收藏&lt;/h2&gt;</span></span><br><span class="line"><span class="string">                &lt;contact-list</span></span><br><span class="line"><span class="string">                    data=&quot;&#123;&#123;favoriteList|filterList(keyword)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                    on-open=&quot;onOpen&quot;</span></span><br><span class="line"><span class="string">                    on-favorite=&quot;onFavorite&quot;</span></span><br><span class="line"><span class="string">                /&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            &lt;div class=&quot;contact-list&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;h2&gt;联系人&lt;/h2&gt;</span></span><br><span class="line"><span class="string">                &lt;contact-list</span></span><br><span class="line"><span class="string">                    data=&quot;&#123;&#123;contactList|filterList(keyword)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                    on-open=&quot;onOpen&quot;</span></span><br><span class="line"><span class="string">                    on-favorite=&quot;onFavorite&quot;</span></span><br><span class="line"><span class="string">                /&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="comment">// 功能 1</span></span><br><span class="line">            <span class="attr">contactList</span>: []</span><br><span class="line">            <span class="comment">// 功能 2</span></span><br><span class="line">            <span class="attr">favoriteList</span>: [],</span><br><span class="line">            <span class="comment">// 功能 3</span></span><br><span class="line">            <span class="attr">keyword</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">filterList</span>(<span class="params">item, keyword</span>) &#123;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span>,</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">attached</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">getContactList</span>();</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="title function_">getContactList</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="title function_">getFavoriteList</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="keyword">async</span> <span class="title function_">onOpen</span>(<span class="params">item</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="keyword">async</span> <span class="title function_">onFavorite</span>(<span class="params">item</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="title function_">changeKeyword</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;keyword&#x27;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>随着组件功能的丰富，Class API 的逻辑会变得越来越发散，我们往往需要在多个模块中跳跃来阅读某个功能的实现，代码的可读性会变差。接下来，我们通过组合式 API 按照功能来组织代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span>,</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;filterList&#x27;</span>, <span class="function">(<span class="params">item, keyword</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="keyword">const</span> contactList = <span class="title function_">data</span>(<span class="string">&#x27;contactList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getContactList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        contactList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getContactList</span>(); &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="keyword">const</span> favoriteList = <span class="title function_">data</span>(<span class="string">&#x27;favoriteList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getFavoriteList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        favoriteList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>(); &#125;);</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="keyword">const</span> keyword = <span class="title function_">data</span>(<span class="string">&#x27;keyword&#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;changeKeyword&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">        keyword.<span class="title function_">set</span>(value);</span><br><span class="line">    &#125;);    </span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="实现可复用"><a href="#实现可复用" class="headerlink" title="实现可复用"></a>实现可复用</h5><p>按照功能来组织的代码有时候逻辑代码块也会比较长，我们可以考虑对组合的逻辑进行一个封装：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@file</span> utils.js</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; ... &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 1</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useContactList</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> contactList = <span class="title function_">data</span>(<span class="string">&#x27;contactList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getContactList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        contactList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getContactList</span>(); &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 2</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useFavoriteList</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> favoriteList = <span class="title function_">data</span>(<span class="string">&#x27;favoriteList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getFavoriteList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        favoriteList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>(); &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 3</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useSearchBox</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> keyword = <span class="title function_">data</span>(<span class="string">&#x27;keyword&#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;changeKeyword&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">        keyword.<span class="title function_">set</span>(value);</span><br><span class="line">    &#125;);    </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该 hook 函数提供一个默认名字为 filterList 的过滤器，可以通过参数修改这个过滤器的名称</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useFilterList</span> = (<span class="params">&#123;filterList = <span class="string">&#x27;filterList&#x27;</span>&#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">filters</span>(filterList, <span class="function">(<span class="params">item, keyword</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>另外，对于一些常用基础 UI 组件，我们也可以封装一个方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useUIComponents</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>我们对联系人列表组件再进行一下重构：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useContactList, useFavoriteList, useSearchBox, useUIComponents, useFilterList &#125; <span class="keyword">from</span> <span class="string">&#x27;utils.js&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useUIComponents</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useFilterList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="title function_">useContactList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="title function_">useFavoriteList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="title function_">useSearchBox</span>();</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p>假设新的需求来了，我们需要一个新的组件，不展示收藏联系人：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useContactList, useFavoriteList, useSearchBox, useUIComponents &#125; <span class="keyword">from</span> <span class="string">&#x27;utils.js&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 模板当然也要做一些调整，这里省略了</span></span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useUIComponents</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useFilterList</span>();</span><br><span class="line">    <span class="title function_">useContactList</span>();</span><br><span class="line">    <span class="title function_">useSearchBox</span>();</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="this-的使用"><a href="#this-的使用" class="headerlink" title="this 的使用"></a>this 的使用</h5><p>在组合式 API 中我们不推荐使用 <code>this</code> ，它会造成一些混淆，但有时候可能不得不使用，这时候注意不要在对应的方法中使用箭头函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里定义的方法不能使用箭头函数</span></span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">dispatch</span>(<span class="string">&#x27;increment:count&#x27;</span>, count.<span class="title function_">get</span>());</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="toc-text">基础用法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%A8%A1%E6%9D%BF"><span class="toc-text">定义模板</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%95%B0%E6%8D%AE"><span class="toc-text">定义数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E8%AE%A1%E7%AE%97%E6%95%B0%E6%8D%AE"><span class="toc-text">定义计算数据</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-text">定义过滤器</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B9%E6%B3%95"><span class="toc-text">定义方法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E9%92%A9%E5%AD%90"><span class="toc-text">生命周期钩子</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="toc-text">进阶篇</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%AF%E7%BB%84%E5%90%88"><span class="toc-text">实现可组合</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%AF%E5%A4%8D%E7%94%A8"><span class="toc-text">实现可复用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#this-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">this 的使用</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">教程</a>
+        <li><a href="../">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

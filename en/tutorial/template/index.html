@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>Template | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="San uses an HTML-based template syntax that allows you to declaratively bind the rendered DOM to the underlying San instance’s data.  ScenesInterpolationLike many template engines, the syntax of inte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Template">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/template/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="San uses an HTML-based template syntax that allows you to declaratively bind the rendered DOM to the underlying San instance’s data.  ScenesInterpolationLike many template engines, the syntax of inte">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.896Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.897Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../start/">Tutorial</a></li>
+                <li><a class="router" href="../../practice/">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../tutorial/template/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../setup/">Setup</a></dd>
+        <dd><a href="../start/">Start</a></dd>
+        <dd><a href="" class="recommend-active">Template</a></dd>
+        <dd><a href="../data-method/">Data Manipulation</a></dd>
+        <dd><a href="../style/">Style</a></dd>
+        <dd><a href="../if/">Conditional</a></dd>
+        <dd><a href="../for/">Loop</a></dd>
+        <dd><a href="../event/">Event</a></dd>
+        <dd><a href="../form/">Form</a></dd>
+        <dd><a href="../slot/">Slot</a></dd>
+        <dd><a href="../attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/template" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Template
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/template.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> San uses an HTML-based template syntax that allows you to declaratively bind the rendered DOM to the underlying San instance’s data. </p>
+<h2 id="Scenes"><a href="#Scenes" class="headerlink" title="Scenes"></a>Scenes</h2><h3 id="Interpolation"><a href="#Interpolation" class="headerlink" title="Interpolation"></a>Interpolation</h3><p>Like many template engines, the syntax of interpolation is that the expression is in double braces, and can be followed by any number of filters.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123; expr [[| filter-call1] | filter-call2...] &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In the text content area, we can use interpolation replacement.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello &#123;&#123;name&#125;&#125;!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Within the attributes of the HTML tag, we can also use interpolation replacement.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">title</span>=<span class="string">&quot;This is &#123;&#123;name&#125;&#125;&quot;</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Interpolated data can be processed using filters.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello &#123;&#123;name | upper&#125;&#125;!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>Expression</code>: In the double braces of interpolation substitution, San provides a wealth of expression support; please refer to <a href="#expression">expression</a> section for details.</p>
+<p><code>Filter</code>: For a description of the filter, please refer to the <a href="#Filter">Filter</a> section.</p>
+<p><code>tips</code>: Interpolation will default to HTML escaping. If you don’t need HTML escaping, please refer to the [Output HTML] (#Output HTML) section later in this article.</p>
+<h3 id="property-binding"><a href="#property-binding" class="headerlink" title="property binding"></a>property binding</h3><p>As the name suggests, property binding means binding data to the properties of a child component. The way of the property binding is the same as the interpolation binding, and the property declaration is passed through the HTML tag. The way of the attribute binding is the same as the interpolation binding, which is declared through the attributes of the HTML tag. And usaslly we only declare one <strong></strong>.</p>
+<p>In the following example, when the jokeName data changes, the new value is automatically set to the text property of the label component.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">text</span>=<span class="string">&quot;&#123;&#123;jokeName&#125;&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p><code>expression</code>: Attribute binding supports any type of expression. Please refer to the <a href="#expression">expression</a> section for details.</p>
+<h3 id="overall-propertys-binding"><a href="#overall-propertys-binding" class="headerlink" title="overall propertys binding"></a>overall propertys binding</h3><p><code>version</code>：&gt;&#x3D; 3.5.8</p>
+<p>By <strong>s-bind</strong>, you can bind the entire data to a component. When <strong>s-bind</strong> coexists with a single property binding, a single property binding overrides the corresponding data item in the overall binding.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">s-bind</span>=<span class="string">&quot;&#123;&#123; &#123;text: email, title: name&#125; &#125;&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- `text` of a-single-property-binding overrides `text` of s-bind --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ui-label</span> <span class="attr">s-bind</span>=<span class="string">&quot;&#123;&#123; &#123;text: email, title: name&#125; &#125;&#125;&quot;</span> <span class="attr">text</span>=<span class="string">&quot;&#123;&#123;name&#125;&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-label</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p><code>tips</code>: Two-way binding only supports primitive type and property accessor exprssion. Otherwise, it may lead to unpredictable problems.</p>
+<h3 id="two-way-binding"><a href="#two-way-binding" class="headerlink" title="two-way binding"></a>two-way binding</h3><p>Two-way binding is possible through the HTML tag’s attribute to declare <strong>{&#x3D; expression &#x3D;}</strong>.</p>
+<p>Two-way bindings typically appear in the <strong>user input</strong> scenario, which automatically updates user input results to component data. So we usually apply two-way binding to the ** input form element** or <strong>custom component with input feedback</strong>.</p>
+<p>The following example establishes a two-way binding between the declared data item (name, online, color) and the value attribute of input, or select, or custom components. When the user enters, the value of the corresponding data item changes.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= name =&#125;&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= online =&#125;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;errorrik&quot;</span>&gt;</span>errorrik<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;otakustay&quot;</span>&gt;</span>otakustay<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">&quot;firede&quot;</span>&gt;</span>firede<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ui-colorpicker</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= color =&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-colorpicker</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>expression</code>: </p>
+<h2 id="Raw-HTML"><a href="#Raw-HTML" class="headerlink" title="Raw HTML"></a>Raw HTML</h2><p>Sometimes we want to output unescaped HTML. There are two ways to do this in San.</p>
+<ol>
+<li><code>s-html</code> directive</li>
+<li><code>raw</code> filter. It is a virtual filter</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">s-html</span>=<span class="string">&quot;rawHTML&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;rawHTML | raw&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Expression"><a href="#Expression" class="headerlink" title="Expression"></a>Expression</h2><p>San provides rich expression type support, making it easier for users to write view templates.</p>
+<ul>
+<li>data access(primitive type and property accessor exprssion)</li>
+<li>unary NOT</li>
+<li>unary negative <code>&gt;= 3.6.6</code></li>
+<li>two-number operation</li>
+<li>two-number relationship</li>
+<li>ternary conditional operation</li>
+<li>brackets</li>
+<li>string</li>
+<li>number</li>
+<li>boolean</li>
+<li>array literal <code>&gt;= 3.5.9</code></li>
+<li>object literal <code>&gt;= 3.5.9</code></li>
+<li>method call <code>&gt;= 3.6.11</code></li>
+</ul>
+<p>Below, the supported expression types are listed by examples of interpolating.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- primitive type --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;name&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- property accessor exprssion --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;person.name&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;persons[1]&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- unary NOT --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;!isOK&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;!!isOK&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- unary negative --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;-num1 + num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- two-number operation --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 + num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 - num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 * num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 / num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 + num2 * num3&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- two-number relationship --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 &gt; num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 !== num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- ternary conditional operation --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 &gt; num2 ? num1 : num2&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- brackets --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;a * (b + c)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- number --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;num1 + 200&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- string + ternary conditional operation --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;item ? &#x27;,&#x27; + item : &#x27;&#x27;&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- array literal --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">x-list</span> <span class="attr">data</span>=<span class="string">&quot;&#123;&#123; persons || [] &#125;&#125;&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- object literal --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">x-article</span> <span class="attr">data</span>=<span class="string">&quot;&#123;&#123; &#123;title: articleTitle, author: user&#125; &#125;&#125;&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- method call --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;max(num1, num2)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>tips</code>: two-way binding only supports primitive type and property accessor expression.</p>
+<h2 id="data-computation-in-view"><a href="#data-computation-in-view" class="headerlink" title="data computation in view"></a>data computation in view</h2><p>We often encounter scenarios where the ** view shows that the data is not the original value**, such as the formatted date, the relative time of last modified time based on the current time, and so on. In these scenarios, we can use the following methods to process and transform the data.</p>
+<ul>
+<li>filter</li>
+<li>method call</li>
+</ul>
+<h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><p>When interpolating, the filter can process and transform the interpolated data into a more suitable data for view rendering. <code>tips</code>: Filters are only supported when interpolating。</p>
+<p>Interpolating supports multi-filter processing. The filter is similar to the pipe, and the output of the previous filter is used as the input of the latter filter and is passed backward.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- primitive type --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | html | url&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Filters support parameter passing, parameters can be any supported <a href="#expression">expressions</a>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- // Suppose there is a filter: comma --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(3)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(commaLength)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;myVariable | comma(commaLength + 1)&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>The filter is registered when the component is declared. For details, please refer to the <a href="../component/#filter">filters</a>。</p>
+<h3 id="Method-call"><a href="#Method-call" class="headerlink" title="Method call"></a>Method call</h3><p><code>&gt;= 3.6.11</code></p>
+<p>The methods declared in the component can be called directly in the template.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;sum(num1, num2)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">sum</span>: <span class="keyword">function</span> (<span class="params">a, b</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> a + b;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">num1</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">num2</span>: <span class="number">2</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>pros</code>: Method calls are sometimes more intuitive than [filters] (#filters). For example, the scene of <code>sum</code> will be a bit awkward through [filter] (#filter).</li>
+<li><code>cons</code>: [Filter] (#Filter) Lets the data processing and transformation methods for the view are placed in filters, and the methods on the component can focus on view-independent logic behavior. This is broken if a method call is used.</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Implementing `sum` through filter is a bit awkward</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;num1 | sum(num2)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="attr">sum</span>: <span class="keyword">function</span> (<span class="params">a, b</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> a + b;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">num1</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">num2</span>: <span class="number">2</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Method calls can dynamically select methods, but the first level must be static.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;ops[opType ? &#x27;</span>sum<span class="string">&#x27; : &#x27;</span>average<span class="string">&#x27;](num1, num2)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">ops</span>: &#123;</span><br><span class="line">        <span class="attr">sum</span>: <span class="keyword">function</span> (<span class="params">a, b</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> a + b;</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="attr">average</span>: <span class="keyword">function</span> (<span class="params">a, b</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> (a + b) / <span class="number">2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">opType</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">num1</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">num2</span>: <span class="number">2</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>In the method called, you can continue to call other methods on the component through this.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;enhance(num)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">enhance</span>: <span class="keyword">function</span> (<span class="params">a</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">square</span>(a);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">square</span>: <span class="keyword">function</span> (<span class="params">a</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> a * a;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">num</span>: <span class="number">2</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>warning</code>: Using method calls, the method can access all of the component’s data through this.data at runtime. However, don’t do this, otherwise, it will cause an implicit dependency on the data, causing the view to not update as the data changes. Below are examples of errors and correctness.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Bad</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;enhance(num)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">enhance</span>: <span class="keyword">function</span> (<span class="params">num</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> num * <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;times&#x27;</span>);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">num</span>: <span class="number">2</span>,</span><br><span class="line">            <span class="attr">times</span>: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Good</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;enhance(num, times)&#125;&#125;&lt;/u&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">enhance</span>: <span class="keyword">function</span> (<span class="params">num, times</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> num * times;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">num</span>: <span class="number">2</span>,</span><br><span class="line">            <span class="attr">times</span>: <span class="number">3</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>tips</code>: If you use a method call, the method you call is preferably a pure function with no side effects.</p>
+<h2 id="HTML-Entities"><a href="#HTML-Entities" class="headerlink" title="HTML Entities"></a>HTML Entities</h2><p>When we write HTML, if the content contains reserved characters or special characters of HTML, we need to write the HTML entity. San’s template HTML is self-parsing, and due to its volume, only limited named HTML entities are supported:</p>
+<ul>
+<li>&amp;lt;</li>
+<li>&amp;gt;</li>
+<li>&amp;nbsp;</li>
+<li>&amp;quot;</li>
+<li>&amp;emsp;</li>
+<li>&amp;ensp;</li>
+<li>&amp;thinsp;</li>
+<li>&amp;copy;</li>
+<li>&amp;reg;</li>
+<li>&amp;zwnj;</li>
+<li>&amp;zwj;</li>
+<li>&amp;amp;</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>LiLei <span class="symbol">&amp;amp;</span> HanMeiMei are a couple.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>1 + 1 <span class="symbol">&amp;lt;</span> 3<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Other than that, we can use numbered character entities like <code>&amp;#[entity_number];</code> or <code>&amp;#x[entity_number];</code>.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>LiLei <span class="symbol">&amp;#38;</span> HanMeiMei are a couple.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>1 + 1 <span class="symbol">&amp;#60;</span> 3<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scenes"><span class="toc-text">Scenes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Interpolation"><span class="toc-text">Interpolation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#property-binding"><span class="toc-text">property binding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#overall-propertys-binding"><span class="toc-text">overall propertys binding</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#two-way-binding"><span class="toc-text">two-way binding</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Raw-HTML"><span class="toc-text">Raw HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Expression"><span class="toc-text">Expression</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#data-computation-in-view"><span class="toc-text">data computation in view</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#filter"><span class="toc-text">filter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Method-call"><span class="toc-text">Method call</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTML-Entities"><span class="toc-text">HTML Entities</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../start/">Tutorial</a>
+        <li><a href="../../practice/">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../tutorial/template/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../setup/">Setup</a></dd>
+        <dd><a href="../start/">Start</a></dd>
+        <dd><a href="" class="recommend-active">Template</a></dd>
+        <dd><a href="../data-method/">Data Manipulation</a></dd>
+        <dd><a href="../style/">Style</a></dd>
+        <dd><a href="../if/">Conditional</a></dd>
+        <dd><a href="../for/">Loop</a></dd>
+        <dd><a href="../event/">Event</a></dd>
+        <dd><a href="../form/">Form</a></dd>
+        <dd><a href="../slot/">Slot</a></dd>
+        <dd><a href="../attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

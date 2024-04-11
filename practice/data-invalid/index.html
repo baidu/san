@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>什么东西不要保存在 data 里？ | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我们知道，data 里应该存与视图相关的数据状态。我们在下面列举了一些不当的使用场景，这些场景是我们不止发现过一次的。 函数不要把函数作为数据存放。函数应该是独立的，或者作为组件方法存在。 123456&#x2F;&#x2F; badthis.data.set(&#x27;camel2kebab&#x27;, function (source) &#123;    return source.replace(&#x2F;[A-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么东西不要保存在 data 里？">
+<meta property="og:url" content="http://baidu.github.io/practice/data-invalid/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="我们知道，data 里应该存与视图相关的数据状态。我们在下面列举了一些不当的使用场景，这些场景是我们不止发现过一次的。 函数不要把函数作为数据存放。函数应该是独立的，或者作为组件方法存在。 123456&#x2F;&#x2F; badthis.data.set(&#x27;camel2kebab&#x27;, function (source) &#123;    return source.replace(&#x2F;[A-">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.897Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.898Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">教程</a></li>
+                <li><a class="router" href="../">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/practice/data-invalid/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-practice/data-invalid" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      什么东西不要保存在 data 里？
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/practice/data-invalid.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们知道，data 里应该存与视图相关的数据状态。我们在下面列举了一些不当的使用场景，这些场景是我们不止发现过一次的。</p>
+<h4 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h4><p>不要把函数作为数据存放。函数应该是独立的，或者作为组件方法存在。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;camel2kebab&#x27;</span>, <span class="keyword">function</span> (<span class="params">source</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> source.<span class="title function_">replace</span>(<span class="regexp">/[A-Z]/g</span>, <span class="keyword">function</span> (<span class="params">match</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;-&#x27;</span> + match.<span class="title function_">toLowerCase</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="DOM-对象"><a href="#DOM-对象" class="headerlink" title="DOM 对象"></a>DOM 对象</h4><p>这个应该不用解释吧。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;sideEl&#x27;</span>, <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;sidebar&#x27;</span>));</span><br></pre></td></tr></table></figure>
+
+<h4 id="组件等复杂对象"><a href="#组件等复杂对象" class="headerlink" title="组件等复杂对象"></a>组件等复杂对象</h4><p>不要使用数据来做动态子组件的管理。动态子组件对象可以直接存在组件的成员中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// bad</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>();</span><br><span class="line">layer.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;layer&#x27;</span>, layer);</span><br><span class="line"></span><br><span class="line"><span class="comment">// good</span></span><br><span class="line"><span class="keyword">var</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>();</span><br><span class="line">layer.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">layer</span> = layer;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%BD%E6%95%B0"><span class="toc-text">函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DOM-%E5%AF%B9%E8%B1%A1"><span class="toc-text">DOM 对象</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E7%AD%89%E5%A4%8D%E6%9D%82%E5%AF%B9%E8%B1%A1"><span class="toc-text">组件等复杂对象</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">教程</a>
+        <li><a href="../">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

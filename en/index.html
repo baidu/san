@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../img/icons/icon-144x144.png">
+  
+  <title>San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="A Flexible JavaScript Component Framework">
+<meta property="og:type" content="website">
+<meta property="og:title" content="San">
+<meta property="og:url" content="http://baidu.github.io/en/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="A Flexible JavaScript Component Framework">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.901Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.901Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../manifest.json">
+
+  
+<link rel="stylesheet" href="../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../css/style.css">
+
+  
+<link rel="stylesheet" href="../css/site.css">
+
+  
+<link rel="stylesheet" href="../css/article.css">
+
+  
+<link rel="stylesheet" href="../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+
+<body id="home">
+    <div class="overlay">
+        <img height="220" src="../img/logo-colorful.svg" class="logo" alt="LOGO" title="San">
+        <h1>San</h1>
+        <iframe src="https://ghbtns.com/github-btn.html?user=baidu&repo=san&type=star&count=true&size=large" class="home-iframe"></iframe>
+        <p class="overlay-p">A fast, portable, flexible JavaScript component framework</p>
+        <a href="tutorial/start/" class="get-start">Get Started</a>
+        <a class="discussion" style="background:url(../img/discussion.svg) no-repeat 50% 50% / contain" href="https://github.com/baidu/san/discussions" target="_blank" title="Discussions"></a>
+    </div>
+
+    <!-- NavBar-->
+    <nav class="navbar-default" role="navigation">
+        <div class="navbar-container">
+            <a href="#home" class="nav-logo"><img src="../img/logo2.png"></a>
+            <a class="nav-a1" href="#Features">Features</a>
+            <a class="nav-a2" href="#Resources">Resources</a>
+            <a class="nav-a3" href="#Facilities">Facilities</a>
+            <a class="nav-lang" href="../index.html">中文</a>
+        </div>
+    </nav>
+
+    <!-- 公众号文章 -->
+    <div class="article-container" data-src="../data/article.json">
+        <a class="article-text-wrapper">
+            <span class="article-text"></span>
+        </a>
+    </div>
+
+    <!-- feature-->
+    <div class="feature-container" id="Features">
+        <section class="feature feature-en">
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <img src="../img/8.svg" width="44" height="44">
+                <h5>HTML Template</h5>
+                <p>Declarative template. HTML conformant template makes it easier for HTML developers.</p>
+            </div>
+            <div class="feature-item">
+               <img src="../img/1.svg" width="44" height="44">
+                <h5>Data Driven</h5>
+                <p>The DOM will be updated accordingly by the view engine upon any data modification. Free yourself from trivial and error-prone DOM APIs.</p>
+            </div>
+            <div class="feature-item">
+                <img src="../img/2.svg" width="44" height="44">
+                <h5>Component</h5>
+                <p>A component is a combination of data, logic and view. Feature blocks, from a single input combination to a whole page, can be built via San components.</p>
+            </div>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <img src="../img/3.svg" width="44" height="44">
+                <h5>High Performance View</h5>
+                <p>By modifying the data, the view engine can directly refresh the view area that needs to be changed without any detection and better performance.</p>
+            </div>
+            <div class="feature-item">
+                <img src="../img/5.svg" width="44" height="44">
+                <h5>Component Reversion</h5>
+                <p>Optimized for the first screen and output HTML from the server side. Reverse parse components from existing elements and build bindings.</p>
+            </div>
+            <div class="feature-item">
+                <img src="../img/4.svg" width="44" height="44">
+                <h5>Small Size</h5>
+                <p>Volume less that 17kb (gzipped), no need to worry about the burden of page downloads. The gospel of patients with volume obsessive.</p>
+            </div>
+        </div>
+
+        <div class="feature-row">
+            <div class="feature-item">
+                <img src="../img/9.svg" width="44" height="44">
+                <h5>Good Compatibility</h5>
+                <p>Another benefit of modifying data by method is that you can get better browser compatibility. After all, some users of our products are a bit rigid.</p>
+            </div>
+            <div class="feature-item">
+                <img src="../img/6.svg" width="44" height="44">
+                <h5>Flexible Module Management</h5>
+                <p>The ESNext Module or AMD can be selected in the project. Of course, if you want to use global variables it is also supported.</p>
+            </div>
+            <div class="feature-item">
+                <img src="../img/7.svg" width="44" height="44">
+                <h5>Convenient Reference</h5>
+                <p>Support for multiple methods such as NPM, GitHub, download, HTTP and HTTPS CDN, making development and online reference more convenient.</p>
+            </div>
+        </div>
+    </section>
+    </div>
+
+    <!--Resources -->
+    <section id ="Resources" class="resource">
+    <hr>
+    <div class="resource-title">
+    <h4>Resources</h4>
+    <p>Tutorials, documents and demos to understand and use San.</p>
+    </div>
+
+    <div class="resource-row">
+        <div class="resource-block">
+            <a class="resource-item" href="tutorial/start/">
+                <div class="resource-item-top resource-item-top-one">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/tutor.json"></div>
+                </div>
+                <div class="resource-item-bottom">
+                    <h5>Tutorial</h5>
+                    <p>Reading the tutorials is a good starting point to learn San.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="resource-block" href="/san/layout/">
+            <a class="resource-item" href="practice/">
+                <div class="resource-item-top resource-item-top-two">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/compass.json"></div>
+                </div>
+                <div class="resource-item-bottom">
+                    <h5>Practice</h5>
+                    <p>Practice guidelines suggest specific ways to deal with many different situations.</p>
+                </div>
+            </a>
+        </div>
+
+       <div class="resource-block">
+            <a class="resource-item" href="example/">
+                <div class="resource-item-top resource-item-top-three">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/example.json"></div>
+                </div>
+                <div class="resource-item-bottom">
+                    <h5>Example</h5>
+                    <p>Real-world demos showing how to use San.</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="resource-block">
+            <a class="resource-item" href="doc/api/">
+                <div class="resource-item-top resource-item-top-four">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/api.json"></div>
+                </div>
+                <div class="resource-item-bottom">
+                    <h5>Component API</h5>
+                    <p>Refer to this when you&#39;re looking for Component API manuals.</p>
+                </div>
+            </a>
+        </div>
+        </div>
+    </section>
+
+
+<!-- facilities -->
+
+<section class="facility" id="Facilities">
+<hr>
+<div class="facility-title">
+    <h4>Facilities</h4>
+    <p>Some tools and libraries can help you build your app faster and easier.</p>
+    </div>
+
+
+    <div class="banner-md"><a href="https://ecomfe.github.io/santd/" target="_blank"><img
+                src="../img/banner-santd.png" alt="santd" style="width: 100%; max-width: 1160px"></a></div>
+    <div class="facility-row">
+
+        <div class="facility-block">
+            <div class="facility-item">
+                <div class="facility-item-top facility-item-top-one">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/test.json"></div>
+                </div>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-router" target="_blank">
+                    <h5>Router</h5>
+                    <p>Support for hash and html5 mode routes to build SPA or isomorphism web applications.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://baidu.github.io/san-ssr/" target="_blank">
+                    <h5>SSR</h5>
+                    <p>Server-Side Render framework and utils.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-factory" target="_blank">
+                    <h5>Factory</h5>
+                    <p>Component register and instantiation.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="facility-block">
+            <div class="facility-item facility-item-unready">
+                <div class="facility-item-top facility-item-top-two">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/store.json"></div>
+                </div>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-store" target="_blank">
+                    <h5>Store</h5>
+                    <p>Application state management suite, the idea is a one-way flow like flux.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-update" target="_blank">
+                    <h5>Update</h5>
+                    <p>Immutable&#39;s object update library, with san-store for application state data updates.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-composition" target="_blank">
+                    <h5>Composition</h5>
+                    <p>The composition API helps us collocate code related to the same logical concern.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="facility-block">
+            <div class="facility-item">
+                <div class="facility-item-top facility-item-top-three">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/dev.json"></div>
+                </div>
+                <a class="facility-item-bottom" href="https://github.com/ecomfe/san-cli" target="_blank">
+                    <h5>CLI</h5>
+                    <p>A CommandLine tooling for rapid development.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/ecomfe/san-loader" target="_blank">
+                    <h5>Loader</h5>
+                    <p>Webpack loader for single-file San components.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/baidu/san-devtools" target="_blank">
+                    <h5>DevTools</h5>
+                    <p>Developer tools based on Chrome extensions.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="facility-block">
+            <div class="facility-item">
+                <div class="facility-item-top facility-item-top-four">
+                    <div style="width:130px;height:130px;display:inline-block;" class="bodymovin" data-movpath="../js/update.json"></div>
+                </div>
+                <a class="facility-item-bottom" href="https://github.com/ecomfe/san-test-utils" target="_blank">
+                    <h5>TestUtils</h5>
+                    <p>Unit testing utility library.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/ecomfe/san-anode-utils" target="_blank">
+                    <h5>ANodeUtils</h5>
+                    <p>Util Functions for ANode.</p>
+                </a>
+                <a class="facility-item-bottom" href="https://github.com/searchfe/sanny" target="_blank">
+                    <h5>Sanny</h5>
+                    <p>VSCode extension.</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="banner-md"><a href="https://ecomfe.github.io/san-mui/" target="_blank"><img
+                src="../img/banner-md.png" alt="san-mui" style="width: 100%; max-width: 1160px"></a></div>
+</section>
+<img src="../img/san-perf.png" class="san-perf">
+    <footer id="More">
+      
+    <div class="copyright">
+        &copy; 2023 <a target="_blank" href="http://ecomfe.github.io/">Baidu EFE</a>
+    </div>
+    </footer>
+
+
+
+    <!-- JavaScript -->
+    <script src="../js/jquery-1.10.2.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/bodymovin.min.js"></script>
+    <script src="../js/anime.js"></script>
+    <!-- StikyMenu -->
+    <script src="../js/stickUp.min.js"></script>
+
+    <script type="text/javascript">
+       jQuery(function($) {
+            $(document).ready( function() {
+                $('.navbar-default').stickUp();
+            });
+        });
+    </script>
+</body>
+</html>

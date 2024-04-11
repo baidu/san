@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>数据操作 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="San 在组件的 data 上提供了一些数据操作的方法。通过 get 方法可以获取数据；通过 set、splice 等方法修改数据，相应的视图会被自动刷新。 说明：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineProperty并未被国内常用的浏览器广泛支持，并且我们也并不喜欢这种侵入式的风格，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据操作">
+<meta property="og:url" content="http://baidu.github.io/tutorial/data-method/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="San 在组件的 data 上提供了一些数据操作的方法。通过 get 方法可以获取数据；通过 set、splice 等方法修改数据，相应的视图会被自动刷新。 说明：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineProperty并未被国内常用的浏览器广泛支持，并且我们也并不喜欢这种侵入式的风格，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.899Z">
+<meta property="article:modified_time" content="2024-04-11T02:16:48.699Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../start/">教程</a></li>
+                <li><a class="router" href="../../practice/">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/tutorial/data-method/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="" class="recommend-active">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/data-method" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      数据操作
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/data-method.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>San 在组件的 <strong>data</strong> 上提供了一些数据操作的方法。通过 <strong>get</strong> 方法可以获取数据；通过 <strong>set</strong>、<strong>splice</strong> 等方法修改数据，相应的视图会被自动刷新。</p>
+<p><code>说明</code>：为什么是通过 San 提供的方法操作数据，而不是直接操作数据？因为defineProperty并未被国内常用的浏览器广泛支持，并且我们也并不喜欢这种侵入式的风格，所以我们选择了折中的方式。因此，只有通过 San 提供的方法修改数据，视图才会自动刷新。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>通过定义 initData 方法，可以在定义组件时指定组件初始化时的数据。initData 方法返回组件实例的初始化数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用-d"><a href="#使用-d" class="headerlink" title="使用 .d"></a>使用 .d</h2><p><code>新增</code>：在 &gt;&#x3D; 3.15.0 中，支持通过 <strong>d</strong> 对组件数据进行获取和修改。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span>,</span><br><span class="line">            <span class="attr">animals</span>: [<span class="string">&#x27;dog&#x27;</span>, <span class="string">&#x27;cat&#x27;</span>, <span class="string">&#x27;lion&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">width</span>; <span class="comment">// 200</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// top: 100</span></span><br><span class="line">        <span class="comment">// left: -1000</span></span><br><span class="line">        <span class="keyword">let</span> &#123;top, left&#125; = <span class="variable language_">this</span>.<span class="property">d</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// for array</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="title function_">push</span>(<span class="string">&#x27;tiger&#x27;</span>);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="property">length</span>; <span class="comment">// 4</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="title function_">pop</span>();</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="title function_">shift</span>();</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="title function_">unshift</span>(<span class="string">&#x27;pig&#x27;</span>);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">d</span>.<span class="property">animals</span>.<span class="title function_">splice</span>(<span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="数据获取"><a href="#数据获取" class="headerlink" title="数据获取"></a>数据获取</h2><h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; get(&#123;string|Object?&#125;expr)</span><br></pre></td></tr></table></figure>
+
+
+<p><code>解释</code>：</p>
+<p>get 方法能够让我们从 data 中获取数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;width&#x27;</span>); <span class="comment">// 200</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>当 expr 参数为空时，将返回整个数据项的对象。提供无参的 <strong>get</strong> 方法，主要是为了 ESNext 的解构，能够在一个表达式中获取多个数据项。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">width</span>: <span class="number">200</span>,</span><br><span class="line">            <span class="attr">top</span>: <span class="number">100</span>,</span><br><span class="line">            <span class="attr">left</span>: -<span class="number">1000</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>().<span class="property">width</span>; <span class="comment">// 200</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// top: 100</span></span><br><span class="line">        <span class="comment">// left: -1000</span></span><br><span class="line">        <span class="keyword">let</span> &#123;top, left&#125; = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>注意</code>： <strong>get</strong> 方法获取的数据不能直接修改，否则可能导致不一致的问题。数据修改请使用本文下面的 <strong>set</strong> 、 <strong>splice</strong> 等方法</p>
+<h2 id="数据赋值"><a href="#数据赋值" class="headerlink" title="数据赋值"></a>数据赋值</h2><h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+
+<p><code>解释</code>：</p>
+<p>set 方法是最常用的数据修改方法，作用相当于 JavaScript 中的赋值 (&#x3D;)。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title function_">requestUser</span>().<span class="title function_">then</span>(<span class="variable language_">this</span>.<span class="property">userReceived</span>.<span class="title function_">bind</span>(<span class="variable language_">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">userReceived</span>: <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;user&#x27;</span>, data);</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">changeEmail</span>: <span class="keyword">function</span> (<span class="params">email</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;user.email&#x27;</span>, email);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">assign(&#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>版本</code>：&gt;&#x3D; 3.9.0</p>
+<p><code>解释</code>：</p>
+<p>assign 方法将传入数据对象（source）与 data 合并，进行批量更新。作用类似于 JavaScript 中的 <code>Object.assign</code>。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;ER&#x27;</span>,</span><br><span class="line">            <span class="attr">type</span>: <span class="string">&#x27;MVC&#x27;</span>,</span><br><span class="line">            <span class="attr">author</span>: <span class="string">&#x27;Someone&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">assign</span>(&#123;</span><br><span class="line">            <span class="attr">title</span>: <span class="string">&#x27;San&#x27;</span>,</span><br><span class="line">            <span class="attr">type</span>: <span class="string">&#x27;MVVM&#x27;</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">merge(&#123;string|Object&#125;expr, &#123;Object&#125;source, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>版本</code>：&gt;&#x3D; 3.4.0</p>
+<p><code>解释</code>：</p>
+<p>merge 方法对指定的数据项，使用传入数据对象（source）进行合并。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title function_">requestUser</span>().<span class="title function_">then</span>(<span class="variable language_">this</span>.<span class="property">updateUserInfo</span>.<span class="title function_">bind</span>(<span class="variable language_">this</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">updateUserInfo</span>: <span class="keyword">function</span> (<span class="params">data</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">merge</span>(<span class="string">&#x27;user&#x27;</span>, data);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="apply"><a href="#apply" class="headerlink" title="apply"></a>apply</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply(&#123;string|Object&#125;expr, &#123;function(&#123;*&#125;):&#123;*&#125;&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>版本</code>：&gt;&#x3D; 3.4.0</p>
+<p><code>解释</code>：</p>
+<p>apply 方法接受一个函数作为参数，传入当前的值到函数，然后用新返回的值更新它。其行为类似 <code>Array.prototype.map</code> 方法。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">number</span>: <span class="number">1</span>,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// increment</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">apply</span>(<span class="string">&#x27;number&#x27;</span>, <span class="keyword">function</span> (<span class="params">n</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> n + <span class="number">1</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组操作"><a href="#数组操作" class="headerlink" title="数组操作"></a>数组操作</h2><p>我们提供了一些数组操作的方法，这些方法与 JavaScript 的数组操作方法基本同名，以减少使用者的学习与记忆成本。除了 <strong>删除</strong> 操作。</p>
+<p><code>提示</code>：修改数组项还是直接使用 set 方法。我们可以认为，基本上所有写 JavaScript 时使用 &#x3D; 赋值的场景，都用 set 方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">flag</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;users[0].flag&#x27;</span>, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="push"><a href="#push" class="headerlink" title="push"></a>push</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; push(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>在数组末尾插入一条数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">addUser</span>: <span class="keyword">function</span> (<span class="params">name</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">push</span>(<span class="string">&#x27;users&#x27;</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="pop"><a href="#pop" class="headerlink" title="pop"></a>pop</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; pop(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>在数组末尾弹出一条数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmLast</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">pop</span>(<span class="string">&#x27;users&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="unshift"><a href="#unshift" class="headerlink" title="unshift"></a>unshift</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;number&#125; unshift(&#123;string|Object&#125;expr, &#123;*&#125;value, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>在数组开始插入一条数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">addUser</span>: <span class="keyword">function</span> (<span class="params">name</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">unshift</span>(<span class="string">&#x27;users&#x27;</span>, &#123;<span class="attr">name</span>: name&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="shift"><a href="#shift" class="headerlink" title="shift"></a>shift</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;*&#125; shift(&#123;string|Object&#125;expr, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>在数组开始弹出一条数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmFirst</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">shift</span>(<span class="string">&#x27;users&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="remove"><a href="#remove" class="headerlink" title="remove"></a>remove</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remove(&#123;string|Object&#125;expr, &#123;*&#125;item, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>移除一条数据。只有当数组项与传入项完全相等(&#x3D;&#x3D;&#x3D;)时，数组项才会被移除。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rm</span>: <span class="keyword">function</span> (<span class="params">user</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">remove</span>(<span class="string">&#x27;users&#x27;</span>, user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="removeAt"><a href="#removeAt" class="headerlink" title="removeAt"></a>removeAt</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">removeAt(&#123;string|Object&#125;expr, &#123;number&#125;index, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>通过数据项的索引移除一条数据。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rmAt</span>: <span class="keyword">function</span> (<span class="params">index</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">removeAt</span>(<span class="string">&#x27;users&#x27;</span>, index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="splice"><a href="#splice" class="headerlink" title="splice"></a>splice</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;Array&#125; splice(&#123;string|Object&#125;expr, &#123;Array&#125;spliceArgs, &#123;Object?&#125;option)</span><br></pre></td></tr></table></figure>
+
+<p><code>解释</code>：</p>
+<p>向数组中添加或删除项目。</p>
+<p><code>用法</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">rm</span>: <span class="keyword">function</span> (<span class="params">index, deleteCount</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">splice</span>(<span class="string">&#x27;users&#x27;</span>, [index, deleteCount]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="option"><a href="#option" class="headerlink" title="option"></a>option</h2><p>每个数据操作方法，最后都可以包含一个类型为 Object 的数据操作选项参数对象，该对象中的参数可控制视图更新行为。</p>
+<h3 id="silent"><a href="#silent" class="headerlink" title="silent"></a>silent</h3><p><code>解释</code>：</p>
+<p>静默更新数据，不触发视图变更。</p>
+<h3 id="force"><a href="#force" class="headerlink" title="force"></a>force</h3><p><code>版本</code>：&gt;&#x3D; 3.5.5</p>
+<p><code>解释</code>：</p>
+<p>设置相同的数据时，强制触发视图变更。该参数仅对 set 方法有效</p>
+<h2 id="数据校验"><a href="#数据校验" class="headerlink" title="数据校验"></a>数据校验</h2><p>我们可以给组件的 data 指定校验规则。如果传入的数据不符合规则，那么 san 会抛出异常。当组件给其他人使用时，这很有用。</p>
+<p>指定校验规则，需要使用 <code>DataTypes</code> 进行声明：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san, &#123;<span class="title class_">DataTypes</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line"></span><br><span class="line">    <span class="attr">dataTypes</span>: &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>DataTypes</code> 提供了一系列校验器，可以用来保证组件得到的数据是合法的。在上边的示例中，我们使用了 <code>DataTypes.string</code>。当一个 <code>name</code> 得到了一个不合法的数据值时，san 会抛出异常。</p>
+<p><strong>考虑到性能原因，<code>dataTypes</code> 只会在 <code>development</code> 模式下进行数据校验。</strong></p>
+<p>请参考<a href="https://github.com/baidu/san/tree/master/dist">这里</a>来确认在不同的 san 发布版本中数据校验功能的支持情况。</p>
+<h3 id="DataTypes"><a href="#DataTypes" class="headerlink" title="DataTypes"></a>DataTypes</h3><p>下边是 <code>DataTypes</code> 提供的各种校验的一个示例代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san, &#123;<span class="title class_">DataTypes</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你可以声明数据为 JS 原生类型。</span></span><br><span class="line">    <span class="comment">// 默认的以下这些数据是可选的。</span></span><br><span class="line">    <span class="attr">optionalArray</span>: <span class="title class_">DataTypes</span>.<span class="property">array</span>,</span><br><span class="line">    <span class="attr">optionalBool</span>: <span class="title class_">DataTypes</span>.<span class="property">bool</span>,</span><br><span class="line">    <span class="attr">optionalFunc</span>: <span class="title class_">DataTypes</span>.<span class="property">func</span>,</span><br><span class="line">    <span class="attr">optionalNumber</span>: <span class="title class_">DataTypes</span>.<span class="property">number</span>,</span><br><span class="line">    <span class="attr">optionalObject</span>: <span class="title class_">DataTypes</span>.<span class="property">object</span>,</span><br><span class="line">    <span class="attr">optionalString</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">    <span class="attr">optionalSymbol</span>: <span class="title class_">DataTypes</span>.<span class="property">symbol</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可以声明数据为指定类的实例。</span></span><br><span class="line">    <span class="comment">// 这里会使用 instanceof 进行判断。</span></span><br><span class="line">    <span class="attr">optionalMessage</span>: <span class="title class_">DataTypes</span>.<span class="title function_">instanceOf</span>(<span class="title class_">Message</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果你可以确定你的数据是有限的几个值之一，那么你可以将它声明为枚举类型。</span></span><br><span class="line">    <span class="attr">optionalEnum</span>: <span class="title class_">DataTypes</span>.<span class="title function_">oneOf</span>([<span class="string">&#x27;News&#x27;</span>, <span class="string">&#x27;Photos&#x27;</span>]),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以是指定的几个类型之一</span></span><br><span class="line">    <span class="attr">optionalUnion</span>: <span class="title class_">DataTypes</span>.<span class="title function_">oneOfType</span>([</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="property">number</span>,</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="title function_">instanceOf</span>(<span class="title class_">Message</span>)</span><br><span class="line">    ]),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数组中每个元素都必须是指定的类型</span></span><br><span class="line">    <span class="attr">optionalArrayOf</span>: <span class="title class_">DataTypes</span>.<span class="title function_">arrayOf</span>(<span class="title class_">DataTypes</span>.<span class="property">number</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对象的所有属性值都必须是指定的类型</span></span><br><span class="line">    <span class="attr">optionalObjectOf</span>: <span class="title class_">DataTypes</span>.<span class="title function_">objectOf</span>(<span class="title class_">DataTypes</span>.<span class="property">number</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 具有特定形状的对象</span></span><br><span class="line">    <span class="attr">optionalObjectWithShape</span>: <span class="title class_">DataTypes</span>.<span class="title function_">shape</span>(&#123;</span><br><span class="line">        <span class="attr">color</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">        <span class="attr">fontSize</span>: <span class="title class_">DataTypes</span>.<span class="property">number</span></span><br><span class="line">    &#125;),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以上所有校验器都拥有 `isRequired` 方法，来确保此数据必须被提供</span></span><br><span class="line">    <span class="attr">requiredFunc</span>: <span class="title class_">DataTypes</span>.<span class="property">func</span>.<span class="property">isRequired</span>,</span><br><span class="line">    <span class="attr">requiredObject</span>: <span class="title class_">DataTypes</span>.<span class="title function_">shape</span>(&#123;</span><br><span class="line">        <span class="attr">color</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span></span><br><span class="line">    &#125;).<span class="property">isRequired</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一个必须的但可以是任何类型的数据</span></span><br><span class="line">    <span class="attr">requiredAny</span>: <span class="title class_">DataTypes</span>.<span class="property">any</span>.<span class="property">isRequired</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可指定一个自定义的校验器。</span></span><br><span class="line">    <span class="comment">// 如果校验失败，它应该丢出一个异常。</span></span><br><span class="line">    <span class="attr">customProp</span>: <span class="keyword">function</span> (<span class="params">props, propName, componentName</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="regexp">/matchme/</span>.<span class="title function_">test</span>(props[propName])) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">                <span class="string">&#x27;Invalid prop `&#x27;</span> + propName + <span class="string">&#x27;` supplied to&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27; `&#x27;</span> + componentName + <span class="string">&#x27;`. Validation failed.&#x27;</span></span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可以给 `arrayOf` 和 `objectOf` 提供一个自定义校验器。</span></span><br><span class="line">    <span class="comment">// 如果校验失败，那么应该当抛出一个异常。</span></span><br><span class="line">    <span class="comment">// 对于数组或者对象中的每个元素都会调用校验器进行校验。</span></span><br><span class="line">    <span class="comment">// 第一个参数是这个数组或者对象，第二个参数是元素的 key。</span></span><br><span class="line">    <span class="attr">customArrayProp</span>: <span class="title class_">DataTypes</span>.<span class="title function_">arrayOf</span>(<span class="keyword">function</span> (<span class="params">dataValue, key, componentName, dataFullName</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="regexp">/matchme/</span>.<span class="title function_">test</span>(dataValue[key])) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">                <span class="string">&#x27;Invalid prop `&#x27;</span> + dataFullName + <span class="string">&#x27;` supplied to&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27; `&#x27;</span> + componentName + <span class="string">&#x27;`. Validation failed.&#x27;</span></span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-d"><span class="toc-text">使用 .d</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96"><span class="toc-text">数据获取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#get"><span class="toc-text">get</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%B5%8B%E5%80%BC"><span class="toc-text">数据赋值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#assign"><span class="toc-text">assign</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#merge"><span class="toc-text">merge</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apply"><span class="toc-text">apply</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%93%8D%E4%BD%9C"><span class="toc-text">数组操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#push"><span class="toc-text">push</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pop"><span class="toc-text">pop</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unshift"><span class="toc-text">unshift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shift"><span class="toc-text">shift</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#remove"><span class="toc-text">remove</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#removeAt"><span class="toc-text">removeAt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#splice"><span class="toc-text">splice</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#option"><span class="toc-text">option</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#silent"><span class="toc-text">silent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#force"><span class="toc-text">force</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A0%A1%E9%AA%8C"><span class="toc-text">数据校验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DataTypes"><span class="toc-text">DataTypes</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../start/">教程</a>
+        <li><a href="../../practice/">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="" class="recommend-active">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

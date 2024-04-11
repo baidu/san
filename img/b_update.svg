@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128px" height="128px" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>b_update</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-Copy" transform="translate(-721.000000, -1664.000000)" fill="#FFFFFF">
+            <g id="Group-2-Copy" transform="translate(72.000000, 1565.000000)">
+                <g id="Group" transform="translate(578.000000, 73.000000)">
+                    <g id="Group-13" transform="translate(71.000000, 26.000000)">
+                        <path d="M83.1837662,55.1837662 L83.1837662,81.1837662 L46.1837662,81.1837662 L46.1837662,55.1837662 L31,55.1837662 C28.2385763,55.1837662 26,52.9451899 26,50.1837662 C26,48.8576837 26.5267842,47.5859142 27.4644661,46.6482323 L60.6482323,13.4644661 C62.6008537,11.5118446 65.7666786,11.5118446 67.7193001,13.4644661 L100.903066,46.6482323 C102.855688,48.6008537 102.855688,51.7666786 100.903066,53.7193001 C99.9653844,54.656982 98.6936148,55.1837662 97.3675324,55.1837662 L83.1837662,55.1837662 Z" id="Combined-Shape" fill-rule="nonzero"></path>
+                        <rect id="Rectangle-18" opacity="0.6" x="46" y="86" width="37" height="12"></rect>
+                        <path d="M46,103 L83,103 L83,111 L83,111 C83,113.209139 81.209139,115 79,115 L50,115 L50,115 C47.790861,115 46,113.209139 46,111 L46,103 Z" id="Rectangle-18-Copy" opacity="0.4"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

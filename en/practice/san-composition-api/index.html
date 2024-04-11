@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>How to use san-composition to organize code by function？ | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="IntroductionAs the business continues to evolve, front-end projects tend to become more and more complex, and the way we used options to define components in the past may become less and less readable">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to use san-composition to organize code by function？">
+<meta property="og:url" content="http://baidu.github.io/en/practice/san-composition-api/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="IntroductionAs the business continues to evolve, front-end projects tend to become more and more complex, and the way we used options to define components in the past may become less and less readable">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.893Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.893Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">Tutorial</a></li>
+                <li><a class="router" href="../">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../practice/san-composition-api/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/practice/san-composition-api" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      How to use san-composition to organize code by function？
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/san-composition-api.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h4><p>As the business continues to evolve, front-end projects tend to become more and more complex, and the way we used options to define components in the past may become less and less readable as we iterate through the functionality. When we add additional functionality to a component, we usually need to modify (initData, attached, computed, etc.) multiple blocks of code; and in some cases, it clearly makes more sense to organize the code by functionality and facilitate fine-grained code reuse.</p>
+<p>The Composition API provides a set of methods corresponding to the key that defines the component options to define the properties and methods of the component, allowing developers to organize the code by logical correlation, thus improving the readability and maintainability of the code.</p>
+<h4 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h4><p><strong>NPM</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i --save san-composition</span><br></pre></td></tr></table></figure>
+
+<h4 id="Basic-usage"><a href="#Basic-usage" class="headerlink" title="Basic usage"></a>Basic usage</h4><p>When defining a component, we usually need to define templates, initialize data, define methods, add lifecycle hooks, and so on. When defining a component using the Composition API, instead of declaring properties and methods using an options object, we use the methods corresponding to each option to solve the definition of various properties and methods of the component.</p>
+<blockquote>
+<p>Note: The Composition API methods can only be executed during the first function argument of the defineComponent method.</p>
+</blockquote>
+<h5 id="Defining-Template"><a href="#Defining-Template" class="headerlink" title="Defining Template"></a>Defining Template</h5><p>Use the <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#template">template</a> method to define the template for the component.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h5 id="Defining-Data"><a href="#Defining-Data" class="headerlink" title="Defining Data"></a>Defining Data</h5><p>Use the <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#data">data</a> method to initialize a data item of the component.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template, data &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p>The return value of <code>data</code> is an object that contains get, set, merge, splice and other methods. We can use the methods on the object to get and modify the data.</p>
+<h5 id="Defining-Computed-Data"><a href="#Defining-Computed-Data" class="headerlink" title="Defining Computed Data"></a>Defining Computed Data</h5><p>Use the <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#computed">computed</a> method to define a computed data item.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> name = <span class="title function_">data</span>(<span class="string">&#x27;name&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">first</span>: <span class="string">&#x27;Donald&#x27;</span>,</span><br><span class="line">        <span class="attr">last</span>: <span class="string">&#x27;Trump&#x27;</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> fullName = <span class="title function_">computed</span>(<span class="string">&#x27;fullName&#x27;</span>,  <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> name.<span class="title function_">get</span>(<span class="string">&#x27;first&#x27;</span>) + <span class="string">&#x27; &#x27;</span> + name.<span class="title function_">get</span>(<span class="string">&#x27;last&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="Defining-Filters"><a href="#Defining-Filters" class="headerlink" title="Defining Filters"></a>Defining Filters</h5><p>Use the <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#filters">filters</a> method to add filters to the component.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;&lt;div&gt; &#123;&#123; count|triple &#125;&#125; &lt;/div&gt;&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;triple&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> value * <span class="number">3</span>);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+
+<h5 id="Defining-Method"><a href="#Defining-Method" class="headerlink" title="Defining Method"></a>Defining Method</h5><p>To define methods using <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#method">method</a>, we strongly recommend defining them according to <code>data</code> and <code>method</code> in close proximity to the business logic.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, template, data, method &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">	`</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">set</span>(count.<span class="title function_">get</span>() + <span class="number">1</span>));</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Lifecycle-Hooks"><a href="#Lifecycle-Hooks" class="headerlink" title="Lifecycle Hooks"></a>Lifecycle Hooks</h5><p>The following <a href="https://github.com/baidu/san-composition/blob/master/docs/api.md#onAttached">onAttached</a> method adds attached lifecycle hooks to the component.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;defineComponent, template, onAttached&#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">App</span> =  <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p>The API related to lifecycle hooks is named by prefixing the corresponding hook with <code>on</code>, so it corresponds to the component’s lifecycle hooks one by one.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Option API</strong></th>
+<th><strong>Hooks in Composition API</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>construct</td>
+<td>onConstruct</td>
+</tr>
+<tr>
+<td>compiled</td>
+<td>onCompiled</td>
+</tr>
+<tr>
+<td>inited</td>
+<td>onInited</td>
+</tr>
+<tr>
+<td>created</td>
+<td>onCreated</td>
+</tr>
+<tr>
+<td>attached</td>
+<td>onAttached</td>
+</tr>
+<tr>
+<td>detached</td>
+<td>onDetached</td>
+</tr>
+<tr>
+<td>disposed</td>
+<td>onDisposed</td>
+</tr>
+<tr>
+<td>updated</td>
+<td>onUpdated</td>
+</tr>
+<tr>
+<td>error</td>
+<td>onError</td>
+</tr>
+</tbody></table>
+<p><strong>A complete example</strong></p>
+<p>The following example shows how to define components using the Composition API.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">    defineComponent,</span><br><span class="line">    template,</span><br><span class="line">    data,</span><br><span class="line">    computed,</span><br><span class="line">    filters,</span><br><span class="line">    watch,</span><br><span class="line">    components,</span><br><span class="line">    method,</span><br><span class="line">    onCreated,</span><br><span class="line">    onAttached</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 定义模板</span></span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;span&gt;count: &#123;&#123; count &#125;&#125; &lt;/span&gt;</span></span><br><span class="line"><span class="string">            &lt;input type=&quot;text&quot; value=&quot;&#123;= count =&#125;&quot; /&gt;</span></span><br><span class="line"><span class="string">            &lt;div&gt;double: &#123;&#123; double &#125;&#125; &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;div&gt;triple: &#123;&#123; count|triple &#125;&#125; &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;increment&quot;&gt; +1 &lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;my-child&gt;&lt;/my-child&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化数据</span></span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加方法</span></span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">set</span>(count.<span class="title function_">get</span>() + <span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 监听数据变化</span></span><br><span class="line">    <span class="title function_">watch</span>(<span class="string">&#x27;count&#x27;</span>, <span class="function"><span class="params">newVal</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;count updated: &#x27;</span>, newVal);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加计算数据</span></span><br><span class="line">    <span class="title function_">computed</span>(<span class="string">&#x27;double&#x27;</span>, <span class="function">() =&gt;</span> count.<span class="title function_">get</span>() * <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 添加过滤器</span></span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;triple&#x27;</span>, <span class="function"><span class="params">n</span> =&gt;</span> n * <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义子组件</span></span><br><span class="line">    <span class="title function_">components</span>(&#123; <span class="string">&#x27;my-child&#x27;</span>: <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> <span class="title function_">template</span>(<span class="string">&#x27;&lt;div&gt;My Child&lt;/div&gt;&#x27;</span>), san) &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 生命周期钩子方法</span></span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;another onAttached&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">onCreated</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;onCreated&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Advanced"><a href="#Advanced" class="headerlink" title="Advanced"></a>Advanced</h4><p>The point of using the Composition API is to define the data, methods, lifecycle runtime logic, etc. <strong>by function</strong>. There is no point in using the Composition API for its own sake if you declare an entire component in a complete definition function.</p>
+<p>This article gives some guidance on the use of the composition API in two subsections with a simple example.</p>
+<ul>
+<li><a href="#Composition">Composition</a> explains how to transform a component declared using class into an implementation using the compositional API</li>
+<li><a href="#Reusability">Reusability</a> builds on the previous section by describing how to break down functions <strong>by function</strong> and implement reuse</li>
+</ul>
+<h5 id="Composition"><a href="#Composition" class="headerlink" title="Composition"></a>Composition</h5><p>Suppose we want to develop a contact list. In terms of business logic, the component has the following functions.</p>
+<ol>
+<li>A list of contacts, and view and favorite operations.</li>
+<li>A list of favorites, as well as view and unfavorite operations.</li>
+<li>Filtering contacts by form.</li>
+</ol>
+<p>We’ll build two versions of the same component: one with the Class API, and the other with the  Composition API.</p>
+<p><strong>Building with Class API</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ContactList</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> template = <span class="comment">/* html */</span><span class="string">`</span></span><br><span class="line"><span class="string">         &lt;div class=&quot;container&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div class=&quot;contact-list-filter&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;s-icon type=&quot;search&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;s-input on-change=&quot;changeKeyword&quot;&gt;&lt;/s-input&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            &lt;div class=&quot;favorite-list&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;h2&gt;个人收藏&lt;/h2&gt;</span></span><br><span class="line"><span class="string">                &lt;contact-list</span></span><br><span class="line"><span class="string">                    data=&quot;&#123;&#123;favoriteList|filterList(keyword)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                    on-open=&quot;onOpen&quot;</span></span><br><span class="line"><span class="string">                    on-favorite=&quot;onFavorite&quot;</span></span><br><span class="line"><span class="string">                /&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            &lt;div class=&quot;contact-list&quot;&gt;</span></span><br><span class="line"><span class="string">                &lt;h2&gt;联系人&lt;/h2&gt;</span></span><br><span class="line"><span class="string">                &lt;contact-list</span></span><br><span class="line"><span class="string">                    data=&quot;&#123;&#123;contactList|filterList(keyword)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                    on-open=&quot;onOpen&quot;</span></span><br><span class="line"><span class="string">                    on-favorite=&quot;onFavorite&quot;</span></span><br><span class="line"><span class="string">                /&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="comment">// 功能 1</span></span><br><span class="line">            <span class="attr">contactList</span>: []</span><br><span class="line">            <span class="comment">// 功能 2</span></span><br><span class="line">            <span class="attr">favoriteList</span>: [],</span><br><span class="line">            <span class="comment">// 功能 3</span></span><br><span class="line">            <span class="attr">keyword</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">filterList</span>(<span class="params">item, keyword</span>) &#123;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> components = &#123;</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span>,</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">attached</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">getContactList</span>();</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="title function_">getContactList</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="title function_">getFavoriteList</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="keyword">async</span> <span class="title function_">onOpen</span>(<span class="params">item</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="keyword">async</span> <span class="title function_">onFavorite</span>(<span class="params">item</span>) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="title function_">changeKeyword</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;keyword&#x27;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>As components become more feature-rich, the logic of the Class API becomes more and more diffuse, and we often need to jump through multiple modules to read the implementation of a feature, making the code less readable. Next, we use the Composition API to organize the code by function.</p>
+<p><strong>Building with Composition API</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span>,</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1 &amp; 2</span></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">filters</span>(<span class="string">&#x27;filterList&#x27;</span>, <span class="function">(<span class="params">item, keyword</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="keyword">const</span> contactList = <span class="title function_">data</span>(<span class="string">&#x27;contactList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getContactList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        contactList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getContactList</span>(); &#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="keyword">const</span> favoriteList = <span class="title function_">data</span>(<span class="string">&#x27;favoriteList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getFavoriteList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        favoriteList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>(); &#125;);</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="keyword">const</span> keyword = <span class="title function_">data</span>(<span class="string">&#x27;keyword&#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;changeKeyword&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">        keyword.<span class="title function_">set</span>(value);</span><br><span class="line">    &#125;);    </span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Reusability"><a href="#Reusability" class="headerlink" title="Reusability"></a>Reusability</h5><p>Code organized by function can sometimes be a long block of logic, so we can consider a wrapper around the combined logic.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@file</span> utils.js</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; ... &#125; <span class="keyword">from</span> <span class="string">&#x27;san-composition&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 1</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useContactList</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> contactList = <span class="title function_">data</span>(<span class="string">&#x27;contactList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getContactList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        contactList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getContactList</span>(); &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 2</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useFavoriteList</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> favoriteList = <span class="title function_">data</span>(<span class="string">&#x27;favoriteList&#x27;</span>, []);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;getFavoriteList&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        favoriteList.<span class="title function_">set</span>([<span class="comment">/* ... */</span>]);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title function_">onAttached</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="title function_">getFavoriteList</span>(); &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 功能 3</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useSearchBox</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> keyword = <span class="title function_">data</span>(<span class="string">&#x27;keyword&#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;changeKeyword&#x27;</span>, <span class="function"><span class="params">value</span> =&gt;</span> &#123;</span><br><span class="line">        keyword.<span class="title function_">set</span>(value);</span><br><span class="line">    &#125;);    </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该 hook 函数提供一个默认名字为 filterList 的过滤器，可以通过参数修改这个过滤器的名称</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useFilterList</span> = (<span class="params">&#123;filterList = <span class="string">&#x27;filterList&#x27;</span>&#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">filters</span>(filterList, <span class="function">(<span class="params">item, keyword</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>In addition, for some common basic UI components, we can also wrap a method.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title function_">useUIComponents</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;s-button&#x27;</span>: <span class="title class_">Button</span>,</span><br><span class="line">        <span class="string">&#x27;s-icon&#x27;</span>: <span class="title class_">Icon</span>,</span><br><span class="line">        <span class="string">&#x27;s-input&#x27;</span>: <span class="title class_">Input</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Let’s refactor the contact list component a bit more.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useContactList, useFavoriteList, useSearchBox, useUIComponents, useFilterList &#125; <span class="keyword">from</span> <span class="string">&#x27;utils.js&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useUIComponents</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useFilterList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 1</span></span><br><span class="line">    <span class="title function_">useContactList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 2</span></span><br><span class="line">    <span class="title function_">useFavoriteList</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 功能 3</span></span><br><span class="line">    <span class="title function_">useSearchBox</span>();</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<p>Suppose a new requirement comes up and we need a new component that doesn’t show favorite contacts.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useContactList, useFavoriteList, useSearchBox, useUIComponents &#125; <span class="keyword">from</span> <span class="string">&#x27;utils.js&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ContactList</span> = <span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 模板当然也要做一些调整，这里省略了</span></span><br><span class="line">    <span class="title function_">template</span>(<span class="string">&#x27;/* ... */&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useUIComponents</span>();</span><br><span class="line"></span><br><span class="line">    <span class="title function_">components</span>(&#123;</span><br><span class="line">        <span class="string">&#x27;contact-list&#x27;</span>: <span class="title class_">ContactListComponent</span>,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">method</span>(&#123;</span><br><span class="line">        <span class="attr">onOpen</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;,</span><br><span class="line">        <span class="attr">onFavorite</span>: <span class="function"><span class="params">item</span> =&gt;</span> &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useFilterList</span>();</span><br><span class="line">    <span class="title function_">useContactList</span>();</span><br><span class="line">    <span class="title function_">useSearchBox</span>();</span><br><span class="line">&#125;, san);</span><br></pre></td></tr></table></figure>
+
+<h5 id="Usage-of-THIS"><a href="#Usage-of-THIS" class="headerlink" title="Usage of THIS"></a>Usage of THIS</h5><p>We don’t recommend using <code>this</code> in the Composition API, it can cause some confusion, but sometimes you may have to use it, so be careful not to use the arrow function in the corresponding method.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">defineComponent</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">template</span>(<span class="comment">/* ... */</span>);</span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">data</span>(<span class="string">&#x27;count&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里定义的方法不能使用箭头函数</span></span><br><span class="line">    <span class="title function_">method</span>(<span class="string">&#x27;increment&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">dispatch</span>(<span class="string">&#x27;increment:count&#x27;</span>, count.<span class="title function_">get</span>());</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, san);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Introduction"><span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Usage"><span class="toc-text">Usage</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Basic-usage"><span class="toc-text">Basic usage</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Defining-Template"><span class="toc-text">Defining Template</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Defining-Data"><span class="toc-text">Defining Data</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Defining-Computed-Data"><span class="toc-text">Defining Computed Data</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Defining-Filters"><span class="toc-text">Defining Filters</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Defining-Method"><span class="toc-text">Defining Method</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Lifecycle-Hooks"><span class="toc-text">Lifecycle Hooks</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Advanced"><span class="toc-text">Advanced</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Composition"><span class="toc-text">Composition</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Reusability"><span class="toc-text">Reusability</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Usage-of-THIS"><span class="toc-text">Usage of THIS</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">Tutorial</a>
+        <li><a href="../">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../practice/san-composition-api/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

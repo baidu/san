@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>Auto camel when data bind | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="In the san component, the key value of data must follow the camelCase naming convention, and the kebab-case specification should not be used. Scenes 1When a parent component calls a child component an">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Auto camel when data bind">
+<meta property="og:url" content="http://baidu.github.io/en/practice/auto-camel/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="In the san component, the key value of data must follow the camelCase naming convention, and the kebab-case specification should not be used. Scenes 1When a parent component calls a child component an">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.892Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.892Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">Tutorial</a></li>
+                <li><a class="router" href="../">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../practice/auto-camel/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/practice/auto-camel" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Auto camel when data bind
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/auto-camel.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>In the san component, the key value of data must follow the camelCase naming convention, and the kebab-case specification should not be used.</p>
+<h2 id="Scenes-1"><a href="#Scenes-1" class="headerlink" title="Scenes 1"></a>Scenes 1</h2><p>When a parent component calls a child component and performs data binding, if a property is written using kebab-case, san will automatically convert it to camelCase and then pass it to the child component. The following example illustrates this:</p>
+<h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Child</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;ol&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;dataParent&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;data-parent&#125;&#125;&lt;/li&gt; </span></span><br><span class="line"><span class="string">    &lt;/ol&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Parent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div&gt;</span></span><br><span class="line"><span class="string">      &lt;san-child data-parent=&quot;data from parent!&quot;/&gt;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> components = &#123;</span><br><span class="line">    <span class="string">&#x27;san-child&#x27;</span>: <span class="title class_">Child</span></span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Parent</span>().<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+<p data-height="265" data-theme-id="0" data-slug-hash="vJQgWm" data-default-tab="js,result" data-user="mly-zju" data-embed-version="2" data-pen-title="vJQgWm" class="codepen">See the Pen <a href="https://codepen.io/mly-zju/pen/vJQgWm/">vJQgWm</a> by Ma Lingyang (<a href="https://codepen.io/mly-zju">@mly-zju</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h3 id="Analyse"><a href="#Analyse" class="headerlink" title="Analyse"></a>Analyse</h3><p>In the above example, the parent component calls the child component, passing in the “data from parent!” string for the <code>data-parent</code> property. In the sub-component, the value of the <code>dataParent</code> and <code>data-parent</code> attributes are output in the li tag at the same time. It can be seen that <code>dataParent</code> prints out the value bound to the parent component, as a comparison, <code>data-parent </code> did not output the binding value we expected. As you can see from this example, for incoming property key values, San will automatically convert the kebab-case method to camelCase. In contrast, in native html tags, there is no auto-camel feature. If we pass in a custom kebab-case method, we can use &#96;dom.getAttribute(‘kebab-case’) to read. The San template differs from the native html in that it deserves our attention.</p>
+<p>The auto camel in this scene is very confusing. This feature makes us mistakenly think that in development, when we define the property key values of components, we can mix camelCase and kebab-case as we like, because anyway, san will automatically help. We convert to the camelCase form. So, isn’t that really the case? Look at scene two.</p>
+<h2 id="Scenes-2"><a href="#Scenes-2" class="headerlink" title="Scenes 2"></a>Scenes 2</h2><p>In scenario 1, the parent component binds a kebab-case method property to the child component and is automatically converted to camelCase. So what happens if the initial data property returned by itself is a kebab-case type in the child component? Let’s look at the second example:</p>
+<h3 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2"></a>Example 2</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Child</span> <span class="keyword">extends</span> <span class="title class_ inherited__">san.Component</span> &#123;</span><br><span class="line">  <span class="keyword">static</span> template = <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;ol&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;dataSelf&#125;&#125;&lt;/li&gt;</span></span><br><span class="line"><span class="string">      &lt;li&gt;&#123;&#123;data-self&#125;&#125;&lt;/li&gt; </span></span><br><span class="line"><span class="string">    &lt;/ol&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="string">&#x27;data-self&#x27;</span>: <span class="string">&#x27;data from myself!&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Child</span>().<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+<p data-height="265" data-theme-id="0" data-slug-hash="QMJpvL" data-default-tab="js,result" data-user="mly-zju" data-embed-version="2" data-pen-title="QMJpvL" class="codepen">See the Pen <a href="https://codepen.io/mly-zju/pen/QMJpvL/">QMJpvL</a> by Ma Lingyang (<a href="https://codepen.io/mly-zju">@mly-zju</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h3 id="Analyse-1"><a href="#Analyse-1" class="headerlink" title="Analyse"></a>Analyse</h3><p>In the above example, the Child component’s initial data contains a data with a key value of <code>data-self</code>. We print them to the li tag with <code>dataSelf</code> and <code>data-self</code> respectively. As you can see, neither of them correctly prints out our initialized values. Explain that for its own data property, if the key value of the property is not in the form of camelCase, San does not perform auto camel conversion on it, so we can’t get this data in any way.</p>
+<h2 id="Principle-analysis"><a href="#Principle-analysis" class="headerlink" title="Principle analysis"></a>Principle analysis</h2><p>In the compile process of San, parsing the template returns an instance of the ANODE class. When the attribute is bound in template, the information of the attribute object is resolved to the props attribute in the ANODE instance. For subcomponents, their own data binds are generated based on the parent component’s aNode.props.</p>
+<p>In San, when the non-root component does data bindings, it will do auto camel processing when accepting the aNode.props step of the parent component. This explains the above two examples. After the parent component kebab property is passed in, the child component camel property behaves normally, and the rest are abnormal. In fact, in the source code of San, we can find the relevant handler:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">kebab2camel</span>(<span class="params">source</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> source.<span class="title function_">replace</span>(<span class="regexp">/-([a-z])/g</span>, <span class="keyword">function</span> (<span class="params">match, alpha</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> alpha.<span class="title function_">toUpperCase</span>();</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">camelComponentBinds</span>(<span class="params">binds</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="keyword">new</span> <span class="title class_">IndexedList</span>();</span><br><span class="line">    binds.<span class="title function_">each</span>(<span class="keyword">function</span> (<span class="params">bind</span>) &#123;</span><br><span class="line">        result.<span class="title function_">push</span>(&#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="title function_">kebab2camel</span>(bind.<span class="property">name</span>),</span><br><span class="line">            <span class="attr">expr</span>: bind.<span class="property">expr</span>,</span><br><span class="line">            <span class="attr">x</span>: bind.<span class="property">x</span>,</span><br><span class="line">            <span class="attr">raw</span>: bind.<span class="property">raw</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>In the binding process of generating subcomponents, it is because of the call to the function of camelComponentBinds that auto camel is available.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>The auto camel of San only applies to data binding when the parent component calls the child component. For the initial data of a component itself, if the property is kebab-case, we will not get the data correctly. Therefore, in the process of writing the San component, we should consciously strictly follow the camelCase specification for the attribute key values in data.</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Scenes-1"><span class="toc-text">Scenes 1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Example-1"><span class="toc-text">Example 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Analyse"><span class="toc-text">Analyse</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scenes-2"><span class="toc-text">Scenes 2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Example-2"><span class="toc-text">Example 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Analyse-1"><span class="toc-text">Analyse</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Principle-analysis"><span class="toc-text">Principle analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-text">Conclusion</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">Tutorial</a>
+        <li><a href="../">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../practice/auto-camel/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

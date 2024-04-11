@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>数据校验 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我们可以给组件的 data 指定校验规则。如果传入的数据不符合规则，那么 san 会抛出异常。当组件给其他人使用时，这很有用。 指定校验规则，需要使用 DataTypes 进行声明： 123456789import san, &#123;DataTypes&#125; from &#x27;san&#x27;;let MyComponent &#x3D; san.defineComponent(&#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据校验">
+<meta property="og:url" content="http://baidu.github.io/tutorial/data-checking/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="我们可以给组件的 data 指定校验规则。如果传入的数据不符合规则，那么 san 会抛出异常。当组件给其他人使用时，这很有用。 指定校验规则，需要使用 DataTypes 进行声明： 123456789import san, &#123;DataTypes&#125; from &#x27;san&#x27;;let MyComponent &#x3D; san.defineComponent(&#123;">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.899Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.899Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../start/">教程</a></li>
+                <li><a class="router" href="../../practice/">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/tutorial/data-checking/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="../data-method/">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/data-checking" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      数据校验
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/data-checking.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们可以给组件的 data 指定校验规则。如果传入的数据不符合规则，那么 san 会抛出异常。当组件给其他人使用时，这很有用。</p>
+<p>指定校验规则，需要使用 <code>DataTypes</code> 进行声明：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san, &#123;<span class="title class_">DataTypes</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line"></span><br><span class="line">    <span class="attr">dataTypes</span>: &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>DataTypes</code> 提供了一系列校验器，可以用来保证组件得到的数据是合法的。在上边的示例中，我们使用了 <code>DataTypes.string</code>。当一个 <code>name</code> 得到了一个不合法的数据值时，san 会抛出异常。</p>
+<p><strong>考虑到性能原因，<code>dataTypes</code> 只会在 <code>development</code> 模式下进行数据校验。</strong></p>
+<p>请参考<a href="https://github.com/baidu/san/tree/master/dist">这里</a>来确认在不同的 san 发布版本中数据校验功能的支持情况。</p>
+<h2 id="DataTypes"><a href="#DataTypes" class="headerlink" title="DataTypes"></a>DataTypes</h2><p>下边是 <code>DataTypes</code> 提供的各种校验的一个示例代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> san, &#123;<span class="title class_">DataTypes</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你可以声明数据为 JS 原生类型。</span></span><br><span class="line">    <span class="comment">// 默认的以下这些数据是可选的。</span></span><br><span class="line">    <span class="attr">optionalArray</span>: <span class="title class_">DataTypes</span>.<span class="property">array</span>,</span><br><span class="line">    <span class="attr">optionalBool</span>: <span class="title class_">DataTypes</span>.<span class="property">bool</span>,</span><br><span class="line">    <span class="attr">optionalFunc</span>: <span class="title class_">DataTypes</span>.<span class="property">func</span>,</span><br><span class="line">    <span class="attr">optionalNumber</span>: <span class="title class_">DataTypes</span>.<span class="property">number</span>,</span><br><span class="line">    <span class="attr">optionalObject</span>: <span class="title class_">DataTypes</span>.<span class="property">object</span>,</span><br><span class="line">    <span class="attr">optionalString</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">    <span class="attr">optionalSymbol</span>: <span class="title class_">DataTypes</span>.<span class="property">symbol</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可以声明数据为指定类的实例。</span></span><br><span class="line">    <span class="comment">// 这里会使用 instanceof 进行判断。</span></span><br><span class="line">    <span class="attr">optionalMessage</span>: <span class="title class_">DataTypes</span>.<span class="title function_">instanceOf</span>(<span class="title class_">Message</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果你可以确定你的数据是有限的几个值之一，那么你可以将它声明为枚举类型。</span></span><br><span class="line">    <span class="attr">optionalEnum</span>: <span class="title class_">DataTypes</span>.<span class="title function_">oneOf</span>([<span class="string">&#x27;News&#x27;</span>, <span class="string">&#x27;Photos&#x27;</span>]),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以是指定的几个类型之一</span></span><br><span class="line">    <span class="attr">optionalUnion</span>: <span class="title class_">DataTypes</span>.<span class="title function_">oneOfType</span>([</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="property">number</span>,</span><br><span class="line">        <span class="title class_">DataTypes</span>.<span class="title function_">instanceOf</span>(<span class="title class_">Message</span>)</span><br><span class="line">    ]),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数组中每个元素都必须是指定的类型</span></span><br><span class="line">    <span class="attr">optionalArrayOf</span>: <span class="title class_">DataTypes</span>.<span class="title function_">arrayOf</span>(<span class="title class_">DataTypes</span>.<span class="property">number</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对象的所有属性值都必须是指定的类型</span></span><br><span class="line">    <span class="attr">optionalObjectOf</span>: <span class="title class_">DataTypes</span>.<span class="title function_">objectOf</span>(<span class="title class_">DataTypes</span>.<span class="property">number</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 具有特定形状的对象</span></span><br><span class="line">    <span class="attr">optionalObjectWithShape</span>: <span class="title class_">DataTypes</span>.<span class="title function_">shape</span>(&#123;</span><br><span class="line">        <span class="attr">color</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span>,</span><br><span class="line">        <span class="attr">fontSize</span>: <span class="title class_">DataTypes</span>.<span class="property">number</span></span><br><span class="line">    &#125;),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以上所有校验器都拥有 `isRequired` 方法，来确保此数据必须被提供</span></span><br><span class="line">    <span class="attr">requiredFunc</span>: <span class="title class_">DataTypes</span>.<span class="property">func</span>.<span class="property">isRequired</span>,</span><br><span class="line">    <span class="attr">requiredObject</span>: <span class="title class_">DataTypes</span>.<span class="title function_">shape</span>(&#123;</span><br><span class="line">        <span class="attr">color</span>: <span class="title class_">DataTypes</span>.<span class="property">string</span></span><br><span class="line">    &#125;).<span class="property">isRequired</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一个必须的但可以是任何类型的数据</span></span><br><span class="line">    <span class="attr">requiredAny</span>: <span class="title class_">DataTypes</span>.<span class="property">any</span>.<span class="property">isRequired</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可指定一个自定义的校验器。</span></span><br><span class="line">    <span class="comment">// 如果校验失败，它应该丢出一个异常。</span></span><br><span class="line">    <span class="attr">customProp</span>: <span class="keyword">function</span> (<span class="params">props, propName, componentName</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="regexp">/matchme/</span>.<span class="title function_">test</span>(props[propName])) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">                <span class="string">&#x27;Invalid prop `&#x27;</span> + propName + <span class="string">&#x27;` supplied to&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27; `&#x27;</span> + componentName + <span class="string">&#x27;`. Validation failed.&#x27;</span></span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 你也可以给 `arrayOf` 和 `objectOf` 提供一个自定义校验器。</span></span><br><span class="line">    <span class="comment">// 如果校验失败，那么应该当抛出一个异常。</span></span><br><span class="line">    <span class="comment">// 对于数组或者对象中的每个元素都会调用校验器进行校验。</span></span><br><span class="line">    <span class="comment">// 第一个参数是这个数组或者对象，第二个参数是元素的 key。</span></span><br><span class="line">    <span class="attr">customArrayProp</span>: <span class="title class_">DataTypes</span>.<span class="title function_">arrayOf</span>(<span class="keyword">function</span> (<span class="params">dataValue, key, componentName, dataFullName</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="regexp">/matchme/</span>.<span class="title function_">test</span>(dataValue[key])) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">                <span class="string">&#x27;Invalid prop `&#x27;</span> + dataFullName + <span class="string">&#x27;` supplied to&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27; `&#x27;</span> + componentName + <span class="string">&#x27;`. Validation failed.&#x27;</span></span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#DataTypes"><span class="toc-text">DataTypes</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../start/">教程</a>
+        <li><a href="../../practice/">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="../data-method/">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

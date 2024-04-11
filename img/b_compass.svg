@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128px" height="128px" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>b_compass</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-Copy" transform="translate(-432.000000, -1192.000000)" fill="#FFFFFF">
+            <g id="Group-2" transform="translate(72.000000, 1093.000000)">
+                <g id="Group" transform="translate(289.000000, 72.000000)">
+                    <g id="Group-17" transform="translate(71.000000, 27.000000)">
+                        <g id="Group-5">
+                            <path d="M64,116 C35.281193,116 12,92.718807 12,64 C12,35.281193 35.281193,12 64,12 C92.718807,12 116,35.281193 116,64 C116,92.718807 92.718807,116 64,116 Z" id="Oval-7" fill-opacity="0.5"></path>
+                            <path d="M55.5181321,55.5861111 C80.0451228,41.8162269 92.5358452,35.3069613 92.9902993,36.0583144 C93.2941921,36.5607431 86.4580483,48.6792679 72.4818679,72.4138889 C47.9548772,86.1837731 35.4641548,92.6930387 35.0097007,91.9416856 C34.7058079,91.4392569 41.5419517,79.3207321 55.5181321,55.5861111 Z M43,85 L68,70 L58,60 L43,85 Z" id="Combined-Shape" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

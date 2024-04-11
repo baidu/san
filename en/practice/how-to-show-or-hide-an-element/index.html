@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>How to Implement Hide and Show? | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="With the s-if directive, we can conditionally render a element. But that’s not sufficient if we want to hide rather than remove the element when conditions not satisfied, in which case the element is">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Implement Hide and Show?">
+<meta property="og:url" content="http://baidu.github.io/en/practice/how-to-show-or-hide-an-element/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="With the s-if directive, we can conditionally render a element. But that’s not sufficient if we want to hide rather than remove the element when conditions not satisfied, in which case the element is">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.893Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.893Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">Tutorial</a></li>
+                <li><a class="router" href="../">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../practice/how-to-show-or-hide-an-element/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/practice/how-to-show-or-hide-an-element" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      How to Implement Hide and Show?
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/practice/how-to-show-or-hide-an-element.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>With the <code>s-if</code> directive, we can conditionally render a element.</p>
+<p>But that’s not sufficient if we want to hide rather than remove the element when conditions not satisfied, in which case the element is still attached to the DOM tree and therefore CSS is more eligible.</p>
+<p>We’ll discuss how to implement Hide and Show in the rest of this article.</p>
+<p>In San, <code>class</code> and <code>style</code> attributes can be used to applying CSS styles. See <a href="https://baidu.github.io/san/tutorial/style/">this article</a> for details.</p>
+<h4 id="1-Applying-Specific-class-Names"><a href="#1-Applying-Specific-class-Names" class="headerlink" title="1. Applying Specific class Names"></a>1. Applying Specific <code>class</code> Names</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;list&#123;&#123;isHidden ? &#x27; list-hidden&#x27; : &#x27; list-visible&#x27;&#125;&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Note: An extra space should be present before every subsequent class name.</p>
+<p>A demo from codepen:</p>
+<p
+    data-height="365"
+    data-theme-id="0"
+    data-slug-hash="ZaOajj"
+    data-default-tab="js,result"
+    data-user="Mona_"
+    data-embed-version="2"
+    data-pen-title="Conditionally Applying Styles - Via the Class Attribute"
+    class="codepen">See the Pen
+    <a href="https://codepen.io/Mona_/pen/ZaOajj/">Conditionally Applying Styles - Via the Class Attribute</a>
+     by MinZhou (<a href="https://codepen.io/Mona_">@Mona_</a>) on
+     <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>With visibility controled by CSS, the element is always attached to the DOM tree. Open your console to check it out.</p>
+<h4 id="2-Via-the-style-Attribute"><a href="#2-Via-the-style-Attribute" class="headerlink" title="2. Via the style Attribute"></a>2. Via the <code>style</code> Attribute</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">style</span>=<span class="string">&quot;display: &#123;&#123;isHidden ? &#x27;none&#x27; : &#x27;block&#x27;&#125;&#125;&quot;</span>&gt;</span>visible<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p
+    data-height="365"
+    data-theme-id="0"
+    data-slug-hash="gXMvBN"
+    data-default-tab="js,result"
+    data-user="Mona_"
+    data-embed-version="2"
+    data-pen-title="Conditionally Applying Styles - Via the Style Attribute"
+    class="codepen">See the Pen
+    <a href="https://codepen.io/Mona_/pen/gXMvBN/">Conditionally Applying Styles - Via the Style Attribute</a>
+     by MinZhou (<a href="https://codepen.io/Mona_">@Mona_</a>) on
+     <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>In case <code>isHidden</code> is absent, it’s more robust to toggle the value along with the property name.</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">style</span>=<span class="string">&quot;&#123;&#123;isHidden === false ? &#x27;display: none&#x27; : &#x27;display: block&#x27;&#125;&#125;&quot;</span>&gt;</span>visible<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-Computed-Attributes"><a href="#3-Computed-Attributes" class="headerlink" title="3. Computed Attributes"></a>3. Computed Attributes</h4><p>In both of the above examples, the attribute value can be dynamically computed so that the Hide and Show logic can be extracted out of the template to better cope with complex situations. In the following example, we use a computed class name:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul class=&quot;&#123;&#123;ulClass&#125;&#125;&quot;&gt;&lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="attr">computed</span>: &#123;</span><br><span class="line">        <span class="title function_">ulClass</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> isHidden = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;isHidden&#x27;</span>);</span><br><span class="line">            <span class="keyword">if</span> (isHidden) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&#x27;list list-hidden&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;list list-visible&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>Demo from codepen:</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="zPNvwz" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="Hide and Show Via a Computed Attribute" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/zPNvwz/">Hide and Show Via a Computed Attribute</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<h4 id="4-Applying-a-Filter"><a href="#4-Applying-a-Filter" class="headerlink" title="4. Applying a Filter"></a>4. Applying a Filter</h4><p><em>filters</em> can also be applied to transform the class and style attributes. As with the computed attributes, the Hide and Show logic is extracted out of the template, but into the filters this time. The difference is that the input dependency is declared explicitly. In the following example, we apply a filter to the class attribute:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;ul class=&quot;&#123;&#123;isHidden | handleHidden&#125;&#125;&quot;&gt;&lt;/ul&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">handleHidden</span>(<span class="params">isHidden</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (isHidden) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&#x27;list list-hidden&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;list list-visible&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>Demo from codepen:</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="ZaLbae" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="Hide and Show - Applying a Filter" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/ZaLbae/">Hide and Show - Applying a Filter</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>It’s obvious that the class is determined by <code>isHidden</code>.</p>
+<p>Issues can arise when the filter depends on additional data, take the Tab component for example:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class=&quot;tab&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div</span></span><br><span class="line"><span class="string">                s-for=&quot;tab in tabs&quot;</span></span><br><span class="line"><span class="string">                class=&quot;&#123;&#123;tab.value | mapActive&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                on-click=&quot;tabChange(tab.value)&quot;</span></span><br><span class="line"><span class="string">                &gt;</span></span><br><span class="line"><span class="string">                &#123;&#123;tab.name&#125;&#125;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">active</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            <span class="attr">tabs</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;First Item&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;one&#x27;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;Second Item&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;two&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">tabChange</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;active&#x27;</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="title function_">mapActive</span>(<span class="params">value</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> active = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">            <span class="keyword">const</span> classStr = <span class="string">&#x27;sm-tab-item&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (value === active) &#123;</span><br><span class="line">                <span class="keyword">return</span> classStr + <span class="string">&#x27; active&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> classStr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Demo from codepen:</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="XzpmVa" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="Tab Bug from Not Declared Dependency" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/XzpmVa/">Tab Bug from Not Declared Dependency</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>When the tab is clicked, the class won’t update despite that the <code>active</code> is changed. That happens due to the San dependency collection mechanism not recognizing the <code>active</code> as one of the dependencies of the view. The fix is simple: we declare the dependency explicitly.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// change `mapActive` to `mapActive(active)`, declare the dependency to `active`</span></span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div class=&quot;tab&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;div</span></span><br><span class="line"><span class="string">                s-for=&quot;tab in tabs&quot;</span></span><br><span class="line"><span class="string">                class=&quot;&#123;&#123;tab.value | mapActive(active)&#125;&#125;&quot;</span></span><br><span class="line"><span class="string">                on-click=&quot;tabChange(tab.value)&quot;</span></span><br><span class="line"><span class="string">                &gt;</span></span><br><span class="line"><span class="string">                &#123;&#123;tab.name&#125;&#125;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">active</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            <span class="attr">tabs</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;First Item&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;one&#x27;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">name</span>: <span class="string">&#x27;Second Item&#x27;</span>,</span><br><span class="line">                    <span class="attr">value</span>: <span class="string">&#x27;two&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title function_">tabChange</span>(<span class="params">value</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;active&#x27;</span>, value);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">fire</span>(<span class="string">&#x27;change&#x27;</span>, value);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">filters</span>: &#123;</span><br><span class="line">        <span class="comment">// Now `active` is passed in</span></span><br><span class="line">        <span class="title function_">mapActive</span>(<span class="params">value, active</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> classStr = <span class="string">&#x27;sm-tab-item&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (value === active) &#123;</span><br><span class="line">                <span class="keyword">return</span> classStr + <span class="string">&#x27; active&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> classStr;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Demo from codepen:</p>
+<p data-height="265" data-theme-id="0" data-slug-hash="mqReLg" data-default-tab="js,result" data-user="LeuisKen" data-embed-version="2" data-pen-title="Tab Demo with Dependency Declared" class="codepen">See the Pen <a href="https://codepen.io/LeuisKen/pen/mqReLg/">Tab Demo with Dependency Declared</a> by LeuisKen (<a href="https://codepen.io/LeuisKen">@LeuisKen</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script>
+
+<p>Now the view will be updated properly. Again we see that the usage of filters makes input dependencies explicit.</p>
+<h3 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h3><p>Besides Hide and Show, there’re plenty of other cases related to <strong>style switching</strong>, which can be implemented in the same way.</p>
+<p>In conclusion, if you need a conditional rendering, use the <code>s-if</code> directive; if you only need to switch styles, such as Hide and Show, use <code>class</code> and <code>style</code> attributes.</p>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Applying-Specific-class-Names"><span class="toc-text">1. Applying Specific class Names</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Via-the-style-Attribute"><span class="toc-text">2. Via the style Attribute</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Computed-Attributes"><span class="toc-text">3. Computed Attributes</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-Applying-a-Filter"><span class="toc-text">4. Applying a Filter</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Conclusion"><span class="toc-text">Conclusion</span></a>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">Tutorial</a>
+        <li><a href="../">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../practice/how-to-show-or-hide-an-element/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

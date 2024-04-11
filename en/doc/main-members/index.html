@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>San API | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Component InitializationdefineComponentDescription: defineComponent({Object}propertiesAndMethods) Explanation: Method. A shortcut to define components. Refer to Component Definition for details. Usage">
+<meta property="og:type" content="article">
+<meta property="og:title" content="San API">
+<meta property="og:url" content="http://baidu.github.io/en/doc/main-members/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="Component InitializationdefineComponentDescription: defineComponent({Object}propertiesAndMethods) Explanation: Method. A shortcut to define components. Refer to Component Definition for details. Usage">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.892Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.892Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">Tutorial</a></li>
+                <li><a class="router" href="../../practice/">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../doc/main-members/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../api/">Component API</a></dd>
+        <dd><a href="" class="recommend-active">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/doc/main-members" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      San API
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/doc/main-members.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Component-Initialization"><a href="#Component-Initialization" class="headerlink" title="Component Initialization"></a>Component Initialization</h2><h3 id="defineComponent"><a href="#defineComponent" class="headerlink" title="defineComponent"></a>defineComponent</h3><p><code>Description</code>: defineComponent({Object}propertiesAndMethods)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. A shortcut to define components. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="compileComponent"><a href="#compileComponent" class="headerlink" title="compileComponent"></a>compileComponent</h3><p><code>Version</code>: &gt;&#x3D; 3.3.0 &amp; &lt; 3.9.0</p>
+<p><code>Description</code>: {void} compileComponent({Function}ComponentClass)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Compile a component. The compilation mainly consists of parsing the template into <a href="https://github.com/baidu/san/blob/master/doc/anode.md">ANode</a>s and call <code>.defineComponent()</code> for plain object within the component.</p>
+<p>Components will compile automatically on its first instantiation. Typically you won’t need to call this API to compile components manually, but it’s provided anyway in case you need ahead-of-time compilation.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">typeof</span> <span class="title class_">MyApp</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">aNode</span> <span class="comment">// undefined</span></span><br><span class="line">san.<span class="title function_">compileComponent</span>(<span class="title class_">MyApp</span>);</span><br><span class="line"><span class="keyword">typeof</span> <span class="title class_">MyApp</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">aNode</span> <span class="comment">// object</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h3><p><code>Type</code>: Function</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Property</strong>. The component class, from which the newly defined components will inherit. For most cases the <strong>san.defineComponent</strong> method should be used instead. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;<span class="title class_">Component</span>&#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">HelloComponent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Component</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> template = <span class="string">&#x27;&lt;p&gt;Hello &#123;&#123;name&#125;&#125;!&lt;/p&gt;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">initData</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">&#x27;San&#x27;</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="inherits"><a href="#inherits" class="headerlink" title="inherits"></a>inherits</h3><p><code>Description</code>: inherits({Function}SubClass, {Function}SuperClass)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. An util method to implement inheritance, which is the case when defining components (inherit from <strong>san.Component</strong>). Usually, to define a component we use <strong>san.defineComponent</strong> in ES5 and <strong>extends</strong> in ESNext.</p>
+<p>It is not recommended to use <code>.inherits()</code> in most cases. Refer to <a href="../../component/define/">Component Definition</a> for details.</p>
+<h2 id="Server-Side-Rendering"><a href="#Server-Side-Rendering" class="headerlink" title="Server-Side Rendering"></a>Server-Side Rendering</h2><h3 id="compileToRenderer"><a href="#compileToRenderer" class="headerlink" title="compileToRenderer"></a>compileToRenderer</h3><p><code>Version</code>:&gt;&#x3D; 3.1.0</p>
+<p><code>Description</code>: {function(Object):string} compileToRenderer({Function}ComponentClass)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Compile a component class into a renderer method. Refer to <a href="../../tutorial/ssr/#output-HTML">Server-Side Rendering</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> render = san.<span class="title function_">compileToRenderer</span>(<span class="title class_">MyApp</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="compileToSource"><a href="#compileToSource" class="headerlink" title="compileToSource"></a>compileToSource</h3><p><code>Version</code>:&gt;&#x3D; 3.1.0</p>
+<p><code>Description</code>: {string} compileToRenderer({Function}ComponentClass)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Compile a component class into a source file containing the renderer method. Refer to <a href="../../tutorial/ssr/#compiling-nodejs-modules">Server-Side Rendering</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;li s-for=&quot;item in list&quot;&gt;&#123;&#123;item&#125;&#125;&lt;/li&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">list</span>: [<span class="string">&#x27;san&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;esui&#x27;</span>, <span class="string">&#x27;etpl&#x27;</span>, <span class="string">&#x27;esl&#x27;</span>]</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> renderSource = san.<span class="title function_">compileToSource</span>(<span class="title class_">MyApp</span>);</span><br><span class="line">fs.<span class="title function_">writeFileSync</span>(<span class="string">&#x27;your-module.js&#x27;</span>, <span class="string">&#x27;exports = module.exports = &#x27;</span> + renderSource, <span class="string">&#x27;UTF-8&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Template-Compilation"><a href="#Template-Compilation" class="headerlink" title="Template Compilation"></a>Template Compilation</h2><h3 id="ExprType"><a href="#ExprType" class="headerlink" title="ExprType"></a>ExprType</h3><p><code>Version</code>:&gt;&#x3D; 3.0.3</p>
+<p><code>Type</code>: Object</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Property</strong>. An enum value representing the expression type, which helps to understand and use the compile output produced by San. Refer to <a href="https://github.com/baidu/san/blob/master/doc/anode.md">ANode</a> for details.</p>
+<h3 id="parseExpr"><a href="#parseExpr" class="headerlink" title="parseExpr"></a>parseExpr</h3><p><code>Version</code>:&gt;&#x3D; 3.0.3</p>
+<p><code>Description</code>: {Object} parseExpr({string}source)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Parse the source string into an expression object. Refer to <a href="https://github.com/baidu/san/blob/master/doc/anode.md">ANode</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> expr = san.<span class="title function_">parseExpr</span>(<span class="string">&#x27;!user.isLogin&#x27;</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">expr = &#123;</span></span><br><span class="line"><span class="comment">    type: ExprType.UNARY,</span></span><br><span class="line"><span class="comment">    expr: &#123;</span></span><br><span class="line"><span class="comment">        type: ExprType.ACCESSOR,</span></span><br><span class="line"><span class="comment">        paths: [</span></span><br><span class="line"><span class="comment">            &#123;type: ExprType.STRING, value: &#x27;user&#x27;&#125;,</span></span><br><span class="line"><span class="comment">            &#123;type: ExprType.STRING, value: &#x27;isLogin&#x27;&#125;</span></span><br><span class="line"><span class="comment">        ]</span></span><br><span class="line"><span class="comment">    &#125;</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="parseTemplate"><a href="#parseTemplate" class="headerlink" title="parseTemplate"></a>parseTemplate</h3><p><code>Version</code>:&gt;&#x3D; 3.0.3</p>
+<p><code>Description</code>: {ANode} parseTemplate({string}source)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Parse the source string into an ANode object. The San template engine can be reused via this method. Refer to <a href="https://github.com/baidu/san/blob/master/doc/anode.md#user-content-%E6%A8%A1%E6%9D%BF%E8%A7%A3%E6%9E%90%E7%BB%93%E6%9E%9C">ANode</a> for details.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> aNode = san.<span class="title function_">parseTemplate</span>(<span class="string">&#x27;&lt;p&gt;Hello &#123;&#123;name&#125;&#125;!&lt;/p&gt;&#x27;</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">aNode = &#123;</span></span><br><span class="line"><span class="comment">    &quot;directives&quot;: &#123;&#125;,</span></span><br><span class="line"><span class="comment">    &quot;props&quot;: [],</span></span><br><span class="line"><span class="comment">    &quot;events&quot;: [],</span></span><br><span class="line"><span class="comment">    &quot;children&quot;: [</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">            &quot;directives&quot;: &#123;&#125;,</span></span><br><span class="line"><span class="comment">            &quot;props&quot;: [],</span></span><br><span class="line"><span class="comment">            &quot;events&quot;: [],</span></span><br><span class="line"><span class="comment">            &quot;children&quot;: [</span></span><br><span class="line"><span class="comment">                &#123;</span></span><br><span class="line"><span class="comment">                    &quot;textExpr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 7,</span></span><br><span class="line"><span class="comment">                        &quot;segs&quot;: [</span></span><br><span class="line"><span class="comment">                            &#123;</span></span><br><span class="line"><span class="comment">                                &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                                &quot;value&quot;: &quot;Hello &quot;</span></span><br><span class="line"><span class="comment">                            &#125;,</span></span><br><span class="line"><span class="comment">                            &#123;</span></span><br><span class="line"><span class="comment">                                &quot;type&quot;: 5,</span></span><br><span class="line"><span class="comment">                                &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                                    &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                                    &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                                        &#123;</span></span><br><span class="line"><span class="comment">                                            &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                                            &quot;value&quot;: &quot;name&quot;</span></span><br><span class="line"><span class="comment">                                        &#125;</span></span><br><span class="line"><span class="comment">                                    ]</span></span><br><span class="line"><span class="comment">                                &#125;,</span></span><br><span class="line"><span class="comment">                                &quot;filters&quot;: []</span></span><br><span class="line"><span class="comment">                            &#125;</span></span><br><span class="line"><span class="comment">                        ]</span></span><br><span class="line"><span class="comment">                    &#125;</span></span><br><span class="line"><span class="comment">                &#125;</span></span><br><span class="line"><span class="comment">            ],</span></span><br><span class="line"><span class="comment">            &quot;tagName&quot;: &quot;p&quot;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    ]</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="parseComponentTemplate"><a href="#parseComponentTemplate" class="headerlink" title="parseComponentTemplate"></a>parseComponentTemplate</h3><p><code>Version</code>: &gt;&#x3D; 3.9.0</p>
+<p><code>Description</code>: {ANode} parseComponentTemplate({Function}ComponentClass)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. Parse component template into <a href="https://github.com/baidu/san/blob/master/doc/anode.md">ANode</a> objects. Different from <code>parseTemplate</code>, this method extracts the first child node, attaches <code>id/style/class</code> attributes to it, and returns it as the root. Basically, <code>parseComponentTemplate</code> parses the template the same way as san parses component in runtime.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MyComponent</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;p&gt;Hello &#123;&#123;name&#125;&#125;&lt;/p&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">var</span> aNode = san.<span class="title function_">parseComponentTemplate</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line"><span class="comment">/* aNode</span></span><br><span class="line"><span class="comment">&#123;</span></span><br><span class="line"><span class="comment">    &quot;directives&quot;: &#123;&#125;,</span></span><br><span class="line"><span class="comment">    &quot;props&quot;: [</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">            &quot;name&quot;: &quot;class&quot;,</span></span><br><span class="line"><span class="comment">            &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                &quot;type&quot;: 5,</span></span><br><span class="line"><span class="comment">                &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                    &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                    &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                        &#123;</span></span><br><span class="line"><span class="comment">                            &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                            &quot;value&quot;: &quot;class&quot;</span></span><br><span class="line"><span class="comment">                        &#125;</span></span><br><span class="line"><span class="comment">                    ]</span></span><br><span class="line"><span class="comment">                &#125;,</span></span><br><span class="line"><span class="comment">                &quot;filters&quot;: [</span></span><br><span class="line"><span class="comment">                    &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 6,</span></span><br><span class="line"><span class="comment">                        &quot;args&quot;: [],</span></span><br><span class="line"><span class="comment">                        &quot;name&quot;: &#123;</span></span><br><span class="line"><span class="comment">                            &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                            &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                                &#123;</span></span><br><span class="line"><span class="comment">                                    &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                                    &quot;value&quot;: &quot;_class&quot;</span></span><br><span class="line"><span class="comment">                                &#125;</span></span><br><span class="line"><span class="comment">                            ]</span></span><br><span class="line"><span class="comment">                        &#125;</span></span><br><span class="line"><span class="comment">                    &#125;</span></span><br><span class="line"><span class="comment">                ]</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        &#125;,</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">            &quot;name&quot;: &quot;style&quot;,</span></span><br><span class="line"><span class="comment">            &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                &quot;type&quot;: 5,</span></span><br><span class="line"><span class="comment">                &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                    &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                    &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                        &#123;</span></span><br><span class="line"><span class="comment">                            &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                            &quot;value&quot;: &quot;style&quot;</span></span><br><span class="line"><span class="comment">                        &#125;</span></span><br><span class="line"><span class="comment">                    ]</span></span><br><span class="line"><span class="comment">                &#125;,</span></span><br><span class="line"><span class="comment">                &quot;filters&quot;: [</span></span><br><span class="line"><span class="comment">                    &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 6,</span></span><br><span class="line"><span class="comment">                        &quot;args&quot;: [],</span></span><br><span class="line"><span class="comment">                        &quot;name&quot;: &#123;</span></span><br><span class="line"><span class="comment">                            &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                            &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                                &#123;</span></span><br><span class="line"><span class="comment">                                    &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                                    &quot;value&quot;: &quot;_style&quot;</span></span><br><span class="line"><span class="comment">                                &#125;</span></span><br><span class="line"><span class="comment">                            ]</span></span><br><span class="line"><span class="comment">                        &#125;</span></span><br><span class="line"><span class="comment">                    &#125;</span></span><br><span class="line"><span class="comment">                ]</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        &#125;,</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">            &quot;name&quot;: &quot;id&quot;,</span></span><br><span class="line"><span class="comment">            &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                    &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                        &quot;value&quot;: &quot;id&quot;</span></span><br><span class="line"><span class="comment">                    &#125;</span></span><br><span class="line"><span class="comment">                ]</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    ],</span></span><br><span class="line"><span class="comment">    &quot;events&quot;: [],</span></span><br><span class="line"><span class="comment">    &quot;children&quot;: [</span></span><br><span class="line"><span class="comment">        &#123;</span></span><br><span class="line"><span class="comment">            &quot;textExpr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                &quot;type&quot;: 7,</span></span><br><span class="line"><span class="comment">                &quot;segs&quot;: [</span></span><br><span class="line"><span class="comment">                    &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                        &quot;value&quot;: &quot;Hello &quot;</span></span><br><span class="line"><span class="comment">                    &#125;,</span></span><br><span class="line"><span class="comment">                    &#123;</span></span><br><span class="line"><span class="comment">                        &quot;type&quot;: 5,</span></span><br><span class="line"><span class="comment">                        &quot;expr&quot;: &#123;</span></span><br><span class="line"><span class="comment">                            &quot;type&quot;: 4,</span></span><br><span class="line"><span class="comment">                            &quot;paths&quot;: [</span></span><br><span class="line"><span class="comment">                                &#123;</span></span><br><span class="line"><span class="comment">                                    &quot;type&quot;: 1,</span></span><br><span class="line"><span class="comment">                                    &quot;value&quot;: &quot;name&quot;</span></span><br><span class="line"><span class="comment">                                &#125;</span></span><br><span class="line"><span class="comment">                            ]</span></span><br><span class="line"><span class="comment">                        &#125;,</span></span><br><span class="line"><span class="comment">                        &quot;filters&quot;: []</span></span><br><span class="line"><span class="comment">                    &#125;</span></span><br><span class="line"><span class="comment">                ]</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    ],</span></span><br><span class="line"><span class="comment">    &quot;tagName&quot;: &quot;p&quot;</span></span><br><span class="line"><span class="comment">&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><p>Data container and expression evaluator in San components are also exposed. These classes can be useful to handle component-independent data such as application state.</p>
+<h3 id="Data-1"><a href="#Data-1" class="headerlink" title="Data"></a>Data</h3><p><code>Version</code>:&gt;&#x3D; 3.5.6</p>
+<p><code>Type</code>: Class Function</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Data Container</strong> provides get, set, splice, push, pop, unshift, shift, merge and apply methods. Refer to <a href="../../tutorial/data-method/">Data Manipulation</a> for details.</p>
+<p><code>change</code> event is fired when the data is changed via data manipulation methods. Handlers for the <code>change</code> event can be registered and unregistered via <code>listen</code> and <code>unlisten</code> methods respectively.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data = <span class="keyword">new</span> san.<span class="title class_">Data</span>(&#123;</span><br><span class="line">    <span class="attr">num1</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">num2</span>: <span class="number">2</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">data.<span class="title function_">listen</span>(<span class="keyword">function</span> (<span class="params">change</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(change.<span class="property">value</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">data.<span class="title function_">set</span>(<span class="string">&#x27;num2&#x27;</span>, <span class="number">10</span>);</span><br><span class="line"><span class="comment">// console 10</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="evalExpr"><a href="#evalExpr" class="headerlink" title="evalExpr"></a>evalExpr</h3><p><code>Version</code>:&gt;&#x3D; 3.5.6</p>
+<p><code>Description</code>: {*} evalExpr({Object}expr, {Data}data, {Component&#x3D;}owner)</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Method</strong>. <code>evalExpr</code> is used to evaluate the value of an expression.</p>
+<ul>
+<li><code>expr</code> can be obtained via <a href="#parseExpr">parseExpr</a> method. For the supported expression types, refer to <a href="../../tutorial/template/#expressions">Expression</a></li>
+<li><code>data</code> can be either component’s data object, or any data object obtained by new <a href="#Data">Data</a></li>
+<li><code>owner</code> is used for evaluating filters in the expression, required when there’re custom filters in the expression, optional otherwise.</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> data = <span class="keyword">new</span> san.<span class="title class_">Data</span>(&#123;</span><br><span class="line">    <span class="attr">num1</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">num2</span>: <span class="number">2</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">san.evalExpr(san.<span class="title function_">parseExpr</span>(<span class="string">&#x27;num1 + num2&#x27;</span>), data)</span><br><span class="line"><span class="comment">// console 3</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Others"><a href="#Others" class="headerlink" title="Others"></a>Others</h2><h3 id="debug"><a href="#debug" class="headerlink" title="debug"></a>debug</h3><p><code>Type</code>: boolean</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Property</strong>. Whether or not to enable debug functionalities. Before using Chrome <strong>DevTools</strong> to debug your San application, make sure the following conditions are matched:</p>
+<ul>
+<li>the <strong>debug</strong> property of San module is set to <strong>true</strong></li>
+<li>the San loaded in the current page is built with <strong>DevTools</strong> functionality. Refer to <a href="https://github.com/baidu/san/tree/master/dist">San releases</a> for details</li>
+</ul>
+<h3 id="version"><a href="#version" class="headerlink" title="version"></a>version</h3><p><code>Type</code>: string</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Property</strong>. The San version number.</p>
+<h3 id="LifeCycle"><a href="#LifeCycle" class="headerlink" title="LifeCycle"></a>LifeCycle</h3><p><code>Version</code>: &lt; 3.3.0 (deprecated)</p>
+<p><code>Type</code>: Function</p>
+<p><code>Explanation</code>:</p>
+<p><strong>Property</strong>. Lifecycle Class is useful when you need to render and update components manually.</p>
+<p>LifeCycle defines the following lifecycle states, some of which are mutually exclusive. In detail:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    compiled: &#123;</span><br><span class="line">        value: 1</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    inited: &#123;</span><br><span class="line">        value: 2</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    created: &#123;</span><br><span class="line">        value: 3</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    attached: &#123;</span><br><span class="line">        value: 4,</span><br><span class="line">        mutex: &#x27;detached&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    detached: &#123;</span><br><span class="line">        value: 5,</span><br><span class="line">        mutex: &#x27;attached&#x27;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    disposed: &#123;</span><br><span class="line">        value: 6,</span><br><span class="line">        mutex: &#x27;*&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>The current state can be set via the <code>.set()</code> method of LifeCycle class, and can be tested via the <code>is</code> method.</p>
+<p><code>Usage</code>:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> lifeCycle = <span class="keyword">new</span> san.<span class="title class_">LifeCycle</span>();</span><br><span class="line"></span><br><span class="line">lifeCycle.<span class="title function_">set</span>(<span class="string">&#x27;attached&#x27;</span>);</span><br><span class="line">lifeCycle.<span class="title function_">is</span>(<span class="string">&#x27;attached&#x27;</span>); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">lifeCycle.<span class="title function_">set</span>(<span class="string">&#x27;detached&#x27;</span>);</span><br><span class="line">lifeCycle.<span class="title function_">is</span>(<span class="string">&#x27;attached&#x27;</span>); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Component-Initialization"><span class="toc-text">Component Initialization</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#defineComponent"><span class="toc-text">defineComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compileComponent"><span class="toc-text">compileComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Component"><span class="toc-text">Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inherits"><span class="toc-text">inherits</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Server-Side-Rendering"><span class="toc-text">Server-Side Rendering</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#compileToRenderer"><span class="toc-text">compileToRenderer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compileToSource"><span class="toc-text">compileToSource</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Template-Compilation"><span class="toc-text">Template Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ExprType"><span class="toc-text">ExprType</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parseExpr"><span class="toc-text">parseExpr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parseTemplate"><span class="toc-text">parseTemplate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#parseComponentTemplate"><span class="toc-text">parseComponentTemplate</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data"><span class="toc-text">Data</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-1"><span class="toc-text">Data</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#evalExpr"><span class="toc-text">evalExpr</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Others"><span class="toc-text">Others</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#debug"><span class="toc-text">debug</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#version"><span class="toc-text">version</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LifeCycle"><span class="toc-text">LifeCycle</span></a></li></ol></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">Tutorial</a>
+        <li><a href="../../practice/">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../doc/main-members/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../../tutorial/setup/">Setup</a></dd>
+        <dd><a href="../../tutorial/start/">Start</a></dd>
+        <dd><a href="../../tutorial/template/">Template</a></dd>
+        <dd><a href="../../tutorial/data-method/">Data Manipulation</a></dd>
+        <dd><a href="../../tutorial/style/">Style</a></dd>
+        <dd><a href="../../tutorial/if/">Conditional</a></dd>
+        <dd><a href="../../tutorial/for/">Loop</a></dd>
+        <dd><a href="../../tutorial/event/">Event</a></dd>
+        <dd><a href="../../tutorial/form/">Form</a></dd>
+        <dd><a href="../../tutorial/slot/">Slot</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../../tutorial/transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../api/">Component API</a></dd>
+        <dd><a href="" class="recommend-active">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="../../tutorial/ssr/">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../../tutorial/background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

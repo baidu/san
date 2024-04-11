@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>组件树结构 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我们知道组件体系下，组件必须是可嵌套的树形关系。下面从一段代码，做一些说明。在下面的代码中，AddForm 内部使用了两个自定义组件：ui-calendar 和 ui-timepicker。 1234567891011121314&lt;!-- Template --&gt;&lt;div class&#x3D;&quot;form&quot;&gt;    &lt;input type&#x3D;&quot;tex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="组件树结构">
+<meta property="og:url" content="http://baidu.github.io/component/tree/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="我们知道组件体系下，组件必须是可嵌套的树形关系。下面从一段代码，做一些说明。在下面的代码中，AddForm 内部使用了两个自定义组件：ui-calendar 和 ui-timepicker。 1234567891011121314&lt;!-- Template --&gt;&lt;div class&#x3D;&quot;form&quot;&gt;    &lt;input type&#x3D;&quot;tex">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.890Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.890Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../../tutorial/start/">教程</a></li>
+                <li><a class="router" href="../../practice/">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/component/tree/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../define/">组件定义</a></dd>
+        <dd><a href="../lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../view/">组件视图</a></dd>
+        <dd><a href="../data/">组件数据</a></dd>
+        <dd><a href="" class="recommend-active">组件树结构</a></dd>
+        <dd><a href="../template-component/">模版组件</a></dd>
+        <dd><a href="../async/">异步组件</a></dd>
+        <dd><a href="../hydrate/">组件反解</a></dd>
+        <dd><a href="../error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-component/tree" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      组件树结构
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/component/tree.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我们知道组件体系下，组件必须是可嵌套的树形关系。下面从一段代码，做一些说明。在下面的代码中，AddForm 内部使用了两个自定义组件：ui-calendar 和 ui-timepicker。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Template --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">class</span>=<span class="string">&quot;form-title&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;标题&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= title =&#125;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">textarea</span> <span class="attr">class</span>=<span class="string">&quot;form-desc&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;备注&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= desc =&#125;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span>预期完成时间：</span><br><span class="line">        <span class="tag">&lt;<span class="name">ui-calendar</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= endTimeDate =&#125;&quot;</span> <span class="attr">s-ref</span>=<span class="string">&quot;endDate&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-calendar</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ui-timepicker</span> <span class="attr">value</span>=<span class="string">&quot;&#123;= endTimeHour =&#125;&quot;</span> <span class="attr">s-ref</span>=<span class="string">&quot;endHour&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">ui-timepicker</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-op&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">on-click</span>=<span class="string">&quot;submit&quot;</span>&gt;</span>ok<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">AddForm</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;ui-timepicker&#x27;</span>: <span class="built_in">require</span>(<span class="string">&#x27;../ui/TimePicker&#x27;</span>),</span><br><span class="line">        <span class="string">&#x27;ui-calendar&#x27;</span>: <span class="built_in">require</span>(<span class="string">&#x27;../ui/Calendar&#x27;</span>)</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">submit</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">ref</span>(<span class="string">&#x27;endDate&#x27;</span>)</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">ref</span>(<span class="string">&#x27;endHour&#x27;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="components"><a href="#components" class="headerlink" title="components"></a>components</h2><p>组件中通常通过声明自定义元素，使用其它组件。</p>
+<p>组件视图可以使用哪些子组件类型，必须通过定义组件的 <strong>components</strong> 成员指定。key 是自定义元素的标签名，value 是组件的类。</p>
+<p><code>注意</code>：考虑到组件的独立性，San 没有提供全局组件注册的方法，组件必须在自身的 <strong>components</strong> 中声明自己内部会用到哪些组件。</p>
+<p>有些组件可能在内容中会使用自己，比如树的节点。我们可以将 <strong>components</strong> 中这一项的值设置为字符串 <strong>self</strong>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Node</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="comment">// template</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;ui-node&#x27;</span>: <span class="string">&#x27;self&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="owner-与-parent"><a href="#owner-与-parent" class="headerlink" title="owner 与 parent"></a>owner 与 parent</h2><p><strong>owner</strong> 与 <strong>parent</strong> 的概念已经被 react 明确过了，但这里还是要专门明确下。</p>
+<p><strong>owner</strong> 指的是目标在声明时位于哪个组件的组件视图中，其生存时间、交互的通信等行为都由 <strong>owner</strong> 管理。<strong>owner</strong> 必须是一个组件。ui-calendar 的 <strong>owner</strong> 是 AddForm 组件。</p>
+<p><strong>parent</strong> 指的是目标在视图中对应的直接父级元素。ui-calendar 的 <strong>parent</strong> 是其上层的 div。<strong>parent</strong> 对组件管理并没有直接的意义。</p>
+<h2 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h2><p>声明子组件时，如果通过 <strong>s-ref</strong> 指定了名称，则可以在owner组件实例的 <strong>ref</strong> 方法调用到。</p>
+<p><code>提示</code>：有了声明式的初始化、数据绑定与事件绑定，我们很少需要在 owner 中拿到子组件的实例。虽然 San 提供了这个途径，但当你用到它的时候，请先思考是不是非要这么干。</p>
+<h2 id="消息"><a href="#消息" class="headerlink" title="消息"></a>消息</h2><p>通过 <strong>dispatch</strong> 方法，组件可以向组件树的上层派发消息。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">SelectItem</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;li on-click=&quot;select&quot;&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/li&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">select</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> value = <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;value&#x27;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 向组件树的上层派发消息</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">dispatch</span>(<span class="string">&#x27;UI:select-item-selected&#x27;</span>, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>消息将沿着组件树向上传递，直到遇到第一个处理该消息的组件，则停止。通过 <strong>messages</strong> 可以声明组件要处理的消息。<strong>messages</strong> 是一个对象，key 是消息名称，value 是消息处理的函数，接收一个包含 target(派发消息的组件) 和 value(消息的值) 的参数对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Select</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;ul&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/ul&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明组件要处理的消息</span></span><br><span class="line">    <span class="attr">messages</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;UI:select-item-selected&#x27;</span>: <span class="keyword">function</span> (<span class="params">arg</span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> value = arg.<span class="property">value</span>;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;value&#x27;</span>, value);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// arg.target 可以拿到派发消息的组件</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>消息主要用于组件与非 <strong>owner</strong> 的上层组件进行通信。比如，slot 内组件 SelectItem 的 <strong>owner</strong> 是更上层的组件，但它需要和 Select 进行通信。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;ui-select&#x27;</span>: <span class="title class_">Select</span>,</span><br><span class="line">        <span class="string">&#x27;ui-selectitem&#x27;</span>: <span class="title class_">SelectItem</span></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;ui-select value=&quot;&#123;=value=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;    &lt;ui-selectitem value=&quot;1&quot;&gt;one&lt;/ui-selectitem&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;    &lt;ui-selectitem value=&quot;2&quot;&gt;two&lt;/ui-selectitem&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;    &lt;ui-selectitem value=&quot;3&quot;&gt;three&lt;/ui-selectitem&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;/ui-select&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="动态子组件"><a href="#动态子组件" class="headerlink" title="动态子组件"></a>动态子组件</h2><p>在 3.10.0 以上的版本，支持 <code>s-is</code> 指令，在渲染过程动态选择组件类型。<code>s-is</code> 特性有以下要点：</p>
+<ul>
+<li><code>s-is</code> 可以声明一个表达式，其运算结果 <strong>应该</strong> 是一个 string</li>
+<li>动态选择的组件类型是在 <code>components</code> 中声明的子组件，<code>s-is</code> 表达式运算结果对应 <code>components</code> 声明中的 <strong>key</strong></li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">BLabel</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;b&gt;&#123;&#123;text&#125;&#125;&lt;/b&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">ULabel</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;u&gt;&#123;&#123;text&#125;&#125;&lt;/u&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">App</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;BLabel&#x27;</span>: <span class="title class_">BLabel</span>,</span><br><span class="line">        <span class="string">&#x27;ULabel&#x27;</span>: <span class="title class_">ULabel</span></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;x-label s-is=&quot;type&quot; text=&quot;&#123;&#123;name&#125;&#125;&quot;/&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">(<span class="keyword">new</span> <span class="title class_">App</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">name</span>: <span class="string">&#x27;San&#x27;</span>,</span><br><span class="line">        <span class="attr">type</span>: <span class="string">&#x27;BLabel&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)).<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="手动创建子组件"><a href="#手动创建子组件" class="headerlink" title="手动创建子组件"></a>手动创建子组件</h2><p>在一些场景下，我们不希望组件通过声明式，在自身视图渲染时创建子组件；而希望通过 JavaScript 灵活控制在未来的某些时间点创建子组件。比如：</p>
+<ul>
+<li>浮动层子组件的 <strong>parent</strong> 不在其根元素 <strong>el</strong> 内，声明式用着不方便</li>
+<li>列表只有在用户点击时才需要创建并展示</li>
+</ul>
+<p>手动创建子组件对开发者要求更高，我们在这里给出一些需要注意的地方，下面节选的代码也做了一些简单的说明：</p>
+<ul>
+<li>手动创建的子组件无需在 <code>components</code> 中声明类型</li>
+<li>确保不要重复创建。常见的做法是在实例的属性上持有对创建组件的引用，并以此作判断</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">mainClick</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">layer</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">layer</span> = <span class="keyword">new</span> <span class="title class_">Layer</span>();</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">layer</span>.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">layer</span>.<span class="title function_">show</span>();</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">disposed</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">layer</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">layer</span>.<span class="title function_">dispose</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">layer</span> = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在 3.7.0 以上的版本，手动创建的子组件支持 owner 和 source 参数。</p>
+<p>指定 owner 可以自动维护 owner 与手动创建的子组件之间的关系：</p>
+<ul>
+<li>owner 可以收到手动创建的子组件 dispatch 的消息</li>
+<li>owner dispose 时，手动创建的子组件将自动 dispose</li>
+</ul>
+<p><code>注意</code>：</p>
+<p>指定 owner 后，不允许将组件 push 到 owner 的 children 中，否则组件 dispose 过程中，会对手动创建的子组件进行多次 dispose 操作。</p>
+<p>source 可以声明手动创建的子组件与 owner 之间的绑定关系：</p>
+<ul>
+<li>数据绑定，含双向绑定</li>
+<li>事件</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手动创建的子组件的数据与事件绑定，指定owner和source</span></span><br><span class="line"><span class="comment">// 3.7.0+</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Person</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=name=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=email=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;done&quot;&gt;Done&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">done</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">fire</span>(<span class="string">&#x27;done&#x27;</span>, &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;name&#x27;</span>),</span><br><span class="line">            <span class="attr">email</span>: <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;email&#x27;</span>)</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  name: &#123;&#123;author.name&#125;&#125;; email&#123;&#123;author.email&#125;&#125;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;edit&quot;&gt;edit&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">edit</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">editor</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span> = <span class="keyword">new</span> <span class="title class_">Person</span>(&#123;</span><br><span class="line">                <span class="attr">owner</span>: <span class="variable language_">this</span>,</span><br><span class="line">                <span class="attr">source</span>: <span class="string">&#x27;&lt;x-person name=&quot;&#123;&#123;author.name&#125;&#125;&quot; email=&quot;&#123;&#123;author.email&#125;&#125;&quot; on-done=&quot;editDone($event)&quot;/&gt;&#x27;</span></span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span>.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">editDone</span>: <span class="keyword">function</span> (<span class="params">e</span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;author&#x27;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">author</span>: &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&#x27;erik&#x27;</span>,</span><br><span class="line">            <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">myApp.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手动创建的子组件双向绑定，指定owner和source</span></span><br><span class="line"><span class="comment">// 3.7.0+</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Person</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=name=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=email=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  name: &#123;&#123;author.name&#125;&#125;; email&#123;&#123;author.email&#125;&#125;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;edit&quot;&gt;edit&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">edit</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">editor</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span> = <span class="keyword">new</span> <span class="title class_">Person</span>(&#123;</span><br><span class="line">                <span class="attr">owner</span>: <span class="variable language_">this</span>,</span><br><span class="line">                <span class="attr">source</span>: <span class="string">&#x27;&lt;x-person name=&quot;&#123;=author.name=&#125;&quot; email=&quot;&#123;=author.email=&#125;&quot;/&gt;&#x27;</span></span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span>.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">author</span>: &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&#x27;erik&#x27;</span>,</span><br><span class="line">            <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">myApp.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手动创建的子组件指定owner，可以dispatch</span></span><br><span class="line"><span class="comment">// 3.7.0+</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Person</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=name=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;input type=&quot;text&quot; value=&quot;&#123;=email=&#125;&quot;&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;done&quot;&gt;Done&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">done</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">dispatch</span>(<span class="string">&#x27;person-done&#x27;</span>, &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;name&#x27;</span>),</span><br><span class="line">            <span class="attr">email</span>: <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;email&#x27;</span>)</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  name: &#123;&#123;author.name&#125;&#125;; email&#123;&#123;author.email&#125;&#125;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;edit&quot;&gt;edit&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">edit</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">editor</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span> = <span class="keyword">new</span> <span class="title class_">Person</span>(&#123;</span><br><span class="line">                <span class="attr">owner</span>: <span class="variable language_">this</span>,</span><br><span class="line">                <span class="attr">source</span>: <span class="string">&#x27;&lt;x-person name=&quot;&#123;&#123;author.name&#125;&#125;&quot; email=&quot;&#123;&#123;author.email&#125;&#125;&quot;/&gt;&#x27;</span></span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">editor</span>.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">messages</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;person-done&#x27;</span>: <span class="keyword">function</span> (<span class="params">e</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;author&#x27;</span>, e.<span class="property">value</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">author</span>: &#123;</span><br><span class="line">            <span class="attr">name</span>: <span class="string">&#x27;erik&#x27;</span>,</span><br><span class="line">            <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line">myApp.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>);</span><br></pre></td></tr></table></figure>
+
+<p><code>提示</code>：如果你的组件包含指定 source 声明的手动创建的子组件，并且预期会被循环多次创建，可以将 source 模板手动预编译，避免框架对 source 字符串进行多次重复编译，提升性能。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手工预编译 source</span></span><br><span class="line"><span class="comment">// 3.7.0+</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">PersonDetail</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &#123;&#123;name&#125;&#125;, &#123;&#123;email&#125;&#125;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;close&quot;&gt;close&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">close</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="property">el</span>.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span> &#125;,</span><br><span class="line">    <span class="attr">open</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="variable language_">this</span>.<span class="property">el</span>.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;block&#x27;</span> &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Person</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  name: &#123;&#123;info.name&#125;&#125;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;  &lt;button on-click=&quot;showDetail&quot;&gt;detail&lt;/button&gt;&#x27;</span></span><br><span class="line">        + <span class="string">&#x27;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 手工预编译 source</span></span><br><span class="line">    <span class="attr">detailSource</span>: san.<span class="title function_">parseTemplate</span>(<span class="string">&#x27;&lt;x-person name=&quot;&#123;&#123;info.name&#125;&#125;&quot; email=&quot;&#123;&#123;info.email&#125;&#125;&quot;/&gt;&#x27;</span>)</span><br><span class="line">        .<span class="property">children</span>[<span class="number">0</span>],</span><br><span class="line"></span><br><span class="line">    <span class="attr">showDetail</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">detail</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">detail</span> = <span class="keyword">new</span> <span class="title class_">PersonDetail</span>(&#123;</span><br><span class="line">                <span class="attr">owner</span>: <span class="variable language_">this</span>,</span><br><span class="line">                <span class="attr">source</span>: <span class="variable language_">this</span>.<span class="property">detailSource</span></span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">detail</span>.<span class="title function_">attach</span>(<span class="variable language_">document</span>.<span class="property">body</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">detail</span>.<span class="title function_">open</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;x-p s-for=&quot;p in members&quot; info=&quot;&#123;&#123;p&#125;&#125;&quot; /&gt;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">components</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;x-p&#x27;</span>: <span class="title class_">Person</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">members</span>: [</span><br><span class="line">            &#123; <span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;errorrik@what.com&#x27;</span> &#125;,</span><br><span class="line">            &#123; <span class="attr">name</span>: <span class="string">&#x27;otakustay&#x27;</span>, <span class="attr">email</span>: <span class="string">&#x27;otakustay@what.com&#x27;</span> &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在 3.7.1 以上的版本，手动创建的子组件的 source 参数允许声明子元素，指定插入 slot 部分的内容。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定插入 slot 部分的内容</span></span><br><span class="line"><span class="comment">// 3.7.1+</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Dialog</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;span&gt;&lt;slot name=&quot;title&quot;/&gt;&lt;slot/&gt;&lt;/span&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">MyApp</span> = san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;button on-click=&quot;alterStrong&quot;&gt;alter strong&lt;/button&gt;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">attached</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable language_">this</span>.<span class="property">dialog</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">dialog</span> = <span class="keyword">new</span> <span class="title class_">Dialog</span>(&#123;</span><br><span class="line">                <span class="attr">owner</span>: <span class="variable language_">this</span>,</span><br><span class="line">                <span class="attr">source</span>: <span class="string">&#x27;&lt;x-dialog&gt;&#x27;</span></span><br><span class="line">                    + <span class="string">&#x27;&lt;h2 slot=&quot;title&quot;&gt;&#123;&#123;title&#125;&#125;&lt;/h2&gt;&#x27;</span></span><br><span class="line">                    + <span class="string">&#x27;&lt;b s-if=&quot;strongContent&quot;&gt;&#123;&#123;content&#125;&#125;&lt;/b&gt;&lt;u s-else&gt;&#123;&#123;content&#125;&#125;&lt;/u&gt;&#x27;</span></span><br><span class="line">                    + <span class="string">&#x27;&lt;/x-dialog&gt;&#x27;</span></span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">dialog</span>.<span class="title function_">attach</span>(<span class="variable language_">this</span>.<span class="property">el</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">alterStrong</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;strongContent&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;strongContent&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myApp = <span class="keyword">new</span> <span class="title class_">MyApp</span>(&#123;</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">&#x27;MyDialog&#x27;</span>,</span><br><span class="line">        <span class="attr">content</span>: <span class="string">&#x27;Hello San&#x27;</span>,</span><br><span class="line">        <span class="attr">strongContent</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#components"><span class="toc-text">components</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#owner-%E4%B8%8E-parent"><span class="toc-text">owner 与 parent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ref"><span class="toc-text">ref</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E6%81%AF"><span class="toc-text">消息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="toc-text">动态子组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E5%88%9B%E5%BB%BA%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="toc-text">手动创建子组件</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../../tutorial/start/">教程</a>
+        <li><a href="../../practice/">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../../tutorial/setup/">安装</a></dd>
+        <dd><a href="../../tutorial/start/">开始</a></dd>
+        <dd><a href="../../tutorial/template/">模板</a></dd>
+        <dd><a href="../../tutorial/data-method/">数据操作</a></dd>
+        <dd><a href="../../tutorial/style/">样式</a></dd>
+        <dd><a href="../../tutorial/if/">条件</a></dd>
+        <dd><a href="../../tutorial/for/">循环</a></dd>
+        <dd><a href="../../tutorial/event/">事件处理</a></dd>
+        <dd><a href="../../tutorial/form/">表单</a></dd>
+        <dd><a href="../../tutorial/slot/">插槽</a></dd>
+        <dd><a href="../../tutorial/attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="../../tutorial/transition/">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../define/">组件定义</a></dd>
+        <dd><a href="../lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../view/">组件视图</a></dd>
+        <dd><a href="../data/">组件数据</a></dd>
+        <dd><a href="" class="recommend-active">组件树结构</a></dd>
+        <dd><a href="../template-component/">模版组件</a></dd>
+        <dd><a href="../async/">异步组件</a></dd>
+        <dd><a href="../hydrate/">组件反解</a></dd>
+        <dd><a href="../error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../../tutorial/ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../../tutorial/background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>

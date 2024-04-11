@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../../img/icons/icon-144x144.png">
+  
+  <title>Server Side Rendering | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="From 3.8.0, server side rendering for san is provided by san-ssr. If you’re using san@&lt;3.8.0, please refer to Server Side Rendering (before 3.8.0).  San’s server-side rendering is based on compone">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Server Side Rendering">
+<meta property="og:url" content="http://baidu.github.io/en/tutorial/ssr/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="From 3.8.0, server side rendering for san is provided by san-ssr. If you’re using san@&lt;3.8.0, please refer to Server Side Rendering (before 3.8.0).  San’s server-side rendering is based on compone">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-04-11T01:48:26.896Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.896Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../start/">Tutorial</a></li>
+                <li><a class="router" href="../../practice/">Practice</a></li>
+                <li><a class="router" href="../../example/">Example</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">Discussions</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../../tutorial/ssr/">中文</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../setup/">Setup</a></dd>
+        <dd><a href="../start/">Start</a></dd>
+        <dd><a href="../template/">Template</a></dd>
+        <dd><a href="../data-method/">Data Manipulation</a></dd>
+        <dd><a href="../style/">Style</a></dd>
+        <dd><a href="../if/">Conditional</a></dd>
+        <dd><a href="../for/">Loop</a></dd>
+        <dd><a href="../event/">Event</a></dd>
+        <dd><a href="../form/">Form</a></dd>
+        <dd><a href="../slot/">Slot</a></dd>
+        <dd><a href="../attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="" class="recommend-active">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+<article id="post-en/tutorial/ssr" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      Server Side Rendering
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/en/tutorial/ssr.md" class="article-edit-link" title="Edit" target="_blank"> <img src="../../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> Edit</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>From 3.8.0, server side rendering for san is provided by <a href="https://github.com/baidu/san-ssr">san-ssr</a>. If you’re using san@&lt;3.8.0, please refer to <a href="../ssr-before-3.8/">Server Side Rendering (before 3.8.0)</a>.</p>
+</blockquote>
+<p>San’s server-side rendering is based on <a href="../../component/hydrate/">component hydrate</a>.</p>
+<ul>
+<li>The HTML output from the server contains markups fragment that has no effect on the view and helps the component understand the structure of the data and view.</li>
+<li>On the browser side, the component structure is understood from the markup fragment when the component is initialized, and the component can respond correctly when the user operates.</li>
+</ul>
+<p><code>tips</code>: Since the component runtime environment needs to consider various browser version as well as NodeJS, the sample code is guaranteed to be simple and no transform is required, all written in ES5.</p>
+<h2 id="Do-you-need-SSR"><a href="#Do-you-need-SSR" class="headerlink" title="Do you need SSR?"></a>Do you need SSR?</h2><p>We can gain some obvious benefits from server-side rendering which outputs HTML directly:</p>
+<ul>
+<li>SEO friendly, HTML direct output is more beneficial to search engine understanding and understanding</li>
+<li>Users can see the content the first time. In the developer’s opinion, the first screen time is coming sooner.</li>
+</ul>
+<p>However, if you use server-side rendering, we will face:</p>
+<ul>
+<li>Higher cost. Although we only need to develop one code of components, we need to consider its runtime is both NodeJS and browser; we need to consider rendering on the server side to compile in advance; we need to consider how the component’s source code is output to the browser; we need to consider the browser compatibility of the component, whether to write old browser compatible code or write it by ESNext and then package the compile-time transform. These still bring about an increase in maintenance costs, even if not much.</li>
+<li>User interaction time does not necessarily arrive earlier. The interaction behavior is managed by the component.  Components need to traverse the DOM tree to reversing the data and structure from the current view.  The speed of component-reversion is not necessarily faster than the direct rendering at the front end.</li>
+</ul>
+<p>Therefore, we recommend a comprehensive evaluation when using server-side rendering. Use SSR only in scenarios that must be used. Here are some scenario suggestions:</p>
+<ul>
+<li>Most of the backend systems (such as CMS、MIS、DashBoard) use the  Single Page Application mode. Obviously, these systems do not need to use SSR.</li>
+<li>Functional pages, such as personal center, my collection, etc, do not require SSR.</li>
+<li>Appear only in the App’s WebView, not as an open web page, no need to use SSR.</li>
+<li>Focus on content pages, you can use SSR. But the component manages the behavioral interaction, and no component rendering is required for the content part. Only need to perform component de-rendering in the part with interaction.</li>
+</ul>
+<h2 id="Output-HTML"><a href="#Output-HTML" class="headerlink" title="Output HTML"></a>Output HTML</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; defineComponent &#125; = <span class="built_in">require</span>(<span class="string">&#x27;san&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; compileToRenderer &#125; = <span class="built_in">require</span>(<span class="string">&#x27;san-ssr&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">MyComponent</span> = <span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> render = <span class="title function_">compileToRenderer</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">render</span>(&#123;</span><br><span class="line">    <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>,</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span></span><br><span class="line">&#125;));</span><br><span class="line"><span class="comment">// Outputs:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;&lt;!--s-data:&#123;&quot;email&quot;:&quot;errorrik@gmail.com&quot;,&quot;name&quot;:&quot;errorrik&quot;&#125;--&gt;&lt;span title=&quot;errorrik@gmail.com&quot;&gt;errorrik&lt;/span&gt;&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>san-ssr provides a <strong>compileToRenderer</strong> function, which takes the component class as the parameter and returns a <strong>{string}render({Object} data)</strong> method, which takes a data object and returns the rendered HTML string.</p>
+<h2 id="Output-CommonJS-Module"><a href="#Output-CommonJS-Module" class="headerlink" title="Output CommonJS Module"></a>Output CommonJS Module</h2><p>In some cases, we need the render method to be a standalone CommonJS Module which can be required and called by other modules. san-ssr provides a <strong>compileToSource</strong> function for this:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; defineComponent &#125; = <span class="built_in">require</span>(<span class="string">&#x27;san&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; compileToSource &#125; = <span class="built_in">require</span>(<span class="string">&#x27;san-ssr&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> &#123; writeFileSync &#125; = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">MyComponent</span> = <span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> fnBody = <span class="title function_">compileToSource</span>(<span class="title class_">MyComponent</span>);</span><br><span class="line"><span class="title function_">writeFileSync</span>(<span class="string">&#x27;ssr.js&#x27;</span>, <span class="string">&#x27;exports = module.exports = &#x27;</span> + fnBody);</span><br></pre></td></tr></table></figure>
+
+<p><strong>compileToSource</strong> takes the component class as input, and returns the function body of the renderer for this component class, which looks like <code>function (data) &#123;...&#125;</code>. You’ll need to add a <code>exports = module.exports = </code> prefix before it’s written into a .js file. This way you’ll get a CommonJS module.</p>
+<h2 id="From-File-To-File"><a href="#From-File-To-File" class="headerlink" title="From File To File"></a>From File To File</h2><p>You’ll need more capability from san-ssr when it comes to writting build tools. For instance, take a file as input and output a file, support TypeScript files, etc. The following is a demo for taking TypeScript file as input and output a CommonJS file:</p>
+<p>The component source code (a San component named <code>NameComponent</code>):</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;san&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">NameComponent</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Component</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> template = <span class="string">&#x27;&lt;a&gt;&lt;span title=&quot;&#123;&#123;email&#125;&#125;&quot;&gt;&#123;&#123;name&#125;&#125;&lt;/span&gt;&lt;/a&gt;&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Compile the component class into a CommonJS module containing the renderer:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">SanProject</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;san-ssr&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; writeFileSync &#125; <span class="keyword">from</span> <span class="string">&#x27;fs&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> project = <span class="keyword">new</span> <span class="title class_">SanProject</span>()</span><br><span class="line"><span class="keyword">const</span> targetCode = project.<span class="title function_">compile</span>(<span class="string">&#x27;./name.comp.ts&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="title function_">writeFileSync</span>(<span class="string">&#x27;name.ssr.js&#x27;</span>, targetCode)</span><br></pre></td></tr></table></figure>
+
+<p>Use <code>name.ssr.js</code> as a CommonJS module:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> nameRenderer = <span class="built_in">require</span>(<span class="string">&#x27;./name.ssr&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">nameRenderer</span>(&#123;</span><br><span class="line">    <span class="attr">email</span>: <span class="string">&#x27;errorrik@gmail.com&#x27;</span>,</span><br><span class="line">    <span class="attr">name</span>: <span class="string">&#x27;errorrik&#x27;</span></span><br><span class="line">&#125;))</span><br><span class="line"><span class="comment">// Outputs:</span></span><br><span class="line"><span class="comment">// &lt;a&gt;&lt;!--s-data:&#123;&quot;email&quot;:&quot;errorrik@gmail.com&quot;,&quot;name&quot;:&quot;errorrik&quot;&#125;--&gt;&lt;span title=&quot;errorrik@gmail.com&quot;&gt;errorrik&lt;/span&gt;&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Commandline-Interface"><a href="#Commandline-Interface" class="headerlink" title="Commandline Interface"></a>Commandline Interface</h2><p>san-ssr can also be used as a CLI tool. Install locally for npm scripts usage, or install globally:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g san-ssr</span><br></pre></td></tr></table></figure>
+
+<p>Compile the <code>NameComponent</code> component class mentioned above:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">san-ssr ./name.comp.ts &gt; name.ssr.js</span><br></pre></td></tr></table></figure>
+
+<p>For more tutorials and API regarding to SSR, please refer to:</p>
+<ul>
+<li>README：<a href="https://github.com/baidu/san-ssr">https://github.com/baidu/san-ssr</a></li>
+<li>TypeDoc: <a href="https://baidu.github.com/san-ssr">https://baidu.github.com/san-ssr</a></li>
+</ul>
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Do-you-need-SSR"><span class="toc-text">Do you need SSR?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Output-HTML"><span class="toc-text">Output HTML</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Output-CommonJS-Module"><span class="toc-text">Output CommonJS Module</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#From-File-To-File"><span class="toc-text">From File To File</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Commandline-Interface"><span class="toc-text">Commandline Interface</span></a></li></ol>
+  <a href="#" class="toc-top">Top</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../start/">Tutorial</a>
+        <li><a href="../../practice/">Practice</a>
+        <li><a href="../../example/">Example</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="../../../tutorial/ssr/">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>Tutorial</dt>
+        <dd><a href="../setup/">Setup</a></dd>
+        <dd><a href="../start/">Start</a></dd>
+        <dd><a href="../template/">Template</a></dd>
+        <dd><a href="../data-method/">Data Manipulation</a></dd>
+        <dd><a href="../style/">Style</a></dd>
+        <dd><a href="../if/">Conditional</a></dd>
+        <dd><a href="../for/">Loop</a></dd>
+        <dd><a href="../event/">Event</a></dd>
+        <dd><a href="../form/">Form</a></dd>
+        <dd><a href="../slot/">Slot</a></dd>
+        <dd><a href="../attr-fallthrough/">Attribute Fallthrough</a></dd>
+        <dd><a href="../transition/">Transition</a></dd>
+
+        <dt>Component</dt>
+        <dd><a href="../../component/define/">Define Component</a></dd>
+        <dd><a href="../../component/lifecycle/">Component Lifecycle</a></dd>
+        <dd><a href="../../component/view/">Component View</a></dd>
+        <dd><a href="../../component/data/">Component Data</a></dd>
+        <dd><a href="../../component/tree/">Component Tree</a></dd>
+        <dd><a href="../../component/template-component/">Template Component</a></dd>
+        <dd><a href="../../component/async/">Async Component</a></dd>
+        <dd><a href="../../component/hydrate/">Component Hydrate</a></dd>
+        <dd><a href="../../component/error/">Error Capture</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">Component API</a></dd>
+        <dd><a href="../../doc/main-members/">San API</a></dd>
+
+        <dt>More</dt>
+        <dd><a href="" class="recommend-active">SSR</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack Doc</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">Dist Files</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">Changelog</a></dd>
+        <dd><a href="../background/">Background</a></dd>
+
+        <dt>Facilities</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>Example</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">Small examples</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (One-way flow)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../../js/layout_control.js"></script>
+</body>
+</html>

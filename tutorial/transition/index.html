@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="San - A Flexible JavaScript Component Framework">
+  <meta name="keywords" content="San,JavaScript,Framework,MVVM,Component,Web">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" href="../../img/favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="../../img/icons/icon-144x144.png">
+  
+  <title>过渡 | San</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在视图中，过渡效果是常见的场景。平滑的过渡动画能够给用户更好的感官体验。san 提供了基础的过渡机制，你可以基于此开发丰富的过渡效果。 版本：&gt;&#x3D; 3.3.0 s-transition在元素上通过 s-transition 指令，可以声明过渡动画控制器。 1&lt;button s-transition&#x3D;&quot;opacityTransition&quot;&gt;click&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="过渡">
+<meta property="og:url" content="http://baidu.github.io/tutorial/transition/index.html">
+<meta property="og:site_name" content="San">
+<meta property="og:description" content="在视图中，过渡效果是常见的场景。平滑的过渡动画能够给用户更好的感官体验。san 提供了基础的过渡机制，你可以基于此开发丰富的过渡效果。 版本：&gt;&#x3D; 3.3.0 s-transition在元素上通过 s-transition 指令，可以声明过渡动画控制器。 1&lt;button s-transition&#x3D;&quot;opacityTransition&quot;&gt;click&amp;">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-04-11T01:48:26.901Z">
+<meta property="article:modified_time" content="2024-04-11T01:48:26.901Z">
+<meta property="article:author" content="errorrik">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="San" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="manifest" href="../../manifest.json">
+
+  
+<link rel="stylesheet" href="../../css/font-awesome.min.css">
+
+  
+<link rel="stylesheet" href="../../css/bootstrap.min.css">
+
+  
+<link rel="stylesheet" href="../../css/style.css">
+
+  
+<link rel="stylesheet" href="../../css/site.css">
+
+  
+<link rel="stylesheet" href="../../css/article.css">
+
+  
+<link rel="stylesheet" href="../../css/code.css">
+
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?3fd0e328e9b2f9b1af04ac25c143093f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  <!-- search -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.css" />
+
+
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+<body style="background: #01222d;">
+  <div class="body-inner">
+  <header>
+    <a href="../../" class="logo-s-link">
+        <img height="80" src="../../img/logo.svg" class="logo-s" alt="LOGO" title="San">
+        </a>
+    <a id="mobile-nav-toggle">
+      <span class="mobile-nav-toggle-bar"></span>
+      
+      <span class="mobile-nav-toggle-bar"></span>
+    </a>
+
+    <div class="header-content">
+        <nav class="header-content-nav">
+            <ul>
+                <li><a class="router" href="../start/">教程</a></li>
+                <li><a class="router" href="../../practice/">指南</a></li>
+                <li><a class="router" href="../../example/">示例</a></li>
+                <li><a class="router" href="../../doc/api/">API</a></li>
+                <li><a class="router" href="https://github.com/baidu/san/discussions" class="github" target="_blank">讨论</a></li>
+                <li>
+                    <a class="router" href="https://github.com/baidu/san" class="github" target="_blank">
+                        <img src="../../img/github2.svg" width="20" height="20">
+                    </a>
+                </li>
+            </ul>
+            <div class="search-input">
+                <input type="text" id="san-query-input" placeholder="Search" class="search-query st-default-search-input"/>
+                <svg t="1502693727354" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1431" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M817.243 742.793l152.765 153.11-76.72 76.547-152.765-153.11zM685.498 258.674c-118.486-118.541-310.63-118.541-429.171 0-118.542 118.542-118.542 310.686 0 429.172 54.911 54.928 130.781 88.903 214.586 88.903 83.804 0 159.674-33.977 214.585-88.903 54.928-54.913 88.903-130.782 88.903-214.587 0-83.804-33.977-159.674-88.903-214.585zM190.258 753.915c-71.856-71.838-116.303-171.092-116.303-280.727 0-219.233 177.723-396.956 396.956-396.956s396.956 177.723 396.956 396.956c0 109.635-44.446 208.89-116.302 280.726-71.833 71.814-171.057 116.229-280.656 116.229s-208.822-44.415-280.656-116.229l0.003 0.001z" p-id="1432"></path></svg>
+            </div>
+
+            <a class="header-lang" href="../../en/tutorial/transition/">EN</a>
+        </nav>
+    </div>
+</header>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/2/docsearch.min.js"></script>
+<script type="text/javascript">
+    var Input = document.getElementById('san-query-input');
+    var Icon = document.getElementsByClassName('icon')[0];
+    docsearch({
+        apiKey: '1c360e1f2503c4fa59ea3d28e3b8f6b3',
+        indexName: 'san',
+        inputSelector: '#san-query-input',
+        debug: false // Set debug to true if you want to inspect the dropdown
+    });
+</script>
+
+  <main>
+<aside class="recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="../data-method/">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="" class="recommend-active">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+<article id="post-tutorial/transition" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    
+        <div class="article-title">
+
+  
+    <h1 class="article-title" itemprop="name">
+      过渡
+    </h1>
+  
+
+  <a href="https://github.com/baidu/san-website/tree/master/source/_posts/tutorial/transition.md" class="article-edit-link" title="编辑本文" target="_blank"> <img src="../../img/pen.svg" width="12" height="15" style="padding-top:2px;"> 编辑本文</a>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在视图中，过渡效果是常见的场景。平滑的过渡动画能够给用户更好的感官体验。san 提供了基础的过渡机制，你可以基于此开发丰富的过渡效果。</p>
+<p><code>版本</code>：&gt;&#x3D; 3.3.0</p>
+<h2 id="s-transition"><a href="#s-transition" class="headerlink" title="s-transition"></a>s-transition</h2><p>在元素上通过 <strong>s-transition</strong> 指令，可以声明过渡动画控制器。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">s-transition</span>=<span class="string">&quot;opacityTransition&quot;</span>&gt;</span>click<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这个对象是元素 owner 的成员。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;button s-transition=&quot;opacityTransition&quot;&gt;click&lt;/button&gt;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">opacityTransition</span>: &#123;</span><br><span class="line">        <span class="comment">// 过渡动画控制器的结构在下文中描述</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>我们通常把 <strong>s-transition</strong> 和条件或循环指令一起使用。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">s-transition</span>=<span class="string">&quot;opacityTransition&quot;</span> <span class="attr">s-if</span>=<span class="string">&quot;allowEdit&quot;</span>&gt;</span>Edit<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">b</span> <span class="attr">s-transition</span>=<span class="string">&quot;opacityTransition&quot;</span> <span class="attr">s-else</span>&gt;</span>Edit not allow<span class="tag">&lt;/<span class="name">b</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>s-transition</strong> 声明的过渡动画控制器可以是 owner 组件的深层成员。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">&#x27;&lt;div&gt;&lt;button s-transition=&quot;trans.opacity&quot;&gt;click&lt;/button&gt;&lt;/div&gt;&#x27;</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">trans</span>: &#123;</span><br><span class="line">        <span class="attr">opacity</span>: &#123;</span><br><span class="line">            <span class="comment">// 过渡动画控制器的结构在下文中描述</span></span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>注意</code>：<strong>s-transition</strong> 只能应用在具体的元素中。template 这种没有具体元素的标签上应用 <strong>s-transition</strong> 将没有效果。</p>
+<h2 id="动画控制器"><a href="#动画控制器" class="headerlink" title="动画控制器"></a>动画控制器</h2><p>过渡动画控制器是一个包含 <strong>enter</strong> 和 <strong>leave</strong> 方法的对象。</p>
+<p><strong>enter</strong> 和 <strong>leave</strong> 方法的签名为 **function({HTMLElement}el, {Function}done)**。san 会把要过渡的元素传给过渡动画控制器，控制器在完成动画后调用 <strong>done</strong> 回调函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;toggle&quot;&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if=&quot;isShow&quot; s-transition=&quot;opacityTrans&quot;&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition=&quot;opacityTrans&quot;&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">toggle</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;isShow&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;isShow&#x27;</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">opacityTrans</span>: &#123;</span><br><span class="line">        <span class="attr">enter</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">            <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span>;</span><br><span class="line">                    <span class="title function_">done</span>();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="title function_">goStep</span>();</span><br><span class="line">        &#125;,</span><br><span class="line"></span><br><span class="line">        <span class="attr">leave</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">            <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">0</span>;</span><br><span class="line">                    <span class="title function_">done</span>();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="title function_">goStep</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><code>提示</code>：</p>
+<p>san 把动画控制器留给应用方实现，框架本身不内置动画控制效果。应用方可以：</p>
+<ul>
+<li>使用 css 动画，在 transitionend 或 animationend 事件监听中回调 done</li>
+<li>使用 requestAnimationFrame 控制动画，完成后回调 done</li>
+<li>在老旧浏览器使用 setTimeout &#x2F; setInterval 控制动画，完成后回调 done</li>
+<li>发挥想象力</li>
+</ul>
+<h2 id="动画控制器-Creator"><a href="#动画控制器-Creator" class="headerlink" title="动画控制器 Creator"></a>动画控制器 Creator</h2><p><strong>s-transition</strong> 指令声明对应的对象如果是一个 function，san 将把它当成 <strong>过渡动画控制器 Creator</strong>。</p>
+<p>每次触发过渡动画前，san 会调用<strong>过渡动画控制器 Creator</strong>，用其返回的对象作为过渡动画控制器。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;toggle&quot;&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if=&quot;isShow&quot; s-transition=&quot;opacityTrans&quot;&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition=&quot;opacityTrans&quot;&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">toggle</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;isShow&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;isShow&#x27;</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">opacityTrans</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">enter</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span>;</span><br><span class="line">                        <span class="title function_">done</span>();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="title function_">goStep</span>();</span><br><span class="line">            &#125;,</span><br><span class="line"></span><br><span class="line">            <span class="attr">leave</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">0</span>;</span><br><span class="line">                        <span class="title function_">done</span>();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="title function_">goStep</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>和<a href="../event/">事件声明</a>类似，<strong>过渡动画控制器 Creator</strong>调用支持传入参数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">san.<span class="title function_">defineComponent</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">        &lt;div&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;toggle&quot;&gt;toggle&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button on-click=&quot;toggleTrans&quot;&gt;toggle transition&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-if=&quot;isShow&quot; s-transition=&quot;opacityTrans(noTransition)&quot;&gt;Hello San!&lt;/button&gt;</span></span><br><span class="line"><span class="string">            &lt;button s-else s-transition=&quot;opacityTrans(noTransition)&quot;&gt;Hello ER!&lt;/button&gt;</span></span><br><span class="line"><span class="string">        &lt;/div&gt;</span></span><br><span class="line"><span class="string">    `</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">toggle</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;isShow&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;isShow&#x27;</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">toggleTrans</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">set</span>(<span class="string">&#x27;noTransition&#x27;</span>, !<span class="variable language_">this</span>.<span class="property">data</span>.<span class="title function_">get</span>(<span class="string">&#x27;noTransition&#x27;</span>));</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">initData</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">noTransition</span>: <span class="literal">false</span></span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="attr">opacityTrans</span>: <span class="keyword">function</span> (<span class="params">disabled</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">enter</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (disabled) &#123;</span><br><span class="line">                    <span class="title function_">done</span>();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span>;</span><br><span class="line">                        <span class="title function_">done</span>();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="title function_">goStep</span>();</span><br><span class="line">            &#125;,</span><br><span class="line"></span><br><span class="line">            <span class="attr">leave</span>: <span class="keyword">function</span> (<span class="params">el, done</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (disabled) &#123;</span><br><span class="line">                    <span class="title function_">done</span>();</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> steps = <span class="number">20</span>;</span><br><span class="line">                <span class="keyword">var</span> currentStep = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">function</span> <span class="title function_">goStep</span>(<span class="params"></span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (currentStep &gt;= steps) &#123;</span><br><span class="line">                        el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">0</span>;</span><br><span class="line">                        <span class="title function_">done</span>();</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    el.<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span> - <span class="number">1</span> / steps * currentStep++;</span><br><span class="line">                    <span class="title function_">requestAnimationFrame</span>(goStep);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="title function_">goStep</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+  </div>
+</article>
+
+<aside class="toc-wrap">
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#s-transition"><span class="toc-text">s-transition</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E7%94%BB%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="toc-text">动画控制器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E7%94%BB%E6%8E%A7%E5%88%B6%E5%99%A8-Creator"><span class="toc-text">动画控制器 Creator</span></a></li></ol>
+  <a href="#" class="toc-top">回到顶部</a>
+</aside>
+
+</main>
+      <div class="footer-copyright">
+        &copy; 2021 <a target="_blank" href="http://efe.baidu.com">Baidu EFE</a>
+    </div>
+</div>
+
+<div class="mobile-nav-dimmer"></div>
+<div class="mobile-nav">
+    <ul class="mobile-nav-header">
+        <li><a href="../../">HOME</a>
+        <li><a href="../start/">教程</a>
+        <li><a href="../../practice/">指南</a>
+        <li><a href="../../example/">示例</a>
+        <li><a href="../../doc/api/">API</a>
+        <li><a href="https://github.com/baidu/san" class="github" target="_blank">Github</a></li>
+        <li><a href="">中文</a></li>
+    </ul>
+    <aside class="mobile-nav-recommend">    <dl>
+        <dt>教程</dt>
+        <dd><a href="../setup/">安装</a></dd>
+        <dd><a href="../start/">开始</a></dd>
+        <dd><a href="../template/">模板</a></dd>
+        <dd><a href="../data-method/">数据操作</a></dd>
+        <dd><a href="../style/">样式</a></dd>
+        <dd><a href="../if/">条件</a></dd>
+        <dd><a href="../for/">循环</a></dd>
+        <dd><a href="../event/">事件处理</a></dd>
+        <dd><a href="../form/">表单</a></dd>
+        <dd><a href="../slot/">插槽</a></dd>
+        <dd><a href="../attr-fallthrough/">属性透传</a></dd>
+        <dd><a href="" class="recommend-active">过渡</a></dd>
+
+        <dt>组件</dt>
+        <dd><a href="../../component/define/">组件定义</a></dd>
+        <dd><a href="../../component/lifecycle/">组件生命周期</a></dd>
+        <dd><a href="../../component/view/">组件视图</a></dd>
+        <dd><a href="../../component/data/">组件数据</a></dd>
+        <dd><a href="../../component/tree/">组件树结构</a></dd>
+        <dd><a href="../../component/template-component/">模版组件</a></dd>
+        <dd><a href="../../component/async/">异步组件</a></dd>
+        <dd><a href="../../component/hydrate/">组件反解</a></dd>
+        <dd><a href="../../component/error/">组件异常</a></dd>
+
+        <dt>API</dt>
+        <dd><a href="../../doc/api/">组件 API</a></dd>
+        <dd><a href="../../doc/main-members/">主模块 API</a></dd>
+
+        <dt>了解更多</dt>
+        <dd><a href="../ssr/">服务端渲染</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode.md" target="_blank">ANode 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/doc/anode-pack.md" target="_blank">APack 文档</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/dist" target="_blank">发布版本说明</a></dd>
+        <dd><a href="https://github.com/baidu/san/blob/master/CHANGELOG.md" target="_blank">版本更新日志</a></dd>
+        <dd><a href="../background/">背景</a></dd>
+
+        <dt>周边</dt>
+        <dd><a href="https://github.com/baidu/san-devtools" target="_blank">san-devtools</a></dd>
+        <dd><a href="https://ecomfe.github.io/santd/" target="_blank">santd</a></dd>
+        <dd><a href="https://github.com/baidu/san-router" target="_blank">san-router</a></dd>
+        <dd><a href="https://github.com/baidu/san-store" target="_blank">san-store</a></dd>
+        <dd><a href="https://github.com/baidu/san-update" target="_blank">san-update</a></dd>
+        <dd><a href="https://baidu.github.io/san-ssr/" target="_blank">san-ssr</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-cli" target="_blank">san-cli</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-loader" target="_blank">san-loader</a></dd>
+        <dd><a href="https://github.com/baidu/san-factory" target="_blank">san-factory</a></dd>
+        <dd><a href="https://github.com/searchfe/sanny" target="_blank">sanny</a></dd>
+        <dd><a href="https://ecomfe.github.io/san-mui/" target="_blank">san-mui</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-anode-utils" target="_blank">san-anode-utils</a></dd>
+        <dd><a href="https://github.com/ecomfe/san-test-utils" target="_blank">san-test-utils</a></dd>
+        <dd><a href="https://github.com/baidu/san-composition" target="_blank">san-composition</a></dd>
+
+        <dt>示例</dt>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/start" target="_blank">一些小示例</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-amd" target="_blank">Todos (AMD)</a></dd>
+        <dd><a href="https://github.com/baidu/san/tree/master/example/todos-esnext" target="_blank">Todos (ESNext)</a></dd>
+        <dd><a href="https://github.com/baidu/san-store/tree/master/example/todos" target="_blank">Todos (单向流)</a></dd>
+    </dl>
+</aside>
+</div>
+
+
+
+
+  </div>
+  <script src="../../js/layout_control.js"></script>
+</body>
+</html>
