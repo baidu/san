@@ -41,6 +41,215 @@ describe("Attribute Inherit", function () {
         });
     });
 
+    it("with if", function (done) {
+        var Inner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><ui-inner s-if="show" attr-title="{{text}}" attr-data-t="state:{{text}}">{{text}}</ui-inner></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hahaha',
+                show: true
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('Hahaha');
+        expect(span.getAttribute('title')).toBe('Hahaha');
+        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        myComponent.data.set('text', 'Wuwuwu');
+
+        myComponent.nextTick(function () {
+            expect(span.innerHTML).toContain('Wuwuwu');
+            expect(span.getAttribute('title')).toBe('Wuwuwu');
+            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("with elif", function (done) {
+        var Inner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><div s-if="noshow"></div><ui-inner s-elif="true" attr-title="{{text}}" attr-data-t="state:{{text}}">{{text}}</ui-inner></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hahaha',
+                noshow: false
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('Hahaha');
+        expect(span.getAttribute('title')).toBe('Hahaha');
+        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        myComponent.data.set('text', 'Wuwuwu');
+
+        myComponent.nextTick(function () {
+            expect(span.innerHTML).toContain('Wuwuwu');
+            expect(span.getAttribute('title')).toBe('Wuwuwu');
+            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+    
+    it("with else", function (done) {
+        var Inner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><div s-if="noshow"></div><ui-inner s-else attr-title="{{text}}" attr-data-t="state:{{text}}">{{text}}</ui-inner></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hahaha',
+                noshow: false
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('Hahaha');
+        expect(span.getAttribute('title')).toBe('Hahaha');
+        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        myComponent.data.set('text', 'Wuwuwu');
+
+        myComponent.nextTick(function () {
+            expect(span.innerHTML).toContain('Wuwuwu');
+            expect(span.getAttribute('title')).toBe('Wuwuwu');
+            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("with for", function (done) {
+        var Inner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><ui-inner s-for="item in list" attr-title="{{item.text}}" attr-data-t="state:{{item.text}}">{{item.text}}</ui-inner></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                list: [{text: 'Hahaha'}]
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('Hahaha');
+        expect(span.getAttribute('title')).toBe('Hahaha');
+        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        myComponent.data.set('list[0].text', 'Wuwuwu');
+
+        myComponent.nextTick(function () {
+            expect(span.innerHTML).toContain('Wuwuwu');
+            expect(span.getAttribute('title')).toBe('Wuwuwu');
+            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
+    it("with is", function (done) {
+        var Inner = san.defineComponent({
+            template: '<span><slot/></span>'
+        });
+
+        var MyComponent = san.defineComponent({
+            template: '<div><ui-unknown s-is="cmpt" attr-title="{{text}}" attr-data-t="state:{{text}}">{{text}}</ui-unknown></div>',
+
+            components: {
+                'ui-inner': Inner
+            }
+        });
+
+        var myComponent = new MyComponent({
+            data: {
+                text: 'Hahaha',
+                cmpt: 'ui-inner'
+            }
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.innerHTML).toContain('Hahaha');
+        expect(span.getAttribute('title')).toBe('Hahaha');
+        expect(span.getAttribute('data-t')).toBe('state:Hahaha');
+
+        myComponent.data.set('text', 'Wuwuwu');
+
+        myComponent.nextTick(function () {
+            expect(span.innerHTML).toContain('Wuwuwu');
+            expect(span.getAttribute('title')).toBe('Wuwuwu');
+            expect(span.getAttribute('data-t')).toBe('state:Wuwuwu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("template component 1 level", function (done) {
         var Inner = san.defineTemplateComponent({
             template: '<span><slot/></span>'
