@@ -123,3 +123,7 @@ Please visit document [ChangeLog](https://github.com/baidu/san/blob/master/CHANG
 ## License
 
 San is [MIT licensed](./LICENSE).
+
+## 特别感谢(Special Thanks)
+
+![文心快码源力计划标志](https://comate.baidu.com/images/powersource/powersource-light-zh-5.png)
