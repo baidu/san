@@ -13,7 +13,6 @@ var kebab2camel = require('../util/kebab2camel');
 var hotTags = require('../browser/hot-tags');
 var getPropHandler = require('./get-prop-handler');
 var getANodeProp = require('./get-a-node-prop');
-var isBrowser = require('../browser/is-browser');
 var TextNode = require('./text-node');
 var SlotNode = require('./slot-node');
 var ForNode = require('./for-node');
@@ -79,7 +78,7 @@ function preheatANode(aNode, componentInstance) {
                     recordHotspotData(varItem.expr);
                 });
 
-                each(aNode.attrs, function (attr, i) {
+                each(aNode.attrs, function (attr) {
                     attr._data = {
                         type: ExprType.ACCESSOR,
                         paths: [
