@@ -173,10 +173,9 @@ function Component(options) { // eslint-disable-line
                     + stumpText
                         .replace(/^[\s\n]*/, '')
                         .replace(
-                            /"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z"/g,
-                            function (match, y, mon, d, h, m, s) {
-                                return 'new Date(' + (+y) + ',' + (+mon) + ',' + (+d)
-                                    + ',' + (+h) + ',' + (+m) + ',' + (+s) + ')';
+                            /"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z"/g,
+                            function (match) {
+                                return 'new Date(Date.parse(' + match + '))';
                             }
                         )
                 ))();
@@ -186,9 +185,9 @@ function Component(options) { // eslint-disable-line
                     stumpText.replace(/\\([^\\\/"bfnrtu])/g, "$1"), 
                     function (key, value) {
                         if (typeof value === 'string') {
-                            var ma = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d+Z/g.exec(value);
+                            var ma = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z/g.exec(value);
                             if (ma) {
-                                return new Date(ma[1], ma[2], ma[3], ma[4], ma[5], ma[6]);
+                                return new Date(Date.parse(ma[0]));
                             }
                         }
                         return value;
