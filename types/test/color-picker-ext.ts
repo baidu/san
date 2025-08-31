@@ -21,6 +21,10 @@ class ColorPicker extends Component<ColorPickerData> {
     itemClick(item: string) {
         // AutoComplete: this.data
         this.data.set('value', item);
+
+        // AutoComplete: this.d
+        // type check
+        this.d.value = item;
     }
 
     // AutoComplete: attached
@@ -62,7 +66,13 @@ export default ColorPicker;
 
 let colorPicker = new ColorPicker();
 let item2 = colorPicker.data.get('datasource[0]');
-let datasource = colorPicker.data.get('datasource');
+let datasource2 = colorPicker.data.get('datasource');
 item2.name // Auto Complete
+datasource2[0].name  // Auto Complete
+
+let item = colorPicker.d.datasource[0]
+let datasource = colorPicker.d.datasource
+item.name // Auto Complete
 datasource[0].name  // Auto Complete
+
 colorPicker.itemClick // Auto Complete

@@ -91,6 +91,7 @@ declare namespace san {
 
         el?: Element;
         data: Data<T>;
+        d: T;
         parentComponent?: Component<{}>;
     
         nodeType: NodeType.CMPT;
