@@ -63,7 +63,7 @@ function parseText(source, delimiters) {
         strValue && pushString(decodeHTMLEntity(strValue));
 
         // pushInterpToSeg
-        if (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
+        while (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
             delimEndIndex++;
         }
 
