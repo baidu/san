@@ -24,9 +24,7 @@ var decodeHTMLEntity = require('../util/decode-html-entity');
 function parseText(source, delimiters) {
     delimiters = delimiters || ['{{', '}}'];
 
-    var walker = new Walker(source);
     var beforeIndex = 0;
-
     var segs = [];
     var segIndex = -1;
     var original;
@@ -49,25 +47,25 @@ function parseText(source, delimiters) {
     var delimEnd = delimiters[1];
     var delimEndLen = delimEnd.length;
     while (1) {
-        var delimStartIndex = walker.source.indexOf(delimStart, walker.index);
-        var delimEndIndex = walker.source.indexOf(delimEnd, walker.index);
+        var delimStartIndex = source.indexOf(delimStart, beforeIndex);
+        var delimEndIndex = source.indexOf(delimEnd, beforeIndex);
         if (delimStartIndex === -1 || delimEndIndex < delimStartIndex) {
             break;
         }
 
         // pushStringToSeg
-        var strValue = walker.source.slice(
+        var strValue = source.slice(
             beforeIndex,
             delimStartIndex
         );
         strValue && pushString(decodeHTMLEntity(strValue));
 
         // pushInterpToSeg
-        while (walker.source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
+        while (source.indexOf(delimEnd, delimEndIndex + 1) === delimEndIndex + 1) {
             delimEndIndex++;
         }
 
-        var interpWalker = new Walker(walker.source.slice(delimStartIndex + delimStartLen, delimEndIndex));
+        var interpWalker = new Walker(source.slice(delimStartIndex + delimStartLen, delimEndIndex));
         if (!interpWalker.goUntil(125) && interpWalker.index < interpWalker.len) {
             var interp = {
                 type: ExprType.INTERP,
@@ -94,11 +92,11 @@ function parseText(source, delimiters) {
             pushString(delimStart + interpWalker.source + delimEnd);
         }
 
-        beforeIndex = walker.index = delimEndIndex + delimEndLen;
+        beforeIndex = delimEndIndex + delimEndLen;
     }
 
     // pushStringToSeg
-    var strValue = walker.source.slice(beforeIndex);
+    var strValue = source.slice(beforeIndex);
     strValue && pushString(decodeHTMLEntity(strValue));
 
     switch (segs.length) {
