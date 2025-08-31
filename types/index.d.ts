@@ -287,7 +287,7 @@ declare namespace san {
         force?: boolean;
     }
     
-    interface DataChangeListener<T> {
+    interface DataChangeListener<T extends {}> {
         (this: Data<T>, change: DataChangeInfo): void
     }
     
@@ -577,7 +577,7 @@ declare namespace san {
         new(option?: ComponentNewOptions<T>): Component<T> & M;
     }
     
-    type ComponentDefineOptionsWithThis<DataT, OptionsT> = ComponentDefineOptions<DataT> & OptionsT 
+    type ComponentDefineOptionsWithThis<DataT extends {}, OptionsT> = ComponentDefineOptions<DataT> & OptionsT 
         & ThisType<Component<DataT> & ComponentDefineOptions<DataT> & OptionsT>;
 
     function defineComponent<DataT extends {} = {}, OptionsT extends {} = {}>(
@@ -630,7 +630,7 @@ declare namespace san {
     function evalExpr<T extends {}>(expr: Expr, data: Data<T>, owner?: Component<T>): any;
     
     function inherits(subClass: Component<{}>, superClass: Component<{}>): void;
-    function inherits<T>(subClass: (options: ComponentNewOptions<T>) => void, superClass: Component<{}>): void;
+    function inherits<T extends {}>(subClass: (options: ComponentNewOptions<T>) => void, superClass: Component<{}>): void;
     function nextTick(handler: () => any): void;
 }
 
