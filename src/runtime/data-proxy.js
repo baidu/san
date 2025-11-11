@@ -51,6 +51,7 @@ function dataProxy(data) {
                     paths: paths.concat({type: ExprType.STRING, value: prop})
                 };
                 data.set(expr, value);
+                return true;
             },
 
             get: target instanceof Array
