@@ -50,7 +50,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
 var handleError = require('../util/handle-error');
 var DOMChildrenWalker = require('./dom-children-walker');
-var emptyReturnTruth = require('../util/proxy-empty-set');
+var emptyReturnTrue = require('../util/empty-return-true');
 
 
 var proxySupported = typeof Proxy !== 'undefined';
@@ -520,14 +520,14 @@ Component.prototype.fire = function (name, event) {
 
 
 var componentComputedProxyHandler = {
+    set: emptyReturnTrue,
     get: function (obj, prop) {
         var value = obj[prop];
         if (value && typeof value === 'object') {
             return new Proxy(value, componentComputedProxyHandler);
         }
         return value;
-    },
-    set: emptyReturnTruth
+    }
 };
 
 
@@ -578,7 +578,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     if (proxySupported) {
         that.d = new Proxy(me.data.raw, {
-            set: emptyReturnTruth,
+            set: emptyReturnTrue,
             get: function (obj, prop) {
                 if (!computedDeps[prop]) {
                     computedDeps[prop] = 1;

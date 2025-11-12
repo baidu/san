@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license.
  * See LICENSE file in the project root for license information.
  *
- * @file 空函数
+ * @file 返回 true 的空函数
  */
 
 
 /**
  * 啥都不干，返回true
  */
-function emptyReturnTruth() {return true;}
+function emptyReturnTrue() {
+    return true;
+}
 
-exports = module.exports = emptyReturnTruth;
+exports = module.exports = emptyReturnTrue;

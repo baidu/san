@@ -11,6 +11,7 @@
     // 人工调整打包代码顺序，通过注释手工写一些依赖
     // require('./util/guid');
     // require('./util/empty');
+    // require('./util/empty-return-true');
     // require('./util/extend');
     // require('./util/inherits');
     // require('./util/each');
