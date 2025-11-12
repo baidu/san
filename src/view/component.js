@@ -9,7 +9,6 @@
 
 
 var each = require('../util/each');
-var empty = require('../util/empty');
 var guid = require('../util/guid');
 var extend = require('../util/extend');
 var nextTick = require('../util/next-tick');
@@ -51,6 +50,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
 var handleError = require('../util/handle-error');
 var DOMChildrenWalker = require('./dom-children-walker');
+var emptyReturnTruth = require('../util/proxy-empty-set');
 
 
 var proxySupported = typeof Proxy !== 'undefined';
@@ -526,8 +526,8 @@ var componentComputedProxyHandler = {
             return new Proxy(value, componentComputedProxyHandler);
         }
         return value;
-    }, 
-    set: empty
+    },
+    set: emptyReturnTruth
 };
 
 
@@ -578,7 +578,7 @@ Component.prototype._calcComputed = function (computedExpr) {
 
     if (proxySupported) {
         that.d = new Proxy(me.data.raw, {
-            set: empty,
+            set: emptyReturnTruth,
             get: function (obj, prop) {
                 if (!computedDeps[prop]) {
                     computedDeps[prop] = 1;
