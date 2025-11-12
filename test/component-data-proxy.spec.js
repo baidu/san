@@ -1,3 +1,5 @@
+"use strict";
+
 (typeof Proxy !== 'undefined') && describe("Component Data Proxy", function () {
     it("simple item", function (done) {
         var MyComponent = san.defineComponent({
