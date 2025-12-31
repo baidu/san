@@ -580,4 +580,89 @@ describe("TemplateComponent", function () {
         triggerEvent(childEl, 'click');
         doneSpec();
     });
+
+    it("bind data should not duplicate updates when set and push in same tick", function (done) {
+        var Child = san.defineTemplateComponent({
+            template: '<ul>'
+                + '<li san-for="item in list1" class="list1">{{item}}</li>'
+                + '<li san-for="item in list2" class="list2">{{item}}</li>'
+                + '<li san-for="item in list3" class="list3">{{item}}</li>'
+                + '<li san-for="item in list4" class="list4">{{item}}</li>'
+                + '<li san-for="item in obj2.list5" class="list5">{{item}}</li>'
+                + '</ul>',
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-child': Child
+            },
+            template: '<div><x-child list1="{{list1}}" list2="{{list2}}" list3="{{obj.list3}}" list4="{{obj1.list4}}" obj2="{{obj2}}"></x-child></div>',
+            initData: function () {
+                return {
+                    list1: [],
+                    list2: [],
+                    obj: {
+                        list3: []
+                    },
+                    obj1: {
+                        list4: []
+                    },
+                    obj2: {
+                        list5: []
+                    }
+                };
+            },
+            attached: function () {
+                // Case 1: SET then PUSH (Same level)
+                this.data.set('list1', []);
+                this.data.push('list1', 1);
+
+                // Case 2: PUSH then SET (Same level)
+                this.data.push('list2', 1);
+                this.data.set('list2', []);
+
+                // Case 3: SET then PUSH (Nested property)
+                this.data.set('obj.list3', []);
+                this.data.push('obj.list3', 1);
+
+                // Case 4: SET Parent then PUSH Child
+                this.data.set('obj1', {list4: []});
+                this.data.push('obj1.list4', 1);
+
+                // Case 5
+                this.data.set('obj2', {list5: []});
+                this.data.push('obj2.list5', 1);
+            }
+        });
+
+        var myComponent = new MyComponent();
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        san.nextTick(function () {
+            var lis1 = wrap.getElementsByClassName('list1');
+            expect(lis1.length).toBe(1);
+            expect(lis1[0].innerHTML).toBe('1');
+
+            var lis2 = wrap.getElementsByClassName('list2');
+            expect(lis2.length).toBe(0);
+
+            var lis3 = wrap.getElementsByClassName('list3');
+            expect(lis3.length).toBe(1);
+            expect(lis3[0].innerHTML).toBe('1');
+
+            var lis4 = wrap.getElementsByClassName('list4');
+            expect(lis4.length).toBe(1);
+            expect(lis4[0].innerHTML).toBe('1');
+
+            var lis5 = wrap.getElementsByClassName('list5');
+            expect(lis5.length).toBe(1);
+            expect(lis5[0].innerHTML).toBe('1');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
 });

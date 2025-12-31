@@ -788,6 +788,7 @@ Component.prototype._update = function (changes) {
             );
         }
 
+        var updatedBinds = {};
         each(changes, function (change) {
             var changeExpr = change.expr;
 
@@ -813,11 +814,13 @@ Component.prototype._update = function (changes) {
                     }
 
                     if (relation >= 2 && change.type === DataChangeType.SPLICE) {
-                        me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
-                            target: {
-                                node: me.owner
-                            }
-                        });
+                        if (!updatedBinds[bindItem.name]) {
+                            me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
+                                target: {
+                                    node: me.owner
+                                }
+                            });
+                        }
                     }
                     else {
                         me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
@@ -825,6 +828,10 @@ Component.prototype._update = function (changes) {
                                 node: me.owner
                             }
                         });
+                        
+                        if (relation <= 2) {
+                            updatedBinds[bindItem.name] = true;
+                        }
                     }
                 }
             });
