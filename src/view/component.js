@@ -50,6 +50,7 @@ var createDataTypesChecker = require('../util/create-data-types-checker');
 var warn = require('../util/warn');
 var handleError = require('../util/handle-error');
 var DOMChildrenWalker = require('./dom-children-walker');
+var removeExcrescentChanges = require('./remove-excrescent-changes');
 var emptyReturnTrue = require('../util/empty-return-true');
 
 
@@ -767,6 +768,8 @@ Component.prototype._update = function (changes) {
     };
 
     if (changes) {
+        changes = removeExcrescentChanges(changes);
+        
         if (this.source) {
             this._srcSbindData = nodeSBindUpdate(
                 this.source.directives.bind,
@@ -788,7 +791,6 @@ Component.prototype._update = function (changes) {
             );
         }
 
-        var updatedBinds = {};
         each(changes, function (change) {
             var changeExpr = change.expr;
 
@@ -814,13 +816,11 @@ Component.prototype._update = function (changes) {
                     }
 
                     if (relation >= 2 && change.type === DataChangeType.SPLICE) {
-                        if (!updatedBinds[bindItem.name]) {
-                            me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
-                                target: {
-                                    node: me.owner
-                                }
-                            });
-                        }
+                        me.data.splice(setExpr, [change.index, change.deleteCount].concat(change.insertions), {
+                            target: {
+                                node: me.owner
+                            }
+                        });
                     }
                     else {
                         me.data.set(setExpr, evalExpr(updateExpr, me.scope, me.owner), {
@@ -828,10 +828,6 @@ Component.prototype._update = function (changes) {
                                 node: me.owner
                             }
                         });
-                        
-                        if (relation <= 2) {
-                            updatedBinds[bindItem.name] = true;
-                        }
                     }
                 }
             });

@@ -2279,20 +2279,21 @@ describe("Component", function () {
 
     it("bind data should not duplicate updates when set and push in same tick", function (done) {
         var Child = san.defineComponent({
-            template: '<ul>'
-                + '<li san-for="item in list1" class="list1">{{item}}</li>'
-                + '<li san-for="item in list2" class="list2">{{item}}</li>'
-                + '<li san-for="item in list3" class="list3">{{item}}</li>'
-                + '<li san-for="item in list4" class="list4">{{item}}</li>'
-                + '<li san-for="item in obj2.list5" class="list5">{{item}}</li>'
-                + '</ul>',
+            template: '<div>'
+                + '<a san-for="item in list1">{{item}}</a>'
+                + '<b san-for="item in list2">{{item}}</b>'
+                + '<i san-for="item in list3">{{item}}</i>'
+                + '<u san-for="item in list4">{{item}}</u>'
+                + '<p san-for="item in obj2.list5">{{item}}</p>'
+                + '<q san-for="item in obj3.list6">{{item}}</q>'
+                + '</div>',
         });
 
         var MyComponent = san.defineComponent({
             components: {
                 'x-child': Child
             },
-            template: '<div><x-child list1="{{list1}}" list2="{{list2}}" list3="{{obj.list3}}" list4="{{obj1.list4}}" obj2="{{obj2}}"></x-child></div>',
+            template: '<div><x-child list1="{{list1}}" list2="{{list2}}" list3="{{obj.list3}}" list4="{{obj1.list4}}" obj2="{{obj2}}" obj3="{{obj3}}"></x-child></div>',
             initData: function () {
                 return {
                     list1: [],
@@ -2305,6 +2306,9 @@ describe("Component", function () {
                     },
                     obj2: {
                         list5: []
+                    },
+                    obj3: {
+                        list6: []
                     }
                 };
             },
@@ -2329,6 +2333,9 @@ describe("Component", function () {
                 this.data.set('obj2', {list5: []});
                 this.data.push('obj2.list5', 1);
 
+                // Case 6
+                this.data.set('obj3.list6', []);
+                this.data.push('obj3.list6', 1);
             }
         });
 
@@ -2338,24 +2345,28 @@ describe("Component", function () {
         myComponent.attach(wrap);
 
         san.nextTick(function () {
-            var lis1 = wrap.getElementsByClassName('list1');
+            var lis1 = wrap.getElementsByTagName('a');
             expect(lis1.length).toBe(1);
             expect(lis1[0].innerHTML).toBe('1');
 
-            var lis2 = wrap.getElementsByClassName('list2');
+            var lis2 = wrap.getElementsByTagName('b');
             expect(lis2.length).toBe(0);
 
-            var lis3 = wrap.getElementsByClassName('list3');
+            var lis3 = wrap.getElementsByTagName('i');
             expect(lis3.length).toBe(1);
             expect(lis3[0].innerHTML).toBe('1');
 
-            var lis4 = wrap.getElementsByClassName('list4');
+            var lis4 = wrap.getElementsByTagName('u');
             expect(lis4.length).toBe(1);
             expect(lis4[0].innerHTML).toBe('1');
 
-            var lis5 = wrap.getElementsByClassName('list5');
+            var lis5 = wrap.getElementsByTagName('p');
             expect(lis5.length).toBe(1);
             expect(lis5[0].innerHTML).toBe('1');
+
+            var lis6 = wrap.getElementsByTagName('q');
+            expect(lis6.length).toBe(1);
+            expect(lis6[0].innerHTML).toBe('1');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
