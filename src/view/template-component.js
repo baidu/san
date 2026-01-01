@@ -379,7 +379,9 @@ TemplateComponent.prototype._update = function (changes) {
     };
 
     if (changes) {
-        changes = removeExcrescentChanges(changes);
+        if (changes.length > 1) {
+            changes = removeExcrescentChanges(changes);
+        }
 
         if (this.source) {
             this._srcSbindData = nodeSBindUpdate(
@@ -402,7 +404,8 @@ TemplateComponent.prototype._update = function (changes) {
             );
         }
 
-        each(changes, function (change) {
+        for (var i = 0; i < changes.length; i++) {
+            var change = changes[i];
             var changeExpr = change.expr;
 
             each(me.binds, function (bindItem) {
@@ -456,7 +459,7 @@ TemplateComponent.prototype._update = function (changes) {
                 needReloadForSlot = needReloadForSlot || changeExprCompare(changeExpr, bindItem.expr, me.scope);
                 return !needReloadForSlot;
             });
-        });
+        }
 
         if (needReloadForSlot) {
             this._initSourceSlots();
