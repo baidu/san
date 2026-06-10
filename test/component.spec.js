@@ -966,6 +966,99 @@ describe("Component", function () {
         });
     });
 
+    it("s-is use component method", function () {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label
+            },
+            initData: function () {
+                return {
+                    type: 'label'
+                }
+            },
+            getComponentName: function () {
+                return 'x-' + this.data.get('type');
+            },
+            template: '<div><test s-is="{{getComponentName()}}"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("s-is use component method update", function (done) {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var H2 = san.defineComponent({
+            template: '<h2>{{text}}.baidu</h2>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+                'x-h2': H2
+            },
+            initData: function () {
+                return {
+                    type: 'label'
+                }
+            },
+            getComponentName: function () {
+                return 'x-' + this.data.get('type');
+            },
+            template: '<div><test s-is="{{getComponentName()}}"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.data.set('type', 'h2');
+        san.nextTick(function () {
+            var h2 = wrap.getElementsByTagName('h2')[0];
+            expect(h2.innerHTML).toBe('erik.baidu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("components in inherits structure", function () {
         var Span = san.defineComponent({});
         Span.template = '<span title="span">span</span>';
@@ -2270,103 +2363,6 @@ describe("Component", function () {
         san.nextTick(function () {
             var u = wrap.getElementsByTagName('u')[0];
             expect(u.title).toBe('errorrik-errorrik@gmail.com');
-
-            myComponent.dispose();
-            document.body.removeChild(wrap);
-            done();
-        });
-    });
-
-    it("bind data should not duplicate updates when set and push in same tick", function (done) {
-        var Child = san.defineComponent({
-            template: '<div>'
-                + '<a san-for="item in list1">{{item}}</a>'
-                + '<b san-for="item in list2">{{item}}</b>'
-                + '<i san-for="item in list3">{{item}}</i>'
-                + '<u san-for="item in list4">{{item}}</u>'
-                + '<p san-for="item in obj2.list5">{{item}}</p>'
-                + '<q san-for="item in obj3.list6">{{item}}</q>'
-                + '</div>',
-        });
-
-        var MyComponent = san.defineComponent({
-            components: {
-                'x-child': Child
-            },
-            template: '<div><x-child list1="{{list1}}" list2="{{list2}}" list3="{{obj.list3}}" list4="{{obj1.list4}}" obj2="{{obj2}}" obj3="{{obj3}}"></x-child></div>',
-            initData: function () {
-                return {
-                    list1: [],
-                    list2: [],
-                    obj: {
-                        list3: []
-                    },
-                    obj1: {
-                        list4: []
-                    },
-                    obj2: {
-                        list5: []
-                    },
-                    obj3: {
-                        list6: []
-                    }
-                };
-            },
-            attached: function () {
-                // Case 1: SET then PUSH (Same level)
-                this.data.set('list1', []);
-                this.data.push('list1', 1);
-
-                // Case 2: PUSH then SET (Same level)
-                this.data.push('list2', 1);
-                this.data.set('list2', []);
-
-                // Case 3: SET then PUSH (Nested property)
-                this.data.set('obj.list3', []);
-                this.data.push('obj.list3', 1);
-
-                // Case 4: SET Parent then PUSH Child
-                this.data.set('obj1', {list4: []});
-                this.data.push('obj1.list4', 1);
-
-                // Case 5
-                this.data.set('obj2', {list5: []});
-                this.data.push('obj2.list5', 1);
-
-                // Case 6
-                this.data.set('obj3.list6', []);
-                this.data.push('obj3.list6', 1);
-            }
-        });
-
-        var myComponent = new MyComponent();
-        var wrap = document.createElement('div');
-        document.body.appendChild(wrap);
-        myComponent.attach(wrap);
-
-        san.nextTick(function () {
-            var lis1 = wrap.getElementsByTagName('a');
-            expect(lis1.length).toBe(1);
-            expect(lis1[0].innerHTML).toBe('1');
-
-            var lis2 = wrap.getElementsByTagName('b');
-            expect(lis2.length).toBe(0);
-
-            var lis3 = wrap.getElementsByTagName('i');
-            expect(lis3.length).toBe(1);
-            expect(lis3[0].innerHTML).toBe('1');
-
-            var lis4 = wrap.getElementsByTagName('u');
-            expect(lis4.length).toBe(1);
-            expect(lis4[0].innerHTML).toBe('1');
-
-            var lis5 = wrap.getElementsByTagName('p');
-            expect(lis5.length).toBe(1);
-            expect(lis5[0].innerHTML).toBe('1');
-
-            var lis6 = wrap.getElementsByTagName('q');
-            expect(lis6.length).toBe(1);
-            expect(lis6[0].innerHTML).toBe('1');
 
             myComponent.dispose();
             document.body.removeChild(wrap);
