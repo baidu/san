@@ -17,6 +17,7 @@ var ExprType = require('../parser/expr-type');
 var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
 var unpackANode = require('../parser/unpack-anode');
+var isBrowser = require('../browser/is-browser');
 var removeEl = require('../browser/remove-el');
 var Data = require('../runtime/data');
 var dataProxy = require('../runtime/data-proxy');
@@ -1161,7 +1162,8 @@ Component.prototype.attach = function (parentEl, beforeEl) {
 
                 var props;
                 var doc = parentEl.ownerDocument;
-                if (aNode._ce && aNode._i > 2) {
+
+                if (isBrowser && aNode._ce && aNode._i > 2) {
                     props = aNode._dp;
                     this.el = (aNode._el || preheatEl(aNode, doc)).cloneNode(false);
                 }

@@ -12,6 +12,7 @@ var changeExprCompare = require('../runtime/change-expr-compare');
 var changesIsInDataRef = require('../runtime/changes-is-in-data-ref');
 var evalExpr = require('../runtime/eval-expr');
 var svgTags = require('../browser/svg-tags');
+var isBrowser = require('../browser/is-browser');
 var insertBefore = require('../browser/insert-before');
 var LifeCycle = require('./life-cycle');
 var NodeType = require('./node-type');
@@ -121,7 +122,7 @@ Element.prototype.attach = function (parentEl, beforeEl) {
         if (!this.el) {
             var props;
 
-            if (aNode._ce && aNode._i > 2) {
+            if (isBrowser && aNode._ce && aNode._i > 2) {
                 props = aNode._dp;
                 this.el = (aNode._el || preheatEl(aNode, doc)).cloneNode(false);
             }

@@ -18,6 +18,7 @@ var parseExpr = require('../parser/parse-expr');
 var parseTemplate = require('../parser/parse-template');
 var unpackANode = require('../parser/unpack-anode');
 var removeEl = require('../browser/remove-el');
+var isBrowser = require('../browser/is-browser');
 var Data = require('../runtime/data');
 var evalExpr = require('../runtime/eval-expr');
 var changeExprCompare = require('../runtime/change-expr-compare');
@@ -264,7 +265,7 @@ TemplateComponent.prototype.attach = function (parentEl, beforeEl) {
                 var props;
                 var doc = parentEl.ownerDocument;
 
-                if (aNode._ce && aNode._i > 2) {
+                if (isBrowser && aNode._ce && aNode._i > 2) {
                     props = aNode._dp;
                     this.el = (aNode._el || preheatEl(aNode, doc)).cloneNode(false);
                 }
