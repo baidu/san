@@ -28,7 +28,7 @@ function unionKeys(obj1, obj2) {
     for (key in obj2) {
         /* istanbul ignore else  */
         if (obj2.hasOwnProperty(key)) {
-            !obj1[key] && result.push(key);
+            (!obj1 || !obj1[key]) && result.push(key);
         }
     }
 

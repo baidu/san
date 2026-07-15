@@ -32,10 +32,11 @@ function nodeSBindUpdate(sBind, oldBindData, scope, owner, changes, updater) {
 
                 for (var i = 0, l = keys.length; i < l; i++) {
                     var key = keys[i];
-                    var value = newBindData[key];
+                    var newValue = newBindData ? newBindData[key] : void(0);
+                    var oldValue = oldBindData ? oldBindData[key] : void(0);
 
-                    if (value !== oldBindData[key]) {
-                        updater(key, value);
+                    if (newValue !== oldValue) {
+                        updater(key, newValue);
                     }
                 }
 

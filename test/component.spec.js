@@ -5129,6 +5129,42 @@ describe("Component", function () {
 
     });
 
+    it("s-bind data is undefined", function (done) {
+        var Person = san.defineComponent({
+            template: '<div><b>{{name || "Anonymous"}}</b></div>'
+        });
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-p': Person
+            },
+            template: '<div><x-p s-bind="p" /></div>'
+        });
+        var myComponent = new MyComponent({
+        });
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var b = wrap.getElementsByTagName('b')[0];
+        expect(b.innerHTML).toContain('Anonymous');
+
+        myComponent.data.set('p', {name: 'Erik'});
+        myComponent.nextTick(function () {
+            expect(b.innerHTML).toContain('Erik');
+
+            myComponent.data.set('p', null);
+            myComponent.nextTick(function () {
+
+                expect(b.innerHTML).toContain('Anonymous');
+                myComponent.dispose();
+                document.body.removeChild(wrap);
+                done();
+            });
+        });
+
+    });
+
 
     it("has s-bind with other attr, confilct", function (done) {
         var Article = san.defineComponent({
