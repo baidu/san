@@ -1036,7 +1036,7 @@ describe("Component", function () {
             getComponentName: function (type) {
                 return 'x-' + type;
             },
-            template: '<div><test s-is="{{getComponentName(type)}}"/></div>'
+            template: '<div><test s-is="getComponentName(type)"/></div>'
         });
 
         var myComponent = new MyComponent();
@@ -1047,11 +1047,14 @@ describe("Component", function () {
 
         var span = wrap.getElementsByTagName('span')[0];
         expect(span.title).toBe('erik');
+        expect(wrap.getElementsByTagName('h2').length).toBe(0);
 
         myComponent.data.set('type', 'h2');
         san.nextTick(function () {
             var h2 = wrap.getElementsByTagName('h2')[0];
             expect(h2.innerHTML).toBe('erik.baidu');
+
+            expect(wrap.getElementsByTagName('span').length).toBe(0);
 
             myComponent.dispose();
             document.body.removeChild(wrap);
