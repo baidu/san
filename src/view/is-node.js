@@ -39,7 +39,7 @@ function IsNode(aNode, parent, scope, owner, hydrateWalker) {
     this.tagName = this.aNode.tagName;
     // #[begin] hydrate
     if (hydrateWalker) {
-        this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+        this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope, this.owner) || this.tagName;
         this.children[0] = createHydrateNode(
             this.aNode.isRinsed,
             this,
@@ -63,7 +63,7 @@ IsNode.prototype.dispose = nodeOwnSimpleDispose;
  * @param {HTMLElement＝} beforeEl 要添加到哪个元素之前
  */
 IsNode.prototype.attach = function (parentEl, beforeEl) {
-    this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+    this.cmpt = evalExpr(this.aNode.directives.is.value, this.scope, this.owner) || this.tagName;
     
     var child = createNode(this.aNode.isRinsed, this, this.scope, this.owner, this.cmpt);
     this.children[0] = child;
@@ -77,7 +77,7 @@ IsNode.prototype.attach = function (parentEl, beforeEl) {
  */
 IsNode.prototype._update = function (changes) {
     var child = this.children[0];
-    var cmpt = evalExpr(this.aNode.directives.is.value, this.scope) || this.tagName;
+    var cmpt = evalExpr(this.aNode.directives.is.value, this.scope, this.owner) || this.tagName;
 
     if (cmpt === this.cmpt) {
         child._update(changes);
