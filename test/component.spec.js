@@ -966,6 +966,99 @@ describe("Component", function () {
         });
     });
 
+    it("s-is use component method", function () {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label
+            },
+            initData: function () {
+                return {
+                    type: 'label'
+                }
+            },
+            getComponentName: function (type) {
+                return 'x-' + type;
+            },
+            template: '<div><test s-is="{{getComponentName(type)}}"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.dispose();
+        document.body.removeChild(wrap);
+    });
+
+    it("s-is use component method update", function (done) {
+        var Label = san.defineComponent({
+            template: '<span title="{{text}}">{{text}}</span>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var H2 = san.defineComponent({
+            template: '<h2>{{text}}.baidu</h2>',
+            initData: function () {
+                return {
+                    text: 'erik'
+                }
+            }
+        });
+
+        var MyComponent = san.defineComponent({
+            components: {
+                'x-label': Label,
+                'x-h2': H2
+            },
+            initData: function () {
+                return {
+                    type: 'label'
+                }
+            },
+            getComponentName: function (type) {
+                return 'x-' + type;
+            },
+            template: '<div><test s-is="{{getComponentName(type)}}"/></div>'
+        });
+
+        var myComponent = new MyComponent();
+
+        var wrap = document.createElement('div');
+        document.body.appendChild(wrap);
+        myComponent.attach(wrap);
+
+        var span = wrap.getElementsByTagName('span')[0];
+        expect(span.title).toBe('erik');
+
+        myComponent.data.set('type', 'h2');
+        san.nextTick(function () {
+            var h2 = wrap.getElementsByTagName('h2')[0];
+            expect(h2.innerHTML).toBe('erik.baidu');
+
+            myComponent.dispose();
+            document.body.removeChild(wrap);
+            done();
+        });
+    });
+
     it("components in inherits structure", function () {
         var Span = san.defineComponent({});
         Span.template = '<span title="span">span</span>';
